@@ -3,6 +3,11 @@
  * All pricing math uses integer paise (1 INR = 100 paise).
  */
 
+import {
+  calculateContinuityCareTotal,
+  getContinuityDiscountPercentage,
+} from "@/lib/pricingConfig";
+
 export type ClinicalCareDurationWeeks = 1 | 2 | 4 | 8 | 12;
 
 export interface ClinicalCareTierOption {
@@ -58,7 +63,18 @@ export function calculateCarePeriodTotalPaise(
   if (!Number.isInteger(weeklyRatePaise) || weeklyRatePaise < 0) {
     throw new Error("Weekly rate must be a non-negative integer in paise");
   }
+  return calculateContinuityCareTotal(weeklyRatePaise, durationWeeks).total;
+}
+
+export function calculateListCarePeriodTotalPaise(
+  weeklyRatePaise: number,
+  durationWeeks: ClinicalCareDurationWeeks
+): number {
   return weeklyRatePaise * durationWeeks;
+}
+
+export function getCarePeriodContinuityBenefit(durationWeeks: ClinicalCareDurationWeeks): number {
+  return getContinuityDiscountPercentage(durationWeeks);
 }
 
 export function formatINRFromPaise(paise: number): string {
@@ -137,6 +153,9 @@ export interface GovernedConcession {
 }
 
 export interface ItemizedPharmacyBreakdown {
+  listProfessionalFeePaise: number;
+  continuityDiscountPercent: number;
+  continuityDiscountPaise: number;
   professionalFeePaise: number;
   routineMedicinesIncluded: true;
   specialBrandedMedicinesPaise: number;

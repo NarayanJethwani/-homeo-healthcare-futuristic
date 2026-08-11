@@ -2,6 +2,8 @@ import {
   CLINICAL_CARE_TIER_OPTIONS,
   EXPLICIT_PHYSICIAN_AUTHORITY_STATEMENT,
   calculateCarePeriodTotalPaise,
+  calculateListCarePeriodTotalPaise,
+  getCarePeriodContinuityBenefit,
   formatINRFromPaise,
   getClinicPaymentConfiguration,
   type ClinicalCareDurationWeeks,
@@ -9,7 +11,6 @@ import {
   type ItemizedPharmacyBreakdown,
   type GovernedConcession,
   type OfficialClinicalQuotation,
-  type PaymentWorkflowMetadata,
 } from "../domain/types";
 
 export interface PreliminaryRecommendationInput {
@@ -66,6 +67,11 @@ export function calculatePreliminaryCareRecommendation(
 
   const complexityScore = baseScore + weightAddition;
 
+  if (complexityScore <= 1) tierId = "focused";
+  else if (complexityScore === 2) tierId = "integrated";
+  else if (complexityScore === 3) tierId = "complex";
+  else tierId = "advanced";
+
   // Advisory rationale synthesis
   const rationaleParts: string[] = [];
   if (organCount > 0) {
@@ -116,7 +122,10 @@ export function calculateItemizedPharmacyQuotation(
   const tierKey = input.tierId && CLINICAL_CARE_TIER_OPTIONS[input.tierId] ? input.tierId : "integrated";
   const tier = CLINICAL_CARE_TIER_OPTIONS[tierKey];
 
+  const listProfessionalFeePaise = calculateListCarePeriodTotalPaise(tier.weeklyRatePaise, input.durationWeeks);
   const professionalFeePaise = calculateCarePeriodTotalPaise(tier.weeklyRatePaise, input.durationWeeks);
+  const continuityDiscountPercent = getCarePeriodContinuityBenefit(input.durationWeeks);
+  const continuityDiscountPaise = listProfessionalFeePaise - professionalFeePaise;
   const brandedPaise = Math.max(0, Math.round(input.specialBrandedMedicinesPaise || 0));
   const courierPaise = Math.max(0, Math.round(input.courierFeePaise || 0));
   const certPaise = Math.max(0, Math.round(input.medicalCertificateFeePaise || 0));
@@ -165,6 +174,9 @@ export function calculateItemizedPharmacyQuotation(
   const finalTotalPaise = netProfessionalFeePaise + brandedPaise + courierPaise + certPaise + diagPaise;
 
   return {
+    listProfessionalFeePaise,
+    continuityDiscountPercent,
+    continuityDiscountPaise,
     professionalFeePaise,
     routineMedicinesIncluded: true,
     specialBrandedMedicinesPaise: brandedPaise,
@@ -199,8 +211,13 @@ export function buildWhatsAppQuotationPayload(quotation: OfficialClinicalQuotati
     `• ${quotation.tierName}`,
     `• ${quotation.durationWeeks} Weeks`,
     "",
-    `Professional Care Fee:\n${formatINRFromPaise(bd.professionalFeePaise)}`,
+    `Professional Care Fee:\n${formatINRFromPaise(bd.listProfessionalFeePaise)}`,
   ];
+
+  if (bd.continuityDiscountPaise > 0) {
+    lines.push(`Continuity Care Benefit (${bd.continuityDiscountPercent}%):\n-${formatINRFromPaise(bd.continuityDiscountPaise)}`);
+    lines.push(`Professional Care Fee After Benefit:\n${formatINRFromPaise(bd.professionalFeePaise)}`);
+  }
 
   if (bd.concessions.length > 0) {
     for (const c of bd.concessions) {

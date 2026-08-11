@@ -79,12 +79,15 @@ function runClinicalCareSimulatorTests() {
   assert.deepStrictEqual(quote, {
     weeklyCareFee: 9_000,
     durationWeeks: 4,
-    baseCareTotal: 36_000,
+    listCareTotal: 36_000,
+    continuityDiscountPercent: 10,
+    continuityDiscountTotal: 3_600,
+    baseCareTotal: 32_400,
     caseSpecificSupportTotal: 3_000,
     pharmacyTotal: 1_000,
-    subtotal: 40_000,
+    subtotal: 36_400,
     concessionTotal: 2_000,
-    finalTotal: 38_000,
+    finalTotal: 34_400,
   });
 
   console.log("✅ Clinical care simulator tests passed");

@@ -9,6 +9,7 @@ import {
   COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE,
   PUBLIC_CARE_LEVEL_KEYS,
   calculateCarePrice,
+  calculateCompleteHealthTransformationPrice,
   toPublicCarePathway,
   type CarePriceSummary,
   type PublicCarePathwayKey,
@@ -148,12 +149,7 @@ export default function PatientPricingPlanner({
       additionalAcuteEpisode: false,
       priorityAcuteSupport: false,
       durationPendingConfirmation: false,
-      summary: {
-        baseCareTotal: COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE * 2,
-        additionalAcuteEpisodeTotal: 0,
-        priorityAcuteSupportTotal: 0,
-        total: COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE * 2,
-      },
+      summary: calculateCompleteHealthTransformationPrice(2),
     }),
     [organSystemBreadth],
   );
@@ -298,7 +294,7 @@ export default function PatientPricingPlanner({
                 }`}
               >
                 <span className="block text-sm font-black text-[#1A2421]">{weeks} {weeks === 1 ? "week" : "weeks"}</span>
-                <span className="block text-lg font-black text-mint-dark mt-1">{formatPrice(activeDetail.weeklyPrice * weeks)}</span>
+                <span className="block text-lg font-black text-mint-dark mt-1">{formatPrice(calculateCarePrice({ pathway, durationWeeks: weeks }).total)}</span>
                 {weeks === 4 && (pathway === "moderate" || pathway === "focused") && (
                   <span className="inline-flex rounded-full bg-[#1A2421] px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white mt-2">Recommended</span>
                 )}
@@ -363,6 +359,7 @@ export default function PatientPricingPlanner({
             <div className="flex justify-between gap-4"><dt className="font-semibold text-slate-500">Duration</dt><dd className="font-bold text-[#1A2421]">{durationWeeks} {durationWeeks === 1 ? "week" : "weeks"}</dd></div>
             {organSystemBreadth && <div className="flex justify-between gap-4"><dt className="font-semibold text-slate-500">Reported case breadth</dt><dd className="font-bold text-[#1A2421] text-right">{getOrganSystemBreadthLabel(organSystemBreadth)}</dd></div>}
             <div className="flex justify-between gap-4"><dt className="font-semibold text-slate-500">Care fee</dt><dd className="font-bold text-[#1A2421]">{formatPrice(summary.baseCareTotal)}</dd></div>
+            {summary.continuityDiscountTotal > 0 && <div className="flex justify-between gap-4 text-emerald-700"><dt className="font-bold">Continuity benefit ({summary.continuityDiscountPercent}%)</dt><dd className="font-black">−{formatPrice(summary.continuityDiscountTotal)}</dd></div>}
             {summary.additionalAcuteEpisodeTotal > 0 && <div className="flex justify-between gap-4"><dt className="font-semibold text-slate-500">Additional acute assessment</dt><dd className="font-bold text-[#1A2421]">+{formatPrice(summary.additionalAcuteEpisodeTotal)}</dd></div>}
             {summary.priorityAcuteSupportTotal > 0 && <div className="flex justify-between gap-4"><dt className="font-semibold text-slate-500">Priority support</dt><dd className="font-bold text-[#1A2421]">+{formatPrice(summary.priorityAcuteSupportTotal)}</dd></div>}
           </dl>
@@ -478,7 +475,7 @@ export default function PatientPricingPlanner({
               {COMPLETE_HEALTH_TRANSFORMATION_DURATIONS.map((weeks) => (
                 <div key={weeks} className="rounded-2xl border border-white/15 bg-white/[0.03] p-3">
                   <span className="block text-xs font-black">{weeks} weeks</span>
-                  <span className="block text-sm font-black text-mint mt-1">{formatPrice(weeks * COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE)}</span>
+                  <span className="block text-sm font-black text-mint mt-1">{formatPrice(calculateCompleteHealthTransformationPrice(weeks).total)}</span>
                 </div>
               ))}
             </div>
@@ -486,7 +483,7 @@ export default function PatientPricingPlanner({
               These totals are references, not selectable packages. Your physician recommends the appropriate duration and confirms scope and final fee after assessment. This is individual—not family—care, and outcomes vary by individual clinical response.
             </p>
             <div className="rounded-2xl border border-mint/20 bg-mint/10 p-4 mt-4 text-xs font-semibold text-slate-200 leading-relaxed">
-              <strong className="text-mint">Transparent intensive-care example:</strong> Two-week program ₹20,000 + physician-assigned Priority Acute Support ₹4,000 for the same period = ₹24,000 for 2 weeks.
+              <strong className="text-mint">Transparent intensive-care example:</strong> Two-week program ₹22,800 after the 5% continuity benefit. Any physician-assigned additional support is itemized separately and requires approval.
             </div>
             {onContinue ? (
               <button type="button" onClick={() => onContinue(completeSelection)} className="pricing-primary-action w-full mt-5 py-4 rounded-full bg-mint hover:bg-mint-dark text-white text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint focus-visible:ring-offset-2 focus-visible:ring-offset-[#1A2421]">

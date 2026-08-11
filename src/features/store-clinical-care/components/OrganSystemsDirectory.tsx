@@ -1,640 +1,293 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo, useState } from "react";
+import Image from "next/image";
 import {
-  Search,
+  Activity,
+  Baby,
+  Bone,
+  Brain,
   CheckCircle2,
   ChevronRight,
-  Stethoscope,
-  Activity,
-  Heart,
-  ShieldAlert,
-  Flame,
-  Wind,
-  ShieldCheck,
-  Zap,
-  Brain,
-  Moon,
-  Sparkles as SkinIcon,
-  Bone,
-  User,
-  Baby,
   Eye,
-  Activity as AgeingIcon,
-  Crosshair,
+  Flame,
+  Heart,
+  Moon,
   RefreshCw,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  Stethoscope,
+  User,
+  Wind,
+  Zap,
+  type LucideIcon,
 } from "lucide-react";
-import { SPECIALTY_CLINICAL_AREAS, type SpecialtyClinicalArea } from "@/lib/specialtyPrograms";
-import { calculatePreliminaryCareRecommendation } from "../services/careRecommendationEngine";
+import { SPECIALTY_CLINICAL_AREAS } from "@/lib/specialtyPrograms";
 import { EXPLICIT_PHYSICIAN_AUTHORITY_STATEMENT } from "../domain/types";
+import { calculatePreliminaryCareRecommendation } from "../services/careRecommendationEngine";
+import { HealthConcernDetailDialog } from "./HealthConcernDetailDialog";
 
 interface OrganSystemsDirectoryProps {
-  selectedAreaIds?: string[];
-  selectedCondition?: string;
-  onSelectAreasAndCondition: (selectedAreas: string[], conditionName: string) => void;
+  selectedAreaIds: string[];
+  selectedCondition: string;
+  onSelectionChange: (areaIds: string[], areaTitles: string[], conditionName: string) => void;
+  onContinueToPathways: () => void;
   onProceedToAssessment: () => void;
-  onProceedToTiers: () => void;
 }
 
-interface OrganSystemTheme {
-  borderUnselected: string;
-  bgUnselected: string;
-  hoverUnselected: string;
-  borderSelected: string;
-  bgSelected: string;
-  ringSelected: string;
-  shadowSelected: string;
-  iconBg: string;
-  iconColor: string;
-  badgeBg: string;
-  badgeText: string;
-  chipBg: string;
-  chipText: string;
+interface ConcernVisual {
+  icon: LucideIcon;
+  accent: string;
+  image: string;
 }
 
-const organThemesMap: Record<string, OrganSystemTheme> = {
-  "heart-circulation": {
-    borderUnselected: "border-rose-200/90",
-    bgUnselected: "bg-rose-50/40",
-    hoverUnselected: "hover:border-rose-300 hover:bg-rose-50/80",
-    borderSelected: "border-rose-500",
-    bgSelected: "bg-rose-500/10",
-    ringSelected: "ring-2 ring-rose-500/30",
-    shadowSelected: "shadow-[0_14px_40px_rgba(244,63,94,0.2)]",
-    iconBg: "bg-rose-100",
-    iconColor: "text-rose-600",
-    badgeBg: "bg-rose-100/90 border border-rose-200",
-    badgeText: "text-rose-900",
-    chipBg: "bg-rose-100/70",
-    chipText: "text-rose-900",
-  },
-  "hormones-metabolism": {
-    borderUnselected: "border-amber-200/90",
-    bgUnselected: "bg-amber-50/40",
-    hoverUnselected: "hover:border-amber-300 hover:bg-amber-50/80",
-    borderSelected: "border-amber-500",
-    bgSelected: "bg-amber-500/10",
-    ringSelected: "ring-2 ring-amber-500/30",
-    shadowSelected: "shadow-[0_14px_40px_rgba(245,158,11,0.2)]",
-    iconBg: "bg-amber-100",
-    iconColor: "text-amber-600",
-    badgeBg: "bg-amber-100/90 border border-amber-200",
-    badgeText: "text-amber-900",
-    chipBg: "bg-amber-100/70",
-    chipText: "text-amber-900",
-  },
-  "digestive-liver": {
-    borderUnselected: "border-emerald-200/90",
-    bgUnselected: "bg-emerald-50/40",
-    hoverUnselected: "hover:border-emerald-300 hover:bg-emerald-50/80",
-    borderSelected: "border-emerald-500",
-    bgSelected: "bg-emerald-500/10",
-    ringSelected: "ring-2 ring-emerald-500/30",
-    shadowSelected: "shadow-[0_14px_40px_rgba(16,185,129,0.2)]",
-    iconBg: "bg-emerald-100",
-    iconColor: "text-emerald-600",
-    badgeBg: "bg-emerald-100/90 border border-emerald-200",
-    badgeText: "text-emerald-900",
-    chipBg: "bg-emerald-100/70",
-    chipText: "text-emerald-900",
-  },
-  "lungs-breathing": {
-    borderUnselected: "border-sky-200/90",
-    bgUnselected: "bg-sky-50/40",
-    hoverUnselected: "hover:border-sky-300 hover:bg-sky-50/80",
-    borderSelected: "border-sky-500",
-    bgSelected: "bg-sky-500/10",
-    ringSelected: "ring-2 ring-sky-500/30",
-    shadowSelected: "shadow-[0_14px_40px_rgba(14,165,233,0.2)]",
-    iconBg: "bg-sky-100",
-    iconColor: "text-sky-600",
-    badgeBg: "bg-sky-100/90 border border-sky-200",
-    badgeText: "text-sky-900",
-    chipBg: "bg-sky-100/70",
-    chipText: "text-sky-900",
-  },
-  "allergy-immunity": {
-    borderUnselected: "border-violet-200/90",
-    bgUnselected: "bg-violet-50/40",
-    hoverUnselected: "hover:border-violet-300 hover:bg-violet-50/80",
-    borderSelected: "border-violet-500",
-    bgSelected: "bg-violet-500/10",
-    ringSelected: "ring-2 ring-violet-500/30",
-    shadowSelected: "shadow-[0_14px_40px_rgba(139,92,246,0.2)]",
-    iconBg: "bg-violet-100",
-    iconColor: "text-violet-600",
-    badgeBg: "bg-violet-100/90 border border-violet-200",
-    badgeText: "text-violet-900",
-    chipBg: "bg-violet-100/70",
-    chipText: "text-violet-900",
-  },
-  "kidney-urinary": {
-    borderUnselected: "border-blue-200/90",
-    bgUnselected: "bg-blue-50/40",
-    hoverUnselected: "hover:border-blue-300 hover:bg-blue-50/80",
-    borderSelected: "border-blue-500",
-    bgSelected: "bg-blue-500/10",
-    ringSelected: "ring-2 ring-blue-500/30",
-    shadowSelected: "shadow-[0_14px_40px_rgba(59,130,246,0.2)]",
-    iconBg: "bg-blue-100",
-    iconColor: "text-blue-600",
-    badgeBg: "bg-blue-100/90 border border-blue-200",
-    badgeText: "text-blue-900",
-    chipBg: "bg-blue-100/70",
-    chipText: "text-blue-900",
-  },
-  "brain-nerves": {
-    borderUnselected: "border-fuchsia-200/90",
-    bgUnselected: "bg-fuchsia-50/40",
-    hoverUnselected: "hover:border-fuchsia-300 hover:bg-fuchsia-50/80",
-    borderSelected: "border-fuchsia-500",
-    bgSelected: "bg-fuchsia-500/10",
-    ringSelected: "ring-2 ring-fuchsia-500/30",
-    shadowSelected: "shadow-[0_14px_40px_rgba(217,70,239,0.2)]",
-    iconBg: "bg-fuchsia-100",
-    iconColor: "text-fuchsia-600",
-    badgeBg: "bg-fuchsia-100/90 border border-fuchsia-200",
-    badgeText: "text-fuchsia-900",
-    chipBg: "bg-fuchsia-100/70",
-    chipText: "text-fuchsia-900",
-  },
-  "emotional-sleep": {
-    borderUnselected: "border-indigo-200/90",
-    bgUnselected: "bg-indigo-50/40",
-    hoverUnselected: "hover:border-indigo-300 hover:bg-indigo-50/80",
-    borderSelected: "border-indigo-500",
-    bgSelected: "bg-indigo-500/10",
-    ringSelected: "ring-2 ring-indigo-500/30",
-    shadowSelected: "shadow-[0_14px_40px_rgba(99,102,241,0.2)]",
-    iconBg: "bg-indigo-100",
-    iconColor: "text-indigo-600",
-    badgeBg: "bg-indigo-100/90 border border-indigo-200",
-    badgeText: "text-indigo-900",
-    chipBg: "bg-indigo-100/70",
-    chipText: "text-indigo-900",
-  },
-  "skin-hair-nails": {
-    borderUnselected: "border-teal-200/90",
-    bgUnselected: "bg-teal-50/40",
-    hoverUnselected: "hover:border-teal-300 hover:bg-teal-50/80",
-    borderSelected: "border-teal-500",
-    bgSelected: "bg-teal-500/10",
-    ringSelected: "ring-2 ring-teal-500/30",
-    shadowSelected: "shadow-[0_14px_40px_rgba(20,184,166,0.2)]",
-    iconBg: "bg-teal-100",
-    iconColor: "text-teal-600",
-    badgeBg: "bg-teal-100/90 border border-teal-200",
-    badgeText: "text-teal-900",
-    chipBg: "bg-teal-100/70",
-    chipText: "text-teal-900",
-  },
-  "joints-spine-mobility": {
-    borderUnselected: "border-orange-200/90",
-    bgUnselected: "bg-orange-50/40",
-    hoverUnselected: "hover:border-orange-300 hover:bg-orange-50/80",
-    borderSelected: "border-orange-500",
-    bgSelected: "bg-orange-500/10",
-    ringSelected: "ring-2 ring-orange-500/30",
-    shadowSelected: "shadow-[0_14px_40px_rgba(249,115,22,0.2)]",
-    iconBg: "bg-orange-100",
-    iconColor: "text-orange-600",
-    badgeBg: "bg-orange-100/90 border border-orange-200",
-    badgeText: "text-orange-900",
-    chipBg: "bg-orange-100/70",
-    chipText: "text-orange-900",
-  },
-  "womens-health": {
-    borderUnselected: "border-pink-200/90",
-    bgUnselected: "bg-pink-50/40",
-    hoverUnselected: "hover:border-pink-300 hover:bg-pink-50/80",
-    borderSelected: "border-pink-500",
-    bgSelected: "bg-pink-500/10",
-    ringSelected: "ring-2 ring-pink-500/30",
-    shadowSelected: "shadow-[0_14px_40px_rgba(236,72,153,0.2)]",
-    iconBg: "bg-pink-100",
-    iconColor: "text-pink-600",
-    badgeBg: "bg-pink-100/90 border border-pink-200",
-    badgeText: "text-pink-900",
-    chipBg: "bg-pink-100/70",
-    chipText: "text-pink-900",
-  },
-  ent: {
-    borderUnselected: "border-cyan-200/90",
-    bgUnselected: "bg-cyan-50/40",
-    hoverUnselected: "hover:border-cyan-300 hover:bg-cyan-50/80",
-    borderSelected: "border-cyan-500",
-    bgSelected: "bg-cyan-500/10",
-    ringSelected: "ring-2 ring-cyan-500/30",
-    shadowSelected: "shadow-[0_14px_40px_rgba(6,182,212,0.2)]",
-    iconBg: "bg-cyan-100",
-    iconColor: "text-cyan-600",
-    badgeBg: "bg-cyan-100/90 border border-cyan-200",
-    badgeText: "text-cyan-900",
-    chipBg: "bg-cyan-100/70",
-    chipText: "text-cyan-900",
-  },
-  "eye-comfort": {
-    borderUnselected: "border-indigo-200/90",
-    bgUnselected: "bg-indigo-50/40",
-    hoverUnselected: "hover:border-indigo-300 hover:bg-indigo-50/80",
-    borderSelected: "border-indigo-500",
-    bgSelected: "bg-indigo-500/10",
-    ringSelected: "ring-2 ring-indigo-500/30",
-    shadowSelected: "shadow-[0_14px_40px_rgba(99,102,241,0.2)]",
-    iconBg: "bg-indigo-100",
-    iconColor: "text-indigo-600",
-    badgeBg: "bg-indigo-100/90 border border-indigo-200",
-    badgeText: "text-indigo-900",
-    chipBg: "bg-indigo-100/70",
-    chipText: "text-indigo-900",
-  },
-  "child-adolescent": {
-    borderUnselected: "border-amber-200/90",
-    bgUnselected: "bg-amber-50/40",
-    hoverUnselected: "hover:border-amber-300 hover:bg-amber-50/80",
-    borderSelected: "border-amber-500",
-    bgSelected: "bg-amber-500/10",
-    ringSelected: "ring-2 ring-amber-500/30",
-    shadowSelected: "shadow-[0_14px_40px_rgba(245,158,11,0.2)]",
-    iconBg: "bg-amber-100",
-    iconColor: "text-amber-600",
-    badgeBg: "bg-amber-100/90 border border-amber-200",
-    badgeText: "text-amber-900",
-    chipBg: "bg-amber-100/70",
-    chipText: "text-amber-900",
-  },
-  "healthy-ageing": {
-    borderUnselected: "border-purple-200/90",
-    bgUnselected: "bg-purple-50/40",
-    hoverUnselected: "hover:border-purple-300 hover:bg-purple-50/80",
-    borderSelected: "border-purple-500",
-    bgSelected: "bg-purple-500/10",
-    ringSelected: "ring-2 ring-purple-500/30",
-    shadowSelected: "shadow-[0_14px_40px_rgba(168,85,247,0.2)]",
-    iconBg: "bg-purple-100",
-    iconColor: "text-purple-600",
-    badgeBg: "bg-purple-100/90 border border-purple-200",
-    badgeText: "text-purple-900",
-    chipBg: "bg-purple-100/70",
-    chipText: "text-purple-900",
-  },
-  "cancer-wellbeing": {
-    borderUnselected: "border-lime-200/90",
-    bgUnselected: "bg-lime-50/40",
-    hoverUnselected: "hover:border-lime-300 hover:bg-lime-50/80",
-    borderSelected: "border-lime-500",
-    bgSelected: "bg-lime-500/10",
-    ringSelected: "ring-2 ring-lime-500/30",
-    shadowSelected: "shadow-[0_14px_40px_rgba(132,204,22,0.2)]",
-    iconBg: "bg-lime-100",
-    iconColor: "text-lime-700",
-    badgeBg: "bg-lime-100/90 border border-lime-200",
-    badgeText: "text-lime-900",
-    chipBg: "bg-lime-100/70",
-    chipText: "text-lime-900",
-  },
-  "infection-recovery": {
-    borderUnselected: "border-orange-200/90",
-    bgUnselected: "bg-orange-50/40",
-    hoverUnselected: "hover:border-orange-300 hover:bg-orange-50/80",
-    borderSelected: "border-orange-500",
-    bgSelected: "bg-orange-500/10",
-    ringSelected: "ring-2 ring-orange-500/30",
-    shadowSelected: "shadow-[0_14px_40px_rgba(249,115,22,0.2)]",
-    iconBg: "bg-orange-100",
-    iconColor: "text-orange-600",
-    badgeBg: "bg-orange-100/90 border border-orange-200",
-    badgeText: "text-orange-900",
-    chipBg: "bg-orange-100/70",
-    chipText: "text-orange-900",
-  },
-};
+const DEFAULT_VISUAL: ConcernVisual = { icon: Stethoscope, accent: "#0f766e", image: "/images/health-concerns-3d.webp" };
 
-const defaultTheme: OrganSystemTheme = {
-  borderUnselected: "border-teal-200/90",
-  bgUnselected: "bg-teal-50/40",
-  hoverUnselected: "hover:border-teal-300 hover:bg-teal-50/80",
-  borderSelected: "border-teal-500",
-  bgSelected: "bg-teal-500/10",
-  ringSelected: "ring-2 ring-teal-500/30",
-  shadowSelected: "shadow-[0_14px_40px_rgba(20,184,166,0.2)]",
-  iconBg: "bg-teal-100",
-  iconColor: "text-teal-600",
-  badgeBg: "bg-teal-100/90 border border-teal-200",
-  badgeText: "text-teal-900",
-  chipBg: "bg-teal-100/70",
-  chipText: "text-teal-900",
-};
-
-const getOrganTheme = (id: string): OrganSystemTheme => {
-  return organThemesMap[id] || defaultTheme;
-};
-
-const getOrganIcon = (id: string, iconColor: string): React.ReactNode => {
-  switch (id) {
-    case "heart-circulation":
-      return <Heart className={`w-5 h-5 ${iconColor}`} aria-hidden="true" />;
-    case "hormones-metabolism":
-      return <Flame className={`w-5 h-5 ${iconColor}`} aria-hidden="true" />;
-    case "digestive-liver":
-      return <ShieldCheck className={`w-5 h-5 ${iconColor}`} aria-hidden="true" />;
-    case "lungs-breathing":
-      return <Wind className={`w-5 h-5 ${iconColor}`} aria-hidden="true" />;
-    case "allergy-immunity":
-      return <Zap className={`w-5 h-5 ${iconColor}`} aria-hidden="true" />;
-    case "kidney-urinary":
-      return <ShieldAlert className={`w-5 h-5 ${iconColor}`} aria-hidden="true" />;
-    case "brain-nerves":
-      return <Brain className={`w-5 h-5 ${iconColor}`} aria-hidden="true" />;
-    case "emotional-sleep":
-      return <Moon className={`w-5 h-5 ${iconColor}`} aria-hidden="true" />;
-    case "skin-hair-nails":
-      return <SkinIcon className={`w-5 h-5 ${iconColor}`} aria-hidden="true" />;
-    case "joints-spine-mobility":
-      return <Bone className={`w-5 h-5 ${iconColor}`} aria-hidden="true" />;
-    case "womens-health":
-      return <User className={`w-5 h-5 ${iconColor}`} aria-hidden="true" />;
-    case "ent":
-      return <Wind className={`w-5 h-5 ${iconColor}`} aria-hidden="true" />;
-    case "eye-comfort":
-      return <Eye className={`w-5 h-5 ${iconColor}`} aria-hidden="true" />;
-    case "child-adolescent":
-      return <Baby className={`w-5 h-5 ${iconColor}`} aria-hidden="true" />;
-    case "healthy-ageing":
-      return <AgeingIcon className={`w-5 h-5 ${iconColor}`} aria-hidden="true" />;
-    case "cancer-wellbeing":
-      return <Crosshair className={`w-5 h-5 ${iconColor}`} aria-hidden="true" />;
-    case "infection-recovery":
-      return <RefreshCw className={`w-5 h-5 ${iconColor}`} aria-hidden="true" />;
-    default:
-      return <Stethoscope className={`w-5 h-5 ${iconColor}`} aria-hidden="true" />;
-  }
+const CONCERN_VISUALS: Record<string, ConcernVisual> = {
+  "heart-circulation": { icon: Heart, accent: "#e11d48", image: "/images/cardiovascular-hypertension-lipids-featured.png" },
+  "hormones-metabolism": { icon: Flame, accent: "#d97706", image: "/images/complete-thyroid-featured.png" },
+  "digestive-liver": { icon: ShieldCheck, accent: "#059669", image: "/images/fatty-liver-regeneration-featured.png" },
+  "lungs-breathing": { icon: Wind, accent: "#0284c7", image: "/images/asthma-bronchospasms-featured.png" },
+  "allergy-immunity": { icon: Zap, accent: "#7c3aed", image: "/images/autoimmune_cellular_featured_new.png" },
+  "kidney-urinary": { icon: Activity, accent: "#2563eb", image: "/images/kidney_pathology_featured_new.png" },
+  "brain-nerves": { icon: Brain, accent: "#9333ea", image: "/images/migraine_article_hero.png" },
+  "emotional-sleep": { icon: Moon, accent: "#4f46e5", image: "/images/neurobiology-stress-anxiety-featured.png" },
+  "skin-hair-nails": { icon: Sparkles, accent: "#0d9488", image: "/images/chronic-skin-pathology-featured.png" },
+  "joints-spine-mobility": { icon: Bone, accent: "#ea580c", image: "/images/joint-bone-health-featured.png" },
+  "womens-health": { icon: User, accent: "#db2777", image: "/images/pcos-pcod-reversal-featured.png" },
+  ent: { icon: Wind, accent: "#0891b2", image: "/images/allergic-rhinitis-sinusitis-featured.png" },
+  "eye-comfort": { icon: Eye, accent: "#4f46e5", image: "/images/eye-comfort-3d.webp" },
+  "child-adolescent": { icon: Baby, accent: "#ca8a04", image: "/images/pediatric-immunity-tonsils-featured.png" },
+  "healthy-ageing": { icon: Activity, accent: "#7e22ce", image: "/images/healthy-ageing-3d.webp" },
+  "cancer-wellbeing": { icon: ShieldCheck, accent: "#4d7c0f", image: "/images/constitutional-immunotherapy-cancer-featured.png" },
+  "infection-recovery": { icon: RefreshCw, accent: "#c2410c", image: "/images/viral_infection_featured_new.png" },
 };
 
 export const OrganSystemsDirectory: React.FC<OrganSystemsDirectoryProps> = ({
-  selectedAreaIds = [],
-  selectedCondition = "",
-  onSelectAreasAndCondition,
+  selectedAreaIds,
+  selectedCondition,
+  onSelectionChange,
+  onContinueToPathways,
   onProceedToAssessment,
-  onProceedToTiers,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeAreaIds, setActiveAreaIds] = useState<string[]>(selectedAreaIds);
-  const [activeCondition, setActiveCondition] = useState<string>(selectedCondition);
   const [customConcern, setCustomConcern] = useState("");
+  const [activeInfoAreaId, setActiveInfoAreaId] = useState<string | null>(null);
 
   const filteredAreas = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) return SPECIALTY_CLINICAL_AREAS;
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return SPECIALTY_CLINICAL_AREAS;
     return SPECIALTY_CLINICAL_AREAS.filter((area) =>
-      [area.title, area.description, ...area.specialties, ...area.conditions].some((val) =>
-        val.toLowerCase().includes(q)
-      )
+      [area.title, area.description, ...area.specialties, ...area.conditions]
+        .some((value) => value.toLowerCase().includes(query))
     );
   }, [searchQuery]);
 
   const activeAreas = useMemo(
-    () => SPECIALTY_CLINICAL_AREAS.filter((a) => activeAreaIds.includes(a.id)),
-    [activeAreaIds]
+    () => SPECIALTY_CLINICAL_AREAS.filter((area) => selectedAreaIds.includes(area.id)),
+    [selectedAreaIds]
   );
 
-  const preliminaryRec = useMemo(() => {
-    const areaTitles = activeAreas.map((a) => a.title);
-    return calculatePreliminaryCareRecommendation({
-      selectedOrganSystems: areaTitles,
-    });
-  }, [activeAreas]);
+  const selectedConditions = useMemo(
+    () => Array.from(new Set(activeAreas.flatMap((area) => area.conditions))),
+    [activeAreas]
+  );
 
-  const toggleSelectArea = (area: SpecialtyClinicalArea) => {
-    let nextIds: string[];
-    if (activeAreaIds.includes(area.id)) {
-      nextIds = activeAreaIds.filter((id) => id !== area.id);
-    } else {
-      nextIds = [...activeAreaIds, area.id];
-    }
-    setActiveAreaIds(nextIds);
-    const selectedTitles = SPECIALTY_CLINICAL_AREAS.filter((a) => nextIds.includes(a.id)).map((a) => a.title);
-    onSelectAreasAndCondition(selectedTitles, activeCondition);
+  const recommendation = useMemo(
+    () => calculatePreliminaryCareRecommendation({ selectedOrganSystems: activeAreas.map((area) => area.title) }),
+    [activeAreas]
+  );
+
+  const activeInfoArea = useMemo(
+    () => SPECIALTY_CLINICAL_AREAS.find((area) => area.id === activeInfoAreaId),
+    [activeInfoAreaId]
+  );
+
+  const toggleArea = (areaId: string) => {
+    const nextIds = selectedAreaIds.includes(areaId)
+      ? selectedAreaIds.filter((id) => id !== areaId)
+      : [...selectedAreaIds, areaId];
+    const nextAreas = SPECIALTY_CLINICAL_AREAS.filter((area) => nextIds.includes(area.id));
+    onSelectionChange(nextIds, nextAreas.map((area) => area.title), selectedCondition);
   };
 
-  const handleSelectCondition = (cond: string) => {
-    setActiveCondition(cond);
-    const resolvedCond = cond === "Other or not sure" ? (customConcern || "General Assessment") : cond;
-    const selectedTitles = activeAreas.map((a) => a.title);
-    onSelectAreasAndCondition(selectedTitles, resolvedCond);
+  const selectCondition = (condition: string) => {
+    onSelectionChange(selectedAreaIds, activeAreas.map((area) => area.title), condition);
   };
 
   return (
-    <section aria-labelledby="organ-systems-heading" className="mb-12">
-      {/* Section Header & Search Bar */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
-        <div className="max-w-3xl">
-          <span className="text-xs font-bold text-mint uppercase tracking-widest flex items-center gap-2 mb-2">
-            <Activity className="w-3.5 h-3.5 text-mint" aria-hidden="true" />
-            Organ Systems & Specialty Triage
+    <section aria-labelledby="organ-systems-heading" className="mb-12 space-y-8">
+      <div className="health-concerns-hero relative isolate overflow-hidden rounded-[2rem] border border-emerald-900/20 bg-[#071f1a] shadow-[0_24px_80px_rgba(4,47,38,0.2)]">
+        <Image
+          src="/images/health-concerns-3d.webp"
+          alt="Three-dimensional visualization of interconnected human organ systems"
+          fill
+          priority={false}
+          sizes="(max-width: 768px) 100vw, 1200px"
+          className="object-cover object-[64%_center] opacity-85"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,#061b17_0%,rgba(6,27,23,0.96)_34%,rgba(6,27,23,0.34)_70%,rgba(6,27,23,0.08)_100%)]" />
+        <div className="relative z-10 flex min-h-[380px] max-w-2xl flex-col justify-center px-7 py-10 text-white md:px-12">
+          <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-300">
+            <Activity className="h-4 w-4" aria-hidden="true" /> Whole-person clinical discovery
           </span>
-          <h2 id="organ-systems-heading" className="font-serif text-3xl md:text-4xl font-bold text-[#1A2421]">
-            Explore Organ Systems & Health Conditions
+          <h2 id="organ-systems-heading" className="mt-4 max-w-xl font-serif text-4xl font-semibold leading-tight md:text-5xl">
+            Explore by health concern
           </h2>
-          <p className="text-sm font-semibold text-slate-600 leading-relaxed mt-2">
-            Select one or more organ systems relevant to your health concerns. Our system will generate a preliminary care recommendation for physician review.
+          <p className="mt-4 max-w-lg text-sm font-semibold leading-relaxed text-emerald-50/90">
+            Start with the area that concerns you most. Add related areas when needed, then review a suggested care pathway with a physician.
+          </p>
+          <div className="mt-7 grid max-w-lg grid-cols-3 gap-3 text-[10px] font-bold text-emerald-50">
+            {["Search concerns", "Select health areas", "Review with physician"].map((step, index) => (
+              <div key={step} className="rounded-2xl border border-white/15 bg-black/20 px-3 py-3 backdrop-blur-sm">
+                <span className="mb-1 block text-emerald-300">0{index + 1}</span>{step}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+        <div className="max-w-3xl">
+          <span className="text-xs font-bold uppercase tracking-widest text-mint">Health areas & common concerns</span>
+          <h3 className="mt-2 font-serif text-3xl font-bold text-[#1A2421]">What would you like help with?</h3>
+          <p className="mt-2 text-sm font-semibold leading-relaxed text-slate-600">
+            Select one primary area and any related areas. This guides your starting point; it does not provide a diagnosis.
           </p>
         </div>
-
-        {/* Search Bar */}
         <div className="relative w-full lg:max-w-md">
-          <label htmlFor="organ-search" className="sr-only">
-            Search organ systems and health conditions
-          </label>
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" aria-hidden="true" />
+          <label htmlFor="organ-search" className="sr-only">Search health areas and common concerns</label>
+          <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" aria-hidden="true" />
           <input
             id="organ-search"
-            type="text"
+            type="search"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search diabetes, migraine, skin, digestion..."
-            className="w-full rounded-full border border-slate-200 bg-white/90 backdrop-blur-md py-3.5 pl-11 pr-5 text-xs font-bold text-[#1A2421] placeholder-slate-400 outline-none focus:border-mint focus:ring-2 focus:ring-mint/20 transition-all shadow-sm"
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder="Search migraine, digestion, skin..."
+            className="w-full rounded-full border border-slate-200 bg-white/90 py-4 pl-11 pr-5 text-xs font-bold text-[#1A2421] shadow-sm outline-none transition-all focus:border-mint focus:ring-2 focus:ring-mint/20"
           />
         </div>
       </div>
 
-      {/* Dynamic Multi-Organ Complexity Indicator Banner */}
-      {activeAreaIds.length > 0 && (
-        <div className="mb-8 p-6 rounded-3xl bg-gradient-to-r from-mint/15 via-white/80 to-teal-50/80 border border-mint/30 shadow-md backdrop-blur-md flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all duration-300">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-black uppercase tracking-wider bg-mint text-white px-3 py-1 rounded-full">
-                {activeAreaIds.length} {activeAreaIds.length === 1 ? "Organ System" : "Organ Systems"} Selected
-              </span>
-              <span className="text-xs font-bold text-mint-dark">
-                Preliminary Care Recommendation: <span className="underline">{preliminaryRec.suggestedTierName}</span>
-              </span>
-            </div>
-            <p className="text-xs font-semibold text-slate-700 leading-relaxed">
-              {preliminaryRec.rationale}
-            </p>
-            <p className="text-[11px] font-semibold italic text-slate-500 border-t border-slate-200/60 pt-2">
-              {EXPLICIT_PHYSICIAN_AUTHORITY_STATEMENT}
-            </p>
+      {selectedAreaIds.length > 0 && (
+        <div className="rounded-3xl border border-mint/30 bg-mint/[0.07] p-5 md:flex md:items-center md:justify-between md:gap-6">
+          <div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-mint-dark">
+              {selectedAreaIds.length} {selectedAreaIds.length === 1 ? "health area" : "health areas"} selected
+            </span>
+            <h3 className="mt-1 font-serif text-2xl font-bold text-[#1A2421]">Suggested starting point: {recommendation.suggestedTierName}</h3>
+            <p className="mt-1 max-w-3xl text-xs font-semibold leading-relaxed text-slate-600">{recommendation.rationale}</p>
+          </div>
+          <button type="button" onClick={onContinueToPathways} className="mt-4 inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-mint px-6 py-3 text-[10px] font-black uppercase tracking-wider text-white shadow-md md:mt-0">
+            Continue to care pathways <ChevronRight className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {filteredAreas.map((area) => {
+          const selected = selectedAreaIds.includes(area.id);
+          const visual = CONCERN_VISUALS[area.id] || DEFAULT_VISUAL;
+          const Icon = visual.icon;
+          return (
+            <article
+              key={area.id}
+              data-selected={selected}
+              className="health-concern-card group flex h-full flex-col overflow-hidden rounded-3xl border text-left transition-all hover:-translate-y-1"
+              style={{ "--concern-accent": visual.accent } as React.CSSProperties}
+            >
+              <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#071f1a]">
+                <Image src={visual.image} alt="" fill sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw" className="scale-110 object-cover opacity-35 blur-xl" aria-hidden="true" />
+                <Image src={visual.image} alt={`Clinical visualization for ${area.title}`} fill sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw" className="object-contain p-1 drop-shadow-[0_12px_24px_rgba(0,0,0,0.35)] transition-transform duration-500 group-hover:scale-[1.02]" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
+                <span className="absolute bottom-3 left-3 rounded-full border border-white/20 bg-black/45 px-3 py-1 text-[9px] font-black uppercase tracking-wider text-white backdrop-blur-sm">{area.specialties[0]}</span>
+                {selected && <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-3 py-1 text-[9px] font-black uppercase tracking-wider text-white shadow-md"><CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" /> Selected</span>}
+              </div>
+              <div className="flex flex-1 flex-col p-5">
+                <span className="flex items-start justify-between gap-4">
+                  <span className="health-concern-icon inline-flex rounded-2xl p-3"><Icon className="h-5 w-5" aria-hidden="true" /></span>
+                  <span className="text-[9px] font-black uppercase tracking-wider text-slate-500">{area.conditions.length} common concerns</span>
+                </span>
+                <h4 className="mt-4 font-serif text-xl font-bold text-[#1A2421]">{area.title}</h4>
+                <p className="mt-2 line-clamp-3 text-xs font-semibold leading-relaxed text-slate-600">{area.description}</p>
+                <div className="mt-auto flex flex-wrap gap-1.5 pt-4">
+                  {area.conditions.slice(0, 2).map((condition) => <span key={condition} className="health-concern-chip rounded-full px-2.5 py-1 text-[9px] font-bold">{condition}</span>)}
+                  <span className="health-concern-chip rounded-full px-2.5 py-1 text-[9px] font-bold">+{Math.max(area.conditions.length - 2, 0)} more</span>
+                </div>
+                <div className="mt-5 grid grid-cols-2 gap-2 border-t border-slate-200 pt-4">
+                  <button type="button" onClick={() => toggleArea(area.id)} className={`rounded-full px-3 py-2.5 text-[9px] font-black uppercase tracking-wider transition-colors ${selected ? "border border-mint bg-mint/10 text-mint-dark" : "bg-mint text-white"}`}>
+                    {selected ? "Remove area" : "Select area"}
+                  </button>
+                  <button type="button" onClick={() => setActiveInfoAreaId(area.id)} className="rounded-full border border-slate-200 bg-white px-3 py-2.5 text-[9px] font-black uppercase tracking-wider text-slate-700 transition-colors hover:border-mint hover:text-mint-dark">
+                    Learn more
+                  </button>
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+
+      {filteredAreas.length === 0 && (
+        <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center">
+          <p className="text-sm font-bold text-[#1A2421]">No exact match found.</p>
+          <p className="mt-1 text-xs font-semibold text-slate-600">Try a broader term, or select “Other or not sure” after choosing the closest health area.</p>
+        </div>
+      )}
+
+      {activeAreas.length > 0 && (
+        <div className="rounded-[2rem] border border-slate-200 bg-white/90 p-6 shadow-sm md:p-8">
+          <div className="border-b border-slate-200 pb-5">
+            <span className="text-[10px] font-black uppercase tracking-widest text-mint">Optional detail</span>
+            <h3 className="mt-1 font-serif text-2xl font-bold text-[#1A2421]">Choose a common condition or concern</h3>
+            <p className="mt-1 text-xs font-semibold text-slate-600">This helps your physician prepare for the review. You can still explain everything in your own words.</p>
+          </div>
+          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {selectedConditions.map((condition) => (
+              <button key={condition} type="button" aria-pressed={selectedCondition === condition} onClick={() => selectCondition(condition)} className={`rounded-2xl border p-3.5 text-left text-xs font-bold transition-all ${selectedCondition === condition ? "border-mint bg-mint/10 text-mint-dark ring-1 ring-mint/30" : "border-slate-200 bg-white text-slate-700 hover:border-mint/60"}`}>
+                {condition}
+              </button>
+            ))}
+            <button type="button" aria-pressed={selectedCondition === "Other or not sure"} onClick={() => selectCondition("Other or not sure")} className={`rounded-2xl border p-3.5 text-left text-xs font-bold transition-all ${selectedCondition === "Other or not sure" ? "border-mint bg-mint/10 text-mint-dark ring-1 ring-mint/30" : "border-slate-200 bg-white text-slate-700 hover:border-mint/60"}`}>
+              Other or not sure
+            </button>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
-            <button
-              type="button"
-              onClick={onProceedToAssessment}
-              className="px-6 py-3 rounded-full bg-mint hover:bg-mint-dark text-white text-xs font-black uppercase tracking-wider transition-all shadow-md flex items-center gap-2"
-            >
-              <span>Begin Assessment</span>
-              <ChevronRight className="w-4 h-4" aria-hidden="true" />
+          {selectedCondition === "Other or not sure" && (
+            <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+              <label htmlFor="custom-concern-input" className="mb-2 block text-xs font-bold text-[#1A2421]">Describe the concern in your own words</label>
+              <input id="custom-concern-input" value={customConcern} onChange={(event) => { setCustomConcern(event.target.value); onSelectionChange(selectedAreaIds, activeAreas.map((area) => area.title), event.target.value || "Other or not sure"); }} placeholder="For example: recurring discomfort after meals" className="w-full rounded-xl border border-slate-200 bg-white p-3 text-xs font-semibold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20" />
+            </div>
+          )}
+
+          <div className="mt-6 flex flex-col gap-3 border-t border-slate-200 pt-6 sm:flex-row sm:items-center sm:justify-between">
+            <p className="max-w-2xl text-[11px] font-semibold leading-relaxed text-slate-500">{EXPLICIT_PHYSICIAN_AUTHORITY_STATEMENT}</p>
+            <button type="button" onClick={onProceedToAssessment} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-[#1A2421] px-6 py-3 text-[10px] font-black uppercase tracking-wider text-white">
+              Request physician review <ChevronRight className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
         </div>
       )}
 
-      {/* Organ System Cards Grid with Distinct Curated Medical Color Palettes */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
-        {filteredAreas.map((area) => {
-          const isSelected = activeAreaIds.includes(area.id);
-          const theme = getOrganTheme(area.id);
-          const icon = getOrganIcon(area.id, theme.iconColor);
-
-          return (
-            <div
-              key={area.id}
-              onClick={() => toggleSelectArea(area)}
-              className={`cursor-pointer rounded-3xl border p-6 transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between ${
-                isSelected
-                  ? `${theme.borderSelected} ${theme.bgSelected} ${theme.ringSelected} ${theme.shadowSelected}`
-                  : `${theme.borderUnselected} ${theme.bgUnselected} ${theme.hoverUnselected} shadow-sm`
-              }`}
-            >
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className={`p-3 rounded-2xl shadow-sm border border-white/80 ${theme.iconBg}`}>
-                      {icon}
-                    </div>
-                    <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${theme.badgeBg} ${theme.badgeText}`}>
-                      {area.specialties.join(", ")}
-                    </span>
-                  </div>
-                  {isSelected ? (
-                    <CheckCircle2 className={`w-6 h-6 shrink-0 ${theme.iconColor}`} aria-hidden="true" />
-                  ) : (
-                    <div className="w-5 h-5 rounded-full border border-slate-300/80 bg-white shrink-0" />
-                  )}
-                </div>
-
-                <h3 className="font-serif text-lg font-bold text-[#1A2421] mb-2">{area.title}</h3>
-                <p className="text-xs font-semibold text-slate-600 leading-relaxed mb-4">{area.description}</p>
-              </div>
-
-              {/* Conditions Chip List Preview */}
-              <div className="pt-3 border-t border-slate-200/60">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">
-                  Conditions Covered:
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {area.conditions.slice(0, 3).map((cond) => (
-                    <span
-                      key={cond}
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${theme.chipBg} ${theme.chipText}`}
-                    >
-                      {cond}
-                    </span>
-                  ))}
-                  {area.conditions.length > 3 && (
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${theme.chipBg} ${theme.chipText}`}>
-                      +{area.conditions.length - 3} more
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Conditions Selector Panel for Selected Systems */}
-      {activeAreas.length > 0 && (
-        <div className="rounded-3xl border border-mint/30 bg-white/90 backdrop-blur-md p-6 md:p-8 shadow-md">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/80 pb-6 mb-6">
-            <div>
-              <span className="text-xs font-bold text-mint uppercase tracking-widest block mb-1">
-                Step 3: Specific Condition Selection
-              </span>
-              <h3 className="font-serif text-2xl font-bold text-[#1A2421]">
-                Select Specific Condition or Concern
-              </h3>
-              <p className="text-xs font-semibold text-slate-500 mt-1">
-                Showing primary conditions across your {activeAreas.length} selected organ {activeAreas.length === 1 ? "system" : "systems"}:
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={onProceedToAssessment}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-mint hover:bg-mint-dark text-white text-xs font-black uppercase tracking-wider transition-all shadow-md shrink-0"
-            >
-              <span>Continue to Clinical Assessment</span>
-              <ChevronRight className="w-4 h-4" aria-hidden="true" />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-6">
-            {activeAreas.flatMap((area) => area.conditions).map((cond) => {
-              const isCondSelected = activeCondition === cond;
-              return (
-                <button
-                  key={cond}
-                  type="button"
-                  onClick={() => handleSelectCondition(cond)}
-                  className={`p-3.5 rounded-2xl border text-left text-xs font-bold transition-all flex items-center justify-between ${
-                    isCondSelected
-                      ? "border-mint bg-mint/15 text-mint-dark ring-2 ring-mint/30 shadow-sm"
-                      : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
-                  }`}
-                >
-                  <span>{cond}</span>
-                  {isCondSelected && <CheckCircle2 className="w-4 h-4 text-mint shrink-0" aria-hidden="true" />}
-                </button>
-              );
-            })}
-
-            <button
-              type="button"
-              onClick={() => handleSelectCondition("Other or not sure")}
-              className={`p-3.5 rounded-2xl border text-left text-xs font-bold transition-all flex items-center justify-between ${
-                activeCondition === "Other or not sure"
-                  ? "border-mint bg-mint/15 text-mint-dark ring-2 ring-mint/30 shadow-sm"
-                  : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
-              }`}
-            >
-              <span>Other or not sure</span>
-              {activeCondition === "Other or not sure" && (
-                <CheckCircle2 className="w-4 h-4 text-mint shrink-0" aria-hidden="true" />
-              )}
-            </button>
-          </div>
-
-          {activeCondition === "Other or not sure" && (
-            <div className="mt-4 p-4 rounded-2xl border border-slate-200 bg-slate-50/70">
-              <label htmlFor="custom-concern-input" className="block text-xs font-bold text-[#1A2421] mb-2">
-                Specify your health concern:
-              </label>
-              <input
-                id="custom-concern-input"
-                type="text"
-                value={customConcern}
-                onChange={(e) => {
-                  setCustomConcern(e.target.value);
-                  const selectedTitles = activeAreas.map((a) => a.title);
-                  onSelectAreasAndCondition(selectedTitles, e.target.value || "Other or not sure");
-                }}
-                placeholder="e.g., Unspecified gastrointestinal discomfort, joint stiffness..."
-                className="w-full rounded-xl border border-slate-200 bg-white p-3 text-xs font-semibold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
-              />
-            </div>
-          )}
-        </div>
+      {activeInfoArea && (
+        <HealthConcernDetailDialog
+          area={activeInfoArea}
+          imageSrc={(CONCERN_VISUALS[activeInfoArea.id] || DEFAULT_VISUAL).image}
+          selected={selectedAreaIds.includes(activeInfoArea.id)}
+          selectedCondition={selectedCondition}
+          onSelectArea={() => {
+            if (!selectedAreaIds.includes(activeInfoArea.id)) toggleArea(activeInfoArea.id);
+          }}
+          onSelectCondition={(condition) => {
+            const nextIds = selectedAreaIds.includes(activeInfoArea.id) ? selectedAreaIds : [...selectedAreaIds, activeInfoArea.id];
+            const nextAreas = SPECIALTY_CLINICAL_AREAS.filter((area) => nextIds.includes(area.id));
+            onSelectionChange(nextIds, nextAreas.map((area) => area.title), condition);
+          }}
+          onContinueToPathways={() => {
+            setActiveInfoAreaId(null);
+            onContinueToPathways();
+          }}
+          onClose={() => setActiveInfoAreaId(null)}
+        />
       )}
     </section>
   );

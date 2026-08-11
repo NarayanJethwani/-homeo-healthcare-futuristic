@@ -1,13 +1,14 @@
 import React from "react";
-import { CheckCircle2, Clock, ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, CheckCircle2, Clock, ShieldCheck, Sparkles, Stethoscope } from "lucide-react";
 import {
-  CLINICAL_CARE_TIER_OPTIONS,
   ALLOWED_CARE_DURATIONS,
-  calculateCarePeriodTotalPaise,
-  formatINRFromPaise,
+  CLINICAL_CARE_TIER_OPTIONS,
   EXPLICIT_PHYSICIAN_AUTHORITY_STATEMENT,
+  calculateCarePeriodTotalPaise,
+  calculateListCarePeriodTotalPaise,
+  formatINRFromPaise,
+  getCarePeriodContinuityBenefit,
   type ClinicalCareDurationWeeks,
-  type ClinicalCareTierOption,
   type PreliminaryCareRecommendation,
 } from "../domain/types";
 
@@ -20,77 +21,30 @@ interface CareLevelCardProps {
   onProceedToAssessment?: () => void;
 }
 
-interface TierTheme {
-  borderUnselected: string;
-  bgUnselected: string;
-  hoverUnselected: string;
-  borderSelected: string;
-  bgSelected: string;
-  ringSelected: string;
-  shadowSelected: string;
-  priceBoxBg: string;
-  priceBoxBorder: string;
-  checkColor: string;
-  buttonSelected: string;
-  buttonUnselected: string;
+const PUBLIC_TIER_IDS = ["focused", "integrated", "complex"] as const;
+
+function formatCarePeriod(weeks: ClinicalCareDurationWeeks): string {
+  if (weeks === 4) return "1-month";
+  if (weeks === 8) return "2-month";
+  if (weeks === 12) return "3-month";
+  return `${weeks}-week`;
 }
 
-const tierThemesMap: Record<string, TierTheme> = {
+const TIER_DETAILS: Record<(typeof PUBLIC_TIER_IDS)[number], { includes: string[]; accent: string; selected: string }> = {
   focused: {
-    borderUnselected: "border-teal-200/90",
-    bgUnselected: "bg-gradient-to-b from-teal-50/70 via-emerald-50/30 to-white/95 text-teal-950",
-    hoverUnselected: "hover:border-teal-400 hover:shadow-md",
-    borderSelected: "border-teal-500",
-    bgSelected: "bg-gradient-to-b from-teal-500/15 via-emerald-500/10 to-teal-50/70",
-    ringSelected: "ring-2 ring-teal-500/30",
-    shadowSelected: "shadow-[0_16px_50px_rgba(20,184,166,0.22)]",
-    priceBoxBg: "bg-white/90",
-    priceBoxBorder: "border-teal-200/80",
-    checkColor: "text-teal-600",
-    buttonSelected: "bg-teal-600 text-white shadow-md",
-    buttonUnselected: "bg-teal-900/10 text-teal-950 hover:bg-teal-600 hover:text-white",
+    includes: ["One primary health concern", "Standard planned follow-up", "Routine prescribed medicines included"],
+    accent: "text-teal-700",
+    selected: "border-teal-500 bg-teal-50/90 ring-teal-500/20",
   },
   integrated: {
-    borderUnselected: "border-sky-200/90",
-    bgUnselected: "bg-gradient-to-b from-sky-50/70 via-blue-50/30 to-white/95 text-sky-950",
-    hoverUnselected: "hover:border-sky-400 hover:shadow-md",
-    borderSelected: "border-sky-500",
-    bgSelected: "bg-gradient-to-b from-sky-500/15 via-blue-500/10 to-sky-50/70",
-    ringSelected: "ring-2 ring-sky-500/30",
-    shadowSelected: "shadow-[0_16px_50px_rgba(14,165,233,0.22)]",
-    priceBoxBg: "bg-white/90",
-    priceBoxBorder: "border-sky-200/80",
-    checkColor: "text-sky-600",
-    buttonSelected: "bg-sky-600 text-white shadow-md",
-    buttonUnselected: "bg-sky-900/10 text-sky-950 hover:bg-sky-600 hover:text-white",
+    includes: ["Related health concerns reviewed together", "Regular progress review", "Coordinated prescription adjustments"],
+    accent: "text-sky-700",
+    selected: "border-sky-500 bg-sky-50/90 ring-sky-500/20",
   },
   complex: {
-    borderUnselected: "border-violet-200/90",
-    bgUnselected: "bg-gradient-to-b from-violet-50/70 via-purple-50/30 to-white/95 text-violet-950",
-    hoverUnselected: "hover:border-violet-400 hover:shadow-md",
-    borderSelected: "border-violet-500",
-    bgSelected: "bg-gradient-to-b from-violet-500/15 via-purple-500/10 to-violet-50/70",
-    ringSelected: "ring-2 ring-violet-500/30",
-    shadowSelected: "shadow-[0_16px_50px_rgba(139,92,246,0.22)]",
-    priceBoxBg: "bg-white/90",
-    priceBoxBorder: "border-violet-200/80",
-    checkColor: "text-violet-600",
-    buttonSelected: "bg-violet-600 text-white shadow-md",
-    buttonUnselected: "bg-violet-900/10 text-violet-950 hover:bg-violet-600 hover:text-white",
-  },
-  advanced: {
-    borderUnselected: "border-amber-200/90",
-    bgUnselected: "bg-gradient-to-b from-amber-50/70 via-orange-50/30 to-white/95 text-amber-950",
-    hoverUnselected: "hover:border-amber-400 hover:shadow-md",
-    borderSelected: "border-amber-500",
-    bgSelected: "bg-gradient-to-b from-amber-500/15 via-orange-500/10 to-amber-50/70",
-    ringSelected: "ring-2 ring-amber-500/30",
-    shadowSelected: "shadow-[0_16px_50px_rgba(245,158,11,0.22)]",
-    priceBoxBg: "bg-white/90",
-    priceBoxBorder: "border-amber-200/80",
-    checkColor: "text-amber-600",
-    buttonSelected: "bg-amber-600 text-white shadow-md",
-    buttonUnselected: "bg-amber-900/10 text-amber-950 hover:bg-amber-600 hover:text-white",
+    includes: ["Long-standing or multi-system concerns", "Enhanced clinical monitoring", "Closer scheduled physician follow-up"],
+    accent: "text-violet-700",
+    selected: "border-violet-500 bg-violet-50/90 ring-violet-500/20",
   },
 };
 
@@ -102,199 +56,95 @@ export const CareLevelCard: React.FC<CareLevelCardProps> = ({
   onSelectDuration,
   onProceedToAssessment,
 }) => {
-  const tiers = Object.values(CLINICAL_CARE_TIER_OPTIONS);
+  const selectedTier = CLINICAL_CARE_TIER_OPTIONS[selectedTierId] || CLINICAL_CARE_TIER_OPTIONS.focused;
+  const recommendedPublicTier = preliminaryRecommendation?.suggestedTierId === "advanced"
+    ? "complex"
+    : preliminaryRecommendation?.suggestedTierId;
+  const listTotalPaise = calculateListCarePeriodTotalPaise(selectedTier.weeklyRatePaise, selectedDurationWeeks);
+  const careTotalPaise = calculateCarePeriodTotalPaise(selectedTier.weeklyRatePaise, selectedDurationWeeks);
+  const continuityPercent = getCarePeriodContinuityBenefit(selectedDurationWeeks);
+  const continuitySavingPaise = listTotalPaise - careTotalPaise;
+  const carePeriodLabel = formatCarePeriod(selectedDurationWeeks);
 
   return (
-    <section className="space-y-10 mb-12">
-      {/* Step Header */}
-      <div className="max-w-3xl">
-        <span className="text-xs font-bold text-mint uppercase tracking-widest block mb-1">
-          Care Pathways & Professional Fees
-        </span>
-        <h2 className="font-serif text-3xl md:text-4xl font-semibold text-[#1A2421]">
-          Which best describes the care level you need?
-        </h2>
-        <p className="text-sm text-slate-600 font-semibold leading-relaxed mt-3">
-          Explore care levels and planned durations below. All professional fees are structured per week and confirmed by your physician after clinical assessment review.
+    <section id="care-pathways-pricing" aria-labelledby="care-pathways-heading" className="mb-12 space-y-8 scroll-mt-28">
+      <div className="max-w-4xl">
+        <span className="text-xs font-bold uppercase tracking-widest text-mint">Care pathways & professional fees</span>
+        <h2 id="care-pathways-heading" className="mt-2 font-serif text-3xl font-semibold text-[#1A2421] md:text-5xl">Choose a clear starting pathway</h2>
+        <p className="mt-3 max-w-3xl text-sm font-semibold leading-relaxed text-slate-600">
+          Three public pathways keep the choice simple. Advanced Physician Care is assigned only after clinical review and cannot be self-selected.
         </p>
-
         {preliminaryRecommendation && (
-          <div className="mt-4 p-4 rounded-2xl bg-mint/10 border border-mint/25 text-xs text-slate-700 font-semibold space-y-1">
-            <span className="font-bold text-mint-dark block flex items-center gap-1.5">
-              <Sparkles className="w-4 h-4 text-mint" aria-hidden="true" />
-              Preliminary Care Recommendation: {preliminaryRecommendation.suggestedTierName}
-            </span>
-            <p>{preliminaryRecommendation.rationale}</p>
+          <div className="mt-5 flex items-start gap-3 rounded-2xl border border-mint/25 bg-mint/[0.07] p-4 text-xs font-semibold text-slate-700">
+            <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-mint" aria-hidden="true" />
+            <div><strong className="block text-mint-dark">Recommended starting point: {CLINICAL_CARE_TIER_OPTIONS[recommendedPublicTier || "focused"].name}</strong>{preliminaryRecommendation.suggestedTierId === "advanced" ? "Your answers also indicate that an Advanced Physician Care review may be appropriate." : preliminaryRecommendation.rationale}</div>
           </div>
         )}
       </div>
 
-      {/* Tier Cards Grid with Distinct Plan Background Colors */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-        {tiers.map((tier: ClinicalCareTierOption) => {
-          const isSelected = selectedTierId === tier.id;
-          const isSuggested = preliminaryRecommendation
-            ? preliminaryRecommendation.suggestedTierId === tier.id
-            : tier.id === "integrated";
-
-          const theme = tierThemesMap[tier.id] || tierThemesMap.integrated;
-          const totalPaise = calculateCarePeriodTotalPaise(tier.weeklyRatePaise, selectedDurationWeeks);
-          const totalFormatted = formatINRFromPaise(totalPaise);
-          const weeklyFormatted = formatINRFromPaise(tier.weeklyRatePaise);
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+        {PUBLIC_TIER_IDS.map((tierId) => {
+          const tier = CLINICAL_CARE_TIER_OPTIONS[tierId];
+          const detail = TIER_DETAILS[tierId];
+          const selected = selectedTier.id === tier.id;
+          const recommended = recommendedPublicTier === tier.id;
+          const tierTotal = calculateCarePeriodTotalPaise(tier.weeklyRatePaise, selectedDurationWeeks);
+          const tierListTotal = calculateListCarePeriodTotalPaise(tier.weeklyRatePaise, selectedDurationWeeks);
 
           return (
-            <button
-              key={tier.id}
-              type="button"
-              aria-pressed={isSelected}
-              onClick={() => onSelectTier(tier.id)}
-              className={`relative rounded-3xl border p-6 text-left transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint focus-visible:ring-offset-2 ${
-                isSelected
-                  ? `${theme.borderSelected} ${theme.bgSelected} ${theme.ringSelected} ${theme.shadowSelected}`
-                  : `${theme.borderUnselected} ${theme.bgUnselected} ${theme.hoverUnselected}`
-              }`}
-            >
-              {isSuggested && (
-                <span className="absolute right-5 top-5 rounded-full bg-[#1A2421] px-3 py-1 text-[9px] font-black uppercase tracking-wider text-white shadow-sm">
-                  Recommended
-                </span>
-              )}
-
-              <div>
-                <h3 className="font-serif text-xl font-bold text-[#1A2421] pr-20">{tier.name}</h3>
-                <p className="text-xs font-semibold text-slate-600 leading-relaxed mt-3">{tier.description}</p>
-
-                {/* Price Display */}
-                <div className="mt-5 flex items-baseline gap-1.5">
-                  <span className="text-3xl font-black text-[#1A2421]">{weeklyFormatted}</span>
-                  <span className="text-xs font-bold text-slate-500">/week</span>
-                </div>
-
-                <div className={`mt-4 p-3 rounded-2xl border ${theme.priceBoxBorder} ${theme.priceBoxBg}`}>
-                  <span className="block text-[11px] font-bold text-slate-500">Estimated Care-Period Fee</span>
-                  <span className="block text-lg font-black text-[#1A2421] mt-0.5">{totalFormatted}</span>
-                  <span className="block text-[10px] font-semibold text-mint-dark mt-0.5">
-                    For {selectedDurationWeeks} {selectedDurationWeeks === 1 ? "week" : "weeks"}
-                  </span>
-                </div>
-
-                <div className="mt-4 text-xs font-semibold text-slate-600 flex items-start gap-2">
-                  <CheckCircle2 className={`w-4 h-4 shrink-0 mt-0.5 ${theme.checkColor}`} aria-hidden="true" />
-                  <span>{tier.recommendedFor}</span>
-                </div>
+            <button key={tier.id} type="button" aria-pressed={selected} onClick={() => onSelectTier(tier.id)} className={`relative flex flex-col rounded-[1.75rem] border p-6 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint focus-visible:ring-offset-2 ${selected ? `${detail.selected} ring-2 shadow-[0_18px_55px_rgba(26,36,33,0.10)]` : "border-slate-200 bg-white/85 hover:-translate-y-1 hover:border-mint/50 hover:shadow-lg"}`}>
+              {recommended && <span className="absolute right-5 top-5 rounded-full bg-[#1A2421] px-3 py-1 text-[9px] font-black uppercase tracking-wider text-white">Recommended</span>}
+              <h3 className="pr-24 font-serif text-2xl font-bold text-[#1A2421]">{tier.name}</h3>
+              <p className="mt-3 min-h-14 text-sm font-semibold leading-relaxed text-slate-600">{tier.description}</p>
+              <div className="mt-5"><span className="block text-3xl font-black text-[#1A2421]">{formatINRFromPaise(tier.weeklyRatePaise)}</span><span className="mt-1 block text-xs font-bold text-slate-500">Weekly care fee</span></div>
+              <div className="mt-4 rounded-2xl border border-slate-200 bg-white/80 p-4">
+                <span className="block text-[10px] font-black uppercase tracking-wider text-slate-500">{carePeriodLabel} {continuityPercent > 0 ? "continuity care fee" : "care fee"}</span>
+                {continuityPercent > 0 && <span className="mt-1 block text-xs font-bold text-slate-400 line-through">{formatINRFromPaise(tierListTotal)}</span>}
+                <span className={`block text-2xl font-black ${detail.accent}`}>{formatINRFromPaise(tierTotal)}</span>
               </div>
-
-              <div className={`mt-6 w-full py-3.5 rounded-full text-xs font-black uppercase tracking-wider text-center transition-all ${
-                isSelected
-                  ? theme.buttonSelected
-                  : theme.buttonUnselected
-              }`}>
-                {isSelected ? "Selected Pathway" : "Select Pathway"}
-              </div>
+              <ul className="mt-5 flex-1 space-y-3">{detail.includes.map((item) => <li key={item} className="flex items-start gap-2 text-xs font-semibold text-slate-600"><CheckCircle2 className={`mt-0.5 h-4 w-4 shrink-0 ${detail.accent}`} aria-hidden="true" />{item}</li>)}</ul>
+              <span className={`mt-6 rounded-full py-3 text-center text-[10px] font-black uppercase tracking-wider ${selected ? "bg-[#1A2421] text-white" : "bg-slate-100 text-slate-700"}`}>{selected ? "Selected pathway" : "Select pathway"}</span>
             </button>
           );
         })}
       </div>
 
-      {/* Explicit Physician Authority Statement Banner */}
-      <div className="p-4 rounded-2xl border border-slate-200/80 bg-white/80 backdrop-blur-md flex items-start gap-3">
-        <ShieldCheck className="w-5 h-5 text-mint shrink-0 mt-0.5" aria-hidden="true" />
-        <p className="text-xs font-semibold text-slate-600 leading-relaxed">
-          {EXPLICIT_PHYSICIAN_AUTHORITY_STATEMENT}
-        </p>
-      </div>
-
-      {/* Care Duration Selection Panel & Selected Care Sidebar */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        <div className="lg:col-span-7 glass-panel border-white/60 bg-white/45 rounded-3xl p-6 md:p-8 space-y-7 border">
-          <div>
-            <span className="text-[10px] font-bold text-mint uppercase tracking-widest">Care Duration</span>
-            <h2 className="text-xl font-bold text-[#1A2421] mt-1">Select planned duration</h2>
-            <p className="text-xs text-slate-500 font-semibold mt-1">Each option shows the estimated care fee for that period.</p>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-start">
+        <div className="rounded-[1.75rem] border border-slate-200 bg-white/75 p-6 lg:col-span-7 md:p-8">
+          <span className="text-[10px] font-black uppercase tracking-widest text-mint">Continuity care benefit</span>
+          <h3 className="mt-1 text-2xl font-bold text-[#1A2421]">Choose the physician-confirmed care period</h3>
+          <p className="mt-2 text-xs font-semibold leading-relaxed text-slate-500">The benefit applies only to the professional care fee. Courier and separately approved products are excluded.</p>
+          <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-5">
             {ALLOWED_CARE_DURATIONS.map((weeks) => {
-              const activeTier = CLINICAL_CARE_TIER_OPTIONS[selectedTierId] || CLINICAL_CARE_TIER_OPTIONS.integrated;
-              const periodTotal = calculateCarePeriodTotalPaise(activeTier.weeklyRatePaise, weeks);
-              const formattedPeriod = formatINRFromPaise(periodTotal);
-              const isDurationSelected = selectedDurationWeeks === weeks;
-
-              return (
-                <button
-                  key={weeks}
-                  type="button"
-                  aria-pressed={isDurationSelected}
-                  onClick={() => onSelectDuration(weeks)}
-                  className={`rounded-2xl border p-3.5 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint ${
-                    isDurationSelected
-                      ? "border-mint bg-mint/[0.08] ring-2 ring-mint/20 shadow-sm"
-                      : "border-slate-200 bg-white/70 hover:border-slate-400"
-                  }`}
-                >
-                  <span className="block text-xs font-black text-[#1A2421]">{weeks} {weeks === 1 ? "week" : "weeks"}</span>
-                  <span className="block text-sm font-black text-mint-dark mt-1">{formattedPeriod}</span>
-                  {weeks === 4 && (
-                    <span className="inline-flex rounded-full bg-[#1A2421] px-2 py-0.5 text-[8px] font-black uppercase tracking-wider text-white mt-1.5">
-                      Recommended
-                    </span>
-                  )}
-                </button>
-              );
+              const percent = getCarePeriodContinuityBenefit(weeks);
+              const selected = selectedDurationWeeks === weeks;
+              return <button key={weeks} type="button" aria-pressed={selected} onClick={() => onSelectDuration(weeks)} className={`rounded-2xl border p-4 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint ${selected ? "border-mint bg-mint/10 ring-1 ring-mint/20" : "border-slate-200 bg-white hover:border-mint/50"}`}><span className="block text-sm font-black text-[#1A2421]">{weeks === 4 ? "1 month" : weeks === 8 ? "2 months" : weeks === 12 ? "3 months" : `${weeks} ${weeks === 1 ? "week" : "weeks"}`}</span><span className="mt-1 block text-xs font-black text-mint-dark">{percent === 0 ? "Standard rate" : `${percent}% benefit`}</span>{weeks === 4 && <span className="mt-2 inline-flex rounded-full bg-[#1A2421] px-2 py-0.5 text-[8px] font-black uppercase tracking-wider text-white">Recommended start</span>}</button>;
             })}
           </div>
-
-          <div className="rounded-2xl border border-sky-200/70 bg-sky-50/50 p-4 text-xs font-semibold text-slate-700 leading-relaxed">
-            <strong className="text-sky-800">Why 4 weeks is recommended:</strong> It provides a clear initial review period for constitutional response. Your treating physician confirms or adjusts the care duration following clinical assessment review.
-          </div>
+          <div className="mt-5 rounded-2xl border border-sky-200 bg-sky-50/60 p-4 text-xs font-semibold leading-relaxed text-slate-700"><strong className="text-sky-800">Commitment safeguard:</strong> two- and three-month continuity care fees require the corresponding confirmed care commitment. Cancellation, clinical modification, and any applicable credit terms are provided before payment.</div>
         </div>
 
-        {/* Selected Care Sidebar */}
-        <aside className="lg:col-span-5 glass-panel border-mint/20 bg-white/60 rounded-3xl p-6 md:p-8 border lg:sticky lg:top-28">
-          <span className="text-[10px] font-bold text-mint uppercase tracking-widest">Selected Care Summary</span>
-          <h3 className="font-serif text-2xl font-bold text-[#1A2421] mt-2">
-            {(CLINICAL_CARE_TIER_OPTIONS[selectedTierId] || CLINICAL_CARE_TIER_OPTIONS.integrated).name}
-          </h3>
-
+        <aside className="rounded-[1.75rem] border border-mint/25 bg-white p-6 shadow-[0_20px_60px_rgba(26,36,33,0.10)] lg:sticky lg:top-28 lg:col-span-5 md:p-8">
+          <span className="text-[10px] font-black uppercase tracking-widest text-mint">Your selected care</span>
+          <h3 className="mt-2 font-serif text-3xl font-bold text-[#1A2421]">{selectedTier.name}</h3>
           <dl className="mt-6 space-y-3 text-sm">
-            <div className="flex justify-between gap-4">
-              <dt className="font-semibold text-slate-500">Planned Duration</dt>
-              <dd className="font-bold text-[#1A2421]">{selectedDurationWeeks} {selectedDurationWeeks === 1 ? "week" : "weeks"}</dd>
-            </div>
-            <div className="flex justify-between gap-4">
-              <dt className="font-semibold text-slate-500">Weekly Equivalent</dt>
-              <dd className="font-bold text-[#1A2421]">
-                {formatINRFromPaise((CLINICAL_CARE_TIER_OPTIONS[selectedTierId] || CLINICAL_CARE_TIER_OPTIONS.integrated).weeklyRatePaise)}/week
-              </dd>
-            </div>
+            <div className="flex justify-between gap-4"><dt className="font-semibold text-slate-500">Care period</dt><dd className="font-bold text-[#1A2421]">{selectedDurationWeeks} weeks</dd></div>
+            <div className="flex justify-between gap-4"><dt className="font-semibold text-slate-500">Care fee before benefit</dt><dd className="font-bold text-[#1A2421]">{formatINRFromPaise(listTotalPaise)}</dd></div>
+            {continuityPercent > 0 && <div className="flex justify-between gap-4 text-emerald-700"><dt className="font-bold">Continuity benefit ({continuityPercent}%)</dt><dd className="font-black">−{formatINRFromPaise(continuitySavingPaise)}</dd></div>}
           </dl>
-
-          <div className="border-t border-slate-200 mt-5 pt-5">
-            <span className="text-xs font-bold text-slate-500">Estimated Care-Period Fee</span>
-            <div className="text-4xl font-black text-[#1A2421] mt-1">
-              {formatINRFromPaise(calculateCarePeriodTotalPaise((CLINICAL_CARE_TIER_OPTIONS[selectedTierId] || CLINICAL_CARE_TIER_OPTIONS.integrated).weeklyRatePaise, selectedDurationWeeks))}
-            </div>
-          </div>
-
-          <div className="rounded-2xl bg-[#1A2421] text-white p-4 mt-6 flex gap-3">
-            <Clock className="w-5 h-5 text-mint shrink-0" aria-hidden="true" />
-            <p className="text-xs font-semibold leading-relaxed">
-              Your treating physician confirms pathway suitability, care scope, and final fee before treatment begins.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={onProceedToAssessment}
-            className="w-full mt-5 py-4 rounded-full bg-mint hover:bg-mint-dark text-white text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint"
-          >
-            Continue to Clinical Assessment <ArrowRight className="w-4 h-4" aria-hidden="true" />
-          </button>
-          <p className="text-center text-[11px] font-semibold text-slate-500 leading-relaxed mt-3">
-            No payment at this step. Submit details → physician review → official quotation prepared.
-          </p>
+          <div className="mt-5 border-t border-slate-200 pt-5"><span className="text-xs font-bold text-slate-500">Estimated {continuityPercent > 0 ? "continuity care fee" : "care fee"}</span><div className="mt-1 text-4xl font-black text-[#1A2421]">{formatINRFromPaise(careTotalPaise)}</div></div>
+          <div className="mt-6 flex gap-3 rounded-2xl bg-[#1A2421] p-4 text-white"><Clock className="h-5 w-5 shrink-0 text-mint" aria-hidden="true" /><p className="text-xs font-semibold leading-relaxed">The physician confirms pathway, service schedule, duration, final fee, and response window before treatment begins.</p></div>
+          <button type="button" onClick={onProceedToAssessment} className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-mint py-4 text-xs font-black uppercase tracking-wider text-white shadow-md transition-colors hover:bg-mint-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint"><span>Request physician review</span><ArrowRight className="h-4 w-4" aria-hidden="true" /></button>
+          <p className="mt-3 text-center text-[11px] font-semibold leading-relaxed text-slate-500">No payment now. Start with contact details, then complete the concise clinical review.</p>
         </aside>
       </div>
+
+      <div className="rounded-[1.75rem] border border-amber-200 bg-amber-50/70 p-6 md:flex md:items-center md:justify-between md:gap-8">
+        <div className="flex items-start gap-3"><Stethoscope className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" aria-hidden="true" /><div><span className="text-[10px] font-black uppercase tracking-widest text-amber-800">Clinician-assigned only</span><h3 className="mt-1 font-serif text-2xl font-bold text-[#1A2421]">Advanced Physician Care</h3><p className="mt-1 max-w-3xl text-xs font-semibold leading-relaxed text-slate-600">For high-complexity cases needing frequent monitoring and direct physician supervision. Indicative weekly care fee ₹12,000; the same continuity benefit ladder applies only after physician assignment.</p></div></div>
+        <button type="button" onClick={onProceedToAssessment} className="mt-5 shrink-0 rounded-full border border-amber-300 bg-white px-6 py-3 text-[10px] font-black uppercase tracking-wider text-amber-900 md:mt-0">Request assessment</button>
+      </div>
+
+      <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white/80 p-4"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-mint" aria-hidden="true" /><p className="text-xs font-semibold leading-relaxed text-slate-600">{EXPLICIT_PHYSICIAN_AUTHORITY_STATEMENT}</p></div>
     </section>
   );
 };
