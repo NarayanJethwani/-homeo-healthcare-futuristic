@@ -1,6 +1,7 @@
 import {
   COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE,
   CARE_LEVELS_DETAILS,
+  calculateContinuityCareTotal,
 } from "@/lib/pricingConfig";
 import type { OrganSystemBreadth } from "@/components/PatientPricingPlanner";
 
@@ -350,7 +351,7 @@ export function calculateSpecialtyTierTotal(tierKey: SpecialtyTierKey, durationW
   if (!tier.durations.includes(durationWeeks)) {
     throw new Error(`Unsupported duration for ${tier.title}: ${durationWeeks} weeks`);
   }
-  return tier.weeklyPrice * durationWeeks;
+  return calculateContinuityCareTotal(tier.weeklyPrice, durationWeeks).total;
 }
 
 export function formatSpecialtyTierTotal(tierKey: SpecialtyTierKey, durationWeeks: number): string {

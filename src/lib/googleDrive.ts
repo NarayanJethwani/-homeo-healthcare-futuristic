@@ -1,5 +1,10 @@
 import { google } from "googleapis";
-import { buildGoogleSheetsCareRateFormula, getCareLevelDisplayNameWithIcon } from "./pricingConfig";
+import {
+  buildGoogleSheetsCarePeriodWeeksFormula,
+  buildGoogleSheetsCareRateFormula,
+  buildGoogleSheetsContinuityBenefitFormula,
+  getCareLevelDisplayNameWithIcon,
+} from "./pricingConfig";
 import { CLINIC_BRAND_NAME, CLINIC_LOGO_PUBLIC_URL } from "./clinicBranding";
 
 
@@ -581,14 +586,14 @@ export async function createPatientClinicalSheet(
                 {
                   range: "'Treatment Planner'!A8:C15",
                   values: [
-                    ["Care Rate", buildGoogleSheetsCareRateFormula(), "Rate from the synchronized care pathway"],
-                    ["Scope Adjustment", 0, "No automatic per-symptom or per-condition charge"],
-                    ["Care Period Total", "=B8*C4", "Care rate multiplied by selected duration"],
+                    ["Weekly Care Rate", buildGoogleSheetsCareRateFormula(), "Weekly rate from the synchronized care pathway"],
+                    ["Continuity Care Benefit", buildGoogleSheetsContinuityBenefitFormula(), "0% / 5% / 10% / 15% / 20% benefit for 1 / 2 / 4 / 8 / 12 weeks"],
+                    ["List Care Period Total", `=B8*${buildGoogleSheetsCarePeriodWeeksFormula()}`, "Weekly rate multiplied by the confirmed care period"],
                     ["Physician Scope Review", 0, "Any physician-recommended scope change requires patient approval"],
                     ["Assessment Add-ons", 0, "Records review or acute support is added only when selected"],
-                    ["Clinical Concession Amount", `=IF(ISNUMBER(SEARCH("Senior", E4)), B10*0.15, IF(ISNUMBER(SEARCH("Socio", E4)), B10*0.30, IF(OR(ISNUMBER(SEARCH("Override", E4)), ISNUMBER(SEARCH("Special", E4))), MAX(0, B10-F4), 0)))`, "Internal compassionate, senior, or approved override concession"],
+                    ["Clinical Concession Amount", `=IF(ISNUMBER(SEARCH("Senior", E4)), (B10-B9)*0.15, IF(ISNUMBER(SEARCH("Socio", E4)), (B10-B9)*0.30, IF(OR(ISNUMBER(SEARCH("Override", E4)), ISNUMBER(SEARCH("Special", E4))), MAX(0, (B10-B9)-F4), 0)))`, "Additional approved concession after the continuity benefit"],
                     ["Medicine Add-ons", "=G4", "Medicine charges and dynamic add-on scripts"],
-                    ["Total Program Cost", "=B10+B12-B13+B14", "Fixed care-period total plus selected add-ons"]
+                    ["Total Program Cost", "=B10-B9+B11+B12-B13+B14", "Care-period total after continuity benefit, plus approved support and add-ons"]
                   ]
                 },
                 {
@@ -606,7 +611,7 @@ export async function createPatientClinicalSheet(
                 {
                   range: "'Treatment Planner'!A19:B19",
                   values: [
-                    ["WhatsApp Care Summary", `="Dear " & 'Case Taking'!B4 & ", thank you for consulting Homeo Healthcare. Your physician-confirmed care pathway is: " & A4 & " for " & C4 & " " & IF(B4="Weekly", IF(C4=1, "week", "weeks"), IF(C4=1, "month", "months")) & IF(E4="None", "", " [" & E4 & "]") & ". Agreed Total: ₹" & TEXT(B15, "#,##0") & ". Balance Due: ₹" & TEXT(B17, "#,##0") & ". Clinic Branch: Homeo Healthcare."`]
+                    ["WhatsApp Care Summary", `="Dear " & 'Case Taking'!B4 & ", thank you for consulting Homeo Healthcare. Your physician-confirmed care pathway is: " & A4 & " for " & C4 & " " & IF(B4="Weekly", IF(C4=1, "week", "weeks"), IF(C4=1, "month", "months")) & ". Continuity care benefit: ₹" & TEXT(B9, "#,##0") & IF(E4="None", "", " [" & E4 & "]") & ". Agreed Total: ₹" & TEXT(B15, "#,##0") & ". Balance Due: ₹" & TEXT(B17, "#,##0") & ". Clinic Branch: Homeo Healthcare."`]
                   ]
                 },
                 {
@@ -995,18 +1000,18 @@ export async function createPatientClinicalSheet(
           ["", "", "", "", "", "", ""],
           ["PRICING BREAKDOWN", "", "", "", "", "", ""],
           ["Component", "Rate / Amount (₹)", "Calculation Description", "", "", "", ""],
-          ["Care Rate", buildGoogleSheetsCareRateFormula(), "Rate from the synchronized care pathway", "", "", "", ""],
-          ["Scope Adjustment", 0, "No automatic per-symptom or per-condition charge", "", "", "", ""],
-          ["Care Period Total", "=B8*C4", "Care rate multiplied by selected duration", "", "", "", ""],
+          ["Weekly Care Rate", buildGoogleSheetsCareRateFormula(), "Weekly rate from the synchronized care pathway", "", "", "", ""],
+          ["Continuity Care Benefit", buildGoogleSheetsContinuityBenefitFormula(), "0% / 5% / 10% / 15% / 20% benefit for 1 / 2 / 4 / 8 / 12 weeks", "", "", "", ""],
+          ["List Care Period Total", `=B8*${buildGoogleSheetsCarePeriodWeeksFormula()}`, "Weekly rate multiplied by the confirmed care period", "", "", "", ""],
           ["Physician Scope Review", 0, "Any physician-recommended scope change requires patient approval", "", "", "", ""],
           ["Assessment Add-ons", 0, "Records review or acute support is added only when selected", "", "", "", ""],
-          ["Clinical Concession Amount", `=IF(ISNUMBER(SEARCH("Senior", E4)), B10*0.15, IF(ISNUMBER(SEARCH("Socio", E4)), B10*0.30, IF(OR(ISNUMBER(SEARCH("Override", E4)), ISNUMBER(SEARCH("Special", E4))), MAX(0, B10-F4), 0)))`, "Internal compassionate, senior, or approved override concession", "", "", "", ""],
+          ["Clinical Concession Amount", `=IF(ISNUMBER(SEARCH("Senior", E4)), (B10-B9)*0.15, IF(ISNUMBER(SEARCH("Socio", E4)), (B10-B9)*0.30, IF(OR(ISNUMBER(SEARCH("Override", E4)), ISNUMBER(SEARCH("Special", E4))), MAX(0, (B10-B9)-F4), 0)))`, "Additional approved concession after the continuity benefit", "", "", "", ""],
           ["Medicine Add-ons", "=G4", "Medicine charges and dynamic add-on scripts", "", "", "", ""],
-          ["Total Program Cost", "=B10+B12-B13+B14", "Fixed care-period total plus selected add-ons", "", "", "", ""],
+          ["Total Program Cost", "=B10-B9+B11+B12-B13+B14", "Care-period total after continuity benefit, plus approved support and add-ons", "", "", "", ""],
           ["Amount Received", data.receivedAmount !== undefined ? data.receivedAmount : data.finalPrice, "Amount collected from patient for this plan", "", "", "", ""],
           ["Balance Due", "=B15-B16", "Outstanding dues for this treatment plan", "", "", "", ""],
           ["", "", "", "", "", "", ""],
-          ["WhatsApp Care Summary", `="Dear " & 'Case Taking'!B4 & ", thank you for consulting Homeo Healthcare. Your physician-confirmed care pathway is: " & A4 & " for " & C4 & " " & IF(B4="Weekly", IF(C4=1, "week", "weeks"), IF(C4=1, "month", "months")) & IF(E4="None", "", " [" & E4 & "]") & ". Agreed Total: ₹" & TEXT(B15, "#,##0") & ". Balance Due: ₹" & TEXT(B17, "#,##0") & ". Clinic Branch: Homeo Healthcare."`, "", "", "", "", ""]
+          ["WhatsApp Care Summary", `="Dear " & 'Case Taking'!B4 & ", thank you for consulting Homeo Healthcare. Your physician-confirmed care pathway is: " & A4 & " for " & C4 & " " & IF(B4="Weekly", IF(C4=1, "week", "weeks"), IF(C4=1, "month", "months")) & ". Continuity care benefit: ₹" & TEXT(B9, "#,##0") & IF(E4="None", "", " [" & E4 & "]") & ". Agreed Total: ₹" & TEXT(B15, "#,##0") & ". Balance Due: ₹" & TEXT(B17, "#,##0") & ". Clinic Branch: Homeo Healthcare."`, "", "", "", "", ""]
         ];
 
         // values for Finance

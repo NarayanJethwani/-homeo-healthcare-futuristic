@@ -41,6 +41,42 @@ export const COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE = 12_000; // Advanced P
 export const STANDARD_CARE_PERIOD_DURATIONS = [1, 2, 4, 8, 12] as const;
 export const COMPLETE_HEALTH_TRANSFORMATION_DURATIONS = STANDARD_CARE_PERIOD_DURATIONS;
 
+export const CONTINUITY_DISCOUNT_PERCENTAGE = {
+  1: 0,
+  2: 5,
+  4: 10,
+  8: 15,
+  12: 20,
+} as const;
+
+export type ContinuityDurationWeeks = keyof typeof CONTINUITY_DISCOUNT_PERCENTAGE;
+
+export function getContinuityDiscountPercentage(durationWeeks: number): number {
+  return CONTINUITY_DISCOUNT_PERCENTAGE[durationWeeks as ContinuityDurationWeeks] ?? 0;
+}
+
+/**
+ * Calculates the physician-confirmed professional care fee after the public
+ * continuity benefit. The helper is unit-agnostic and works for rupees or paise.
+ */
+export function calculateContinuityCareTotal(unitPrice: number, durationWeeks: number): {
+  listTotal: number;
+  discountPercent: number;
+  discountAmount: number;
+  total: number;
+} {
+  const listTotal = unitPrice * durationWeeks;
+  const discountPercent = getContinuityDiscountPercentage(durationWeeks);
+  const discountAmount = Math.round(listTotal * (discountPercent / 100));
+
+  return {
+    listTotal,
+    discountPercent,
+    discountAmount,
+    total: listTotal - discountAmount,
+  };
+}
+
 export const PUBLIC_CARE_LEVEL_KEYS: readonly PublicCarePathwayKey[] = [
   "mild",
   "moderate",
@@ -52,7 +88,7 @@ export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
     title: "Focused Clinical Care",
     subtitle: "Coordinated physician care for specific, localized, or early-stage health concerns",
     weeklyPrice: ACUTE_WEEKLY_PRICE,
-    monthlyPrice: ACUTE_WEEKLY_PRICE * 4,
+    monthlyPrice: calculateContinuityCareTotal(ACUTE_WEEKLY_PRICE, 4).total,
     badge: "Focused Care",
     icon: "🌱",
     colorClass: "text-teal-700 border-teal-200/60 bg-teal-50/70",
@@ -77,7 +113,7 @@ export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
     title: "Integrated Clinical Care",
     subtitle: "Comprehensive care managing multiple interrelated systems and constitutional balance",
     weeklyPrice: CONSTITUTIONAL_WEEKLY_PRICE,
-    monthlyPrice: CONSTITUTIONAL_WEEKLY_PRICE * 4,
+    monthlyPrice: calculateContinuityCareTotal(CONSTITUTIONAL_WEEKLY_PRICE, 4).total,
     badge: "Recommended",
     icon: "⚡",
     colorClass: "text-sky-700 border-sky-200/60 bg-sky-50/70",
@@ -102,7 +138,7 @@ export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
     title: "Complex Clinical Care",
     subtitle: "Intensive physician supervision for long-standing, multi-layered pathological conditions",
     weeklyPrice: ADVANCED_WEEKLY_PRICE,
-    monthlyPrice: ADVANCED_WEEKLY_PRICE * 4,
+    monthlyPrice: calculateContinuityCareTotal(ADVANCED_WEEKLY_PRICE, 4).total,
     badge: "Complex Care",
     icon: "🎯",
     colorClass: "text-violet-700 border-violet-200/60 bg-violet-50/70",
@@ -148,7 +184,7 @@ export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
     title: "Advanced Physician Care",
     subtitle: "Our most comprehensive physician-led program for high-complexity cases requiring frequent monitoring",
     weeklyPrice: COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE,
-    monthlyPrice: COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE * 4,
+    monthlyPrice: calculateContinuityCareTotal(COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE, 4).total,
     badge: "Advanced Care",
     icon: "🔮",
     complexityLabel: "Advanced",
@@ -202,6 +238,9 @@ export interface CarePriceSelection {
 }
 
 export interface CarePriceSummary {
+  listCareTotal: number;
+  continuityDiscountPercent: number;
+  continuityDiscountTotal: number;
   baseCareTotal: number;
   additionalAcuteEpisodeTotal: number;
   priorityAcuteSupportTotal: number;
@@ -215,7 +254,8 @@ export function calculateCarePrice(selection: CarePriceSelection): CarePriceSumm
   }
 
   const isAcute = selection.pathway === "mild";
-  const baseCareTotal = detail.weeklyPrice * selection.durationWeeks;
+  const continuity = calculateContinuityCareTotal(detail.weeklyPrice, selection.durationWeeks);
+  const baseCareTotal = continuity.total;
   const additionalAcuteEpisodeTotal = isAcute && selection.additionalAcuteEpisode
     ? ADDITIONAL_ACUTE_EPISODE_PRICE
     : 0;
@@ -223,6 +263,9 @@ export function calculateCarePrice(selection: CarePriceSelection): CarePriceSumm
     ? PRIORITY_ACUTE_SUPPORT_WEEKLY_PRICE * selection.durationWeeks
     : 0;
   return {
+    listCareTotal: continuity.listTotal,
+    continuityDiscountPercent: continuity.discountPercent,
+    continuityDiscountTotal: continuity.discountAmount,
     baseCareTotal,
     additionalAcuteEpisodeTotal,
     priorityAcuteSupportTotal,
@@ -238,8 +281,12 @@ export function calculateCompleteHealthTransformationPrice(durationWeeks: number
     throw new Error(`Unsupported duration for Advanced Physician Care Program: ${durationWeeks} weeks`);
   }
 
-  const baseCareTotal = COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE * durationWeeks;
+  const continuity = calculateContinuityCareTotal(COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE, durationWeeks);
+  const baseCareTotal = continuity.total;
   return {
+    listCareTotal: continuity.listTotal,
+    continuityDiscountPercent: continuity.discountPercent,
+    continuityDiscountTotal: continuity.discountAmount,
     baseCareTotal,
     additionalAcuteEpisodeTotal: 0,
     priorityAcuteSupportTotal: 0,
@@ -281,10 +328,25 @@ export function getCareLevelDisplayNameWithIcon(keyOrName: string): string {
 
 export function buildGoogleSheetsCareRateFormula(
   careLevelCell = "A4",
-  billingCycleCell = "B4",
 ): string {
-  const rate = (weekly: number) => `IF(${billingCycleCell}="Weekly", ${weekly}, ${weekly * 4})`;
+  const rate = (weekly: number) => `${weekly}`;
   const has = (term: string) => `ISNUMBER(SEARCH("${term}", ${careLevelCell}))`;
 
   return `=IF(OR(${has("Advanced Physician")}, ${has("Complete")}, ${has("Multisystem")}), ${rate(CARE_LEVELS_DETAILS.comprehensive.weeklyPrice)}, IF(OR(${has("Case-Specific")}, ${has("Records")}, ${has("Pathology Support")}), 0, IF(OR(${has("Priority")}, ${has("Critical")}), ${rate(CARE_LEVELS_DETAILS.acute_critical.weeklyPrice)}, IF(OR(${has("Complex Clinical")}, ${has("Advanced Constitutional")}, ${has("Deep")}, ${has("Systemic")}), ${rate(CARE_LEVELS_DETAILS.focused.weeklyPrice)}, IF(OR(${has("Integrated Clinical")}, ${has("Constitutional")}, ${has("Chronic")}, ${has("Core")}), ${rate(CARE_LEVELS_DETAILS.moderate.weeklyPrice)}, IF(OR(${has("Focused Clinical")}, ${has("Wellness")}, ${has("Acute")}, ${has("Essential")}), ${rate(CARE_LEVELS_DETAILS.mild.weeklyPrice)}, 0))))))`;
+}
+
+export function buildGoogleSheetsCarePeriodWeeksFormula(
+  billingCycleCell = "B4",
+  durationCell = "C4",
+): string {
+  return `IF(${billingCycleCell}="Monthly", ${durationCell}*4, ${durationCell})`;
+}
+
+export function buildGoogleSheetsContinuityBenefitFormula(
+  listTotalCell = "B10",
+  billingCycleCell = "B4",
+  durationCell = "C4",
+): string {
+  const weeks = buildGoogleSheetsCarePeriodWeeksFormula(billingCycleCell, durationCell);
+  return `=${listTotalCell}*IF(${weeks}=2, 5%, IF(${weeks}=4, 10%, IF(${weeks}=8, 15%, IF(${weeks}=12, 20%, 0))))`;
 }

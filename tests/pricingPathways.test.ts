@@ -5,7 +5,10 @@ import {
   PUBLIC_CARE_LEVEL_KEYS,
   calculateCarePrice,
   calculateCompleteHealthTransformationPrice,
+  calculateContinuityCareTotal,
+  buildGoogleSheetsCarePeriodWeeksFormula,
   buildGoogleSheetsCareRateFormula,
+  buildGoogleSheetsContinuityBenefitFormula,
   toPublicCarePathway,
 } from "../src/lib/pricingConfig";
 
@@ -24,10 +27,10 @@ function runPricingPathwayTests() {
   assert.deepStrictEqual(COMPLETE_HEALTH_TRANSFORMATION_DURATIONS, [1, 2, 4, 8, 12]);
   assert.strictEqual(CARE_LEVELS_DETAILS.comprehensive.defaultDurationWeeks, 4);
   assert.strictEqual(calculateCompleteHealthTransformationPrice(1).total, 12_000);
-  assert.strictEqual(calculateCompleteHealthTransformationPrice(2).total, 24_000);
-  assert.strictEqual(calculateCompleteHealthTransformationPrice(4).total, 48_000);
-  assert.strictEqual(calculateCompleteHealthTransformationPrice(8).total, 96_000);
-  assert.strictEqual(calculateCompleteHealthTransformationPrice(12).total, 144_000);
+  assert.strictEqual(calculateCompleteHealthTransformationPrice(2).total, 22_800);
+  assert.strictEqual(calculateCompleteHealthTransformationPrice(4).total, 43_200);
+  assert.strictEqual(calculateCompleteHealthTransformationPrice(8).total, 81_600);
+  assert.strictEqual(calculateCompleteHealthTransformationPrice(12).total, 115_200);
   assert.throws(() => calculateCompleteHealthTransformationPrice(3), /Unsupported duration/);
 
   assert.deepStrictEqual(CARE_LEVELS_DETAILS.mild.durations, [1, 2, 4, 8, 12]);
@@ -35,16 +38,19 @@ function runPricingPathwayTests() {
   assert.deepStrictEqual(CARE_LEVELS_DETAILS.focused.durations, [1, 2, 4, 8, 12]);
   assert.strictEqual(CARE_LEVELS_DETAILS.moderate.defaultDurationWeeks, 4);
   assert.strictEqual(CARE_LEVELS_DETAILS.focused.defaultDurationWeeks, 4);
-  assert.strictEqual(calculateCarePrice({ pathway: "moderate", durationWeeks: 2 }).total, 12_000);
-  assert.strictEqual(calculateCarePrice({ pathway: "focused", durationWeeks: 2 }).total, 18_000);
+  assert.strictEqual(calculateCarePrice({ pathway: "moderate", durationWeeks: 2 }).total, 11_400);
+  assert.strictEqual(calculateCarePrice({ pathway: "focused", durationWeeks: 2 }).total, 17_100);
 
   assert.deepStrictEqual(
     calculateCarePrice({ pathway: "moderate", durationWeeks: 8 }),
     {
-      baseCareTotal: 48_000,
+      listCareTotal: 48_000,
+      continuityDiscountPercent: 15,
+      continuityDiscountTotal: 7_200,
+      baseCareTotal: 40_800,
       additionalAcuteEpisodeTotal: 0,
       priorityAcuteSupportTotal: 0,
-      total: 48_000,
+      total: 40_800,
     },
   );
 
@@ -55,12 +61,12 @@ function runPricingPathwayTests() {
       additionalAcuteEpisode: true,
       priorityAcuteSupport: true,
     }).total,
-    11_000,
+    10_700,
   );
 
   assert.strictEqual(
     calculateCarePrice({ pathway: "focused", durationWeeks: 4, additionalAcuteEpisode: true }).total,
-    36_000,
+    32_400,
     "Acute episode pricing must never leak into constitutional pathways",
   );
 
@@ -68,6 +74,13 @@ function runPricingPathwayTests() {
     calculateCarePrice({ pathway: "moderate", durationWeeks: 1 }).total,
     6_000,
   );
+
+  assert.deepStrictEqual(calculateContinuityCareTotal(6_000, 12), {
+    listTotal: 72_000,
+    discountPercent: 20,
+    discountAmount: 14_400,
+    total: 57_600,
+  });
 
   assert.strictEqual(toPublicCarePathway("Core Chronic Care"), "moderate");
   assert.strictEqual(toPublicCarePathway("Deep Constitutional Care"), "focused");
@@ -83,6 +96,12 @@ function runPricingPathwayTests() {
   assert.match(sheetsFormula, /9000/);
   assert.match(sheetsFormula, /12000/);
   assert.doesNotMatch(sheetsFormula, /IF\(B4="Weekly", 5000, 20000\)/);
+  assert.strictEqual(buildGoogleSheetsCarePeriodWeeksFormula(), 'IF(B4="Monthly", C4*4, C4)');
+  const sheetsBenefitFormula = buildGoogleSheetsContinuityBenefitFormula();
+  assert.match(sheetsBenefitFormula, /=2, 5%/);
+  assert.match(sheetsBenefitFormula, /=4, 10%/);
+  assert.match(sheetsBenefitFormula, /=8, 15%/);
+  assert.match(sheetsBenefitFormula, /=12, 20%/);
 
   console.log("✅ Pricing pathway tests passed");
 }

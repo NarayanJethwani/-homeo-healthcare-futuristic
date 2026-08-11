@@ -1,6 +1,6 @@
 "use client";
 
-import { CARE_LEVELS_DETAILS, PRIORITY_ACUTE_SUPPORT_WEEKLY_PRICE, normalizeCareLevelName, getCareLevelDisplayName } from "@/lib/pricingConfig";
+import { CARE_LEVELS_DETAILS, PRIORITY_ACUTE_SUPPORT_WEEKLY_PRICE, calculateContinuityCareTotal, normalizeCareLevelName, getCareLevelDisplayName } from "@/lib/pricingConfig";
 import { INDIA_STATES, findIndiaCity, findIndiaCityByKey, getIndiaCityOptions, makeIndiaLocationKey } from "@/lib/indiaLocations";
 
 import { useState, useEffect, useRef, useMemo, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
@@ -791,18 +791,22 @@ const calculatePlannerPricing = (
   conditions: number
 ) => {
   const details = CARE_LEVELS_DETAILS[level as keyof typeof CARE_LEVELS_DETAILS] || CARE_LEVELS_DETAILS.focused;
-  const basePrice = cycle === "weekly" ? details.weeklyPrice : details.monthlyPrice;
+  const durationWeeks = cycle === "weekly" ? duration : duration * 4;
+  const continuity = calculateContinuityCareTotal(details.weeklyPrice, durationWeeks);
+  const basePrice = details.weeklyPrice;
   const surcharge = 0;
   const adjustedBasePrice = basePrice;
-  const rawTotal = adjustedBasePrice * duration;
-  const discountPercent = 0;
-  const discountAmount = 0;
+  const listTotal = continuity.listTotal;
+  const rawTotal = continuity.total;
+  const discountPercent = continuity.discountPercent;
+  const discountAmount = continuity.discountAmount;
   const finalPriceBeforeConcession = rawTotal;
   
   return {
     basePrice,
     surcharge,
     adjustedBasePrice,
+    listTotal,
     rawTotal,
     discountPercent,
     discountAmount,
@@ -3456,9 +3460,10 @@ export default function AdminDashboard() {
         basePrice: quote.weeklyCareFee,
         surcharge: 0,
         adjustedBasePrice: quote.weeklyCareFee,
+        listTotal: quote.listCareTotal,
         rawTotal: quote.baseCareTotal,
-        discountPercent: 0,
-        discountAmount: 0,
+        discountPercent: quote.continuityDiscountPercent,
+        discountAmount: quote.continuityDiscountTotal,
         finalPriceBeforeConcession: quote.subtotal,
         caseSpecificSupportTotal: quote.caseSpecificSupportTotal,
         concessionAmount: quote.concessionTotal,
@@ -5304,6 +5309,14 @@ export default function AdminDashboard() {
   const [caseSpecificSupportIncludesMedicines, setCaseSpecificSupportIncludesMedicines] = useState(false);
   const [invoiceManualReason, setInvoiceManualReason] = useState("");
   const [invoiceConcessionReason, setInvoiceConcessionReason] = useState("");
+  const [invoiceSource, setInvoiceSource] = useState<"confirmed-quotation" | "manual-administrative">("manual-administrative");
+  const [invoiceQuotationMetadata, setInvoiceQuotationMetadata] = useState<{
+    quotationId: string;
+    physicianConfirmed: true;
+    confirmedAt: string;
+    pricingRuleVersion: string;
+    approvalStatus: "approved";
+  } | null>(null);
 
   const invoiceSubtotal = invoiceItems.reduce((sum, item) => sum + item.amount, 0);
   const invoiceGrandTotal = Math.max(0, invoiceSubtotal - invoiceDiscount);
@@ -5370,17 +5383,58 @@ export default function AdminDashboard() {
   const openInvoiceModal = (patient: Patient) => {
     setSelectedInvoicePatient(patient);
     setInvoiceNo(generateInvoiceNo());
-    
-    // Auto-populate item based on care level price
-    setInvoiceItems([
-      {
+
+    const approvedPlan = [...(((patient as any).treatmentPlans || []) as any[])]
+      .reverse()
+      .find((plan) => plan?.physicianConfirmed === true && plan?.approvalStatus === "approved" && plan?.quote && plan?.quotationId);
+
+    if (approvedPlan) {
+      const quote = approvedPlan.quote as ClinicalCareSimulatorDecision["quote"];
+      const continuityLabel = quote.continuityDiscountPercent > 0
+        ? ` after ${quote.continuityDiscountPercent}% continuity benefit (list fee ₹${quote.listCareTotal.toLocaleString("en-IN")})`
+        : "";
+      setInvoiceItems([
+        {
+          description: `${approvedPlan.careLevel || "Clinical Care"} — ${approvedPlan.durationValue || quote.durationWeeks}-week care period${continuityLabel}`,
+          qty: 1,
+          unitPrice: quote.baseCareTotal,
+          amount: quote.baseCareTotal,
+        },
+        ...(quote.caseSpecificSupportTotal > 0 ? [{
+          description: `Case-Specific Clinical Support — ${approvedPlan.caseSpecificSupport?.reason || "physician-confirmed additional scope"}`,
+          qty: 1,
+          unitPrice: quote.caseSpecificSupportTotal,
+          amount: quote.caseSpecificSupportTotal,
+        }] : []),
+        ...((approvedPlan.pharmacyItems || []) as Array<{ type: string; details: string; quantity: number; unitPrice: number; amount: number }>).map((item) => ({
+          description: `${item.type}: ${item.details}`,
+          qty: item.quantity,
+          unitPrice: item.unitPrice,
+          amount: item.amount,
+        })),
+      ]);
+      setInvoiceDiscount(quote.concessionTotal);
+      setInvoiceConcessionReason(quote.concessionTotal > 0 ? (approvedPlan.concessionReason || "Concession documented in approved quotation") : "");
+      setInvoiceSource("confirmed-quotation");
+      setInvoiceQuotationMetadata({
+        quotationId: approvedPlan.quotationId,
+        physicianConfirmed: true,
+        confirmedAt: approvedPlan.confirmedAt,
+        pricingRuleVersion: approvedPlan.pricingRuleVersion,
+        approvalStatus: "approved",
+      });
+    } else {
+      setInvoiceItems([{
         description: `General Consultation & Treatment Plan (${patient.durationText || "1-Month"})`,
         qty: 1,
         unitPrice: patient.finalPrice || 6000,
-        amount: patient.finalPrice || 6000
-      }
-    ]);
-    setInvoiceDiscount(0);
+        amount: patient.finalPrice || 6000,
+      }]);
+      setInvoiceDiscount(0);
+      setInvoiceConcessionReason("");
+      setInvoiceSource("manual-administrative");
+      setInvoiceQuotationMetadata(null);
+    }
     setInvoicePaymentMode("UPI");
     setInvoiceStatus("Pending");
     setGeneratedInvoiceUrl("");
@@ -5391,7 +5445,6 @@ export default function AdminDashboard() {
     setCaseSpecificSupportScope("");
     setCaseSpecificSupportIncludesMedicines(false);
     setInvoiceManualReason("");
-    setInvoiceConcessionReason("");
     setIsInvoiceModalOpen(true);
   };
 
@@ -5491,7 +5544,7 @@ export default function AdminDashboard() {
       alert("Please add at least one valid item with a description, quantity, and fee.");
       return;
     }
-    if (invoiceManualReason.trim().length < 8) {
+    if (invoiceSource === "manual-administrative" && invoiceManualReason.trim().length < 8) {
       alert("Document why this administrative invoice is being created.");
       return;
     }
@@ -5523,9 +5576,10 @@ export default function AdminDashboard() {
         grandTotal,
         paymentMode: invoicePaymentMode,
         status: invoiceStatus,
-        invoiceSource: "manual-administrative",
+        invoiceSource,
         manualOverrideReason: invoiceManualReason.trim(),
         concessionReason: invoiceConcessionReason.trim(),
+        ...(invoiceQuotationMetadata || {}),
         folderId: selectedInvoicePatient.folderUrl ? extractIdFromDriveUrl(selectedInvoicePatient.folderUrl) : "mock-folder-id",
         caseSheetId: selectedInvoicePatient.sheetUrl ? extractIdFromDriveUrl(selectedInvoicePatient.sheetUrl) : "mock-sheet-id"
       };
@@ -12460,7 +12514,9 @@ ${err.message || err}`);
             const durText = `${plannerDurationValue} ${plannerDurationValue === 1 ? "Week" : "Weeks"}`;
             const concessionText = calculatedPrices.concessionAmount > 0 ? ", Documented concession applied" : "";
             
-            const whatsappInvoiceText = `Dear ${activePatient?.name || "Valued Patient"},\n\nThank you for consulting Homeo Healthcare.\n\nYour physician-reviewed care plan is ready as a pending quotation:\n*Quotation:* ${plannerSimulatorDecision?.quotationId || "Pending confirmation"}\n*Valid until:* ${plannerSimulatorDecision ? new Date(plannerSimulatorDecision.validUntil).toLocaleDateString("en-IN") : "—"}\n*Approval status:* ${(plannerSimulatorDecision?.approvalStatus || "pending-patient-approval").replaceAll("-", " ")}\n*Care Pathway:* ${careText}\n*Clinical Scope:* ${breadthText}\n*Care Period:* ${durText}${concessionText}\n${plannerDurationValue === 1 && plannerSimulatorDecision?.recommendation.pathway !== "mild" ? "*Reassessment:* Physician reassessment is required before continuation.\n" : ""}\n*Itemized Quotation:*\n- Care-period total: ₹${calculatedPrices.rawTotal.toLocaleString("en-IN")}\n` +
+            const whatsappInvoiceText = `Dear ${activePatient?.name || "Valued Patient"},\n\nThank you for consulting Homeo Healthcare.\n\nYour physician-reviewed care plan is ready as a pending quotation:\n*Quotation:* ${plannerSimulatorDecision?.quotationId || "Pending confirmation"}\n*Valid until:* ${plannerSimulatorDecision ? new Date(plannerSimulatorDecision.validUntil).toLocaleDateString("en-IN") : "—"}\n*Approval status:* ${(plannerSimulatorDecision?.approvalStatus || "pending-patient-approval").replaceAll("-", " ")}\n*Care Pathway:* ${careText}\n*Clinical Scope:* ${breadthText}\n*Care Period:* ${durText}${concessionText}\n${plannerDurationValue === 1 && plannerSimulatorDecision?.recommendation.pathway !== "mild" ? "*Reassessment:* Physician reassessment is required before continuation.\n" : ""}\n*Itemized Quotation:*\n- List care-period fee: ₹${calculatedPrices.listTotal.toLocaleString("en-IN")}\n` +
+              (calculatedPrices.discountAmount > 0 ? `- Continuity Care Benefit (${calculatedPrices.discountPercent}%): -₹${calculatedPrices.discountAmount.toLocaleString("en-IN")}\n` : "") +
+              `- Care fee after benefit: ₹${calculatedPrices.rawTotal.toLocaleString("en-IN")}\n` +
               (calculatedPrices.caseSpecificSupportTotal > 0 ? `- Case-Specific Clinical Support: +₹${calculatedPrices.caseSpecificSupportTotal.toLocaleString("en-IN")}\n` : "") +
               (calculatedPrices.concessionAmount > 0 ? `- Concession Applied: -₹${calculatedPrices.concessionAmount.toLocaleString("en-IN")}\n` : "") +
               (calculatedPrices.addonsSum > 0 ? `- Itemized pharmacy medicines: +₹${calculatedPrices.addonsSum.toLocaleString("en-IN")}\n` : "") +
@@ -13093,27 +13149,27 @@ ${err.message || err}`);
                           </div>
                         )}
                         <div className="flex justify-between items-center border-t border-slate-100 dark:border-slate-800 pt-1.5">
-                          <span>Care-period total:</span>
-                          <span className="font-bold text-slate-800 dark:text-slate-200 font-mono">₹{calculatedPrices.rawTotal.toLocaleString("en-IN")}</span>
+                          <span>List care-period fee:</span>
+                          <span className="font-bold text-slate-800 dark:text-slate-200 font-mono">₹{calculatedPrices.listTotal.toLocaleString("en-IN")}</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span>Confirmed care period:</span>
                           <span className="font-bold text-slate-850 dark:text-slate-350">{plannerDurationValue} {plannerDurationValue === 1 ? "week" : "weeks"}</span>
                         </div>
+                        {calculatedPrices.discountPercent > 0 && (
+                          <div className="flex justify-between items-center text-emerald-700 dark:text-emerald-400 bg-emerald-500/5 px-2 py-1 rounded-lg">
+                            <span>Continuity Care Benefit ({calculatedPrices.discountPercent}%):</span>
+                            <span className="font-mono">-₹{calculatedPrices.discountAmount.toLocaleString("en-IN")}</span>
+                          </div>
+                        )}
                         <div className="flex justify-between items-center font-bold text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-950 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
-                          <span>Clinical care subtotal:</span>
+                          <span>Care fee after benefit:</span>
                           <span className="font-mono">₹{calculatedPrices.rawTotal.toLocaleString("en-IN")}</span>
                         </div>
                         {calculatedPrices.caseSpecificSupportTotal > 0 && (
                           <div className="flex justify-between items-center text-teal-700 dark:text-teal-300 bg-teal-500/5 px-2 py-1 rounded-lg">
                             <span>Case-Specific Clinical Support:</span>
                             <span className="font-mono">+₹{calculatedPrices.caseSpecificSupportTotal.toLocaleString("en-IN")}</span>
-                          </div>
-                        )}
-                        {calculatedPrices.discountPercent > 0 && (
-                          <div className="flex justify-between items-center text-emerald-700 dark:text-emerald-400 bg-emerald-500/5 px-2 py-1 rounded-lg">
-                            <span>Continuity of Care Benefit ({calculatedPrices.discountPercent}%):</span>
-                            <span className="font-mono">-₹{calculatedPrices.discountAmount.toLocaleString("en-IN")}</span>
                           </div>
                         )}
                         {calculatedPrices.concessionAmount > 0 && (
@@ -13206,7 +13262,7 @@ ${err.message || err}`);
                           if (!plannerSimulatorDecision) return;
                           const decision = plannerSimulatorDecision;
                           const items = [
-                            { label: `${decision.durationWeeks}-week care period`, amount: decision.quote.baseCareTotal },
+                            { label: `${decision.durationWeeks}-week care period after ${decision.quote.continuityDiscountPercent}% continuity benefit (list fee ₹${decision.quote.listCareTotal.toLocaleString("en-IN")})`, amount: decision.quote.baseCareTotal },
                             ...(decision.quote.caseSpecificSupportTotal > 0 ? [{ label: "Case-Specific Clinical Support", amount: decision.quote.caseSpecificSupportTotal }] : []),
                             ...decision.pharmacyItems.map(item => ({ label: `${item.type}: ${item.details}`, amount: item.amount })),
                           ];
@@ -30299,6 +30355,13 @@ Exported on: ${new Date().toLocaleDateString()}
                       Create New Invoice
                     </h4>
 
+                    {invoiceSource === "confirmed-quotation" && invoiceQuotationMetadata && (
+                      <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-xs font-semibold text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-100">
+                        <div className="font-black uppercase tracking-wider">Approved plan-linked invoice</div>
+                        <p className="mt-1">Items, continuity benefit, approved concession, and totals were synchronized from quotation {invoiceQuotationMetadata.quotationId}.</p>
+                      </div>
+                    )}
+
                     {/* Meta Fields */}
                     <div className="grid grid-cols-2 gap-4">
                       <div>
@@ -30542,7 +30605,7 @@ Exported on: ${new Date().toLocaleDateString()}
                     </div>
 
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                      <label><span className="mb-1.5 block text-[9px] font-bold uppercase tracking-wider text-slate-700">Administrative invoice reason</span><input value={invoiceManualReason} onChange={e => setInvoiceManualReason(e.target.value)} placeholder="Required audit note" className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-semibold text-slate-800" /></label>
+                      {invoiceSource === "manual-administrative" && <label><span className="mb-1.5 block text-[9px] font-bold uppercase tracking-wider text-slate-700">Administrative invoice reason</span><input value={invoiceManualReason} onChange={e => setInvoiceManualReason(e.target.value)} placeholder="Required audit note" className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-semibold text-slate-800" /></label>}
                       {invoiceDiscount > 0 && <label><span className="mb-1.5 block text-[9px] font-bold uppercase tracking-wider text-slate-700">Concession reason</span><input value={invoiceConcessionReason} onChange={e => setInvoiceConcessionReason(e.target.value)} placeholder="Required when concession applies" className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-semibold text-slate-800" /></label>}
                     </div>
 

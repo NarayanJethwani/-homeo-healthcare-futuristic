@@ -30,19 +30,13 @@ assert.equal(FEATURE_FLAGS.STORE_CLINICAL_CARE_V1_ENABLED, true);
 assert.equal(isStoreClinicalCareV1Enabled(), true);
 console.log("✅ TEST PASSED: 1. Feature Flag STORE_CLINICAL_CARE_V1_ENABLED is enabled by default");
 
-// Test 2: Integer paise total calculation across all allowed durations
+// Test 2: Integer paise totals include the governed 0/5/10/15/20 continuity ladder
+const durationMultiplier = { 1: 1, 2: 1.9, 4: 3.6, 8: 6.8, 12: 9.6 } as const;
 for (const weeks of ALLOWED_CARE_DURATIONS) {
-  const focusedTotal = calculateCarePeriodTotalPaise(CLINICAL_CARE_TIER_OPTIONS.focused.weeklyRatePaise, weeks);
-  assert.equal(focusedTotal, 300000 * weeks);
-
-  const integratedTotal = calculateCarePeriodTotalPaise(CLINICAL_CARE_TIER_OPTIONS.integrated.weeklyRatePaise, weeks);
-  assert.equal(integratedTotal, 600000 * weeks);
-
-  const complexTotal = calculateCarePeriodTotalPaise(CLINICAL_CARE_TIER_OPTIONS.complex.weeklyRatePaise, weeks);
-  assert.equal(complexTotal, 900000 * weeks);
-
-  const advancedTotal = calculateCarePeriodTotalPaise(CLINICAL_CARE_TIER_OPTIONS.advanced.weeklyRatePaise, weeks);
-  assert.equal(advancedTotal, 1200000 * weeks);
+  assert.equal(calculateCarePeriodTotalPaise(CLINICAL_CARE_TIER_OPTIONS.focused.weeklyRatePaise, weeks), 300000 * durationMultiplier[weeks]);
+  assert.equal(calculateCarePeriodTotalPaise(CLINICAL_CARE_TIER_OPTIONS.integrated.weeklyRatePaise, weeks), 600000 * durationMultiplier[weeks]);
+  assert.equal(calculateCarePeriodTotalPaise(CLINICAL_CARE_TIER_OPTIONS.complex.weeklyRatePaise, weeks), 900000 * durationMultiplier[weeks]);
+  assert.equal(calculateCarePeriodTotalPaise(CLINICAL_CARE_TIER_OPTIONS.advanced.weeklyRatePaise, weeks), 1200000 * durationMultiplier[weeks]);
 }
 
 assert.equal(formatINRFromPaise(1200000), "₹12,000");
@@ -101,8 +95,8 @@ if (submissionResult.success) {
   assert.ok(dto.submissionId.startsWith("CAS-2026-"));
   assert.equal(dto.patientName, "Dr. Test Patient");
   assert.equal(dto.preferredDurationWeeks, 4);
-  assert.equal(dto.totalEstimatedAmountPaise, 2400000); // ₹24,000 for 4 weeks @ ₹6,000/week
-  assert.equal(dto.totalEstimatedAmountFormatted, "₹24,000");
+  assert.equal(dto.totalEstimatedAmountPaise, 2160000); // ₹24,000 list fee less 10% continuity benefit
+  assert.equal(dto.totalEstimatedAmountFormatted, "₹21,600");
   assert.equal(dto.status, "submitted_for_physician_review");
 
   // Verify NO internal clinical scores or Level 1-4 numbers are exposed
@@ -135,6 +129,8 @@ assert.equal(rec4.suggestedTierId, "complex");
 const rec5 = calculatePreliminaryCareRecommendation({ selectedOrganSystems: ["Digestive", "Hormones", "Skin", "Respiratory", "Kidney"] });
 assert.equal(rec5.suggestedTierId, "advanced");
 assert.equal(rec5.disclaimer, EXPLICIT_PHYSICIAN_AUTHORITY_STATEMENT);
+const weightedRec = calculatePreliminaryCareRecommendation({ selectedOrganSystems: ["Digestive"], durationText: "More than 3 years (chronic)", severityRating: 8 });
+assert.equal(weightedRec.suggestedTierId, "complex");
 console.log("✅ TEST PASSED: 7. Multi-organ advisory complexity calculation matches 1/2/3-4/5+ scaling rules");
 
 // Test 8: Itemized pharmacy breakdown & governed concessions with mandatory audit fields
@@ -148,12 +144,14 @@ const breakdown = calculateItemizedPharmacyQuotation({
   seniorCitizenReason: "Age 65 Senior Citizen Care Support",
 });
 
-assert.equal(breakdown.professionalFeePaise, 2400000); // ₹24,000
-assert.equal(breakdown.totalConcessionsPaise, 240000); // ₹2,400 (10%)
+assert.equal(breakdown.listProfessionalFeePaise, 2400000); // ₹24,000 list fee
+assert.equal(breakdown.continuityDiscountPaise, 240000); // ₹2,400 continuity benefit
+assert.equal(breakdown.professionalFeePaise, 2160000); // ₹21,600 after continuity benefit
+assert.equal(breakdown.totalConcessionsPaise, 216000); // ₹2,160 (10%)
 assert.equal(breakdown.specialBrandedMedicinesPaise, 125000); // ₹1,250
 assert.equal(breakdown.courierFeePaise, 35000); // ₹350
-assert.equal(breakdown.finalTotalPaise, 2320000); // Net ₹21,600 + ₹1,250 + ₹350 = ₹23,200 (2,320,000 paise)
-assert.equal(breakdown.finalTotalFormatted, "₹23,200");
+assert.equal(breakdown.finalTotalPaise, 2104000); // Net ₹19,440 + ₹1,250 + ₹350 = ₹21,040
+assert.equal(breakdown.finalTotalFormatted, "₹21,040");
 assert.equal(breakdown.concessions[0].approvedBy, "Dr. N. Jethwani");
 assert.equal(breakdown.concessions[0].reason, "Age 65 Senior Citizen Care Support");
 console.log("✅ TEST PASSED: 8. Itemized pharmacy breakdown and governed concessions behave deterministically");
@@ -182,7 +180,7 @@ const testQuotation = {
 
 const waPayload = buildWhatsAppQuotationPayload(testQuotation);
 assert.ok(waPayload.messageText.includes("Integrated Clinical Care"));
-assert.ok(waPayload.messageText.includes("₹23,200"));
+assert.ok(waPayload.messageText.includes("₹21,040"));
 assert.ok(waPayload.messageText.includes(paymentConfig.upiId));
 assert.ok(waPayload.whatsappUrl.startsWith("https://wa.me/919999988888?text="));
 console.log("✅ TEST PASSED: 9. WhatsApp quotation payload uses environment-configured payment details");

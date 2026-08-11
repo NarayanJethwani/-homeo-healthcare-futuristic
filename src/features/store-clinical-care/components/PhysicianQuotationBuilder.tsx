@@ -286,9 +286,11 @@ export const PhysicianQuotationBuilder: React.FC<PhysicianQuotationBuilderProps>
 
         <dl className="space-y-2 text-xs font-semibold">
           <div className="flex justify-between">
-            <dt className="text-slate-400">Professional Care Fee ({durationWeeks} wks)</dt>
-            <dd className="font-bold">{formatINRFromPaise(quotationBreakdown.professionalFeePaise)}</dd>
+            <dt className="text-slate-400">List Professional Care Fee ({durationWeeks} wks)</dt>
+            <dd className="font-bold">{formatINRFromPaise(quotationBreakdown.listProfessionalFeePaise)}</dd>
           </div>
+          {quotationBreakdown.continuityDiscountPaise > 0 && <div className="flex justify-between text-emerald-400"><dt>Continuity Care Benefit ({quotationBreakdown.continuityDiscountPercent}%)</dt><dd>-{formatINRFromPaise(quotationBreakdown.continuityDiscountPaise)}</dd></div>}
+          <div className="flex justify-between"><dt className="text-slate-400">Professional Care Fee After Benefit</dt><dd className="font-bold">{formatINRFromPaise(quotationBreakdown.professionalFeePaise)}</dd></div>
           <div className="flex justify-between">
             <dt className="text-slate-400">Routine Homeopathic Medicines</dt>
             <dd className="font-bold text-mint">Included</dd>
