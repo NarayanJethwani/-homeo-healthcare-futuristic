@@ -57,6 +57,7 @@ export const CareLevelCard: React.FC<CareLevelCardProps> = ({
   onProceedToAssessment,
 }) => {
   const selectedTier = CLINICAL_CARE_TIER_OPTIONS[selectedTierId] || CLINICAL_CARE_TIER_OPTIONS.focused;
+  const advancedTier = CLINICAL_CARE_TIER_OPTIONS.advanced;
   const recommendedPublicTier = preliminaryRecommendation?.suggestedTierId === "advanced"
     ? "complex"
     : preliminaryRecommendation?.suggestedTierId;
@@ -139,12 +140,41 @@ export const CareLevelCard: React.FC<CareLevelCardProps> = ({
         </aside>
       </div>
 
-      <div className="rounded-[1.75rem] border border-amber-200 bg-amber-50/70 p-6 md:flex md:items-center md:justify-between md:gap-8">
-        <div className="flex items-start gap-3"><Stethoscope className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" aria-hidden="true" /><div><span className="text-[10px] font-black uppercase tracking-widest text-amber-800">Clinician-assigned only</span><h3 className="mt-1 font-serif text-2xl font-bold text-[#1A2421]">Advanced Physician Care</h3><p className="mt-1 max-w-3xl text-xs font-semibold leading-relaxed text-slate-600">For high-complexity cases needing frequent monitoring and direct physician supervision. Indicative weekly care fee ₹12,000; the same continuity benefit ladder applies only after physician assignment.</p></div></div>
-        <button type="button" onClick={onProceedToAssessment} className="mt-5 shrink-0 rounded-full border border-amber-300 bg-white px-6 py-3 text-[10px] font-black uppercase tracking-wider text-amber-900 md:mt-0">Request assessment</button>
-      </div>
+      <div className="overflow-hidden rounded-[1.75rem] border border-amber-200 bg-amber-50/70">
+        <div className="grid gap-6 p-5 md:p-7 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center">
+          <div className="flex min-w-0 items-start gap-4">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-amber-200 bg-white/80 text-amber-700 shadow-sm">
+              <Stethoscope className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <div className="min-w-0">
+              <span className="inline-flex rounded-full border border-amber-300 bg-white/80 px-3 py-1 text-[9px] font-black uppercase tracking-[0.16em] text-amber-800">Clinician-assigned only</span>
+              <h3 className="mt-2 font-serif text-2xl font-bold text-[#1A2421] md:text-3xl">{advancedTier.name}</h3>
+              <p className="mt-2 max-w-2xl text-sm font-semibold leading-relaxed text-slate-600">For complex or multi-system cases requiring close monitoring, frequent clinical review, and direct physician supervision.</p>
+              <div className="mt-3 flex items-center gap-2 text-xs font-bold text-amber-900">
+                <ShieldCheck className="h-4 w-4 shrink-0" aria-hidden="true" />
+                <span>Not available for self-selection</span>
+              </div>
+            </div>
+          </div>
 
-      <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white/80 p-4"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-mint" aria-hidden="true" /><p className="text-xs font-semibold leading-relaxed text-slate-600">{EXPLICIT_PHYSICIAN_AUTHORITY_STATEMENT}</p></div>
+          <dl className="rounded-2xl border border-amber-200 bg-white/80 px-5 py-4 lg:min-w-52">
+            <dt className="text-[9px] font-black uppercase tracking-[0.16em] text-amber-800">Indicative care fee</dt>
+            <dd className="mt-1 text-2xl font-black text-[#1A2421]">{formatINRFromPaise(advancedTier.weeklyRatePaise)}</dd>
+            <dd className="text-xs font-bold text-slate-500">Per week care period</dd>
+            <dd className="mt-2 border-t border-amber-200 pt-2 text-[10px] font-bold leading-relaxed text-slate-600">Continuity benefits apply after physician assignment.</dd>
+          </dl>
+
+          <button type="button" onClick={onProceedToAssessment} className="flex shrink-0 items-center justify-center gap-2 rounded-full bg-mint px-6 py-4 text-[10px] font-black uppercase tracking-wider text-white shadow-md transition-colors hover:bg-mint-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint">
+            <span>Request physician review</span>
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
+
+        <div className="flex items-start gap-3 border-t border-amber-200 bg-white/55 px-5 py-3.5 md:px-7">
+          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-mint" aria-hidden="true" />
+          <p className="text-[11px] font-semibold leading-relaxed text-slate-600"><strong className="text-[#1A2421]">Physician confirmation:</strong> {EXPLICIT_PHYSICIAN_AUTHORITY_STATEMENT}</p>
+        </div>
+      </div>
     </section>
   );
 };
