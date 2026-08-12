@@ -8,6 +8,7 @@ import { MateriaMedicaReader } from "@/features/materia-medica/components/reader
 import { MATERIA_MEDICA_REGISTRY } from "@/features/materia-medica/data/registry";
 import { GovernedMateriaMedicaRepository } from "@/features/materia-medica/services/GovernedMateriaMedicaRepository";
 import { MachineValidatedCorpusRepository } from "@/features/materia-medica/services/MachineValidatedCorpusRepository";
+import { findRemedyHeadingIndex } from "./remedyReaderResolution";
 
 type Keynote = { keynotes: string[]; aggravations: string[]; ameliorations: string[]; miasm: string };
 type Score = { remedy: string; score: number; coverage: string };
@@ -21,26 +22,18 @@ type Props = {
   onActiveRemedyChange: (remedy: string) => void;
 };
 
-const normalize = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, "");
-
 async function resolveReaderPath(bookId: string, remedy: string): Promise<string | undefined> {
   const fullName = REMEDIES_METADATA[remedy]?.fullName || remedy;
-  const candidates = [normalize(remedy), normalize(fullName)].filter(Boolean);
+  const identity = { abbreviation: remedy, fullName };
   try {
     const passages = await GovernedMateriaMedicaRepository.listApprovedPassages(bookId);
-    const passage = passages.find((item) => candidates.some((candidate) => {
-      const itemName = normalize(item.remedyDisplayName);
-      return itemName === candidate || itemName.includes(candidate) || candidate.includes(itemName);
-    }));
-    if (passage) return passage.remedyId;
+    const passageIndex = findRemedyHeadingIndex(passages.map((item) => item.remedyDisplayName), identity);
+    if (passageIndex >= 0) return passages[passageIndex].remedyId;
 
     const manifest = await MachineValidatedCorpusRepository.getManifest(bookId);
     for (const chunk of manifest?.chunks || []) {
       const headings = chunk.indexHeadings?.length ? chunk.indexHeadings : [chunk.title];
-      const headingIndex = headings.findIndex((heading) => candidates.some((candidate) => {
-        const headingName = normalize(heading);
-        return headingName === candidate || headingName.includes(candidate) || candidate.includes(headingName);
-      }));
+      const headingIndex = findRemedyHeadingIndex(headings, identity);
       if (headingIndex >= 0) return `ocr:${chunk.id}:${headingIndex}`;
     }
   } catch (error) {
