@@ -15,6 +15,7 @@ describe("AdminSidebar Component", () => {
         favorites={[]}
         setFavorites={() => {}}
         handleSubTabClick={() => {}}
+        onOpenConsultation={() => {}}
         session={null}
       />
     );

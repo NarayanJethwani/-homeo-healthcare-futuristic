@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Users, FileText, ArrowRight, AlertCircle, RefreshCw, ChevronDown, ChevronUp, Clock, CreditCard, ShieldAlert } from "lucide-react";
+import Link from "next/link";
+import { Users, FileText, ArrowRight, AlertCircle, RefreshCw, ChevronDown, ChevronUp, Clock, CreditCard, ShieldAlert, Video } from "lucide-react";
 import { Patient } from "../types";
 import { usePatientQueue } from "../hooks/usePatientQueue";
 
@@ -274,8 +275,19 @@ export default function PatientQueue({
                         </div>
                       )}
 
-                      {/* Open Case Action */}
-                      <div className="pt-2 flex justify-end">
+                      {/* Consultation & Open Case Action Buttons */}
+                      <div className="pt-2 flex items-center justify-end gap-2">
+                        <Link
+                          href={`/admin/clinical/consultation?patientId=${encodeURIComponent(pat.id)}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className={`px-3 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl text-[9px] font-extrabold cursor-pointer flex items-center gap-1 shadow-sm transition-all ${
+                            reduceMotion ? "" : "active:scale-98"
+                          }`}
+                        >
+                          <Video className="w-3 h-3" />
+                          <span>Start Consultation</span>
+                        </Link>
+
                         <button
                           onClick={(e) => {
                             e.stopPropagation();

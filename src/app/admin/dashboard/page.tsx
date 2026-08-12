@@ -3,7 +3,7 @@
 import { CARE_LEVELS_DETAILS, PRIORITY_ACUTE_SUPPORT_WEEKLY_PRICE, calculateContinuityCareTotal, normalizeCareLevelName, getCareLevelDisplayName } from "@/lib/pricingConfig";
 import { INDIA_STATES, findIndiaCity, findIndiaCityByKey, getIndiaCityOptions, makeIndiaLocationKey } from "@/lib/indiaLocations";
 
-import { useState, useEffect, useRef, useMemo, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -32,6 +32,11 @@ import {
   type RepertoryCatalogEntry,
 } from "@/features/repertory/components/RepertoryCatalogSelector";
 import { GroupedRepertoryResults } from "@/features/repertory/components/GroupedRepertoryResults";
+import { RemedyScoreBarChart } from "@/features/repertory/components/RemedyScoreBarChart";
+import { RemedyScoreTracePanel } from "@/features/repertory/components/RemedyScoreTracePanel";
+import { RepertoryBookView } from "@/features/repertory/components/RepertoryBookView";
+import { IntegratedMateriaMedicaWorkspace } from "@/features/repertory/components/IntegratedMateriaMedicaWorkspace";
+import { PotencySelectionHelper } from "@/features/repertory/components/PotencySelectionHelper";
 import { MATERIA_MEDICA_BOOKS, MateriaMedicaBook } from "@/lib/materiaMedicaData";
 import { ORGANON_EDITIONS, ORGANON_KNOWLEDGE_TREE, ORGANON_APHORISMS, ORGANON_CASES, ACTIVE_RECALL_EXERCISES, TIMELINE_STEPS } from "@/lib/organonData";
 import { db, auth } from "@/lib/firebase";
@@ -44,6 +49,11 @@ import { REMEDY_LEARNING_DB, parseLearningTutorQuery, searchRemedies, compareFam
 import { simulateMateriaMedicaIngestion, CLASSICAL_SOURCES } from "@/lib/materiaMedicaIngestion";
 import { GENOME_REMEDY_DB } from "@/lib/remedyGenomeSchema";
 import { RepertoryWorkbench } from "@/features/repertory/components/RepertoryWorkbench";
+import {
+  ClinicalKnowledgeInspector,
+  ClinicalKnowledgeWorkspaceControls,
+  useClinicalWorkspaceLayout,
+} from "@/features/repertory/clinicalWorkspace";
 import { MateriaMedicaLibrary } from "@/features/materia-medica/components/library/MateriaMedicaLibrary";
 import { 
   getKnowledgeLinkForDisease, 
@@ -1786,7 +1796,8 @@ export default function AdminDashboard() {
   const [isRepertoryLoaded, setIsRepertoryLoaded] = useState(false);
   const [isRepertoryLoading, setIsRepertoryLoading] = useState(false);
   const [expandedRubricGroupKey, setExpandedRubricGroupKey] = useState<string | null>(null);
-  const [rubricPanelWidth, setRubricPanelWidth] = useState(460);
+  const [workspaceRemedy, setWorkspaceRemedy] = useState<string | null>(null);
+  const clinicalWorkspaceLayout = useClinicalWorkspaceLayout();
 
   const repertoryCatalogItems = useMemo<RepertoryCatalogEntry[]>(
     () => repertoryCatalogBase.map((entry) => ({
@@ -1892,37 +1903,6 @@ export default function AdminDashboard() {
       setSelectedChapter(chapters[0]);
     }
   }, [selectedRepertory, isRepertoryLoaded]);
-
-  useEffect(() => {
-    const savedWidth = Number(window.localStorage.getItem("homeo.classical-repertory-panel-width"));
-    if (Number.isFinite(savedWidth) && savedWidth >= 400 && savedWidth <= 640) {
-      setRubricPanelWidth(savedWidth);
-    }
-  }, []);
-
-  const beginRubricPanelResize = (event: ReactPointerEvent<HTMLButtonElement>) => {
-    if (window.innerWidth < 1280) return;
-    event.preventDefault();
-    const startX = event.clientX;
-    const startWidth = rubricPanelWidth;
-    let finalWidth = startWidth;
-    const handlePointerMove = (moveEvent: PointerEvent) => {
-      const maximumWidth = Math.min(640, Math.floor(window.innerWidth * 0.48));
-      finalWidth = Math.max(400, Math.min(maximumWidth, startWidth + moveEvent.clientX - startX));
-      setRubricPanelWidth(finalWidth);
-    };
-    const handlePointerUp = () => {
-      window.removeEventListener("pointermove", handlePointerMove);
-      window.removeEventListener("pointerup", handlePointerUp);
-      window.localStorage.setItem("homeo.classical-repertory-panel-width", String(finalWidth));
-      document.body.style.cursor = "";
-      document.body.style.userSelect = "";
-    };
-    document.body.style.cursor = "col-resize";
-    document.body.style.userSelect = "none";
-    window.addEventListener("pointermove", handlePointerMove);
-    window.addEventListener("pointerup", handlePointerUp);
-  };
 
   // Fullscreen escape key release and body scroll locking
   useEffect(() => {
@@ -2413,6 +2393,9 @@ export default function AdminDashboard() {
 
   // AI State
   const [selectedPatientId, setSelectedPatientId] = useState<string>("");
+  const consultationHref = selectedPatientId.trim()
+    ? `/admin/clinical/consultation?patientId=${encodeURIComponent(selectedPatientId.trim())}`
+    : "/admin/dashboard?tab=patients";
 
   // Sync export patient selection with active dashboard selection
   useEffect(() => {
@@ -7141,6 +7124,9 @@ Homeo Healthcare`;
   })
     : [];
   const filteredRubrics = allFilteredRubrics.slice(0, 300);
+  const activeBookRubrics = selectedRepertory === "combined"
+    ? []
+    : getRepertoryData(selectedRepertory).filter((rubric) => rubric.chapter === selectedChapter);
 
   useEffect(() => {
     setExpandedRubricGroupKey(null);
@@ -8876,6 +8862,7 @@ ${err.message || err}`);
           favorites={sidebarFavorites}
           setFavorites={setSidebarFavorites}
           handleSubTabClick={handleSubTabClick}
+          onOpenConsultation={() => router.push(consultationHref)}
           reduceMotion={reduceMotion}
           patients={patients}
         />
@@ -8895,6 +8882,7 @@ ${err.message || err}`);
               onTriggerQuickAction={handleTriggerQuickAction}
               onOpenSearch={() => setIsGlobalSearchOpen(true)}
               onOpenDisplayDrawer={() => setIsDisplayDrawerOpen(true)}
+              consultationHref={consultationHref}
               reduceMotion={reduceMotion}
               telemetryLogs={telemetryLogs}
               onOpenDiagnostics={() => setIsDiagnosticsDrawerOpen(true)}
@@ -9011,6 +8999,7 @@ ${err.message || err}`);
                   {/* Shortcuts & Quick Actions (positioned at the absolute top for faster access) */}
                   <QuickActionsGrid 
                     onTriggerQuickAction={handleTriggerQuickAction} 
+                    consultationHref={consultationHref}
                     reduceMotion={reduceMotion}
                   />
 
@@ -14597,7 +14586,7 @@ ${err.message || err}`);
                       <div className="flex items-center gap-3 w-full lg:w-auto flex-wrap">
                         {/* Native EHR Consultation Workspace Link */}
                         <Link
-                          href={`/admin/clinical/consultation?patientId=${patient.id}`}
+                          href={`/admin/clinical/consultation?patientId=${encodeURIComponent(patient.id)}`}
                           className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4.5 py-3 rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
                         >
                           <Stethoscope className="w-4 h-4 text-emerald-200" />
@@ -14998,9 +14987,20 @@ ${err.message || err}`);
 
                 {repertoryWorkbenchMode === "classical" ? (
                   <div
-                    className="classical-workbench-grid w-full items-stretch pb-12"
-                    style={{ "--repertory-browser-width": `${rubricPanelWidth}px` } as CSSProperties}
+                    className={`classical-workbench-grid ckw-shell is-canvas-${clinicalWorkspaceLayout.canvasMode} w-full items-stretch pb-12 ${clinicalWorkspaceLayout.leftCollapsed ? "is-left-collapsed" : ""} ${clinicalWorkspaceLayout.rightCollapsed ? "is-right-collapsed" : ""}`}
+                    style={clinicalWorkspaceLayout.style}
                   >
+                    <ClinicalKnowledgeWorkspaceControls
+                      preset={clinicalWorkspaceLayout.preset}
+                      leftCollapsed={clinicalWorkspaceLayout.leftCollapsed}
+                      rightCollapsed={clinicalWorkspaceLayout.rightCollapsed}
+                      canvasMode={clinicalWorkspaceLayout.canvasMode}
+                      onPresetChange={clinicalWorkspaceLayout.applyPreset}
+                      onCanvasModeChange={clinicalWorkspaceLayout.setCanvasMode}
+                      onToggleLeft={clinicalWorkspaceLayout.toggleLeft}
+                      onToggleRight={clinicalWorkspaceLayout.toggleRight}
+                      onReset={clinicalWorkspaceLayout.resetLayout}
+                    />
                     <div className="repertory-context-bar rounded-3xl border border-white/70 bg-white/65 p-3 shadow-sm backdrop-blur-md">
                       <div className="mb-2 flex items-center justify-between gap-3 px-1">
                         <div>
@@ -15013,7 +15013,7 @@ ${err.message || err}`);
                           {selectedRepertory === "combined" ? "Multi-source scope" : "Single-source scope"}
                         </span>
                       </div>
-                      <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(280px,1.25fr)_minmax(250px,1fr)_minmax(280px,1.15fr)]">
+                      <div className="grid grid-cols-1 gap-3 2xl:grid-cols-[minmax(280px,1.25fr)_minmax(250px,1fr)_minmax(280px,1.15fr)]">
                         <div className="min-w-0">
                           <label className="mb-1 block px-1 font-mono text-[8px] font-black uppercase tracking-widest text-slate-400">
                             Repertory catalogue
@@ -15065,6 +15065,48 @@ ${err.message || err}`);
                           <RepertorySourceSummary item={activeRepertoryCatalogItem} />
                         </div>
                       </div>
+                    </div>
+
+                    <div className="ckw-book-panel">
+                      {selectedRepertory === "combined" ? (
+                        <div className="ckw-book-unavailable">
+                          <BookOpen aria-hidden="true" />
+                          <h3>Choose one repertory for Book view</h3>
+                          <p>The combined database is a governed search scope, not a printed edition. Select a source above to browse its rubrics, grades and citations as a book.</p>
+                        </div>
+                      ) : (
+                        <RepertoryBookView
+                          source={activeRepertoryCatalogItem}
+                          chapters={getActiveChapters()}
+                          chapter={selectedChapter}
+                          rubrics={activeBookRubrics}
+                          selectedRubricIds={new Set(selectedRubrics.map((item) => item.rubric.id))}
+                          onChapterChange={setSelectedChapter}
+                          onAddRubric={addRubric}
+                          onInspectRemedy={setWorkspaceRemedy}
+                        />
+                      )}
+                    </div>
+
+                    <div className="ckw-mm-panel">
+                      <IntegratedMateriaMedicaWorkspace
+                        activeRemedy={workspaceRemedy}
+                        scores={remedyScores}
+                        selectedRubrics={selectedRubrics}
+                        keynotes={COMMON_REMEDIES_KEYNOTES}
+                        onActiveRemedyChange={setWorkspaceRemedy}
+                      />
+                    </div>
+
+                    <div className="ckw-potency-panel">
+                      <PotencySelectionHelper
+                        remedy={workspaceRemedy}
+                        patientName={patients.find((patient) => patient.id === selectedPatientId)?.name || null}
+                        onStageDraft={({ remedy, potency }) => {
+                          setCaseEntryPrescription(remedy);
+                          setCaseEntryPotency(potency);
+                        }}
+                      />
                     </div>
                 
                 {/* ZONE 1 (Top Left) - Column Span 5 */}
@@ -15316,7 +15358,8 @@ ${err.message || err}`);
 
                 <button
                   type="button"
-                  onPointerDown={beginRubricPanelResize}
+                  onPointerDown={clinicalWorkspaceLayout.beginLeftResize}
+                  onDoubleClick={clinicalWorkspaceLayout.resetLayout}
                   className="repertory-panel-resizer"
                   aria-label="Resize rubric browser and repertorization matrix"
                   title="Drag to resize the rubric browser"
@@ -15443,6 +15486,20 @@ ${err.message || err}`);
                       )}
                     </div>
 
+                    {selectedRubrics.length > 0 && (
+                      <>
+                        <RemedyScoreBarChart
+                          scores={remedyScores}
+                          onSelectRemedy={setWorkspaceRemedy}
+                        />
+                        <RemedyScoreTracePanel
+                          selectedRubrics={selectedRubrics}
+                          selectedRemedy={workspaceRemedy}
+                          onSelectRemedy={setWorkspaceRemedy}
+                        />
+                      </>
+                    )}
+
                     {selectedRubrics.length === 0 ? (
                       <div className="mt-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50/20 p-12 text-center">
                         <p className="text-xs font-bold text-slate-500">Repertorization Grid Offline</p>
@@ -15485,7 +15542,7 @@ ${err.message || err}`);
                                     </button>
                                     {/* Remedy Card column header */}
                                     <div 
-                                      onClick={() => setSelectedRemedyDetail(rem)}
+                                      onClick={() => setWorkspaceRemedy(rem)}
                                       className="flex flex-col items-center space-y-1 p-2 bg-slate-50/80 border border-slate-200 rounded-2xl group-hover:border-mint group-hover:shadow-sm transition-all duration-300 relative cursor-pointer"
                                       title={`Inspect ${card.fullName}`}
                                     >
@@ -15534,7 +15591,7 @@ ${err.message || err}`);
                                   return (
                                     <td 
                                       key={rem} 
-                                      onClick={() => setSelectedRemedyDetail(rem)}
+                                      onClick={() => setWorkspaceRemedy(rem)}
                                       className={`p-4 text-center border-l border-slate-100 font-mono font-bold cursor-pointer transition-all duration-300 hover:bg-mint/5 ${
                                         remGrade === 3 ? "bg-rose-500/[0.03]" :
                                         remGrade === 2 ? "bg-amber-500/[0.02]" :
@@ -15594,8 +15651,32 @@ ${err.message || err}`);
                   </div>
                 </div>
 
+                <button
+                  type="button"
+                  onPointerDown={clinicalWorkspaceLayout.beginRightResize}
+                  onDoubleClick={clinicalWorkspaceLayout.resetLayout}
+                  className="ckw-right-resizer"
+                  aria-label="Resize repertorization canvas and clinical inspector"
+                  title="Drag to resize the clinical inspector; double click to reset"
+                >
+                  <span />
+                  <span />
+                  <span />
+                </button>
+
+                <ClinicalKnowledgeInspector
+                  source={activeRepertoryCatalogItem}
+                  selectedRubricCount={selectedRubrics.length}
+                  remedyCount={remedyScores.length}
+                  selectedRemedy={workspaceRemedy}
+                  onOpenMateriaMedica={(remedy) => {
+                    setWorkspaceRemedy(remedy);
+                    clinicalWorkspaceLayout.setCanvasMode("materia-medica");
+                  }}
+                />
+
                 {/* ZONE 2: Constitutional Vector Analytics - Column Span 12 */}
-                <div className="order-3 xl:order-3 xl:col-span-12">
+                <div className="ckw-full-span order-3 xl:order-3 xl:col-span-12">
                   <div className="rounded-3xl border border-slate-800 p-6 space-y-6 flex flex-col shadow-2xl bg-slate-950 text-white relative overflow-hidden">
                     {/* Glowing particle container */}
                     <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
@@ -16355,7 +16436,7 @@ ${err.message || err}`);
                 </div>
 
                 {/* ZONE 4: AI Clinical Prescribing Intelligence - Column Span 12 */}
-                <div className="order-5 xl:order-5 xl:col-span-12">
+                <div className="ckw-full-span order-5 xl:order-5 xl:col-span-12">
                   <div className="glass-panel rounded-3xl border-white/60 p-6 space-y-4 flex-grow flex flex-col relative overflow-hidden shadow-sm bg-white/60 backdrop-blur-md min-h-[460px]">
                     <div className="flex items-center justify-between border-b border-slate-900/5 pb-3">
                       <h3 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-2 font-mono">
@@ -16920,7 +17001,7 @@ ${err.message || err}`);
 
                 {/* ZONE 5: AI Materia Medica Intelligence Engine - Column Span 12 */}
                 {aiData && aiData.materia_medica_analysis && (
-                  <div className="order-6 xl:order-6 xl:col-span-12 mt-6">
+                  <div className="ckw-full-span order-6 xl:order-6 xl:col-span-12 mt-6">
                     <div className="rounded-3xl border border-slate-800 p-6 space-y-6 flex-grow flex flex-col relative overflow-hidden shadow-2xl bg-slate-950 text-white">
                       
                       {/* Floating background particles */}

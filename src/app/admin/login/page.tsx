@@ -165,7 +165,7 @@ export default function AdminLogin() {
       const data = await res.json();
       if (data.success) {
         localStorage.setItem("admin_session", JSON.stringify(data.user));
-        window.location.href = "/admin/clinical/consultation?patientId=P-000001";
+        window.location.href = "/admin/dashboard?tab=patients";
       } else {
         setError(data.message || "Dev login failed");
       }

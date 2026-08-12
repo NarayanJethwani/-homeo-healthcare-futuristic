@@ -1,13 +1,30 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import Portal from "../../../components/Portal";
+import React, { useState, useEffect, useRef } from "react";
 import {
-  Gauge, Sparkles, Users, Compass, IndianRupee, Layers, FileText,
-  Activity, Cpu, Network, Award, Send, UserPlus, ChevronLeft, ChevronRight, Star, Settings
+  Gauge,
+  UserCheck,
+  Users,
+  Search,
+  FileText,
+  Layers,
+  Award,
+  Send,
+  UserPlus,
+  Settings,
+  Star,
+  ChevronLeft,
+  ChevronRight,
+  Pin,
+  Sparkles,
+  ChevronDown,
+  Activity,
+  Cpu,
+  Network,
+  Video,
 } from "lucide-react";
-
 import { normalizeRole } from "@/lib/security/rbac";
+import Portal from "../../../components/Portal";
 
 interface AdminSidebarProps {
   isCollapsed: boolean;
@@ -16,22 +33,20 @@ interface AdminSidebarProps {
   setActiveTab: (tabId: any) => void;
   session: any;
   favorites: string[];
-  setFavorites: React.Dispatch<React.SetStateAction<string[]>>;
-  handleSubTabClick: (tabId: any, subId: string) => void;
+  setFavorites: (favorites: string[] | ((prev: string[]) => string[])) => void;
+  handleSubTabClick?: (tabId: any, subId: string, action?: () => void) => void;
+  onOpenConsultation: () => void;
   reduceMotion?: boolean;
   patients?: any[];
 }
 
-// Icon mappings based on active tab IDs
-const TABS_METADATA: Record<
-  string,
-  { label: string; icon: React.ComponentType<{ className?: string }>; gradient: string; shadow: string; adminOnly?: boolean }
-> = {
+const TABS_METADATA: Record<string, { label: string; icon: any; gradient: string; shadow: string; adminOnly?: boolean }> = {
   dashboard: { label: "Dashboard", icon: Gauge, gradient: "from-teal-500 to-emerald-500", shadow: "shadow-[0_4px_12px_rgba(20,184,166,0.3)]" },
-  intake: { label: "AI Intake", icon: Sparkles, gradient: "from-amber-500 to-orange-500", shadow: "shadow-[0_4px_12px_rgba(245,158,11,0.3)]" },
-  patients: { label: "Patients", icon: Users, gradient: "from-sky-500 to-blue-500", shadow: "shadow-[0_4px_12px_rgba(14,165,233,0.3)]" },
-  diagnostics: { label: "Diagnostics", icon: Compass, gradient: "from-emerald-600 to-green-500", shadow: "shadow-[0_4px_12px_rgba(16,185,129,0.3)]" },
-  "treatment-planner": { label: "Treatment Planner", icon: IndianRupee, gradient: "from-emerald-600 to-teal-500", shadow: "shadow-[0_4px_12px_rgba(16,185,129,0.3)]" },
+  consultation: { label: "Consultation Workspace", icon: Video, gradient: "from-purple-600 to-indigo-600", shadow: "shadow-[0_4px_12px_rgba(147,51,234,0.3)]" },
+  intake: { label: "AI Intake Engine", icon: UserCheck, gradient: "from-amber-500 to-orange-500", shadow: "shadow-[0_4px_12px_rgba(245,158,11,0.3)]" },
+  patients: { label: "Patient Registry", icon: Users, gradient: "from-blue-500 to-cyan-500", shadow: "shadow-[0_4px_12px_rgba(59,130,246,0.3)]" },
+  diagnostics: { label: "Nexus Diagnostics", icon: Search, gradient: "from-purple-500 to-violet-500", shadow: "shadow-[0_4px_12px_rgba(168,85,247,0.3)]" },
+  "treatment-planner": { label: "Treatment Planner", icon: Layers, gradient: "from-teal-500 to-emerald-500", shadow: "shadow-[0_4px_12px_rgba(20,184,166,0.3)]" },
   "diet-lifestyle": { label: "Diet & Lifestyle", icon: Layers, gradient: "from-rose-500 to-pink-500", shadow: "shadow-[0_4px_12px_rgba(244,63,94,0.3)]" },
   analyzer: { label: "Report Analyzer", icon: FileText, gradient: "from-indigo-500 to-violet-500", shadow: "shadow-[0_4px_12px_rgba(99,102,241,0.3)]" },
   cie: { label: "Clinical OS", icon: Activity, gradient: "from-emerald-500 to-teal-500", shadow: "shadow-[0_4px_12px_rgba(16,185,129,0.3)]" },
@@ -49,7 +64,7 @@ const TABS_METADATA: Record<
 const SIDEBAR_GROUPS = [
   {
     name: "Clinical",
-    items: ["dashboard", "intake", "patients", "diagnostics", "treatment-planner", "diet-lifestyle"],
+    items: ["dashboard", "consultation", "intake", "patients", "diagnostics", "treatment-planner", "diet-lifestyle"],
   },
   {
     name: "AI",
@@ -155,6 +170,7 @@ export default function AdminSidebar({
   favorites,
   setFavorites,
   handleSubTabClick,
+  onOpenConsultation,
   reduceMotion = false,
   patients = [],
 }: AdminSidebarProps) {
@@ -242,7 +258,13 @@ export default function AdminSidebar({
         >
           <button
             type="button"
-            onClick={() => setActiveTab(tabId)}
+            onClick={() => {
+              if (tabId === "consultation") {
+                onOpenConsultation();
+              } else {
+                setActiveTab(tabId);
+              }
+            }}
             className="flex items-center gap-3 min-w-0 flex-grow border-none bg-transparent p-0 text-inherit text-left cursor-pointer focus-visible:ring-2 focus-visible:ring-teal-555 outline-none rounded"
             title={isCollapsed ? meta.label : undefined}
             aria-current={isActive ? "page" : undefined}
@@ -434,7 +456,7 @@ export default function AdminSidebar({
                     key={sub.id}
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleSubTabClick(hoveredTabId as any, sub.id);
+                      handleSubTabClick?.(hoveredTabId as any, sub.id);
                       setHoveredTabId(null);
                     }}
                     className="w-full text-left px-3 py-1.5 rounded-xl text-[10px] font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer border-none bg-transparent flex items-center gap-2 focus-visible:ring-1 focus-visible:ring-teal-555 outline-none"

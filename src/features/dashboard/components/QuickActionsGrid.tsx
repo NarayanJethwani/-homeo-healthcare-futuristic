@@ -1,18 +1,28 @@
 "use client";
 
 import React from "react";
-import { UserPlus, Sparkles, UploadCloud, FileText, Calendar, Receipt, ShieldAlert, BookOpen } from "lucide-react";
+import { UserPlus, Sparkles, UploadCloud, FileText, Calendar, Receipt, ShieldAlert, BookOpen, Video } from "lucide-react";
 
 interface QuickActionsGridProps {
   onTriggerQuickAction: (actionKey: string) => void;
+  consultationHref: string;
   reduceMotion?: boolean;
 }
 
 export default function QuickActionsGrid({
   onTriggerQuickAction,
+  consultationHref,
   reduceMotion = false,
 }: QuickActionsGridProps) {
   const actions = [
+    {
+      key: "clinical-consultation",
+      label: "Clinical Consultation",
+      description: "Launch 4-panel workspace",
+      icon: Video,
+      color: "from-purple-600 to-indigo-600",
+      shadow: "shadow-purple-100 dark:shadow-none",
+    },
     {
       key: "new-patient",
       label: "New Patient Case",
@@ -90,7 +100,13 @@ export default function QuickActionsGrid({
           return (
             <button
               key={act.key}
-              onClick={() => onTriggerQuickAction(act.key)}
+              onClick={() => {
+                if (act.key === "clinical-consultation") {
+                  window.location.href = consultationHref;
+                } else {
+                  onTriggerQuickAction(act.key);
+                }
+              }}
               className={`group p-4 bg-white dark:bg-slate-900 border border-slate-202 dark:border-slate-800 rounded-[20px] text-left hover:border-slate-350 dark:hover:border-slate-700 cursor-pointer focus-visible:ring-2 focus-visible:ring-teal-500 outline-none flex flex-col justify-between gap-4 transition-all ${
                 reduceMotion ? "" : "active:scale-98"
               }`}
