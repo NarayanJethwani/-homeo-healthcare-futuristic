@@ -10,7 +10,16 @@ import { DifferentialComparison } from './DifferentialComparison';
 import { ConfidenceBreakdownPanel } from './ConfidenceBreakdownPanel';
 import { RubricCoverageHeatmap } from './RubricCoverageHeatmap';
 import { ReasoningTimeline } from './ReasoningTimeline';
+import { RemedyScoreBarChart } from './RemedyScoreBarChart';
+import { PotencySelectionHelper } from './PotencySelectionHelper';
+import { ClinicalScoreAuditPanel } from './ClinicalScoreAuditPanel';
+import { ClinicalEditionBookView } from './ClinicalEditionBookView';
 import { createClinicalRepertoryService } from '../clinicalWorkspace/clinicalRepertoryService';
+import {
+  ClinicalKnowledgeWorkspaceControls,
+  JETHWANI_CLINICAL_CANVAS_MODES,
+  useClinicalWorkspaceLayout,
+} from '../clinicalWorkspace';
 import { ClinicalValidationFinding } from '../clinicalWorkspace/types';
 import { VisitTimelineEntry, LongitudinalCaseSummary } from '../clinicalWorkspace/longitudinalTypes';
 import { db } from '@/lib/firebase';
@@ -31,6 +40,10 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   onPatientChange,
   enableMiasmaticFilter = false
 }) => {
+  const clinicalLayout = useClinicalWorkspaceLayout({
+    storageKey: 'homeo.jethwani-clinical-workbench.layout.v1',
+    defaultCanvasMode: 'split',
+  });
   const isFilterEnabled = process.env.NODE_ENV === 'test' && enableMiasmaticFilter === true
     ? true
     : IS_MIASMATIC_FILTER_ENABLED;
@@ -171,6 +184,12 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
     frequency: 'constant' | 'frequent' | 'occasional';
     impact: 'severe' | 'moderate' | 'mild';
   } | null>(null);
+
+  useEffect(() => {
+    if (clinicalLayout.canvasMode === 'materia-medica') setActiveDockTab('materia-medica');
+    if (clinicalLayout.canvasMode === 'timeline') setActiveDockTab('timeline');
+    if (clinicalLayout.canvasMode === 'review') setActiveDockTab('validation');
+  }, [clinicalLayout.canvasMode]);
 
   // Categories list
   const CATEGORIES = [
@@ -983,26 +1002,40 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   };
 
   return (
-    <div className="w-full space-y-4">
+    <div
+      className={`jcr-workspace ckw-shell is-canvas-${clinicalLayout.canvasMode} ${clinicalLayout.leftCollapsed ? 'is-left-collapsed' : ''} ${clinicalLayout.rightCollapsed ? 'is-right-collapsed' : ''} w-full space-y-4`}
+      style={clinicalLayout.style}
+      data-clinical-workspace="jethwani-v2"
+    >
+      <ClinicalKnowledgeWorkspaceControls
+        preset={clinicalLayout.preset}
+        leftCollapsed={clinicalLayout.leftCollapsed}
+        rightCollapsed={clinicalLayout.rightCollapsed}
+        canvasMode={clinicalLayout.canvasMode}
+        onPresetChange={clinicalLayout.applyPreset}
+        onCanvasModeChange={clinicalLayout.setCanvasMode}
+        onToggleLeft={clinicalLayout.toggleLeft}
+        onToggleRight={clinicalLayout.toggleRight}
+        onReset={clinicalLayout.resetLayout}
+        identityLabel="Dr. Jethwani Clinical Workbench"
+        statusLabel="Governed clinical edition · upgrade preview"
+        leftPanelLabel="Clinical browser"
+        modeItems={JETHWANI_CLINICAL_CANVAS_MODES}
+      />
       {/* Sticky Global Safety Banner */}
       <div className="sticky top-0 z-50 bg-amber-50/95 backdrop-blur-md border border-amber-200/80 p-2.5 rounded-2xl flex items-center justify-center text-center shadow-xs text-[10px] text-amber-800 font-bold">
         <span>⚠️ <strong>Clinical Review Required</strong> — This system provides clinical decision support only. Final diagnosis and prescribing remain the responsibility of the clinician.</span>
       </div>
 
-      {/* Release transparency for source-faithful Clarke occurrence scoring. */}
-      <div className="rounded-2xl border border-cyan-200 bg-cyan-50/90 px-4 py-3 text-left text-xs text-cyan-950 shadow-xs">
-        <div className="flex items-start gap-2">
-          <BookOpen className="mt-0.5 h-4 w-4 shrink-0 text-cyan-700" />
-          <div>
-            <p className="font-black uppercase tracking-wider">Expanded repertory release status</p>
-            <p className="mt-1 font-semibold leading-relaxed">
-              Version 1.2.0 is validated and staged with 78,687 rubrics from Kent, Boericke, and Clarke.
-              Clarke rubrics use source-faithful equal-occurrence repertorization: each verified remedy listed
-              under a selected rubric contributes one point. No remedy-grade hierarchy is inferred from OCR.
-            </p>
-          </div>
+      <section className="jcr-context-bar" aria-label="Dr. Jethwani clinical edition context">
+        <div className="jcr-context-bar__identity">
+          <BookOpen aria-hidden="true" />
+          <div><span>Active clinical edition</span><strong>Dr. Jethwani’s Clinical Repertory</strong><small>{rubrics.length.toLocaleString()} visible rubrics · governed clinical corpus · patient-linked workspace</small></div>
         </div>
-      </div>
+        <div><span>Scoring model</span><strong>Governed graded clinical scoring</strong><small>Severity, frequency and functional impact remain clinician-controlled.</small></div>
+        <div><span>Editorial governance</span><strong>Clinical and source provenance retained</strong><small>Clinical observations never overwrite original remedy grades.</small></div>
+        <span className="jcr-context-bar__status">Clinical review required</span>
+      </section>
 
       {/* Case File Management Bar */}
       <div className="bg-slate-900 border border-slate-800 p-4 rounded-3xl shadow-md text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -1298,13 +1331,13 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
           </div>
         );
       })()}
-      <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch pb-12 text-slate-800 lg:h-[calc(100vh-140px)] lg:max-h-[950px] min-h-[500px]">
+      <div className="jcr-layout w-full grid grid-cols-1 gap-6 items-stretch pb-12 text-slate-800 min-h-[500px]">
       
       {/* LEFT COLUMN: Search & Rubric Directory (Col Span 5) */}
-      <div className="lg:col-span-5 flex flex-col gap-4 order-2 lg:order-1 lg:overflow-y-auto lg:h-full pb-6 pr-1 scrollbar-thin">
+      <div className="jcr-browser flex flex-col gap-4 pb-6 pr-1 scrollbar-thin">
         
         {/* Search & NLP Intake Block */}
-        <div className="bg-white/70 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 space-y-4 shadow-xs">
+        <div className="jcr-intake-panel bg-white/70 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 space-y-4 shadow-xs">
           <div className="flex items-center justify-between border-b border-slate-100 pb-2">
             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
               <Search className="w-4 h-4 text-emerald-500" />
@@ -1437,12 +1470,20 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
           })()}
         </div>
 
+        <div className="jcr-book-panel">
+          <ClinicalEditionBookView
+            rubrics={visibleCatalogRubrics}
+            selectedRubricIds={selectedRubrics.map((rubric) => rubric.rubricId)}
+            onToggleRubric={handleToggleRubric}
+          />
+        </div>
+
         {/* Collapsible Clinical Rubrics Catalog */}
         {(() => {
           const resolvedCatalogExpanded = isCatalogExpanded !== null ? isCatalogExpanded : (selectedRubrics.length <= 6);
 
           return (
-            <div className="bg-white/70 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 flex flex-col gap-4 shadow-xs">
+            <div className="jcr-catalog-panel bg-white/70 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 flex flex-col gap-4 shadow-xs">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
                   <BookOpen className="w-4 h-4 text-emerald-500" />
@@ -1691,7 +1732,8 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
         })()}
       </div>
       {/* CENTER COLUMN: Active Workbench & Scoring (Col Span 4) */}
-      <div className="lg:col-span-4 flex flex-col gap-4 order-1 lg:order-2 lg:overflow-y-auto lg:h-full pb-6 pr-1 scrollbar-thin">
+      <button type="button" onPointerDown={clinicalLayout.beginLeftResize} onDoubleClick={clinicalLayout.resetLayout} className="jcr-resizer jcr-resizer--left" aria-label="Resize clinical browser and analysis canvas"><span /><span /><span /></button>
+      <div className="jcr-canvas flex flex-col gap-4 pb-6 pr-1 scrollbar-thin">
         
         {/* Active Symptoms Panel */}
         <div className="bg-white/70 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 space-y-4 shadow-xs text-left">
@@ -1782,6 +1824,25 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
             <div className="space-y-4">
               
               {/* Remedies Bar Chart List */}
+              <RemedyScoreBarChart
+                scores={scoringResult.topRemedies.map((remedy) => ({
+                  remedy: remedy.remedyId,
+                  score: remedy.score,
+                  coverage: remedy.coverageRatio || `${remedy.matches}/${selectedRubrics.length}`,
+                }))}
+                onSelectRemedy={(remedy) => {
+                  setActiveReasoningRemedyId(remedy);
+                  setActiveRemedyDetails(remedy);
+                }}
+              />
+              <ClinicalScoreAuditPanel
+                result={scoringResult}
+                selectedRubricCount={selectedRubrics.length}
+                onSelectRemedy={(remedy) => {
+                  setActiveReasoningRemedyId(remedy);
+                  setActiveRemedyDetails(remedy);
+                }}
+              />
               <div className="space-y-2">
                 {scoringResult.topRemedies.slice(0, 5).map((rem, idx) => {
                   const maxScore = scoringResult.topRemedies[0].score || 1;
@@ -1900,7 +1961,8 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
       </div>
 
       {/* RIGHT COLUMN: Clinical Reasoning Engine (Col Span 3) */}
-      <div className="lg:col-span-3 flex flex-col gap-4 order-3 lg:order-3 text-left lg:overflow-y-auto lg:h-full pb-6 pr-1 scrollbar-thin">
+      <button type="button" onPointerDown={clinicalLayout.beginRightResize} onDoubleClick={clinicalLayout.resetLayout} className="jcr-resizer jcr-resizer--right" aria-label="Resize analysis canvas and clinical inspector"><span /><span /><span /></button>
+      <div className="jcr-inspector flex flex-col gap-4 text-left pb-6 pr-1 scrollbar-thin">
         <div className="bg-white/70 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 space-y-4 shadow-xs">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3 flex-wrap gap-2">
             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
@@ -2054,6 +2116,25 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
         </div>
       </div>
       </div>
+
+      <div className="jcr-potency-panel">
+        <PotencySelectionHelper
+          remedy={activeReasoningRemedyId || scoringResult?.topRemedies[0]?.remedyId || null}
+          patientName={loadedPatient?.name || null}
+          onStageDraft={(draft) => {
+            const summary = `Clinician-selected prescription draft\nPatient: ${loadedPatient?.name || 'Unlinked'}\nRemedy: ${draft.remedy}\nPotency: ${draft.potency}\nRepetition: ${draft.repetition}\n${draft.note}`;
+            if (onSendToTreatmentPlanner) onSendToTreatmentPlanner(summary);
+          }}
+        />
+      </div>
+
+      {!reasoningSummary && (clinicalLayout.canvasMode === 'materia-medica' || clinicalLayout.canvasMode === 'timeline' || clinicalLayout.canvasMode === 'review') && (
+        <section className="jcr-focused-empty">
+          <BookOpen aria-hidden="true" />
+          <h3>{clinicalLayout.canvasMode === 'materia-medica' ? 'Materia Medica workspace' : clinicalLayout.canvasMode === 'timeline' ? 'Longitudinal case timeline' : 'Clinical validation review'}</h3>
+          <p>Select one or more governed rubrics to activate this clinical workspace. Existing analysis, provenance and safety checks will appear here without changing the saved case.</p>
+        </section>
+      )}
 
       {/* MODIFIER CONFIG POPUP MODAL */}
       {modifyingSymptom && (() => {
@@ -2263,7 +2344,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
 
       {/* CLINICAL INTELLIGENCE DOCK */}
       {reasoningSummary && activeReasoningRemedyId && (
-        <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 space-y-6 mt-6 shadow-sm">
+        <div className="jcr-intelligence-dock bg-white/80 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 space-y-6 mt-6 shadow-sm">
           {/* Dock Tab Selector */}
           <div className="flex border-b border-slate-200/60 pb-3 gap-2 overflow-x-auto">
             {[

@@ -69,7 +69,23 @@ assert.strictEqual(session.selectedRubrics[0].rubricWeight, 2);
 
 const weighted = repertorizeClinicalSession(session, [], "2026-07-03T00:00:00.000Z");
 assert.strictEqual(weighted.strategyId, "weighted_grades");
-assert.strictEqual(weighted.rankings[0].remedyId, "Acon");
+assert.strictEqual(weighted.rankings[0].remedyId, "Ars");
+assert.strictEqual(weighted.rankings.find((ranking) => ranking.remedyId === "Ars")?.totalScore, 10);
+assert.strictEqual(weighted.rankings.find((ranking) => ranking.remedyId === "Acon")?.totalScore, 8);
+assert.deepStrictEqual(
+  weighted.rankings.find((ranking) => ranking.remedyId === "Ars")?.contributions.map((contribution) => ({
+    rubricId: contribution.rubricId,
+    grade: contribution.grade,
+    rubricWeight: contribution.rubricWeight,
+    contribution: contribution.strategyContribution,
+  })),
+  [
+    { rubricId: "fear-death", grade: 2, rubricWeight: 2, contribution: 4 },
+    { rubricId: "restlessness", grade: 3, rubricWeight: 1, contribution: 3 },
+    { rubricId: "thirst-small-sips", grade: 3, rubricWeight: 1, contribution: 3 },
+  ],
+  "The weighted-grades leader must remain auditable as grade × rubric weight for every contribution",
+);
 assert.strictEqual(weighted.rankings.some((ranking) => ranking.remedyId === "Nux-v"), false);
 assert.strictEqual(weighted.rankings.some((ranking) => ranking.remedyId === "Phos"), false);
 assert.ok(weighted.rankings[0].contributions[0].percentageContribution > 0);

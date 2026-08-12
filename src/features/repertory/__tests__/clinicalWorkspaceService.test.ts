@@ -1,3 +1,7 @@
+// Keep this standalone suite on the governed in-memory corpus. Production and
+// emulator persistence are verified separately by their dedicated test layers.
+(process.env as Record<string, string | undefined>).NODE_ENV = "test";
+process.env.REPERTORY_USE_MOCK_FIRESTORE = "true";
 import assert from "assert";
 import { createClinicalRepertoryService } from "../clinicalWorkspace/clinicalRepertoryService";
 import { CLINICAL_WORKSPACE_SAFETY_NOTICE } from "../clinicalWorkspace/types";

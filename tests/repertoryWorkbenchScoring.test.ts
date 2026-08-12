@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import type { Rubric } from "../src/lib/repertoryData";
 import {
+  calculateWorkbenchRemedyContributions,
   calculateWorkbenchRemedyRankings,
   getTopWorkbenchRemedyColumns,
   projectWorkbenchScores,
@@ -94,6 +95,27 @@ assert.deepStrictEqual(projected, [
   { remedy: "Puls", coverage: "1/1", score: 5 },
   { remedy: "Sep", coverage: "1/1", score: 2 },
 ]);
+
+const sensitivitySelections: SelectedWorkbenchRubric[] = [
+  { ...selected("sensitivity-a", "kent", { Acon: 3, Puls: 2 }), grade: 3, weightMultiplier: 2 },
+  { ...selected("sensitivity-b", "kent", { Puls: 3 }), grade: 1, weightMultiplier: 1 },
+];
+assert.strictEqual(calculateWorkbenchRemedyRankings(sensitivitySelections, "current")[0].remedy, "Acon");
+assert.strictEqual(calculateWorkbenchRemedyRankings(sensitivitySelections, "equal-case-importance")[0].remedy, "Puls");
+assert.strictEqual(calculateWorkbenchRemedyRankings(sensitivitySelections, "without-multipliers")[0].score, 9);
+
+const aconAudit = calculateWorkbenchRemedyContributions(sensitivitySelections, "Acon");
+assert.deepStrictEqual(
+  aconAudit.map(({ sourceGrade, caseImportance, multiplier, contribution }) => ({ sourceGrade, caseImportance, multiplier, contribution })),
+  [
+    { sourceGrade: 3, caseImportance: 3, multiplier: 2, contribution: 18 },
+    { sourceGrade: 0, caseImportance: 1, multiplier: 1, contribution: 0 },
+  ],
+  "The remedy audit must reproduce the governed ranking formula row by row",
+);
+
+const referenceAudit = calculateWorkbenchRemedyContributions([referenceOnlyClarke], "Ars");
+assert.strictEqual(referenceAudit[0].contribution, 0, "Reference-only rubrics must remain visible but contribute zero");
 
 const productionAssets = [
   "kentRepertoryData.json",

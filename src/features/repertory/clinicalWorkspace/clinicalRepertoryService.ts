@@ -185,7 +185,7 @@ export function createClinicalRepertoryService(
       patientId: string,
       timeline: VisitTimelineEntry[]
     ): Promise<LongitudinalCaseSummary> {
-      const response = await fetch("/api/repertory/search?q=&pageSize=100");
+      const response = await fetch("/api/repertory/search?q=&pageSize=50");
       const data = await response.json();
       const rubrics = data.success ? data.rubrics : [];
       const titlesMap: Record<string, string> = {};
@@ -205,7 +205,7 @@ export function createClinicalRepertoryService(
     },
 
     async loadInitialRubrics(): Promise<any[]> {
-      const response = await fetch("/api/repertory/search?q=&pageSize=100");
+      const response = await fetch("/api/repertory/search?q=&pageSize=50");
       const data = await response.json();
       if (!data.success) {
         throw new Error(data.message || "Failed to load initial rubrics from server.");
@@ -216,7 +216,7 @@ export function createClinicalRepertoryService(
     async getRubrics(filters?: Record<string, any>): Promise<any[]> {
       const qParams = new URLSearchParams();
       qParams.set('q', '');
-      qParams.set('pageSize', '100');
+      qParams.set('pageSize', '50');
       if (filters) {
         if (filters.category) qParams.set('category', filters.category);
         if (filters.organSystem) qParams.set('organSystem', filters.organSystem);
@@ -235,7 +235,7 @@ export function createClinicalRepertoryService(
     async searchFullRubrics(query: string, filters?: Record<string, any>): Promise<any[]> {
       const qParams = new URLSearchParams();
       qParams.set('q', query);
-      qParams.set('pageSize', '100');
+      qParams.set('pageSize', '50');
       if (filters) {
         if (filters.category) qParams.set('category', filters.category);
         if (filters.organSystem) qParams.set('organSystem', filters.organSystem);

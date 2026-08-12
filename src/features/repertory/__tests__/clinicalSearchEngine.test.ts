@@ -96,6 +96,11 @@ assert.ok(partialResults[0].matches.some((match) => match.type === "starts_with"
 const britishSpellingResults = searchCanonicalRubrics(index, "diarrhoea");
 assert.strictEqual(britishSpellingResults[0].rubric.id, "diarrhea-loose-stool");
 assert.ok(britishSpellingResults[0].matches.some((match) => match.type === "synonym"));
+assert.strictEqual(
+  britishSpellingResults.some((result) => result.rubric.id === "constipation-hard-stool"),
+  false,
+  "A British spelling synonym must not leak generic phrase tokens into an opposing stool concept",
+);
 
 const difficultStoolResults = buildAndSearchCanonicalRubrics(fixtures, "difficult stool");
 assert.strictEqual(difficultStoolResults[0].rubric.id, "constipation-hard-stool");

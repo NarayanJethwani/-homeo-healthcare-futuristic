@@ -249,39 +249,24 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
   },
   {
     "path": "src/features/repertory/__tests__/clinicalRepertorizationEngine.test.ts",
-    "status": "quarantined",
-    "ownerArea": "legacy-repertory",
+    "status": "active",
+    "ownerArea": "feature-unit",
     "testLayer": "unit",
-    "reason": "Legacy repertory engine test targeted for Phase 3 clinical refactoring",
-    "risk": "medium",
-    "trackingIssue": "QUARANTINE-SRC-FEATURES-REPERTORY---TESTS---CLINICALREPERTORIZATIONENGINE-TEST-TS",
-    "owner": "platform-engineering",
-    "lastExecutionResult": "Legacy assertion mismatch",
-    "plannedResolution": "Refactor engine assertions in Phase 3"
+    "reason": "Active passing Node test suite with auditable weighted-grade contributions"
   },
   {
     "path": "src/features/repertory/__tests__/clinicalRubricIntelligence.test.ts",
-    "status": "quarantined",
-    "ownerArea": "legacy-repertory",
+    "status": "active",
+    "ownerArea": "feature-unit",
     "testLayer": "unit",
-    "reason": "Legacy repertory engine test targeted for Phase 3 clinical refactoring",
-    "risk": "medium",
-    "trackingIssue": "QUARANTINE-SRC-FEATURES-REPERTORY---TESTS---CLINICALRUBRICINTELLIGENCE-TEST-TS",
-    "owner": "platform-engineering",
-    "lastExecutionResult": "Legacy assertion mismatch",
-    "plannedResolution": "Refactor engine assertions in Phase 3"
+    "reason": "Active passing Node test suite with explicit cross-reference precedence"
   },
   {
     "path": "src/features/repertory/__tests__/clinicalSearchEngine.test.ts",
-    "status": "quarantined",
-    "ownerArea": "legacy-repertory",
+    "status": "active",
+    "ownerArea": "feature-unit",
     "testLayer": "unit",
-    "reason": "Legacy repertory engine test targeted for Phase 3 clinical refactoring",
-    "risk": "medium",
-    "trackingIssue": "QUARANTINE-SRC-FEATURES-REPERTORY---TESTS---CLINICALSEARCHENGINE-TEST-TS",
-    "owner": "platform-engineering",
-    "lastExecutionResult": "Legacy assertion mismatch",
-    "plannedResolution": "Refactor engine assertions in Phase 3"
+    "reason": "Active passing Node test suite with clinically bounded synonym expansion"
   },
   {
     "path": "src/features/repertory/__tests__/clinicalSearchShadow.test.ts",

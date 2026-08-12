@@ -13,23 +13,53 @@ export type WorkbenchRemedyRanking = {
   score: number;
 };
 
+export type WorkbenchSensitivityMode = "current" | "equal-case-importance" | "without-multipliers";
+
+export type WorkbenchRemedyContribution = {
+  rubricId: string;
+  rubricName: string;
+  chapter: string;
+  source?: Rubric["source"];
+  sourceGrade: number;
+  caseImportance: number;
+  multiplier: number;
+  contribution: number;
+  covered: boolean;
+  scoringEnabled: boolean;
+  occurrenceOnly: boolean;
+  citation?: string;
+};
+
+function resolveWeights(
+  selected: SelectedWorkbenchRubric,
+  sensitivityMode: WorkbenchSensitivityMode,
+): { caseImportance: number; multiplier: number } {
+  if (selected.rubric.scoringMode === "occurrence") {
+    return { caseImportance: 1, multiplier: 1 };
+  }
+  return {
+    caseImportance: sensitivityMode === "equal-case-importance" ? 1 : selected.grade,
+    multiplier: sensitivityMode === "without-multipliers" ? 1 : (selected.weightMultiplier || 1),
+  };
+}
+
 export function calculateWorkbenchRemedyRankings(
   selectedRubrics: SelectedWorkbenchRubric[],
+  sensitivityMode: WorkbenchSensitivityMode = "current",
 ): WorkbenchRemedyRanking[] {
   const remedyTotals = new Map<string, { coverage: number; score: number }>();
 
-  for (const { rubric, grade: userWeight, weightMultiplier } of selectedRubrics) {
+  for (const selected of selectedRubrics) {
+    const { rubric } = selected;
     if (!isRubricScoringEnabled(rubric)) continue;
 
-    const occurrenceOnly = rubric.scoringMode === "occurrence";
-    const effectiveUserWeight = occurrenceOnly ? 1 : userWeight;
-    const multiplier = occurrenceOnly ? 1 : (weightMultiplier || 1);
+    const { caseImportance, multiplier } = resolveWeights(selected, sensitivityMode);
 
     for (const [remedy, remedyGrade] of Object.entries(rubric.remedies)) {
       if (remedyGrade < 0) continue;
       const current = remedyTotals.get(remedy) || { coverage: 0, score: 0 };
       current.coverage += 1;
-      current.score += remedyGrade * effectiveUserWeight * multiplier;
+      current.score += remedyGrade * caseImportance * multiplier;
       remedyTotals.set(remedy, current);
     }
   }
@@ -41,6 +71,34 @@ export function calculateWorkbenchRemedyRankings(
       || right.coverage - left.coverage
       || left.remedy.localeCompare(right.remedy)
     );
+}
+
+export function calculateWorkbenchRemedyContributions(
+  selectedRubrics: SelectedWorkbenchRubric[],
+  remedy: string,
+  sensitivityMode: WorkbenchSensitivityMode = "current",
+): WorkbenchRemedyContribution[] {
+  return selectedRubrics.map((selected) => {
+    const { rubric } = selected;
+    const scoringEnabled = isRubricScoringEnabled(rubric);
+    const occurrenceOnly = rubric.scoringMode === "occurrence";
+    const sourceGrade = rubric.remedies[remedy] || 0;
+    const { caseImportance, multiplier } = resolveWeights(selected, sensitivityMode);
+    return {
+      rubricId: rubric.id,
+      rubricName: rubric.name,
+      chapter: rubric.chapter,
+      source: rubric.source,
+      sourceGrade,
+      caseImportance,
+      multiplier,
+      contribution: scoringEnabled ? sourceGrade * caseImportance * multiplier : 0,
+      covered: sourceGrade > 0,
+      scoringEnabled,
+      occurrenceOnly,
+      citation: rubric.citation,
+    };
+  });
 }
 
 export function getTopWorkbenchRemedyColumns(
