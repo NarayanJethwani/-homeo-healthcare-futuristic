@@ -175,6 +175,7 @@ export interface AIIntakeMappingResult {
   }>;
   missingClarificationQuestions: string[];
   repertoryScore: number;
+  rubrics?: RepertoryRubric[];
 }
 
 export interface ScoringResult {
