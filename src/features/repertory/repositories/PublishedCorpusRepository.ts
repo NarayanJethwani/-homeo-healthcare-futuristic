@@ -1,6 +1,44 @@
 import path from 'path';
 import crypto from 'crypto';
 import { RepertoryRubric, RepertoryPublishedCorpusManifest } from '../types';
+import { JETHWANI_REPERTORY_DATA } from '@/lib/repertoryData';
+
+function convertJethwaniToRubric(item: any): RepertoryRubric {
+  const categoryMap: Record<string, string> = {
+    "Section A": "Mental & Emotional",
+    "Section B": "Constitutional Generals",
+    "Section C": "Etiology / Causation",
+    "Section D": "Modern Clinical Conditions"
+  };
+  const category = categoryMap[item.section] || "Generalities";
+  const nameTokens = (item.name || "").split(/[,\/]/).map((t: string) => t.trim());
+
+  return {
+    rubricId: item.id,
+    id: item.id,
+    title: item.name,
+    displayText: item.name,
+    classicalWording: item.name,
+    plainLanguageMeaning: item.name,
+    category,
+    organSystem: category === "Mental & Emotional" ? "Mind" : "General",
+    severity: 5,
+    frequency: "frequent",
+    impact: "moderate",
+    synonyms: nameTokens,
+    clinicalKeywords: nameTokens,
+    patientExpressions: [item.name, ...nameTokens],
+    relatedRemedies: Object.entries(item.remedies || {}).map(([rem, grade]) => ({
+      remedyId: rem,
+      remedyName: rem,
+      grade: Number(grade)
+    })),
+    source: "Dr. Jethwani Governed Clinical Corpus",
+    sourceId: "JethwaniCorpus",
+    author: "Dr. Jethwani",
+    editorialStatus: "published"
+  };
+}
 import { getRuntimeEnvironment } from '../config/runtimeEnv';
 import { getActiveCorpusPointerRepository } from './ActiveCorpusPointerRepository';
 import {
@@ -386,6 +424,11 @@ export class PublishedCorpusRepository {
 
   // Public Query Interfaces
   static async getRubricById(id: string): Promise<RepertoryRubric | null> {
+    const jethwaniMatch = JETHWANI_REPERTORY_DATA.find(j => j.id === id);
+    if (jethwaniMatch) {
+      return convertJethwaniToRubric(jethwaniMatch);
+    }
+
     await this.ensureActiveCorpusLoaded();
     try {
       const locations = await this.loadLocationShard(id);
@@ -406,8 +449,17 @@ export class PublishedCorpusRepository {
     organSystem?: string;
     sourceId?: string;
   }): Promise<RepertoryRubric[]> {
+    const jethwaniConverted = JETHWANI_REPERTORY_DATA.map(convertJethwaniToRubric);
+    let jethwaniFiltered = jethwaniConverted;
+    if (filters?.category && filters.category !== 'All') {
+      jethwaniFiltered = jethwaniFiltered.filter(r => r.category === filters.category);
+    }
+    if (filters?.sourceId && filters.sourceId !== 'All' && filters.sourceId !== 'JethwaniCorpus') {
+      jethwaniFiltered = [];
+    }
+
     await this.ensureActiveCorpusLoaded();
-    if (!this.cachedManifest) return [];
+    if (!this.cachedManifest) return jethwaniFiltered;
 
     // Filtered loading using source index or by reading relevant chapters
     const sources = this.cachedManifest.sourceIds;
@@ -433,17 +485,25 @@ export class PublishedCorpusRepository {
               filtered = filtered.filter(r => r.category === filters.category);
             }
             results.push(...filtered);
-            if (results.length >= 100) {
-              return results.slice(0, 100); // Bounded page size for initial loads
+            if (results.length >= 200) {
+              break;
             }
           }
+          if (results.length >= 200) break;
         }
       } catch (err) {
         console.warn(`Failed to read chapters list for source ${srcId}:`, err);
       }
     }
 
-    return results.slice(0, 100);
+    // Merge loaded corpus rubrics with Jethwani rubrics
+    const combined = [...results, ...jethwaniFiltered];
+    const seen = new Set<string>();
+    return combined.filter(r => {
+      if (!r.rubricId || seen.has(r.rubricId)) return false;
+      seen.add(r.rubricId);
+      return true;
+    });
   }
 
   static async searchRubrics(query: string, filters?: {
