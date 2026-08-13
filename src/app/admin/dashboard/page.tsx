@@ -1804,6 +1804,8 @@ export default function AdminDashboard() {
     if (!focusedClassicalZone) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    document.body.classList.add("has-focused-zone");
+    document.documentElement.classList.add("has-focused-zone");
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") setFocusedClassicalZone(null);
     };
@@ -1811,6 +1813,8 @@ export default function AdminDashboard() {
     return () => {
       document.removeEventListener("keydown", closeOnEscape);
       document.body.style.overflow = previousOverflow;
+      document.body.classList.remove("has-focused-zone");
+      document.documentElement.classList.remove("has-focused-zone");
     };
   }, [focusedClassicalZone]);
 
