@@ -2402,7 +2402,7 @@ html.lenis, html.lenis body {
 .remedy-score-trace__summary strong { display: block; margin-top: 0.1rem; color: #0f766e; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.78rem; }
 
 .remedy-score-trace__table-wrap {
-  max-height: 290px;
+  max-height: 600px;
   overflow: auto;
   padding: 0 0.85rem 0.85rem;
 }
@@ -3276,6 +3276,9 @@ body.has-focused-zone .admin-dashboard-shell > div,
 .ckw-shell.is-zone-vectors-focused > .ckw-full-span > div {
   width: 100% !important;
   min-height: calc(100dvh - 2.5rem) !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
 }
 
@@ -3285,7 +3288,14 @@ body.has-focused-zone .admin-dashboard-shell > div,
 }
 
 .ckw-shell.is-zone-analysis-focused .repertory-matrix-scroll {
-  max-height: calc(100dvh - 12rem) !important;
+  max-height: none !important;
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+}
+
+.ckw-shell.is-zone-analysis-focused .remedy-score-trace__table-wrap {
+  max-height: none !important;
+  overflow: visible !important;
 }
 
 @media (max-width: 639px) {
