@@ -1,0 +1,12 @@
+# Generated local build output is recreated by Vercel and must not be uploaded.
+.next
+.next/**
+
+# Local development dependencies and caches are installed or generated remotely.
+node_modules
+node_modules/**
+.git
+.git/**
+coverage
+tmp
+*.log
