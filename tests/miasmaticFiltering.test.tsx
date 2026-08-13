@@ -255,7 +255,7 @@ describe('Sprint 28D Miasmatic Filtering & Projection Read Model Tests', () => {
     );
 
     // Wait for rubrics to load
-    await screen.findByText('Skin; eczema; itching');
+    await screen.findAllByText('Skin; eczema; itching');
 
     // Capture initial call counts of initialization methods
     const initialGetRubrics = mockGetRubrics.mock.calls.length;
@@ -361,7 +361,7 @@ describe('Sprint 28D Miasmatic Filtering & Projection Read Model Tests', () => {
     );
 
     // Wait for rubrics to load
-    await screen.findByText('Skin; eczema; itching');
+    await screen.findAllByText('Skin; eczema; itching');
 
     // Add a rubric to workbench to trigger clinical analysis
     const eczemaToggles = await screen.findAllByTitle('Add to workbench');

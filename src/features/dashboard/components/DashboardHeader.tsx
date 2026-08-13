@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Search, Plus, Bell, MessageSquare, User, LogOut, Settings, FileText, IndianRupee, Send, Sparkles, Activity } from "lucide-react";
+import Link from "next/link";
+import { Search, Plus, Bell, MessageSquare, User, LogOut, Settings, FileText, IndianRupee, Send, Sparkles, Activity, Video } from "lucide-react";
 import KeyboardShortcutsModal from "./KeyboardShortcutsModal";
 
 interface DashboardHeaderProps {
@@ -10,6 +11,7 @@ interface DashboardHeaderProps {
   onTriggerQuickAction: (actionKey: string) => void;
   onOpenSearch: () => void;
   onOpenDisplayDrawer: () => void;
+  consultationHref: string;
   reduceMotion?: boolean;
   telemetryLogs?: any[];
   onOpenDiagnostics?: () => void;
@@ -21,6 +23,7 @@ export default function DashboardHeader({
   onTriggerQuickAction,
   onOpenSearch,
   onOpenDisplayDrawer,
+  consultationHref,
   reduceMotion = false,
   telemetryLogs = [],
   onOpenDiagnostics,
@@ -111,7 +114,17 @@ export default function DashboardHeader({
       </div>
 
       {/* Actions & Profile Controls */}
-      <div className="flex items-center gap-5 sm:gap-6">
+      <div className="flex items-center gap-3 sm:gap-4">
+        {/* Quick Consultation Workspace Access Button */}
+        <Link
+          href={consultationHref}
+          className="px-3 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-purple-900/20 shrink-0"
+          title="Launch 4-Panel Clinical Consultation Workspace"
+        >
+          <Video className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Consultation</span>
+        </Link>
+
         {/* Quick Actions Dropdown */}
         <div className="relative">
           <button
@@ -135,6 +148,7 @@ export default function DashboardHeader({
                 role="menu"
               >
                 {[
+                  { key: "clinical-consultation", label: "Start Consultation", icon: Video },
                   { key: "new-patient", label: "New Patient", icon: User },
                   { key: "ai-intake", label: "AI Intake", icon: Sparkles },
                   { key: "upload-report", label: "Upload Report", icon: FileText },
@@ -148,7 +162,11 @@ export default function DashboardHeader({
                     <button
                       key={act.key}
                       onClick={() => {
-                        onTriggerQuickAction(act.key);
+                        if (act.key === "clinical-consultation") {
+                          window.location.href = consultationHref;
+                        } else {
+                          onTriggerQuickAction(act.key);
+                        }
                         setIsQuickActionsOpen(false);
                       }}
                       className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-655 hover:bg-slate-50 dark:hover:bg-slate-800 dark:text-slate-350 hover:text-slate-800 dark:hover:text-white transition-all cursor-pointer border-none bg-transparent flex items-center gap-2.5 focus-visible:ring-2 focus-visible:ring-teal-500 outline-none"

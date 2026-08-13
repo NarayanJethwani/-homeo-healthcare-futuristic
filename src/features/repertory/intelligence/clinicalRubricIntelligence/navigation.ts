@@ -75,10 +75,12 @@ export function suggestNearbyRubrics(index: RubricHierarchyIndex, rubricId: stri
     });
   };
 
+  // Explicit source-authored links take precedence over inferred hierarchy links.
+  // This also preserves their explanation when a referenced rubric is a sibling.
+  node.crossReferenceIds.forEach((crossReferenceId) => addSuggestion(crossReferenceId, "nearby", "Explicit cross-reference"));
   addSuggestion(node.parentId, "parent", "Move one level up");
   node.childIds.forEach((childId) => addSuggestion(childId, "child", "Move one level deeper"));
   node.siblingIds.forEach((siblingId) => addSuggestion(siblingId, "sibling", "Same parent rubric"));
-  node.crossReferenceIds.forEach((crossReferenceId) => addSuggestion(crossReferenceId, "nearby", "Explicit cross-reference"));
 
   return suggestions.slice(0, limit);
 }

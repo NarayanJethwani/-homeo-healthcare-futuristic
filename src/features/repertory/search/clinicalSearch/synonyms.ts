@@ -61,7 +61,14 @@ export function buildSynonymMap(dictionary: SynonymDictionary = DEFAULT_CLINICAL
 
   Object.entries(dictionary).forEach(([term, synonyms]) => {
     const termTokens = uniqueTokens(term);
-    const synonymTokens = synonyms.flatMap((synonym) => uniqueTokens(synonym));
+    const synonymTokens = synonyms.flatMap((synonym) => {
+      const tokens = uniqueTokens(synonym);
+
+      // A phrase such as "loose stool" is clinically meaningful as a unit. Flattening
+      // it into a token synonym makes the generic word "stool" match opposing concepts
+      // such as constipation when the user searches for "diarrhoea".
+      return tokens.length === 1 ? tokens : [];
+    });
 
     termTokens.forEach((termToken) => {
       synonymTokens.forEach((synonymToken) => {

@@ -6,6 +6,7 @@ import { readerPreferenceStorage } from "../src/features/materia-medica/services
 import { LegacyMateriaMedicaContentAdapter } from "../src/features/materia-medica/components/reader/LegacyMateriaMedicaContentAdapter";
 import { MATERIA_MEDICA_REGISTRY } from "../src/features/materia-medica/data/registry";
 import { getMachineChunkUrl } from "../src/features/materia-medica/services/MachineValidatedCorpusRepository";
+import { findRemedyHeadingIndex } from "../src/features/repertory/components/remedyReaderResolution";
 
 // Mock localStorage for the test runner environment
 const mockLocalStorage: Record<string, string> = {};
@@ -67,6 +68,22 @@ async function runTests() {
   // 1. The governed reader is the production default
   await test("Test 1 - Governed V2 reader is the production default", () => {
     assert.strictEqual(featureFlags.MATERIA_MEDICA_READER_V2, true);
+  });
+
+  await test("Bell abbreviation resolves Belladonna instead of Bellis perennis", () => {
+    const headings = ["BELLIS PERENNIS", "BELLADONNA", "BELLADONNA - RELATIONSHIPS"];
+    assert.strictEqual(
+      findRemedyHeadingIndex(headings, { abbreviation: "Bell", fullName: "Belladonna" }),
+      1,
+    );
+  });
+
+  await test("Bellis perennis remains independently addressable", () => {
+    const headings = ["BELLADONNA", "BELLIS PERENNIS"];
+    assert.strictEqual(
+      findRemedyHeadingIndex(headings, { abbreviation: "Bell-p", fullName: "Bellis Perennis" }),
+      1,
+    );
   });
 
   // 2. Feature flag true renders the V2 reader shell
