@@ -3207,12 +3207,19 @@ html.has-focused-zone {
   overflow: hidden !important;
 }
 
+body.has-focused-zone aside,
+html.has-focused-zone aside,
+body.has-focused-zone header,
+html.has-focused-zone header,
+body.has-focused-zone .admin-dashboard-shell > aside,
 .admin-dashboard-shell:has(.is-zone-focused) > aside,
+.admin-dashboard-shell:has(.is-zone-focused) aside,
 .admin-dashboard-shell:has(.is-zone-focused) header,
 .admin-dashboard-shell:has(.is-zone-focused) .system-status-strip {
   display: none !important;
 }
 
+body.has-focused-zone .admin-dashboard-shell > div,
 .admin-dashboard-shell:has(.is-zone-focused) > div {
   overflow: visible !important;
   contain: none !important;
