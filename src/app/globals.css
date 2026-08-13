@@ -3282,20 +3282,43 @@ body.has-focused-zone .admin-dashboard-shell > div,
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
 }
 
+.repertory-matrix-scroll {
+  max-height: 600px;
+  overflow: auto !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(13, 148, 136, 0.45) rgba(226, 232, 240, 0.65);
+}
+
+.repertory-matrix-scroll table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background-color: #f8fafc !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.remedy-score-trace__table-wrap table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background-color: #f8fafc !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
 .ckw-shell.is-zone-browser-focused .selected-rubrics-grid {
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
   max-height: none !important;
 }
 
 .ckw-shell.is-zone-analysis-focused .repertory-matrix-scroll {
-  max-height: none !important;
-  overflow-x: auto !important;
-  overflow-y: visible !important;
+  max-height: calc(100vh - 280px) !important;
+  min-height: 380px !important;
+  overflow: auto !important;
 }
 
 .ckw-shell.is-zone-analysis-focused .remedy-score-trace__table-wrap {
-  max-height: none !important;
-  overflow: visible !important;
+  max-height: 450px !important;
+  overflow: auto !important;
 }
 
 @media (max-width: 639px) {

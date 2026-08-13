@@ -15572,7 +15572,7 @@ ${err.message || err}`);
                             Scroll horizontally to compare additional remedies
                           </span>
                         </div>
-                        <div className="repertory-matrix-scroll max-w-full overflow-x-auto overscroll-x-contain rounded-2xl border border-slate-200/60 bg-white shadow-md">
+                        <div data-lenis-prevent className="repertory-matrix-scroll max-w-full overflow-x-auto overscroll-x-contain rounded-2xl border border-slate-200/60 bg-white shadow-md">
                         <table className="w-max min-w-full border-collapse text-left text-xs">
                           <thead>
                             <tr className="bg-slate-50/80 border-b border-slate-200 text-[9px] font-black uppercase text-slate-500 tracking-wider">
