@@ -15,7 +15,7 @@ function jsonResponse(body: Record<string, unknown>, status = 200) {
 function cookieOptions() {
   return {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "strict" as const,
     path: "/",
     maxAge: SESSION_MAX_AGE_SECONDS,
