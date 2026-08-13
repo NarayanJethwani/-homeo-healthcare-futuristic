@@ -3896,3 +3896,270 @@ html.lenis, html.lenis body {
     opacity: 0.48;
   }
 }
+
+/* Store-specific accessible color system.
+   This scope protects the public care page from the dashboard's inverted slate scale. */
+.store-care-page {
+  --store-page: #f2f7f4;
+  --store-surface: #ffffff;
+  --store-surface-soft: #eaf3ef;
+  --store-surface-raised: #f8fbfa;
+  --store-border: #bfd1ca;
+  --store-border-strong: #8eaaa0;
+  --store-text: #10231d;
+  --store-copy: #344b43;
+  --store-muted: #53675f;
+  --store-accent: #08786b;
+  --store-accent-strong: #065f56;
+  --store-accent-soft: #dff5ee;
+  --store-inverse: #10231d;
+  --store-inverse-text: #f7fffc;
+  --store-info-bg: #e7f3f8;
+  --store-info-border: #9bc5d7;
+  --store-info-text: #164e63;
+  --store-warning-bg: #fff5dc;
+  --store-warning-border: #e5bd65;
+  --store-warning-text: #713f12;
+  --store-danger-bg: #fff0f1;
+  --store-danger-border: #e9a6ad;
+  --store-danger-text: #881337;
+  color: var(--store-text);
+  background:
+    radial-gradient(circle at 8% 4%, rgba(8, 120, 107, 0.08), transparent 24rem),
+    var(--store-page);
+}
+
+.dark .store-care-page {
+  --store-page: #07110e;
+  --store-surface: #0f1d18;
+  --store-surface-soft: #142720;
+  --store-surface-raised: #192f27;
+  --store-border: #315047;
+  --store-border-strong: #497065;
+  --store-text: #f2faf6;
+  --store-copy: #c4d8d0;
+  --store-muted: #a5bbb2;
+  --store-accent: #5eead4;
+  --store-accent-strong: #99f6e4;
+  --store-accent-soft: #123d34;
+  --store-inverse: #173a32;
+  --store-inverse-text: #f4fffb;
+  --store-info-bg: #102d39;
+  --store-info-border: #28566a;
+  --store-info-text: #bae6fd;
+  --store-warning-bg: #35270f;
+  --store-warning-border: #725723;
+  --store-warning-text: #fde68a;
+  --store-danger-bg: #36171d;
+  --store-danger-border: #74323f;
+  --store-danger-text: #fecdd3;
+  color-scheme: dark;
+  background:
+    radial-gradient(circle at 8% 4%, rgba(45, 212, 191, 0.09), transparent 26rem),
+    var(--store-page);
+}
+
+.store-care-page [class~="text-[#1A2421]"],
+.store-care-page [class~="text-slate-800"],
+.store-care-page [class~="text-slate-900"] {
+  color: var(--store-text) !important;
+}
+
+.store-care-page [class~="text-slate-600"],
+.store-care-page [class~="text-slate-700"] {
+  color: var(--store-copy) !important;
+}
+
+.store-care-page [class~="text-slate-400"],
+.store-care-page [class~="text-slate-500"] {
+  color: var(--store-muted) !important;
+}
+
+.store-care-page .text-mint,
+.store-care-page .text-mint-dark {
+  color: var(--store-accent) !important;
+}
+
+.dark .store-care-page .text-teal-700,
+.dark .store-care-page .text-emerald-700 {
+  color: #6ee7c2 !important;
+}
+
+.dark .store-care-page .text-sky-600,
+.dark .store-care-page .text-sky-700,
+.dark .store-care-page .text-sky-800,
+.dark .store-care-page .text-sky-900 {
+  color: #7dd3fc !important;
+}
+
+.dark .store-care-page .text-violet-700 {
+  color: #c4b5fd !important;
+}
+
+.dark .store-care-page .text-amber-700,
+.dark .store-care-page .text-amber-800,
+.dark .store-care-page .text-amber-900 {
+  color: var(--store-warning-text) !important;
+}
+
+.dark .store-care-page .text-rose-600,
+.dark .store-care-page .text-rose-700,
+.dark .store-care-page .text-rose-800,
+.dark .store-care-page .text-rose-900,
+.dark .store-care-page .text-rose-950 {
+  color: var(--store-danger-text) !important;
+}
+
+.store-care-page .bg-mint {
+  background-color: #08786b !important;
+}
+
+.dark .store-care-page .bg-mint {
+  background-color: #0f766e !important;
+}
+
+.store-care-page [class~="bg-white"],
+.store-care-page [class~="bg-white/90"],
+.store-care-page [class~="bg-white/85"],
+.store-care-page [class~="bg-white/80"],
+.store-care-page [class~="bg-white/75"],
+.store-care-page [class~="bg-white/70"],
+.store-care-page [class~="bg-white/60"],
+.store-care-page [class~="bg-white/55"] {
+  background-color: var(--store-surface) !important;
+}
+
+.store-care-page [class~="bg-slate-50/70"],
+.store-care-page [class~="bg-slate-50"],
+.store-care-page [class~="bg-slate-100"] {
+  background-color: var(--store-surface-soft) !important;
+}
+
+.store-care-page [class~="border-slate-100"],
+.store-care-page [class~="border-slate-200"],
+.store-care-page [class~="border-slate-200/80"],
+.store-care-page [class~="border-slate-200/70"],
+.store-care-page [class~="border-slate-200/60"] {
+  border-color: var(--store-border) !important;
+}
+
+.store-care-page [class~="bg-[#1A2421]"] {
+  color: var(--store-inverse-text) !important;
+  background-color: var(--store-inverse) !important;
+}
+
+.store-care-page [class~="bg-mint/10"],
+.store-care-page [class~="bg-mint/[0.07]"],
+.store-care-page [class~="bg-mint/[0.06]"],
+.store-care-page [class~="bg-mint/5"] {
+  background-color: var(--store-accent-soft) !important;
+}
+
+.dark .store-care-page [class~="bg-teal-50/90"],
+.dark .store-care-page [class~="bg-sky-50/90"],
+.dark .store-care-page [class~="bg-violet-50/90"] {
+  background-color: var(--store-surface-raised) !important;
+}
+
+.store-care-page [class~="bg-sky-50/60"] {
+  background-color: var(--store-info-bg) !important;
+  border-color: var(--store-info-border) !important;
+  color: var(--store-info-text) !important;
+}
+
+.store-care-page [class~="bg-amber-50/70"] {
+  background-color: var(--store-warning-bg) !important;
+  border-color: var(--store-warning-border) !important;
+  color: var(--store-warning-text) !important;
+}
+
+.store-care-page [class~="bg-rose-50/70"],
+.store-care-page [class~="bg-rose-50"] {
+  background-color: var(--store-danger-bg) !important;
+  border-color: var(--store-danger-border) !important;
+  color: var(--store-danger-text) !important;
+}
+
+.store-care-page button,
+.store-care-page a,
+.store-care-page input,
+.store-care-page select,
+.store-care-page textarea {
+  outline-color: var(--store-accent);
+}
+
+.store-care-page button:focus-visible,
+.store-care-page a:focus-visible,
+.store-care-page input:focus-visible,
+.store-care-page select:focus-visible,
+.store-care-page textarea:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--store-accent) 75%, transparent);
+  outline-offset: 3px;
+}
+
+.dark .store-care-page input,
+.dark .store-care-page select,
+.dark .store-care-page textarea {
+  background-color: var(--store-surface-soft) !important;
+  border-color: var(--store-border-strong) !important;
+  color: var(--store-text) !important;
+}
+
+.dark .store-care-page input::placeholder,
+.dark .store-care-page textarea::placeholder {
+  color: var(--store-muted);
+  opacity: 1;
+}
+
+.store-care-page .health-concern-card {
+  border-color: var(--store-border);
+  background-color: var(--store-surface);
+  box-shadow: 0 10px 32px rgba(20, 55, 44, 0.06);
+}
+
+.store-care-page .health-concern-card:hover {
+  border-color: color-mix(in srgb, var(--concern-accent) 60%, var(--store-border));
+  box-shadow: 0 18px 45px color-mix(in srgb, var(--concern-accent) 12%, transparent);
+}
+
+.store-care-page .health-concern-card[data-selected="true"] {
+  border-color: var(--concern-accent);
+  background-color: color-mix(in srgb, var(--concern-accent) 7%, var(--store-surface));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--concern-accent) 22%, transparent), 0 18px 45px color-mix(in srgb, var(--concern-accent) 14%, transparent);
+}
+
+.store-care-page .health-concern-icon,
+.store-care-page .health-concern-chip {
+  color: color-mix(in srgb, var(--concern-accent) 88%, #10231d);
+  background-color: color-mix(in srgb, var(--concern-accent) 10%, white);
+}
+
+.store-care-page .health-concern-check {
+  color: var(--concern-accent);
+}
+
+.dark .store-care-page .health-concern-card {
+  box-shadow: 0 12px 38px rgba(0, 0, 0, 0.22);
+}
+
+.dark .store-care-page .health-concern-card[data-selected="true"] {
+  background-color: color-mix(in srgb, var(--concern-accent) 12%, var(--store-surface));
+}
+
+.dark .store-care-page .health-concern-icon,
+.dark .store-care-page .health-concern-chip {
+  color: color-mix(in srgb, var(--concern-accent) 45%, white);
+  background-color: color-mix(in srgb, var(--concern-accent) 18%, var(--store-surface-soft));
+}
+
+.store-care-page .health-concern-dialog {
+  color: var(--store-text);
+  background-color: var(--store-surface);
+  scrollbar-color: var(--store-border-strong) transparent;
+}
+
+@media (max-width: 640px) {
+  .store-care-page .health-concerns-hero img {
+    opacity: 0.48;
+  }
+}
