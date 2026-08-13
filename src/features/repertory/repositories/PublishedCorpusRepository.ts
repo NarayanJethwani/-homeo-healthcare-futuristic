@@ -1,6 +1,58 @@
 import path from 'path';
 import crypto from 'crypto';
-import { RepertoryRubric, RepertoryPublishedCorpusManifest } from '../types';
+import { RepertoryRubric, RepertoryPublishedCorpusManifest, RubricCategory, GradedRemedy } from '../types';
+import { JETHWANI_REPERTORY_DATA } from '@/lib/repertoryData';
+
+function convertJethwaniToRubric(item: any): RepertoryRubric {
+  const categoryMap: Record<string, RubricCategory> = {
+    "Section A": "Mental & Emotional",
+    "Section B": "Constitutional Generals",
+    "Section C": "Etiology / Causation",
+    "Section D": "Modern Clinical Conditions"
+  };
+  const category: RubricCategory = categoryMap[item.section] || "Constitutional Generals";
+  const nameTokens = (item.name || "").split(/[,\/]/).map((t: string) => t.trim());
+
+  const relatedRemedies: GradedRemedy[] = Object.entries(item.remedies || {}).map(([rem, grade]) => ({
+    remedyId: rem,
+    remedyName: rem,
+    grade: Math.min(4, Math.max(1, Number(grade))) as 1 | 2 | 3 | 4,
+    confidence: 1.0,
+    keynoteReason: `Keynote indicator for ${item.name}`,
+    sourceReference: item.researchCitation?.source || "Dr. Jethwani Clinical Repertory Data",
+    clinicalExperienceWeight: 1.0
+  }));
+
+  return {
+    rubricId: item.id,
+    id: item.id,
+    title: item.name,
+    displayText: item.name,
+    classicalWording: item.name,
+    plainLanguageMeaning: item.name,
+    category,
+    organSystem: category === "Mental & Emotional" ? "Mind" : "General",
+    intensityScale: 5,
+    polarity: 'positive',
+    synonyms: nameTokens,
+    clinicalKeywords: nameTokens,
+    patientExpressions: [item.name, ...nameTokens],
+    relatedSymptoms: [],
+    relatedDiseases: [],
+    miasmaticWeight: { Psora: 0.5, Sycosis: 0.3, Syphilis: 0.1, Tubercular: 0.1, Cancerinic: 0.0 },
+    modalities: [],
+    aggravations: [],
+    ameliorations: [],
+    source: "Dr. Jethwani Governed Clinical Corpus",
+    sourceId: "JethwaniCorpus",
+    confidence: 1.0,
+    author: "Dr. Jethwani",
+    reviewer: "Dr. Jethwani Clinical Board",
+    lastUpdated: new Date().toISOString(),
+    relatedRemedies,
+    editorialStatus: "published"
+  } as RepertoryRubric;
+}
 import { getRuntimeEnvironment } from '../config/runtimeEnv';
 import { getActiveCorpusPointerRepository } from './ActiveCorpusPointerRepository';
 import {
@@ -386,6 +438,11 @@ export class PublishedCorpusRepository {
 
   // Public Query Interfaces
   static async getRubricById(id: string): Promise<RepertoryRubric | null> {
+    const jethwaniMatch = JETHWANI_REPERTORY_DATA.find(j => j.id === id);
+    if (jethwaniMatch) {
+      return convertJethwaniToRubric(jethwaniMatch);
+    }
+
     await this.ensureActiveCorpusLoaded();
     try {
       const locations = await this.loadLocationShard(id);
@@ -406,8 +463,17 @@ export class PublishedCorpusRepository {
     organSystem?: string;
     sourceId?: string;
   }): Promise<RepertoryRubric[]> {
+    const jethwaniConverted = JETHWANI_REPERTORY_DATA.map(convertJethwaniToRubric);
+    let jethwaniFiltered = jethwaniConverted;
+    if (filters?.category && filters.category !== 'All') {
+      jethwaniFiltered = jethwaniFiltered.filter(r => r.category === filters.category);
+    }
+    if (filters?.sourceId && filters.sourceId !== 'All' && filters.sourceId !== 'JethwaniCorpus') {
+      jethwaniFiltered = [];
+    }
+
     await this.ensureActiveCorpusLoaded();
-    if (!this.cachedManifest) return [];
+    if (!this.cachedManifest) return jethwaniFiltered;
 
     // Filtered loading using source index or by reading relevant chapters
     const sources = this.cachedManifest.sourceIds;
@@ -433,17 +499,25 @@ export class PublishedCorpusRepository {
               filtered = filtered.filter(r => r.category === filters.category);
             }
             results.push(...filtered);
-            if (results.length >= 100) {
-              return results.slice(0, 100); // Bounded page size for initial loads
+            if (results.length >= 200) {
+              break;
             }
           }
+          if (results.length >= 200) break;
         }
       } catch (err) {
         console.warn(`Failed to read chapters list for source ${srcId}:`, err);
       }
     }
 
-    return results.slice(0, 100);
+    // Merge loaded corpus rubrics with Jethwani rubrics
+    const combined = [...results, ...jethwaniFiltered];
+    const seen = new Set<string>();
+    return combined.filter(r => {
+      if (!r.rubricId || seen.has(r.rubricId)) return false;
+      seen.add(r.rubricId);
+      return true;
+    });
   }
 
   static async searchRubrics(query: string, filters?: {

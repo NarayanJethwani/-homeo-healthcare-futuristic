@@ -501,7 +501,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
     const general: any[] = [];
 
     selectedRubrics.forEach(sr => {
-      const rub = rubrics.find(r => r.rubricId === sr.rubricId);
+      const rub = rubrics.find(r => r.rubricId === sr.rubricId || (r as any).id === sr.rubricId);
       if (!rub) return;
 
       const titleLower = rub.title.toLowerCase();

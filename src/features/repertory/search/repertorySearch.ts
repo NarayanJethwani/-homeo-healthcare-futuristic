@@ -203,10 +203,16 @@ export class RepertorySearch {
     if (!intakeText.trim()) return result;
 
     // Split text into phrases/sentences
-    const phrases = intakeText
+    const rawPhrases = intakeText
       .split(/[.,;\n]+/)
       .map(p => p.trim())
-      .filter(p => p.length > 5);
+      .filter(p => p.length >= 2);
+
+    const phrases = [...rawPhrases];
+    if (phrases.length === 1 && phrases[0].includes(' ')) {
+      const words = phrases[0].split(/\s+/).map(w => w.trim()).filter(w => w.length >= 3);
+      phrases.push(...words);
+    }
 
     const rubricMatchesMap = new Map<string, AIIntakeMatch>();
 
@@ -214,8 +220,10 @@ export class RepertorySearch {
       const searchResults = await this.searchRubrics(phrase);
       if (searchResults.length > 0) {
         const topScore = searchResults[0].score;
-        // Keep all matches that are close to the top match and meet threshold
-        const validHits = searchResults.filter(hit => hit.score >= 35 && hit.score >= topScore * 0.5);
+        // Keep top 3 matches per phrase that meet score threshold
+        const validHits = searchResults
+          .filter(hit => hit.score >= 30 && hit.score >= topScore * 0.6)
+          .slice(0, 3);
 
         for (const hit of validHits) {
           const rubricId = hit.rubric.rubricId;
