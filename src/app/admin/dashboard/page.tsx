@@ -4,6 +4,7 @@ import { CARE_LEVELS_DETAILS, PRIORITY_ACUTE_SUPPORT_WEEKLY_PRICE, calculateCont
 import { INDIA_STATES, findIndiaCity, findIndiaCityByKey, getIndiaCityOptions, makeIndiaLocationKey } from "@/lib/indiaLocations";
 
 import { useState, useEffect, useRef, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -1798,7 +1799,12 @@ export default function AdminDashboard() {
   const [expandedRubricGroupKey, setExpandedRubricGroupKey] = useState<string | null>(null);
   const [workspaceRemedy, setWorkspaceRemedy] = useState<string | null>(null);
   const [focusedClassicalZone, setFocusedClassicalZone] = useState<"browser" | "analysis" | "vectors" | null>(null);
+  const [isClientMounted, setIsClientMounted] = useState(false);
   const clinicalWorkspaceLayout = useClinicalWorkspaceLayout();
+
+  useEffect(() => {
+    setIsClientMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!focusedClassicalZone) return;
