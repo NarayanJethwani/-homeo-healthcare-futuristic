@@ -1797,7 +1797,22 @@ export default function AdminDashboard() {
   const [isRepertoryLoading, setIsRepertoryLoading] = useState(false);
   const [expandedRubricGroupKey, setExpandedRubricGroupKey] = useState<string | null>(null);
   const [workspaceRemedy, setWorkspaceRemedy] = useState<string | null>(null);
+  const [focusedClassicalZone, setFocusedClassicalZone] = useState<"browser" | "analysis" | "vectors" | null>(null);
   const clinicalWorkspaceLayout = useClinicalWorkspaceLayout();
+
+  useEffect(() => {
+    if (!focusedClassicalZone) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setFocusedClassicalZone(null);
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("keydown", closeOnEscape);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [focusedClassicalZone]);
 
   const repertoryCatalogItems = useMemo<RepertoryCatalogEntry[]>(
     () => repertoryCatalogBase.map((entry) => ({
@@ -14987,7 +15002,8 @@ ${err.message || err}`);
 
                 {repertoryWorkbenchMode === "classical" ? (
                   <div
-                    className={`classical-workbench-grid ckw-shell is-canvas-${clinicalWorkspaceLayout.canvasMode} w-full items-stretch pb-12 ${clinicalWorkspaceLayout.leftCollapsed ? "is-left-collapsed" : ""} ${clinicalWorkspaceLayout.rightCollapsed ? "is-right-collapsed" : ""}`}
+                    ref={clinicalWorkspaceLayout.workspaceRef}
+                    className={`classical-workbench-grid ckw-shell is-canvas-${clinicalWorkspaceLayout.canvasMode} w-full items-stretch pb-12 ${clinicalWorkspaceLayout.leftCollapsed ? "is-left-collapsed" : ""} ${clinicalWorkspaceLayout.rightCollapsed ? "is-right-collapsed" : ""} ${focusedClassicalZone ? `is-zone-focused is-zone-${focusedClassicalZone}-focused` : ""}`}
                     style={clinicalWorkspaceLayout.style}
                   >
                     <ClinicalKnowledgeWorkspaceControls
@@ -15114,12 +15130,24 @@ ${err.message || err}`);
                   
                   {/* ZONE 1: Rubrics & Case Intake */}
                   <div className="glass-panel rounded-3xl border-white/60 p-6 space-y-5 flex flex-col shadow-sm bg-white/60 backdrop-blur-md">
-                    <div className="flex items-center justify-between border-b border-slate-900/5 pb-3">
+                    <div className="flex items-center justify-between gap-3 border-b border-slate-900/5 pb-3">
                       <h3 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-2">
                         <Sliders className="w-4 h-4 text-mint animate-pulse" />
                         Zone 1: Rubric Browser
                       </h3>
-                      <span className="text-[9px] font-bold text-mint bg-mint/5 px-2 py-0.5 rounded-full border border-mint/10 font-mono">Active Workbench</span>
+                      <div className="flex flex-none items-center gap-2">
+                        <span className="hidden text-[9px] font-bold text-mint bg-mint/5 px-2 py-0.5 rounded-full border border-mint/10 font-mono sm:inline">Active Workbench</span>
+                        <button
+                          type="button"
+                          onClick={() => setFocusedClassicalZone(focusedClassicalZone === "browser" ? null : "browser")}
+                          className="ckw-zone-focus-button"
+                          title={focusedClassicalZone === "browser" ? "Restore all workbench zones" : "Open rubric browser full screen"}
+                          aria-label={focusedClassicalZone === "browser" ? "Restore workbench" : "Maximize rubric browser"}
+                        >
+                          {focusedClassicalZone === "browser" ? <Minimize2 /> : <Maximize2 />}
+                          <span>{focusedClassicalZone === "browser" ? "Restore" : "Expand"}</span>
+                        </button>
+                      </div>
                     </div>
                     <div className="grid grid-cols-1 gap-4">
                       {/* Chapter Select */}
@@ -15247,7 +15275,7 @@ ${err.message || err}`);
 
                       <div 
                         data-lenis-prevent
-                        className={`grid gap-2.5 flex-grow overflow-y-auto pr-1 ${selectedRubrics.length > 0 ? 'grid-cols-1 md:grid-cols-2 max-h-[420px]' : 'grid-cols-1 h-full'}`}
+                        className={`selected-rubrics-grid grid gap-2.5 flex-grow overflow-y-auto pr-1 ${selectedRubrics.length > 0 ? 'grid-cols-1 max-h-[420px]' : 'grid-cols-1 h-full'}`}
                       >
                         {selectedRubrics.length === 0 ? (
                           <div className="col-span-full h-full py-16 flex flex-col items-center justify-center text-center border border-dashed border-slate-200 rounded-2xl bg-slate-50/20">
@@ -15263,9 +15291,9 @@ ${err.message || err}`);
                             return (
                               <div
                                 key={rubric.id}
-                                className="flex items-center justify-between p-3.5 rounded-2xl border border-slate-200/50 bg-white/80 backdrop-blur-md shadow-sm hover:shadow-md hover:border-slate-300/80 transition-all duration-300"
+                                className="flex flex-wrap items-center justify-between gap-2 p-3.5 rounded-2xl border border-slate-200/50 bg-white/80 backdrop-blur-md shadow-sm hover:shadow-md hover:border-slate-300/80 transition-all duration-300"
                               >
-                                <div className="max-w-[50%] flex flex-col gap-1">
+                                <div className="min-w-[150px] flex-1 flex flex-col gap-1">
                                   <div className="flex items-center gap-1.5">
                                     <span className={`text-[8px] font-black border rounded px-1.5 py-0.5 flex-shrink-0 font-mono ${
                                       rubric.source === "kent"
@@ -15299,7 +15327,7 @@ ${err.message || err}`);
                                   <span className="text-xs font-bold text-slate-800 leading-snug" title={rubric.name}>{rubric.name}</span>
                                 </div>
                                 
-                                <div className="flex items-center gap-2">
+                                <div className="ml-auto flex max-w-full flex-wrap items-center justify-end gap-2">
                                   {/* Grade selection */}
                                   {occurrenceOnly && scoringEnabled ? (
                                     <span className="rounded-lg border border-amber-200 bg-amber-50 px-2 py-1 text-[8px] font-black uppercase tracking-wide text-amber-700">
@@ -15359,8 +15387,15 @@ ${err.message || err}`);
                 <button
                   type="button"
                   onPointerDown={clinicalWorkspaceLayout.beginLeftResize}
+                  onKeyDown={clinicalWorkspaceLayout.resizeLeftWithKeyboard}
                   onDoubleClick={clinicalWorkspaceLayout.resetLayout}
                   className="repertory-panel-resizer"
+                  role="separator"
+                  aria-orientation="vertical"
+                  aria-valuemin={280}
+                  aria-valuemax={760}
+                  aria-valuenow={clinicalWorkspaceLayout.leftWidth}
+                  tabIndex={0}
                   aria-label="Resize rubric browser and repertorization matrix"
                   title="Drag to resize the rubric browser"
                 >
@@ -15375,12 +15410,24 @@ ${err.message || err}`);
                   {/* ZONE 3: Repertorization Engine Matrix */}
                   <div className="repertory-zone-three-card glass-panel overflow-hidden rounded-3xl border-white/60 bg-white/60 p-4 shadow-sm backdrop-blur-md sm:p-5">
                     <div className="flex flex-col gap-3 border-b border-slate-900/5 pb-4">
-                      <div className="min-w-0">
-                        <h3 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-2 font-mono">
-                          <Activity className="w-4 h-4 text-mint" />
-                          Zone 3: Constitutional Repertorization Matrix
-                        </h3>
-                        <p className="text-[9px] text-slate-400 font-semibold mt-0.5">High-density Bloomberg Terminal remedy comparison</p>
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <h3 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-2 font-mono">
+                            <Activity className="w-4 h-4 text-mint" />
+                            Zone 3: Constitutional Repertorization Matrix
+                          </h3>
+                          <p className="text-[9px] text-slate-400 font-semibold mt-0.5">High-density Bloomberg Terminal remedy comparison</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setFocusedClassicalZone(focusedClassicalZone === "analysis" ? null : "analysis")}
+                          className="ckw-zone-focus-button"
+                          title={focusedClassicalZone === "analysis" ? "Restore all workbench zones" : "Open charts and score matrix full screen"}
+                          aria-label={focusedClassicalZone === "analysis" ? "Restore workbench" : "Maximize scoring analysis"}
+                        >
+                          {focusedClassicalZone === "analysis" ? <Minimize2 /> : <Maximize2 />}
+                          <span>{focusedClassicalZone === "analysis" ? "Restore" : "Expand"}</span>
+                        </button>
                       </div>
 
                       {selectedRubrics.length > 0 && (
@@ -15535,7 +15582,7 @@ ${err.message || err}`);
                                         e.stopPropagation();
                                         setRemedyColumns(remedyColumns.filter(c => c !== rem));
                                       }}
-                                      className="absolute top-1 right-1 w-4 h-4 rounded-full bg-slate-200 text-slate-500 hover:bg-rose-500 hover:text-white flex items-center justify-center text-[9px] font-bold cursor-pointer border-none shadow-2xs z-30 transition-all opacity-0 group-hover:opacity-100"
+                                      className="absolute top-1 right-1 flex h-5 w-5 cursor-pointer items-center justify-center rounded-full border-none bg-white text-[11px] font-black text-slate-600 opacity-100 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-rose-500 hover:text-white focus-visible:bg-rose-500 focus-visible:text-white"
                                       title={`Remove ${rem} from comparison`}
                                     >
                                       ×
@@ -15654,8 +15701,15 @@ ${err.message || err}`);
                 <button
                   type="button"
                   onPointerDown={clinicalWorkspaceLayout.beginRightResize}
+                  onKeyDown={clinicalWorkspaceLayout.resizeRightWithKeyboard}
                   onDoubleClick={clinicalWorkspaceLayout.resetLayout}
                   className="ckw-right-resizer"
+                  role="separator"
+                  aria-orientation="vertical"
+                  aria-valuemin={260}
+                  aria-valuemax={620}
+                  aria-valuenow={clinicalWorkspaceLayout.rightWidth}
+                  tabIndex={0}
                   aria-label="Resize repertorization canvas and clinical inspector"
                   title="Drag to resize the clinical inspector; double click to reset"
                 >
@@ -15684,12 +15738,24 @@ ${err.message || err}`);
                       <div className="absolute w-36 h-36 rounded-full bg-purple-500/5 -bottom-16 -right-16 blur-3xl animate-pulse" />
                     </div>
 
-                    <div className="flex items-center justify-between border-b border-white/5 pb-3 z-10">
+                    <div className="flex items-center justify-between gap-3 border-b border-white/5 pb-3 z-10">
                       <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2 font-mono">
                         <Activity className="w-4 h-4 text-mint animate-pulse" />
                         Zone 2: Constitutional Vector Analytics
                       </h3>
-                      <span className="text-[8px] font-bold text-[#14B8A6] bg-[#14B8A6]/10 px-2 py-0.5 rounded-full font-mono">Telemetry Real-Time</span>
+                      <div className="flex flex-none items-center gap-2">
+                        <span className="hidden text-[8px] font-bold text-[#14B8A6] bg-[#14B8A6]/10 px-2 py-0.5 rounded-full font-mono sm:inline">Telemetry Real-Time</span>
+                        <button
+                          type="button"
+                          onClick={() => setFocusedClassicalZone(focusedClassicalZone === "vectors" ? null : "vectors")}
+                          className="ckw-zone-focus-button is-dark"
+                          title={focusedClassicalZone === "vectors" ? "Restore all workbench zones" : "Open constitutional analytics full screen"}
+                          aria-label={focusedClassicalZone === "vectors" ? "Restore workbench" : "Maximize constitutional analytics"}
+                        >
+                          {focusedClassicalZone === "vectors" ? <Minimize2 /> : <Maximize2 />}
+                          <span>{focusedClassicalZone === "vectors" ? "Restore" : "Expand"}</span>
+                        </button>
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 z-10">

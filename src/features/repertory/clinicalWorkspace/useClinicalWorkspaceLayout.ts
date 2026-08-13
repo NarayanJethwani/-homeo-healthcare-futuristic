@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from "react";
 
 export type ClinicalWorkspacePreset = "browse" | "repertorize" | "compare";
 export type ClinicalCanvasMode =
@@ -57,8 +57,8 @@ function readStoredLayout(storageKey: string, defaults: StoredWorkspaceLayout): 
   try {
     const parsed = JSON.parse(window.localStorage.getItem(storageKey) || "{}") as Partial<StoredWorkspaceLayout>;
     return {
-      leftWidth: clamp(Number(parsed.leftWidth) || defaults.leftWidth, 320, 560),
-      rightWidth: clamp(Number(parsed.rightWidth) || defaults.rightWidth, 300, 520),
+      leftWidth: clamp(Number(parsed.leftWidth) || defaults.leftWidth, 280, 760),
+      rightWidth: clamp(Number(parsed.rightWidth) || defaults.rightWidth, 260, 620),
       leftCollapsed: Boolean(parsed.leftCollapsed),
       rightCollapsed: Boolean(parsed.rightCollapsed),
       preset: parsed.preset === "browse" || parsed.preset === "compare" || parsed.preset === "repertorize"
@@ -78,6 +78,7 @@ export function useClinicalWorkspaceLayout(options: ClinicalWorkspaceLayoutOptio
     canvasMode: options.defaultCanvasMode || DEFAULT_LAYOUT.canvasMode,
   }), [options.defaultCanvasMode]);
   const [layout, setLayout] = useState<StoredWorkspaceLayout>(defaults);
+  const workspaceRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setLayout(readStoredLayout(storageKey, defaults));
@@ -116,33 +117,51 @@ export function useClinicalWorkspaceLayout(options: ClinicalWorkspaceLayoutOptio
   }, []);
 
   const beginResize = useCallback((side: "left" | "right", event: ReactPointerEvent<HTMLButtonElement>) => {
-    if (window.innerWidth < 1280) return;
     event.preventDefault();
+    event.currentTarget.setPointerCapture?.(event.pointerId);
     const startX = event.clientX;
     const startWidth = side === "left" ? layout.leftWidth : layout.rightWidth;
+    const workspaceWidth = workspaceRef.current?.getBoundingClientRect().width || window.innerWidth;
+    const leftMaximum = Math.max(360, Math.min(760, workspaceWidth - layout.rightWidth - 420));
+    const rightMaximum = Math.max(320, Math.min(620, workspaceWidth - layout.leftWidth - 420));
 
     const handlePointerMove = (moveEvent: PointerEvent) => {
       const delta = moveEvent.clientX - startX;
       setLayout((current) => ({
         ...current,
         ...(side === "left"
-          ? { leftWidth: clamp(startWidth + delta, 320, 560), leftCollapsed: false }
-          : { rightWidth: clamp(startWidth - delta, 300, 520), rightCollapsed: false }),
+          ? { leftWidth: clamp(startWidth + delta, 280, leftMaximum), leftCollapsed: false }
+          : { rightWidth: clamp(startWidth - delta, 260, rightMaximum), rightCollapsed: false }),
       }));
     };
 
     const handlePointerUp = () => {
-      window.removeEventListener("pointermove", handlePointerMove);
-      window.removeEventListener("pointerup", handlePointerUp);
+      document.removeEventListener("pointermove", handlePointerMove);
+      document.removeEventListener("pointerup", handlePointerUp);
+      document.removeEventListener("pointercancel", handlePointerUp);
       document.body.style.cursor = "";
       document.body.style.userSelect = "";
     };
 
     document.body.style.cursor = "col-resize";
     document.body.style.userSelect = "none";
-    window.addEventListener("pointermove", handlePointerMove);
-    window.addEventListener("pointerup", handlePointerUp);
+    document.addEventListener("pointermove", handlePointerMove);
+    document.addEventListener("pointerup", handlePointerUp);
+    document.addEventListener("pointercancel", handlePointerUp);
   }, [layout.leftWidth, layout.rightWidth]);
+
+  const resizeWithKeyboard = useCallback((side: "left" | "right", event: ReactKeyboardEvent<HTMLButtonElement>) => {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    event.preventDefault();
+    const direction = event.key === "ArrowRight" ? 1 : -1;
+    const amount = event.shiftKey ? 50 : 20;
+    setLayout((current) => ({
+      ...current,
+      ...(side === "left"
+        ? { leftWidth: clamp(current.leftWidth + direction * amount, 280, 760), leftCollapsed: false }
+        : { rightWidth: clamp(current.rightWidth - direction * amount, 260, 620), rightCollapsed: false }),
+    }));
+  }, []);
 
   const style = useMemo(() => ({
     "--ckw-left-width": `${layout.leftCollapsed ? 0 : layout.leftWidth}px`,
@@ -151,6 +170,7 @@ export function useClinicalWorkspaceLayout(options: ClinicalWorkspaceLayoutOptio
 
   return {
     ...layout,
+    workspaceRef,
     style,
     applyPreset,
     setCanvasMode,
@@ -159,5 +179,7 @@ export function useClinicalWorkspaceLayout(options: ClinicalWorkspaceLayoutOptio
     toggleRight,
     beginLeftResize: (event: ReactPointerEvent<HTMLButtonElement>) => beginResize("left", event),
     beginRightResize: (event: ReactPointerEvent<HTMLButtonElement>) => beginResize("right", event),
+    resizeLeftWithKeyboard: (event: ReactKeyboardEvent<HTMLButtonElement>) => resizeWithKeyboard("left", event),
+    resizeRightWithKeyboard: (event: ReactKeyboardEvent<HTMLButtonElement>) => resizeWithKeyboard("right", event),
   };
 }

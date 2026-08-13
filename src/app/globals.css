@@ -3044,11 +3044,11 @@ html.lenis, html.lenis body {
   .classical-workbench-grid {
     grid-template-columns:
       minmax(0, var(--ckw-left-width, 430px))
-      14px
-      minmax(460px, 1fr)
-      14px
+      10px
+      minmax(280px, 1fr)
+      10px
       minmax(0, var(--ckw-right-width, 340px));
-    column-gap: 0.75rem;
+    column-gap: 0.35rem;
     row-gap: 1.5rem;
   }
 
@@ -3160,6 +3160,93 @@ html.lenis, html.lenis body {
   .ckw-shell.is-left-collapsed .repertory-panel-resizer,
   .ckw-shell.is-right-collapsed .ckw-inspector,
   .ckw-shell.is-right-collapsed .ckw-right-resizer {
+    display: none;
+  }
+}
+
+.ckw-zone-focus-button {
+  display: inline-flex;
+  min-height: 2rem;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid rgba(20, 184, 166, 0.2);
+  border-radius: 0.7rem;
+  color: #0f766e;
+  background: #f0fdfa;
+  font-size: 0.55rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  transition: 150ms ease;
+}
+
+.ckw-zone-focus-button:hover,
+.ckw-zone-focus-button:focus-visible {
+  border-color: #14b8a6;
+  color: white;
+  background: #0f766e;
+  outline: none;
+}
+
+.ckw-zone-focus-button svg {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.ckw-zone-focus-button.is-dark {
+  border-color: rgba(45, 212, 191, 0.3);
+  color: #5eead4;
+  background: rgba(20, 184, 166, 0.1);
+}
+
+.ckw-shell.is-zone-focused {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) !important;
+  width: 100vw;
+  height: 100dvh;
+  padding: 1rem !important;
+  overflow: auto;
+  background: #f8fafc;
+}
+
+.ckw-shell.is-zone-focused > * {
+  display: none !important;
+}
+
+.ckw-shell.is-zone-browser-focused > .repertory-browser-panel,
+.ckw-shell.is-zone-analysis-focused > .repertorization-panel,
+.ckw-shell.is-zone-vectors-focused > .ckw-full-span {
+  display: flex !important;
+  grid-column: 1 !important;
+  min-width: 0;
+  min-height: calc(100dvh - 2rem);
+  max-height: none;
+  overflow: visible;
+}
+
+.ckw-shell.is-zone-browser-focused .glass-panel,
+.ckw-shell.is-zone-analysis-focused .repertory-zone-three-card,
+.ckw-shell.is-zone-vectors-focused > .ckw-full-span > div {
+  width: 100%;
+  min-height: calc(100dvh - 2rem);
+}
+
+.ckw-shell.is-zone-browser-focused .selected-rubrics-grid {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  max-height: none;
+}
+
+.ckw-shell.is-zone-analysis-focused .repertory-matrix-scroll {
+  max-height: none;
+}
+
+@media (max-width: 639px) {
+  .ckw-zone-focus-button span {
     display: none;
   }
 }
