@@ -77,7 +77,73 @@ export async function POST(request: Request) {
 
     const body = await request.json();
 
-    // 2. Validate input using Zod
+    // 1.5 Handle NLP Clinical Intake parsing request if body contains 'text' without patient registration fields
+    if (typeof body.text === "string" && !body.name && !body.phone) {
+      const { RepertorySearch } = await import("@/features/repertory/search/repertorySearch");
+      const { PublishedCorpusRepository } = await import("@/features/repertory/repositories/PublishedCorpusRepository");
+      const { JETHWANI_REPERTORY_DATA } = await import("@/lib/repertoryData");
+
+      const intakeText = body.text.trim();
+      if (!intakeText) {
+        return NextResponse.json({
+          success: true,
+          nlpPhrase: "",
+          matchedRubrics: [],
+          suggestedRemedies: [],
+          missingClarificationQuestions: [],
+          repertoryScore: 0,
+          rubrics: []
+        });
+      }
+
+      const result = await RepertorySearch.parseAIIntakeText(intakeText);
+      const rubricIds = result.matchedRubrics.map(m => m.rubricId);
+      const rubricsMap = new Map<string, any>();
+
+      for (const id of rubricIds) {
+        try {
+          const r = await PublishedCorpusRepository.getRubricById(id);
+          if (r) rubricsMap.set(id, r);
+        } catch (_e) {}
+      }
+
+      for (const id of rubricIds) {
+        if (!rubricsMap.has(id)) {
+          const fallback = JETHWANI_REPERTORY_DATA.find(j => j.id === id);
+          if (fallback) {
+            rubricsMap.set(id, {
+              rubricId: fallback.id,
+              id: fallback.id,
+              title: fallback.name,
+              displayText: fallback.name,
+              classicalWording: fallback.name,
+              plainLanguageMeaning: fallback.name,
+              category: fallback.section === "Section A" ? "Mental & Emotional" : "Physical Symptoms",
+              organSystem: "General",
+              severity: 5,
+              frequency: "frequent",
+              impact: "moderate",
+              synonyms: [],
+              clinicalKeywords: [],
+              patientExpressions: [],
+              relatedRemedies: Object.entries(fallback.remedies || {}).map(([rem, grade]) => ({
+                remedyId: rem,
+                remedyName: rem,
+                grade
+              }))
+            });
+          }
+        }
+      }
+
+      return NextResponse.json({
+        success: true,
+        ...result,
+        rubrics: Array.from(rubricsMap.values())
+      });
+    }
+
+    // 2. Validate input using Zod for patient intake registration
     const validationResult = intakeSchema.safeParse(body);
     if (!validationResult.success) {
       return NextResponse.json({

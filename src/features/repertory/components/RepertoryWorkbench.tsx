@@ -674,25 +674,40 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
     setParsingIntake(true);
     try {
       const results = await clinicalRepertoryService.current.parseAIIntakeText(nlpInput);
+
+      // Add any newly returned rubric details to rubrics state so chips/catalog render immediately
+      if (results.rubrics && Array.isArray(results.rubrics) && results.rubrics.length > 0) {
+        setRubrics(prev => {
+          const existingIds = new Set(prev.map(r => r.rubricId || r.id));
+          const newRubrics = results.rubrics!.filter((r: any) => !existingIds.has(r.rubricId || r.id));
+          return [...prev, ...newRubrics];
+        });
+      }
       
       // Map results back to selected rubrics
-      const incoming = results.matchedRubrics.map((m: { rubricId: string; suggestedSeverity: number }) => ({
+      const matched = results.matchedRubrics || [];
+      const incoming = matched.map((m: { rubricId: string; suggestedSeverity?: number }) => ({
         rubricId: m.rubricId,
-        severity: m.suggestedSeverity,
+        severity: m.suggestedSeverity || 5,
         frequency: 'frequent' as const,
         impact: 'moderate' as const
       }));
 
-      // Merge with existing
-      setSelectedRubrics(prev => {
-        const filtered = prev.filter(s => !incoming.some((i: { rubricId: string }) => i.rubricId === s.rubricId));
-        return [...filtered, ...incoming];
-      });
+      if (incoming.length === 0) {
+        alert("No direct rubric matches found for the intake text. Try searching specific terms like 'headache', 'anxiety', or 'chilly'.");
+      } else {
+        // Merge with existing
+        setSelectedRubrics(prev => {
+          const filtered = prev.filter(s => !incoming.some((i: { rubricId: string }) => i.rubricId === s.rubricId));
+          return [...filtered, ...incoming];
+        });
 
-      setNlpInput('');
-      alert(`Intake processing complete! Matched ${results.matchedRubrics.length} clinical indicators with active weights.`);
-    } catch (e) {
+        setNlpInput('');
+        alert(`Intake processing complete! Matched ${incoming.length} clinical indicators with active weights.`);
+      }
+    } catch (e: any) {
       console.error("AI Intake mapping failed:", e);
+      alert(`AI Intake processing error: ${e?.message || e}`);
     }
     setParsingIntake(false);
   };

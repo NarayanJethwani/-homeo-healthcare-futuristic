@@ -169,8 +169,8 @@ export function createClinicalRepertoryService(
       }));
     },
 
-    async parseAIIntakeText(intakeText: string): Promise<AIIntakeMappingResult> {
-      const response = await fetch("/api/intake", {
+    async parseAIIntakeText(intakeText: string): Promise<AIIntakeMappingResult & { rubrics?: any[] }> {
+      const response = await fetch("/api/repertory/intake", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -178,7 +178,10 @@ export function createClinicalRepertoryService(
         body: JSON.stringify({ text: intakeText })
       });
       const data = await response.json();
-      return data as AIIntakeMappingResult;
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Failed to parse AI clinical intake.");
+      }
+      return data as AIIntakeMappingResult & { rubrics?: any[] };
     },
 
     async getLongitudinalSummary(
