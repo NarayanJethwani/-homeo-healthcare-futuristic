@@ -1,89 +1,93 @@
 {
-  "milestoneId": "M10",
-  "packageId": "KEP5-PACKAGE-M10-KEY-REMEDIES-WAVE2-001",
-  "generatedAt": "2026-08-14T08:18:48.970Z",
+  "milestoneId": "M17",
+  "packageId": "KEP7-PACKAGE-M17-DISEASE-WAVE2-001",
+  "sourceCommit": "eee406e5b01d359f2c84a3caf831a790c32b740d",
+  "generatedAt": "2026-08-14T07:55:35.410Z",
   "status": "pending_authorization",
   "governance": {
-    "program": "KEP-5",
+    "program": "KEP-7",
     "productionRagActivation": false,
+    "transitionalPublicationFreeze": true,
     "governedProposalsCount": 50,
     "allProposalsDraftOnly": true,
     "ragIneligible": true
   },
   "summary": {
     "totalEntitiesUpgraded": 10,
-    "keyRemedyEntitiesCount": 10,
+    "diseaseEntitiesCount": 10,
     "evaluationCasesCount": 100,
-    "evaluationPassRate": 1
+    "evaluationPassRate": 1,
+    "wavePromotionCandidate": true,
+    "wavePromotionAchieved": false
   },
   "entities": [
     {
-      "entityId": "R0010",
-      "slug": "carbo-vegetabilis",
-      "entityType": "remedy",
+      "entityId": "D0021",
+      "slug": "insomnia",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0011",
-      "slug": "chamomilla",
-      "entityType": "remedy",
+      "entityId": "D0024",
+      "slug": "fibromyalgia",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0013",
-      "slug": "hepar-sulphuris-calcareum",
-      "entityType": "remedy",
+      "entityId": "D0025",
+      "slug": "chronic-fatigue-syndrome",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0014",
-      "slug": "ignatia-amara",
-      "entityType": "remedy",
+      "entityId": "D0031",
+      "slug": "benign-prostatic-hyperplasia",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0015",
-      "slug": "kali-bichromicum",
-      "entityType": "remedy",
+      "entityId": "D0042",
+      "slug": "carpal-tunnel-syndrome",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0016",
-      "slug": "mercurius-solubilis",
-      "entityType": "remedy",
+      "entityId": "D0045",
+      "slug": "anal-fissure",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0017",
-      "slug": "natrum-muriaticum",
-      "entityType": "remedy",
+      "entityId": "D0046",
+      "slug": "constipation",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0018",
-      "slug": "phosphorus",
-      "entityType": "remedy",
+      "entityId": "D0047",
+      "slug": "gastroenteritis",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0022",
-      "slug": "silicea-terra",
-      "entityType": "remedy",
+      "entityId": "D0048",
+      "slug": "fatty-liver",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0023",
-      "slug": "thuja-occidentalis",
-      "entityType": "remedy",
+      "entityId": "D0060",
+      "slug": "gallstones-cholelithiasis",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     }
@@ -104,5 +108,5 @@
     "passedCaseCount": 100,
     "failedCaseCount": 0
   },
-  "packageSha256": "31eeaac88ac5b1af5ae67d07929284390654aea8c2e7db23a6ec143839134bcc"
+  "packageSha256": "bbbd37611ac04a49a354d5320bff328595f9a3e263f86c7538edcc70abe74a32"
 }
