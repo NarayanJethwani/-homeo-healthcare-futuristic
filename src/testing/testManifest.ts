@@ -1621,6 +1621,13 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "M18 KEP-7 Disease Coverage Wave 3 (10 major diseases - D0012, D0039, D0054, D0056, D0059, D0062, D0063, D0067, D0070, D0073) v1.1.0 upgrades, 50 draft graph proposals, 100-case offline evaluation with 20 negative controls, clinical safety boundaries, and human wave promotion authorization boundary"
   },
   {
+    "path": "tests/knowledgeKEP7DiseaseWave4.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M19 KEP-7 Disease Coverage Wave 4 (10 major diseases - D0037, D0038, D0050, D0052, D0053, D0055, D0058, D0061, D0064, D0065) v1.1.0 upgrades, 50 draft graph proposals, 100-case offline evaluation with 20 negative controls, clinical safety boundaries, and human wave promotion authorization boundary"
+  },
+  {
     "path": "tests/softLaunchManualPayment.test.ts",
     "status": "active",
     "ownerArea": "commerce-pricing",
