@@ -1,89 +1,93 @@
 {
-  "milestoneId": "M9",
-  "packageId": "KEP5-PACKAGE-M9-POLYCREST-REMEDIES-001",
-  "generatedAt": "2026-08-14T14:47:23.583Z",
+  "milestoneId": "M19",
+  "packageId": "KEP7-PACKAGE-M19-DISEASE-WAVE4-001",
+  "sourceCommit": "e9bb5796e51de8ba9ebd261cd006b0c614b03395",
+  "generatedAt": "2026-08-14T14:39:58.459Z",
   "status": "pending_authorization",
   "governance": {
-    "program": "KEP-5",
+    "program": "KEP-7",
     "productionRagActivation": false,
+    "transitionalPublicationFreeze": true,
     "governedProposalsCount": 50,
     "allProposalsDraftOnly": true,
     "ragIneligible": true
   },
   "summary": {
     "totalEntitiesUpgraded": 10,
-    "polycrestRemedyEntitiesCount": 10,
+    "diseaseEntitiesCount": 10,
     "evaluationCasesCount": 100,
-    "evaluationPassRate": 1
+    "evaluationPassRate": 1,
+    "wavePromotionCandidate": true,
+    "wavePromotionAchieved": false
   },
   "entities": [
     {
-      "entityId": "R0003",
-      "slug": "lycopodium",
-      "entityType": "remedy",
+      "entityId": "D0037",
+      "slug": "dandruff",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0004",
-      "slug": "aconitum-napellus",
-      "entityType": "remedy",
+      "entityId": "D0038",
+      "slug": "seborrheic-dermatitis",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0005",
-      "slug": "arnica-montana",
-      "entityType": "remedy",
+      "entityId": "D0050",
+      "slug": "gingivitis",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0007",
-      "slug": "belladonna",
-      "entityType": "remedy",
+      "entityId": "D0052",
+      "slug": "vitamin-d-deficiency",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0008",
-      "slug": "bryonia-alba",
-      "entityType": "remedy",
+      "entityId": "D0053",
+      "slug": "vitamin-b12-deficiency",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0009",
-      "slug": "calcarea-carbonica",
-      "entityType": "remedy",
+      "entityId": "D0055",
+      "slug": "recurrent-cold",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0012",
-      "slug": "gelsemium-sempervirens",
-      "entityType": "remedy",
+      "entityId": "D0058",
+      "slug": "eustachian-tube-dysfunction",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0019",
-      "slug": "pulsatilla-pratensis",
-      "entityType": "remedy",
+      "entityId": "D0061",
+      "slug": "laryngitis",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0020",
-      "slug": "rhus-toxicodendron",
-      "entityType": "remedy",
+      "entityId": "D0064",
+      "slug": "dry-eye-syndrome",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0021",
-      "slug": "sepia-officinalis",
-      "entityType": "remedy",
+      "entityId": "D0065",
+      "slug": "oral-thrush",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     }
@@ -104,5 +108,5 @@
     "passedCaseCount": 100,
     "failedCaseCount": 0
   },
-  "packageSha256": "0f853d4b098bf6d125454bc555be281526e4f03ce32426c93ddad73625d1ad1e"
+  "packageSha256": "4a5b5cc4317bfeaddcec1b24b9630d6210f3888118201f20d5fabf5029125e34"
 }
