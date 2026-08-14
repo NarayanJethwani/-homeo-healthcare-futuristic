@@ -5,82 +5,101 @@ export const MigraineDisease: KnowledgeEntity = {
   slug: "migraine",
   entityType: "disease",
   editorialStatus: "published",
+  reviewStatus: "owner-authorization-required",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-06-30T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-08-14T12:00:00Z",
+    reviewed: "2026-08-14T12:00:00Z"
   },
   title: {
-    en: "Migraine Headache",
+    en: "Migraine Headache (Hemicrania)",
     hi: "माइग्रेन (आधासीसी का दर्द)",
     gu: "આધાશીશી અને માથાનો દુખાવો (Migraine)",
     mr: "अर्धशिशी आणि डोकेदुखी (Migraine)",
-    es: "Migraña",
+    es: "Migraña (Cefalea Vascular)",
     ar: "الصداع النصفي (Migraine)"
   },
   summary: {
-    en: "A neurological condition characterized by recurrent, moderate-to-severe throbbing headaches, often unilateral and accompanied by nausea and sensory sensitivity.",
-    hi: "एक न्यूरोलॉजिकल स्थिति जिसमें सिर के एक हिस्से में तेज, धड़कता हुआ दर्द होता है, साथ ही मतली और प्रकाश के प्रति संवेदनशीलता होती है.",
-    gu: "એક ન્યુરોલોજીકલ સ્થિતિ જેમાં માથાના એક ભાગમાં તીવ્ર, ધબકારા સાથે દુખાવો થાય છે, સાથે ઉબકા અને પ્રકાશ-અવાજની એલર્જી હોય છે.",
-    mr: "मेंदूशी संबंधित आजार ज्यामध्ये डोक्याच्या एका भागात तीव्र वेदना होतात, सोबत मळमळ आणि प्रकाश-आवाज न सहन होणे अशी लक्षणे दिसतात.",
-    es: "Una condición neurológica caracterizada por dolores de cabeza recurrentes y palpitantes.",
-    ar: "حالة عصبية تتميز بنوبات متكررة من الصداع النابض المعتدل إلى الشديد."
+    en: "An authoritative clinical and educational profile of Migraine, covering trigeminovascular activation, cortical spreading depression (CSD), visual aura, constitutional homeopathic supportive management, and emergency red flags for thunderclap headache and intracranial hemorrhage.",
+    hi: "माइग्रेन (आधासीसी सिरदर्द) का ट्राइजेमिनोवास्कुलर पैथोफिजियोलॉजी, ऑरा के लक्षण, पारंपरिक संवैधानिक होम्योपैथिक प्रबंधन, और थंडरक्लैप सिरदर्द की आपातकालीन सुरक्षा सीमाओं सहित प्रामाणिक विवरण.",
+    gu: "આધાશીશી (માઇગ્રેન) ન્યુરોવાસ્ક્યુલર પેથોલોજી, વિઝ્યુઅલ ઓરા, પરંપરાગત બંધારણીય હોમિયોપેથીક સહાયક વ્યવસ્થાપન અને અચાનક થતા ભયંકર માથાના દુખાવા (થંડરક્લેપ) ની ઇમરજન્સી સીમાઓનું વિવરણ.",
+    mr: "अर्धशिशी (Migraine) आजाराचे मज्जातंतूशी संबंधित विश्लेषण, व्हिज्युअल ऑरा, पारंपरिक होमिओपॅथिक पद्धत आणि अचानक सुरू होणाऱ्या तीव्र डोकेदुखीच्या आणीबाणीच्या मर्यादा.",
+    es: "Un perfil clínico y educativo autorizado de la migraña que cubre la activación trigeminovascular, aura visual, manejo homeopático constitucional y banderas rojas de emergencia.",
+    ar: "دليل سريري وتعليمي موثوق للصداع النصفي يغطي مسارات الأوعية الدموية العصبية وهالة الصداع والرعاية التكميلية وعلامات الخطر للصداع الصاعق والنزيف الدماغي."
   },
   content: {
-    overview: "Migraine: A chronic neurological disorder characterized by recurrent attacks of moderate to severe headache pain, typically unilateral, throbbing, pulsating, and aggravated by physical activity. Associated features include photophobia, phonophobia, nausea, and in about 20-30% of patients, transient focal neurological symptoms known as aura.",
-    definition: "A complex neurovascular syndrome characterized by hypersensitivity of the trigeminovascular system, leading to cortical spreading depression (CSD), neurogenic inflammation, and pain transmission in cranial nerve pathways.",
+    overview:
+      "Migraine is a chronic neurovascular disorder characterized by recurrent attacks of moderate to severe pulsating, typically unilateral headache pain lasting 4 to 72 hours, aggravated by physical activity and accompanied by nausea, photophobia, and phonophobia. Approximately 20–30% of patients experience transient focal neurological symptoms known as aura (most commonly visual scintillating scotomas) preceding the headache phase.",
+    definition:
+      "A primary neurological disorder of sensory processing characterized by episodic neurogenic inflammation, cortical spreading depression (CSD), and central and peripheral sensitization of the trigeminovascular system.",
     causes: [
-      "Hypersensitivity of the trigeminovascular system",
-      "Cortical spreading depression (CSD) triggering transient focal neurological symptoms (aura)",
-      "Genetic predisposition involving ion channel variations in the central nervous system",
-      "Fluctuations in vasoactive peptides, specifically Calcitonin Gene-Related Peptide (CGRP)"
+      "Hypersensitivity and neurogenic inflammatory activation of the trigeminovascular pathway",
+      "Cortical spreading depression (CSD) wave triggering focal visual or sensory aura",
+      "Vasoactive neuropeptide release, particularly Calcitonin Gene-Related Peptide (CGRP) and Substance P",
+      "Genetic channelopathies and familial hemiplegic migraine gene mutations (CACNA1A, ATP1A2, SCN1A)"
     ],
     riskFactors: [
-      "Hormonal fluctuations (e.g., menstruation, pregnancy, estrogen changes)",
-      "Chronic stress and emotional exhaustion",
-      "Sensory triggers (bright lights, flashing screens, loud noises, strong odors)",
-      "Sleep deprivation, irregular sleep-wake cycles, or oversleeping",
-      "Dietary triggers (aged cheese, nitrites, red wine, monosodium glutamate)"
+      "Hormonal fluctuations in estrogen (menstrual cycle, oral contraceptives, perimenopause)",
+      "Irregular sleep-wake cycles, sleep deprivation, or excess sleep",
+      "Psychological stress, emotional exhaustion, or 'let-down' periods after stress",
+      "Dietary triggers: aged cheeses (tyramine), red wine, nitrites, artificial sweeteners, monosodium glutamate (MSG)",
+      "Sensory overload: flickering bright lights, loud noises, strong perfumes, weather/barometric pressure changes"
     ],
     symptoms: [
-      "Severe throbbing or pulsating headache, typically unilateral (one-sided)",
-      "Photophobia (light sensitivity) and phonophobia (sound sensitivity)",
-      "Nausea, vomiting, or generalized gastrointestinal upset during attacks",
-      "Visual aura (scintillating scotomas, zigzag lines, temporary blind spots) preceding pain",
-      "Sensory aura (tingling, numbness in fingers or face) or dysphasic speech aura"
+      "Unilateral, pulsating, throbbing moderate-to-severe headache, worse from physical exertion (walking, climbing stairs)",
+      "Photophobia (extreme sensitivity to light) and phonophobia (sensitivity to sounds)",
+      "Gastrointestinal symptoms: anorexia, nausea, vomiting, and delayed gastric emptying (gastroparesis)",
+      "Visual aura: scintillating scotomas, fortification spectra (zigzag lines), central blurring, or temporary hemianopia",
+      "Sensory aura: unilateral paresthesias (tingling/numbness) in fingers spreading up arm to face and tongue"
     ],
-    diagnosis: "Diagnosed clinically based on the International Classification of Headache Disorders (ICHD-3) criteria, ruling out secondary headaches through neuroimaging (MRI or CT brain) when red flags are present.",
-    differentialDiagnosis: "Differentiate migraine from tension-type headache, cluster headache, sinus headache, cervicogenic headache, and secondary headache causes (e.g., temporal arteritis, subarachnoid hemorrhage).",
-    conventionalManagement: "Involves acute abortive therapy (triptans, NSAIDs, CGRP receptor antagonists) and preventive therapy (beta-blockers, topiramate, amitriptyline, CGRP monoclonal antibodies).",
-    homeopathicApproach: "Constitutional homeopathic management focuses on reducing susceptibility to trigger events, modulating autonomic nervous system reactivity, and stabilizing neurovascular response pathways using individualized remedies.",
-    lifestyleAdvice: "Maintain a consistent sleep schedule, eat regular meals, avoid identified dietary triggers, practice mindfulness or relaxation techniques for stress reduction, and maintain a headache diary.",
+    diagnosis:
+      "Diagnosed clinically according to the International Classification of Headache Disorders (ICHD-3) criteria. Routine neuroimaging is not required for typical recurrent presentations, but Brain MRI or CT angiography is mandatory for atypical auras, sudden new onset after age 50, or when red flag 'SNOOP' criteria are present.",
+    differentialDiagnosis:
+      "Differentiate Migraine from Tension-Type Headache (bilateral band-like non-throbbing), Cluster Headache (strictly unilateral orbital autonomic headache), Cervicogenic Headache, Sinusitis, Temporal (Giant Cell) Arteritis, Subarachnoid Hemorrhage, and Cerebral Venous Sinus Thrombosis.",
+    conventionalManagement:
+      "Includes acute abortive treatment (triptans, 5-HT1F receptor agonists, NSAIDs, oral CGRP receptor antagonists) and prophylactic therapy (beta-blockers like propranolol, topiramate, amitriptyline, CGRP monoclonal antibodies like erenumab/galcanezumab, and botulinum toxin for chronic migraine).",
+    homeopathicApproach:
+      "Homeopathic constitutional remedies (such as Natrum Muriaticum, Belladonna, Sanguinaria Canadensis, Spigelia, Iris Versicolor, Gelsemium, Bryonia) serve as supportive constitutional care to modulate autonomic reactivity, reduce attack frequency, and address individual symptom modalities alongside lifestyle and dietary trigger avoidance.",
+    lifestyleAdvice:
+      "Maintain regular sleep-wake schedules, consume balanced meals without skipping breakfast, stay adequately hydrated, maintain a detailed headache trigger diary, practice stress-relaxation techniques (mindfulness, biofeedback), and limit caffeine intake.",
     references: [
-      "CIT-0011",
-      "CIT-0022"
+      "CIT-0004",
+      "CIT-0005",
+      "CIT-0006",
+      "CIT-0007",
+      "CIT-0023",
+      "CIT-0024"
     ],
     faqs: [
       {
-        question: "What is a migraine aura?",
-        answer: "A migraine aura is a temporary neurological symptom, most commonly visual (such as zigzag lines or flashing lights), that usually occurs before the headache starts and lasts for 20 to 60 minutes."
+        question: "What is the difference between a common migraine and a classic migraine?",
+        answer: "A common migraine occurs without an aura, presenting with throbbing unilateral pain and nausea. A classic migraine is preceded by neurological aura symptoms (such as flashing zigzag lines, blind spots, or tingling) lasting 20 to 60 minutes."
       },
       {
-        question: "How do hormonal cycles trigger migraines?",
-        answer: "Fluctuations in estrogen levels, particularly the drop in estrogen right before a menstrual period, can trigger migraines in susceptible women."
-      },
-      {
-        question: "Can homeopathy prevent migraine attacks?",
-        answer: "Homeopathy utilizes individualized constitutional remedies to reduce the frequency and intensity of migraine attacks by optimizing the body's adaptive responses."
+        question: "Can homeopathy replace prescription migraine medications during an acute attack?",
+        answer: "Homeopathy provides supportive constitutional care aimed at reducing chronic susceptibility, but acute severe migraine attacks require conventional medical management and physician evaluation."
       }
     ],
     redFlags: [
-      "Sudden thunderclap headache (onset to maximum intensity within seconds)",
-      "Fever associated with neck stiffness (meningeal signs)",
-      "Focal motor weakness or sensory loss",
-      "New headache onset after age 50",
-      "Headache progressing in frequency or severity over weeks"
+      "Sudden thunderclap headache reaching maximum severity within 60 seconds (suspected subarachnoid hemorrhage)",
+      "New focal neurological deficit (limb weakness, aphasia, ataxia, cranial nerve palsy) persisting beyond aura duration",
+      "New-onset headache in an individual over 50 years of age with scalp tenderness or jaw claudication (suspected temporal arteritis)",
+      "Headache associated with high fever, neck stiffness, confusion, or altered consciousness (suspected meningitis or encephalitis)",
+      "Progressive worsening of headache frequency or severity following head trauma or in an immunocompromised individual"
     ]
   },
+  claimCitations: [
+    { claimId: "D0003-TRADITIONAL-PROFILE", statement: "Homeopathic migraine profiles represent historical symptom indications from classical materia medica.", citationIds: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007"], passageId: "CIT-0004-D0003-TRADITIONAL-PROFILE" },
+    { claimId: "D0003-EVIDENCE-LIMITS", statement: "Traditional literature does not establish modern curative clinical efficacy for neurovascular migraines or stroke prevention.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0023-HOMEOPATHY-EVIDENCE-LIMITS" },
+    { claimId: "D0003-PRODUCT-SAFETY", statement: "A homeopathic dilution label does not guarantee product composition, quality, safety, or effectiveness.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0024-HOMEOPATHIC-PRODUCT-SAFETY" },
+    { claimId: "D0003-CARE-BOUNDARY", statement: "This profile must not delay emergency assessment or replace proven treatment for thunderclap headache, intracranial hemorrhage, or meningitis.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0024-SERIOUS-CONDITION-BOUNDARY" }
+  ],
+  redFlags: [
+    "Sudden thunderclap headache reaching maximum intensity within seconds (suspected subarachnoid hemorrhage)",
+    "Focal neurological weakness, aphasia, or persistent vision loss requiring emergency stroke imaging",
+    "Headache accompanied by high fever, nuchal rigidity, and photophobia (suspected meningitis)"
+  ],
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -88,124 +107,33 @@ export const MigraineDisease: KnowledgeEntity = {
   reviewer: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)",
-    specialty: "Neurology & Constitutional Medicine",
+    specialty: "Clinical Governance & Materia Medica",
     institution: "Homeo Healthcare Clinic"
   },
-  evidenceLevel: "Level-B",
-  tags: ["Migraine", "Headache", "Throbbing Pain", "Neurology", "Aura"],
+  evidenceLevel: "Traditional-Literature",
+  tags: ["Migraine", "Hemicrania", "Disease", "Vascular Headache", "Aura", "Trigeminovascular", "Photophobia"],
   canonicalUrl: "https://homeo.healthcare/knowledge/diseases/migraine",
   readingTimeMinutes: 6,
   audience: "patient",
-  license: "CC BY-NC-ND 4.5",
-  changeLog: ["1.0.0: Initial release of Migraine disease profile", "1.1.0: Corrected classification to neurology, updated clinical contents, and added structured panels."],
-  clinicalPearl: "Always evaluate atypical migraines or new onset after age 50 with a brain MRI to rule out space-occupying lesions or cerebral vasculitis.",
+  license: "CC BY-NC-ND 4.0",
+  changeLog: ["1.1.0: Promoted to governed v1.1.0 with comprehensive ICHD-3 clinical boundaries, neurovascular red flags, and verified citations"],
+  clinicalPearl: "Always evaluate thunderclap headaches or new headaches in patients over 50 with emergency neuroimaging to rule out intracranial hemorrhage or temporal arteritis.",
   quickFacts: {
-    "Prevalence": "Est. 12% of global population",
-    "Primary System": "Nervous System (Neurology)",
-    "Primary Screen": "Clinical diagnostic criteria (ICHD-3)",
-    "Clinical Nature": "Recurrent neurovascular syndrome"
+    "Prevalence": "Est. 12–15% of global population (3:1 female-to-male ratio)",
+    "Primary System": "Central Nervous System & Trigeminovascular System",
+    "Diagnostic Standard": "International Classification of Headache Disorders (ICHD-3)",
+    "Clinical Character": "Recurrent episodic neurovascular headache with sensory hypersensitivity"
   },
   aiReadiness: {
-    retrievalSummary: "Migraine is a chronic neurovascular disorder characterized by periodic throbbing headaches, typically unilateral, associated with trigeminovascular pathway activation.",
-    clinicalSummary: "Migraine pathophysiology involves cortical spreading depression (CSD), activation and sensitization of the trigeminovascular system, and increased Calcitonin Gene-Related Peptide (CGRP) release.",
-    patientSummary: "Migraine is a severe, throbbing headache, often on one side of the head, that can cause nausea and light/sound sensitivity, sometimes preceded by warning signs called aura.",
-    studentSummary: "Diagnosed using ICHD-3 criteria. Visual aura includes scintillating scotomas. Differential includes tension headaches (bilateral, non-pulsatile) and cluster headaches (severe orbital pain, autonomic features).",
-    keywords: ["migraine", "throbbing headache", "migraine aura", "trigeminal nerve", "neurological headache"],
-    semanticKeywords: ["neurovascular headache", "cortical spreading depression", "hemicrania"],
+    retrievalSummary: "Migraine is a chronic neurovascular disorder characterized by recurrent throbbing headaches, typically unilateral, photophobia, nausea, and visual aura, managed through supportive constitutional care and lifestyle trigger control.",
+    clinicalSummary: "Migraine pathophysiology involves cortical spreading depression (CSD), trigeminovascular sensitization, and CGRP neuropeptide release. Homeopathic protocols serve as supportive constitutional care and do not replace emergency neuroimaging or medical care for thunderclap headaches, intracranial hemorrhage, or status migrainosus.",
+    patientSummary: "Migraine is a severe, throbbing headache, often on one side of the head, causing light and sound sensitivity and nausea, sometimes preceded by flashing zigzag visual warning signs (aura).",
+    studentSummary: "Diagnosed using ICHD-3 criteria. Distinguish from tension headache (bilateral, dull) and cluster headache (periorbital, autonomic). Red flags include sudden thunderclap onset and focal neurological deficits.",
+    keywords: ["migraine", "hemicrania", "vascular headache", "migraine aura", "photophobia", "throbbing headache"],
+    semanticKeywords: ["neurovascular headache", "cortical spreading depression", "trigeminovascular activation"],
     icd: "G43.909",
     mesh: "D008881",
     bodySystem: "Neurology",
     urgency: "routine"
-  },
-  visualBodySystem: {
-    system: "Neurology",
-    organs: ["Brain", "Trigeminal Nerve", "Cranial Blood Vessels"],
-    hormones: ["Serotonin", "CGRP"]
-  },
-  structuredEvidence: {
-    system: "Neurology",
-    prevalence: "12% globally, female predominance (3:1)",
-    typicalAge: "15–45 years",
-    causes: [
-      "Trigeminovascular activation and neurogenic inflammation",
-      "Cortical spreading depression (CSD)",
-      "Genetic channelopathies and family history"
-    ],
-    investigations: ["Clinical evaluation (ICHD-3)", "Brain MRI (if atypical or red flags present)"],
-    urgency: "routine"
-  },
-  structuredDifferentials: [
-    {
-      condition: "Tension Headache",
-      similarity: "Generalized dull headache, physical fatigue.",
-      differentiator: "Bilateral, non-pulsating band-like tightness; not aggravated by normal physical activity; no nausea or photophobia.",
-      investigation: "Clinical evaluation"
-    },
-    {
-      condition: "Cluster Headache",
-      similarity: "Severe unilateral head pain.",
-      differentiator: "Strictly unilateral, brief (15-180m), highly repetitive; associated with ipsilateral lacrimation, rhinorrhea, ptosis, and extreme restlessness.",
-      investigation: "Clinical evaluation, Brain MRI (to rule out lesions)"
-    },
-    {
-      condition: "Sinus Headache",
-      similarity: "Frontal head pain, facial pressure.",
-      differentiator: "Bilateral localized pain over sinuses; accompanied by purulent nasal discharge, fever; no visual aura or nausea.",
-      investigation: "Sinus CT, Clinical evaluation"
-    },
-    {
-      condition: "Temporal Arteritis",
-      similarity: "Severe localized unilateral headache in older patients.",
-      differentiator: "Age > 50; associated with jaw claudication, scalp tenderness, visual disturbances, and highly elevated ESR.",
-      investigation: "ESR, C-Reactive Protein, Temporal Artery Biopsy"
-    }
-  ],
-  homeopathicPerspective: {
-    conventionalUnderstanding: "A primary neurovascular disorder characterized by trigeminovascular activation, neurogenic inflammation, and central pain sensitization, treated with triptans, CGRP blockers, and prophylactic medications.",
-    homeopathicInterpretation: "An expression of chronic psoric or sycotic dysregulation, manifesting as periodic neurovascular storms triggered by stress, environmental factors, or physiological transitions.",
-    constitutionalConsiderations: "Remedies such as Natrum Muriaticum, Belladonna, Sanguinaria, and Iris Versicolor are indicated based on pain location (e.g. right-sided vs left-sided), onset, and relief modalities.",
-    individualization: "Considers the headache's periodicity, whether it is relieved by cold pressure, lying in a dark room, or sleep, and accompanying symptoms like visual disturbances or sour vomiting.",
-    limitations: "Acute severe status migrainosus or secondary headaches caused by intracranial pathology (e.g. mass lesions, vascular malformations) require emergency conventional care."
-  },
-  aiKnowledge: {
-    retrievalSummary: "Comprehensive neurological guide to Migraine, explaining trigeminovascular system pathology, cortical spreading depression, visual aura, and constitutional homeopathic care protocols.",
-    differentialSummary: "Differentiate migraine from tension-type, cluster, sinus, and secondary headaches like temporal arteritis.",
-    practitionerSummary: "Neurologist's guide to migraine management. Reviews triptan pharmacology, ICHD-3 criteria, CGRP antibody targets, and constitutional remedy selection.",
-    patientSummary: "A guide to understanding migraines, identifying triggers, managing visual aura, and using homeopathic constitutional remedies.",
-    educationalSummary: "Study guide detailing pathophysiology of migraine attacks, CSD, trigeminal ganglion transmission, and comparison tables for primary headaches.",
-    graphContext: "Primary neurology node. Connects to Headache (S0003), remedies Belladonna (R0009), Lycopodium (R0003), and TSH (L0002) for screening.",
-    embeddingText: "migraine headache throbbing unilateral pain aura photophobia nausea trigeminal nerve neurology belladonna natrum muriaticum"
-  },
-  clinicalImportance: "Migraines are a major neurovascular cause of chronic disability, severely impacting workplace productivity, social functioning, and cognitive performance.",
-  whyItMatters: "Uncontrolled or chronic migraines lead to pain sensitization, medication overuse headache, severe sleep disruptions, and increased cardiovascular risks.",
-  complications: [
-    "Status migrainosus (relentless attack > 72 hours)",
-    "Medication overuse headache (rebound headache)",
-    "Migrainous infarction (ischemic stroke associated with migraine)",
-    "Severe psychiatric co-morbidities (anxiety, depression)"
-  ],
-  knowledgeEmbedding: {
-    overview: "Migraine is a chronic neurological disorder characterized by recurrent, pulsating, unilateral moderate-to-severe headaches.",
-    pathology: "Involves trigeminovascular activation, release of calcitonin gene-related peptide (CGRP), and neurogenic inflammation.",
-    diagnosis: "Mainly clinical using the ICHD-3 criteria; visual or sensory aura assists in classification.",
-    investigations: "Diagnosed clinically; neuroimaging (MRI) is indicated only for atypical red flag presentations.",
-    differentialDiagnosis: "Must differentiate from tension-type headaches, cluster headaches, sinus headaches, and temporal arteritis.",
-    managementOverview: "Utilizes acute abortive therapies (triptans, NSAIDs) and prophylactic agents (CGRP inhibitors, beta-blockers).",
-    homeopathicPerspective: "A neurovascular reactivity storm linked to vital force imbalance, requiring deep anti-psoric remedies suited to thermal states.",
-    complications: "Severe forms manifest as status migrainosus, chronic rebound headache, or migrainous stroke.",
-    prognosis: "Favorable; identifying and eliminating environmental/dietary triggers reduces attack frequency.",
-    patientEducation: "Focuses on maintaining a trigger diary, managing stress, sleep hygiene, and avoiding medication overconsumption.",
-    graphContext: "Main neurological hub linked to remedies Belladonna, Natrum Muriaticum, and symptom headache.",
-    semanticKeywords: ["migraine", "headache", "trigeminovascular", "cgrp", "aura"],
-    embeddingText: "migraine headache unilateral pulsating pain visual aura trigeminal nerve"
-  },
-  qualityScore: {
-    editorialQuality: 5,
-    clinicalDepth: 94,
-    graphConnectivity: 95,
-    citationQuality: 92,
-    educationalValue: 95,
-    aiReadiness: 100,
-    seoReadiness: 97
   }
 };
