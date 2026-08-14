@@ -1,89 +1,93 @@
 {
-  "milestoneId": "M10",
-  "packageId": "KEP5-PACKAGE-M10-KEY-REMEDIES-WAVE2-001",
-  "generatedAt": "2026-08-14T13:34:34.658Z",
+  "milestoneId": "M18",
+  "packageId": "KEP7-PACKAGE-M18-DISEASE-WAVE3-001",
+  "sourceCommit": "b281aaf26126ac936d74f2b8768db6f297d5450b",
+  "generatedAt": "2026-08-14T13:09:03.006Z",
   "status": "pending_authorization",
   "governance": {
-    "program": "KEP-5",
+    "program": "KEP-7",
     "productionRagActivation": false,
+    "transitionalPublicationFreeze": true,
     "governedProposalsCount": 50,
     "allProposalsDraftOnly": true,
     "ragIneligible": true
   },
   "summary": {
     "totalEntitiesUpgraded": 10,
-    "keyRemedyEntitiesCount": 10,
+    "diseaseEntitiesCount": 10,
     "evaluationCasesCount": 100,
-    "evaluationPassRate": 1
+    "evaluationPassRate": 1,
+    "wavePromotionCandidate": true,
+    "wavePromotionAchieved": false
   },
   "entities": [
     {
-      "entityId": "R0010",
-      "slug": "carbo-vegetabilis",
-      "entityType": "remedy",
+      "entityId": "D0012",
+      "slug": "hyperthyroidism",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0011",
-      "slug": "chamomilla",
-      "entityType": "remedy",
+      "entityId": "D0039",
+      "slug": "intercostal-neuralgia",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0013",
-      "slug": "hepar-sulphuris-calcareum",
-      "entityType": "remedy",
+      "entityId": "D0054",
+      "slug": "chronic-cough",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0014",
-      "slug": "ignatia-amara",
-      "entityType": "remedy",
+      "entityId": "D0056",
+      "slug": "low-back-pain",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0015",
-      "slug": "kali-bichromicum",
-      "entityType": "remedy",
+      "entityId": "D0059",
+      "slug": "fibroadenoma",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0016",
-      "slug": "mercurius-solubilis",
-      "entityType": "remedy",
+      "entityId": "D0062",
+      "slug": "meniere-s-disease",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0017",
-      "slug": "natrum-muriaticum",
-      "entityType": "remedy",
+      "entityId": "D0063",
+      "slug": "tension-headache",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0018",
-      "slug": "phosphorus",
-      "entityType": "remedy",
+      "entityId": "D0067",
+      "slug": "plantar-fasciitis",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0022",
-      "slug": "silicea-terra",
-      "entityType": "remedy",
+      "entityId": "D0070",
+      "slug": "peripheral-neuropathy",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0023",
-      "slug": "thuja-occidentalis",
-      "entityType": "remedy",
+      "entityId": "D0073",
+      "slug": "mastitis",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     }
@@ -104,5 +108,5 @@
     "passedCaseCount": 100,
     "failedCaseCount": 0
   },
-  "packageSha256": "31eeaac88ac5b1af5ae67d07929284390654aea8c2e7db23a6ec143839134bcc"
+  "packageSha256": "5c02806411223a3454996de11648d0c3ba38bd932687bdb10d47a48815fbbc65"
 }
