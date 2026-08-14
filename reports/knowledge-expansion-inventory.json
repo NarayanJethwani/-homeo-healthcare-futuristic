@@ -20,7 +20,7 @@
     "withdrawnEntities": 3,
     "flagshipEntities": 8,
     "legacyBulkGeneratedEntities": 256,
-    "genericSignalEntities": 105,
+    "genericSignalEntities": 97,
     "independentlyReviewedEntities": 0,
     "governedEvidenceProfiles": 0,
     "claimCitationCompleteEntities": 0,
@@ -1339,446 +1339,6 @@
           "generic-template-detected",
           "independent-review-unproven",
           "graph-isolated",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0057",
-      "slug": "hypochlorhydria",
-      "entityType": "disease",
-      "title": "Hypochlorhydria",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 3,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 4,
-        "duplicateRelationshipRows": 4,
-        "brokenRelationshipRows": 2,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0066",
-      "slug": "sebaceous-cyst",
-      "entityType": "disease",
-      "title": "Sebaceous Cyst",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 3,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 4,
-        "duplicateRelationshipRows": 4,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0068",
-      "slug": "post-viral-fatigue",
-      "entityType": "disease",
-      "title": "Post-Viral Fatigue",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 6,
-        "duplicateRelationshipRows": 6,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0069",
-      "slug": "irritable-bladder",
-      "entityType": "disease",
-      "title": "Irritable Bladder",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 2,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 4,
-        "duplicateRelationshipRows": 4,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0071",
-      "slug": "spasmodic-dysphonia",
-      "entityType": "disease",
-      "title": "Spasmodic Dysphonia",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 3,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 4,
-        "duplicateRelationshipRows": 4,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0072",
-      "slug": "hypoglycemia",
-      "entityType": "disease",
-      "title": "Hypoglycemia",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 5,
-        "duplicateRelationshipRows": 5,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0074",
-      "slug": "intertrigo",
-      "entityType": "disease",
-      "title": "Intertrigo",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 3,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 4,
-        "duplicateRelationshipRows": 4,
-        "brokenRelationshipRows": 2,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0075",
-      "slug": "hyperacidity",
-      "entityType": "disease",
-      "title": "Hyperacidity",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 3,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 5,
-        "duplicateRelationshipRows": 5,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
           "clinical-interpretation-content"
         ]
       }
@@ -10819,6 +10379,58 @@
       }
     },
     {
+      "entityId": "D0057",
+      "slug": "hypochlorhydria",
+      "entityType": "disease",
+      "title": "Hypochlorhydria & Achlorhydria (Low Stomach Acid & Parietal Cell Secretory Failure)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 4,
+        "duplicateRelationshipRows": 4,
+        "brokenRelationshipRows": 2,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
       "entityId": "D0058",
       "slug": "eustachian-tube-dysfunction",
       "entityType": "disease",
@@ -11235,6 +10847,58 @@
       }
     },
     {
+      "entityId": "D0066",
+      "slug": "sebaceous-cyst",
+      "entityType": "disease",
+      "title": "Epidermoid & Sebaceous Cyst (Infundibular Follicular Cyst & Keratinaceous Skin Nodule)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 4,
+        "duplicateRelationshipRows": 4,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
       "entityId": "D0067",
       "slug": "plantar-fasciitis",
       "entityType": "disease",
@@ -11268,6 +10932,110 @@
       "graph": {
         "uniqueConnectionCount": 5,
         "duplicateRelationshipRows": 5,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0068",
+      "slug": "post-viral-fatigue",
+      "entityType": "disease",
+      "title": "Post-Viral Fatigue Syndrome (PVFS, Post-Acute Sequelae of COVID-19 & ME/CFS Spectrum)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 6,
+        "duplicateRelationshipRows": 6,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0069",
+      "slug": "irritable-bladder",
+      "entityType": "disease",
+      "title": "Irritable Bladder & Overactive Bladder (OAB, Detrusor Muscle Overactivity & Urgency Incontinence)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 4,
+        "duplicateRelationshipRows": 4,
         "brokenRelationshipRows": 0,
         "isolated": false
       },
@@ -11339,6 +11107,110 @@
       }
     },
     {
+      "entityId": "D0071",
+      "slug": "spasmodic-dysphonia",
+      "entityType": "disease",
+      "title": "Spasmodic Dysphonia (Laryngeal Dystonia, Focal Task-Specific Vocal Cord Spasms)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 4,
+        "duplicateRelationshipRows": 4,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0072",
+      "slug": "hypoglycemia",
+      "entityType": "disease",
+      "title": "Hypoglycemia & Low Blood Glucose Crisis (Neuroglycopenia, Autonomic Counter-Regulation & Whipple's Triad)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 5,
+        "duplicateRelationshipRows": 5,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
       "entityId": "D0073",
       "slug": "mastitis",
       "entityType": "disease",
@@ -11373,6 +11245,110 @@
         "uniqueConnectionCount": 5,
         "duplicateRelationshipRows": 5,
         "brokenRelationshipRows": 2,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0074",
+      "slug": "intertrigo",
+      "entityType": "disease",
+      "title": "Intertrigo & Intertriginous Candidiasis (Skin Fold Friction, Maceration & Satellite Pustulosis)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 4,
+        "duplicateRelationshipRows": 4,
+        "brokenRelationshipRows": 2,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0075",
+      "slug": "hyperacidity",
+      "entityType": "disease",
+      "title": "Hyperacidity & Functional Acid Dyspepsia (Gastric Acid Hypersecretion, Epigastric Burning & Heartburn)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 5,
+        "duplicateRelationshipRows": 5,
+        "brokenRelationshipRows": 0,
         "isolated": false
       },
       "eligibility": {
