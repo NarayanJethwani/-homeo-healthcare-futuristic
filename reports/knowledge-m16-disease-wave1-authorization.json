@@ -1,89 +1,93 @@
 {
-  "milestoneId": "M10",
-  "packageId": "KEP5-PACKAGE-M10-KEY-REMEDIES-WAVE2-001",
-  "generatedAt": "2026-08-14T07:17:53.324Z",
+  "milestoneId": "M16",
+  "packageId": "KEP7-PACKAGE-M16-DISEASE-WAVE1-001",
+  "sourceCommit": "c05f2688afd2e3c70b402cdf7d7616ef6db6c461",
+  "generatedAt": "2026-08-14T07:06:55.963Z",
   "status": "pending_authorization",
   "governance": {
-    "program": "KEP-5",
+    "program": "KEP-7",
     "productionRagActivation": false,
+    "transitionalPublicationFreeze": true,
     "governedProposalsCount": 50,
     "allProposalsDraftOnly": true,
     "ragIneligible": true
   },
   "summary": {
     "totalEntitiesUpgraded": 10,
-    "keyRemedyEntitiesCount": 10,
+    "diseaseEntitiesCount": 10,
     "evaluationCasesCount": 100,
-    "evaluationPassRate": 1
+    "evaluationPassRate": 1,
+    "wavePromotionCandidate": true,
+    "wavePromotionAchieved": false
   },
   "entities": [
     {
-      "entityId": "R0010",
-      "slug": "carbo-vegetabilis",
-      "entityType": "remedy",
+      "entityId": "D0003",
+      "slug": "migraine",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0011",
-      "slug": "chamomilla",
-      "entityType": "remedy",
+      "entityId": "D0018",
+      "slug": "cervical-spondylosis",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0013",
-      "slug": "hepar-sulphuris-calcareum",
-      "entityType": "remedy",
+      "entityId": "D0023",
+      "slug": "gout",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0014",
-      "slug": "ignatia-amara",
-      "entityType": "remedy",
+      "entityId": "D0026",
+      "slug": "otitis-media",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0015",
-      "slug": "kali-bichromicum",
-      "entityType": "remedy",
+      "entityId": "D0030",
+      "slug": "urolithiasis",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0016",
-      "slug": "mercurius-solubilis",
-      "entityType": "remedy",
+      "entityId": "D0032",
+      "slug": "urinary-tract-infection",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0017",
-      "slug": "natrum-muriaticum",
-      "entityType": "remedy",
+      "entityId": "D0040",
+      "slug": "sciatica",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0018",
-      "slug": "phosphorus",
-      "entityType": "remedy",
+      "entityId": "D0041",
+      "slug": "trigeminal-neuralgia",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0022",
-      "slug": "silicea-terra",
-      "entityType": "remedy",
+      "entityId": "D0043",
+      "slug": "varicose-veins",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0023",
-      "slug": "thuja-occidentalis",
-      "entityType": "remedy",
+      "entityId": "D0049",
+      "slug": "peptic-ulcer",
+      "entityType": "disease",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     }
@@ -104,5 +108,5 @@
     "passedCaseCount": 100,
     "failedCaseCount": 0
   },
-  "packageSha256": "31eeaac88ac5b1af5ae67d07929284390654aea8c2e7db23a6ec143839134bcc"
+  "packageSha256": "e701e0df1e8fe4c7bcc760c6af6b3225a063b67fb2b7ab85f8cee862aa5aa075"
 }
