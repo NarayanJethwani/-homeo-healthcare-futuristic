@@ -1,11 +1,13 @@
 {
-  "milestoneId": "M10",
-  "packageId": "KEP5-PACKAGE-M10-KEY-REMEDIES-WAVE2-001",
-  "generatedAt": "2026-08-14T02:26:34.169Z",
+  "milestoneId": "M13",
+  "packageId": "KEP6-PACKAGE-M13-KEY-REMEDIES-WAVE5-001",
+  "sourceCommit": "9e622704e2f913d9e98acafe3431332235982719",
+  "generatedAt": "2026-08-14T02:14:16.485Z",
   "status": "pending_authorization",
   "governance": {
-    "program": "KEP-5",
+    "program": "KEP-6",
     "productionRagActivation": false,
+    "transitionalPublicationFreeze": true,
     "governedProposalsCount": 50,
     "allProposalsDraftOnly": true,
     "ragIneligible": true
@@ -14,75 +16,77 @@
     "totalEntitiesUpgraded": 10,
     "keyRemedyEntitiesCount": 10,
     "evaluationCasesCount": 100,
-    "evaluationPassRate": 1
+    "evaluationPassRate": 1,
+    "wavePromotionCandidate": true,
+    "wavePromotionAchieved": false
   },
   "entities": [
     {
-      "entityId": "R0010",
-      "slug": "carbo-vegetabilis",
+      "entityId": "R0046",
+      "slug": "hamamelis",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0011",
-      "slug": "chamomilla",
+      "entityId": "R0047",
+      "slug": "hyoscyamus",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0013",
-      "slug": "hepar-sulphuris-calcareum",
+      "entityId": "R0050",
+      "slug": "kali-carbonicum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0014",
-      "slug": "ignatia-amara",
+      "entityId": "R0051",
+      "slug": "kali-phosphoricum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0015",
-      "slug": "kali-bichromicum",
+      "entityId": "R0052",
+      "slug": "kreosotum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0016",
-      "slug": "mercurius-solubilis",
+      "entityId": "R0053",
+      "slug": "lachesis-muta",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0017",
-      "slug": "natrum-muriaticum",
+      "entityId": "R0055",
+      "slug": "magnesia-phosphorica",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0018",
-      "slug": "phosphorus",
+      "entityId": "R0056",
+      "slug": "nux-moschata",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0022",
-      "slug": "silicea-terra",
+      "entityId": "R0057",
+      "slug": "opium",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0023",
-      "slug": "thuja-occidentalis",
+      "entityId": "R0058",
+      "slug": "phytolacca",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
@@ -104,5 +108,5 @@
     "passedCaseCount": 100,
     "failedCaseCount": 0
   },
-  "packageSha256": "31eeaac88ac5b1af5ae67d07929284390654aea8c2e7db23a6ec143839134bcc"
+  "packageSha256": "ec442f6b99c47cdfdfcc7057d3a66ab0ad609f6137b05410240a5ccead41acdc"
 }

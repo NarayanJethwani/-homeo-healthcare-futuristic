@@ -1,7 +1,7 @@
 {
   "milestoneId": "M8",
   "packageId": "KEP4-PACKAGE-M8-COMMON-SYMPTOMS-LABS-001",
-  "generatedAt": "2026-08-08T14:43:15.168Z",
+  "generatedAt": "2026-08-14T02:26:32.720Z",
   "status": "pending_authorization",
   "governance": {
     "program": "KEP-4",
@@ -168,5 +168,5 @@
     "passedCaseCount": 190,
     "failedCaseCount": 0
   },
-  "packageSha256": "70ea6a2d805a3ceebc4c44d5c04fbbfe06d85e48e57a65c99ad7dd0436a0b4d2"
+  "packageSha256": "04bb3d6c9fa0bbf4cb0fdeb3bd99c8543b7fb36579105b986d641d7baea87c6a"
 }
