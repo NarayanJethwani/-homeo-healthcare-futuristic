@@ -1,0 +1,98 @@
+{
+  "milestoneId": "M20",
+  "packageId": "KEP7-PACKAGE-M20-DISEASE-WAVE5-001",
+  "sourceCommit": "83ebbe0008923cf5a254d34f70fddb96fe4599d3",
+  "generatedAt": "2026-08-14T16:31:40.842Z",
+  "status": "pending_authorization",
+  "governance": {
+    "program": "KEP-7",
+    "productionRagActivation": false,
+    "transitionalPublicationFreeze": true,
+    "governedProposalsCount": 40,
+    "allProposalsDraftOnly": true,
+    "ragIneligible": true
+  },
+  "summary": {
+    "totalEntitiesUpgraded": 8,
+    "diseaseEntitiesCount": 8,
+    "evaluationCasesCount": 80,
+    "evaluationPassRate": 1,
+    "wavePromotionCandidate": true,
+    "wavePromotionAchieved": false
+  },
+  "entities": [
+    {
+      "entityId": "D0057",
+      "slug": "hypochlorhydria",
+      "entityType": "disease",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "D0066",
+      "slug": "sebaceous-cyst",
+      "entityType": "disease",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "D0068",
+      "slug": "post-viral-fatigue",
+      "entityType": "disease",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "D0069",
+      "slug": "irritable-bladder",
+      "entityType": "disease",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "D0071",
+      "slug": "spasmodic-dysphonia",
+      "entityType": "disease",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "D0072",
+      "slug": "hypoglycemia",
+      "entityType": "disease",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "D0074",
+      "slug": "intertrigo",
+      "entityType": "disease",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "D0075",
+      "slug": "hyperacidity",
+      "entityType": "disease",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    }
+  ],
+  "evaluation": {
+    "caseCount": 80,
+    "entityCount": 8,
+    "minimumCasesPerEntity": 10,
+    "recallAt5": 1,
+    "meanReciprocalRank": 1,
+    "citationPrecision": 1,
+    "unsupportedClaimFailureCount": 0,
+    "emergencyEscalationFailureCount": 0,
+    "abstentionFailureCount": 0,
+    "staleRevisionLeakageCount": 0,
+    "crossEntityConfusionCount": 0,
+    "withdrawnContentLeakageCount": 0,
+    "passedCaseCount": 80,
+    "failedCaseCount": 0
+  },
+  "packageSha256": "d7a3cfcd0efa6b9c7ad8849720157df11c5a19a9c8d2b651ec5ed8be1eb08a23"
+}
