@@ -1635,6 +1635,13 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "M20 KEP-7 Disease Coverage Wave 5 (Final 8 diseases - D0057, D0066, D0068, D0069, D0071, D0072, D0074, D0075) v1.1.0 upgrades completing 100% disease coverage, 40 draft graph proposals, 80-case offline evaluation with 16 negative controls, clinical safety boundaries, and human wave promotion authorization boundary"
   },
   {
+    "path": "tests/knowledgeKEP6RemedyWave8.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M21 KEP-6 Remedy Coverage Wave 8 (10 major classical remedies - R0037, R0038, R0041, R0043, R0079, R0098, R0101, R0103, R0104, R0147) v1.1.0 upgrades, 50 draft graph proposals, 100-case offline evaluation with 20 negative controls, clinical safety boundaries, and human wave promotion authorization boundary"
+  },
+  {
     "path": "tests/softLaunchManualPayment.test.ts",
     "status": "active",
     "ownerArea": "commerce-pricing",
