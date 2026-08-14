@@ -20,7 +20,7 @@
     "withdrawnEntities": 3,
     "flagshipEntities": 8,
     "legacyBulkGeneratedEntities": 256,
-    "genericSignalEntities": 125,
+    "genericSignalEntities": 115,
     "independentlyReviewedEntities": 0,
     "governedEvidenceProfiles": 0,
     "claimCitationCompleteEntities": 0,
@@ -690,62 +690,6 @@
       },
       "evidence": {
         "referenceCount": 3,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 50,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "graph-isolated",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0039",
-      "slug": "intercostal-neuralgia",
-      "entityType": "disease",
-      "title": "Intercostal Neuralgia",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 2,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
@@ -1568,61 +1512,6 @@
       }
     },
     {
-      "entityId": "D0012",
-      "slug": "hyperthyroidism",
-      "entityType": "disease",
-      "title": "Hyperthyroidism",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 3,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 8,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
       "entityId": "D0052",
       "slug": "vitamin-d-deficiency",
       "entityType": "disease",
@@ -1733,61 +1622,6 @@
       }
     },
     {
-      "entityId": "D0054",
-      "slug": "chronic-cough",
-      "entityType": "disease",
-      "title": "Chronic Cough",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 3,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 5,
-        "duplicateRelationshipRows": 5,
-        "brokenRelationshipRows": 2,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
       "entityId": "D0055",
       "slug": "recurrent-cold",
       "entityType": "disease",
@@ -1810,61 +1644,6 @@
       },
       "evidence": {
         "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 6,
-        "duplicateRelationshipRows": 6,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0056",
-      "slug": "low-back-pain",
-      "entityType": "disease",
-      "title": "Low Back Pain",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 2,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
@@ -2008,61 +1787,6 @@
       }
     },
     {
-      "entityId": "D0059",
-      "slug": "fibroadenoma",
-      "entityType": "disease",
-      "title": "Fibroadenoma",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 3,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 4,
-        "duplicateRelationshipRows": 4,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
       "entityId": "D0061",
       "slug": "laryngitis",
       "entityType": "disease",
@@ -2099,116 +1823,6 @@
         "uniqueConnectionCount": 5,
         "duplicateRelationshipRows": 5,
         "brokenRelationshipRows": 2,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0062",
-      "slug": "meniere-s-disease",
-      "entityType": "disease",
-      "title": "Meniere's Disease",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 2,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 5,
-        "duplicateRelationshipRows": 5,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0063",
-      "slug": "tension-headache",
-      "entityType": "disease",
-      "title": "Tension Headache",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 2,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 5,
-        "duplicateRelationshipRows": 5,
-        "brokenRelationshipRows": 0,
         "isolated": false
       },
       "eligibility": {
@@ -2393,61 +2007,6 @@
       }
     },
     {
-      "entityId": "D0067",
-      "slug": "plantar-fasciitis",
-      "entityType": "disease",
-      "title": "Plantar Fasciitis",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 2,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 5,
-        "duplicateRelationshipRows": 5,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
       "entityId": "D0068",
       "slug": "post-viral-fatigue",
       "entityType": "disease",
@@ -2538,61 +2097,6 @@
       "graph": {
         "uniqueConnectionCount": 4,
         "duplicateRelationshipRows": 4,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0070",
-      "slug": "peripheral-neuropathy",
-      "entityType": "disease",
-      "title": "Peripheral Neuropathy",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 2,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 6,
-        "duplicateRelationshipRows": 6,
         "brokenRelationshipRows": 0,
         "isolated": false
       },
@@ -2704,61 +2208,6 @@
         "uniqueConnectionCount": 5,
         "duplicateRelationshipRows": 5,
         "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0073",
-      "slug": "mastitis",
-      "entityType": "disease",
-      "title": "Mastitis",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 3,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 5,
-        "duplicateRelationshipRows": 5,
-        "brokenRelationshipRows": 2,
         "isolated": false
       },
       "eligibility": {
@@ -9124,6 +8573,59 @@
       }
     },
     {
+      "entityId": "D0039",
+      "slug": "intercostal-neuralgia",
+      "entityType": "disease",
+      "title": "Intercostal Neuralgia (Rib Cage Neuropathic Pain & Post-Herpetic Neuralgia)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 30,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
       "entityId": "D0040",
       "slug": "sciatica",
       "entityType": "disease",
@@ -11347,6 +10849,58 @@
       }
     },
     {
+      "entityId": "D0012",
+      "slug": "hyperthyroidism",
+      "entityType": "disease",
+      "title": "Hyperthyroidism & Thyrotoxicosis (Overactive Thyroid & Graves' Disease)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 8,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
       "entityId": "D0051",
       "slug": "anemia",
       "entityType": "disease",
@@ -11380,6 +10934,162 @@
       "graph": {
         "uniqueConnectionCount": 6,
         "duplicateRelationshipRows": 6,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0054",
+      "slug": "chronic-cough",
+      "entityType": "disease",
+      "title": "Chronic Cough (Unexplained & Refractory Cough Reflex Hypersensitivity)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 5,
+        "duplicateRelationshipRows": 5,
+        "brokenRelationshipRows": 2,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0056",
+      "slug": "low-back-pain",
+      "entityType": "disease",
+      "title": "Mechanical Low Back Pain & Lumbago (Lumbar Spondylosis & Myofascial Strain)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 6,
+        "duplicateRelationshipRows": 6,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0059",
+      "slug": "fibroadenoma",
+      "entityType": "disease",
+      "title": "Breast Fibroadenoma (Benign Fibroepithelial Breast Neoplasm / 'Breast Mouse')",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 4,
+        "duplicateRelationshipRows": 4,
         "brokenRelationshipRows": 0,
         "isolated": false
       },
@@ -11433,6 +11143,266 @@
         "uniqueConnectionCount": 5,
         "duplicateRelationshipRows": 5,
         "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0062",
+      "slug": "meniere-s-disease",
+      "entityType": "disease",
+      "title": "Ménière's Disease (Idiopathic Endolymphatic Hydrops / Episodic Vertigo)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 5,
+        "duplicateRelationshipRows": 5,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0063",
+      "slug": "tension-headache",
+      "entityType": "disease",
+      "title": "Tension-Type Headache (TTH / Stress & Pericranial Myofascial Headache)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 5,
+        "duplicateRelationshipRows": 5,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0067",
+      "slug": "plantar-fasciitis",
+      "entityType": "disease",
+      "title": "Plantar Fasciitis (Plantar Fasciopathy & Calcaneal Spur Heel Pain)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 5,
+        "duplicateRelationshipRows": 5,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0070",
+      "slug": "peripheral-neuropathy",
+      "entityType": "disease",
+      "title": "Peripheral Neuropathy (Distal Symmetric Polyneuropathy & Diabetic Neuropathy)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 6,
+        "duplicateRelationshipRows": 6,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0073",
+      "slug": "mastitis",
+      "entityType": "disease",
+      "title": "Acute Mastitis (Lactational Puerperal Mastitis & Breast Inflammation)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 5,
+        "duplicateRelationshipRows": 5,
+        "brokenRelationshipRows": 2,
         "isolated": false
       },
       "eligibility": {
