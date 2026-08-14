@@ -1579,6 +1579,13 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "M12 KEP-5 Polycrest & Key Remedy Coverage Wave 4 (10 major key remedies - R0035, R0036, R0039, R0040, R0042, R0044, R0045, R0048, R0049, R0054) v1.1.0 upgrades, 50 draft graph proposals, 100-case offline evaluation with 20 negative controls, toxicology/safety boundaries, and program completion authorization boundary"
   },
   {
+    "path": "tests/knowledgeKEP6KeyRemediesWave5.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M13 KEP-6 Remedy Coverage Wave 5 (10 major key remedies - R0046, R0047, R0050, R0051, R0052, R0053, R0055, R0056, R0057, R0058) v1.1.0 upgrades, 50 draft graph proposals, 100-case offline evaluation with 20 negative controls, toxicology/safety boundaries, and human wave promotion authorization boundary"
+  },
+  {
     "path": "tests/softLaunchManualPayment.test.ts",
     "status": "active",
     "ownerArea": "commerce-pricing",
