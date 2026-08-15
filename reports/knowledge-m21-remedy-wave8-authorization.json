@@ -1,88 +1,92 @@
 {
-  "milestoneId": "M9",
-  "packageId": "KEP5-PACKAGE-M9-POLYCREST-REMEDIES-001",
-  "generatedAt": "2026-08-15T01:01:46.042Z",
+  "milestoneId": "M21",
+  "packageId": "KEP6-PACKAGE-M21-REMEDY-WAVE8-001",
+  "sourceCommit": "b835d438c6ca8b4f55487c96882bdcb78c5f2306",
+  "generatedAt": "2026-08-14T18:21:54.155Z",
   "status": "pending_authorization",
   "governance": {
-    "program": "KEP-5",
+    "program": "KEP-6",
     "productionRagActivation": false,
+    "transitionalPublicationFreeze": true,
     "governedProposalsCount": 50,
     "allProposalsDraftOnly": true,
     "ragIneligible": true
   },
   "summary": {
     "totalEntitiesUpgraded": 10,
-    "polycrestRemedyEntitiesCount": 10,
+    "remedyEntitiesCount": 10,
     "evaluationCasesCount": 100,
-    "evaluationPassRate": 1
+    "evaluationPassRate": 1,
+    "wavePromotionCandidate": true,
+    "wavePromotionAchieved": false
   },
   "entities": [
     {
-      "entityId": "R0003",
-      "slug": "lycopodium",
+      "entityId": "R0037",
+      "slug": "conium-maculatum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0004",
-      "slug": "aconitum-napellus",
+      "entityId": "R0038",
+      "slug": "digitalis",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0005",
-      "slug": "arnica-montana",
+      "entityId": "R0041",
+      "slug": "eupatorium-perfoliatum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0007",
-      "slug": "belladonna",
+      "entityId": "R0043",
+      "slug": "ferrum-phosphoricum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0008",
-      "slug": "bryonia-alba",
+      "entityId": "R0079",
+      "slug": "zincum-metallicum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0009",
-      "slug": "calcarea-carbonica",
+      "entityId": "R0098",
+      "slug": "chelidonium",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0012",
-      "slug": "gelsemium-sempervirens",
+      "entityId": "R0101",
+      "slug": "mercurius-corrosivus",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0019",
-      "slug": "pulsatilla-pratensis",
+      "entityId": "R0103",
+      "slug": "petroleum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0020",
-      "slug": "rhus-toxicodendron",
+      "entityId": "R0104",
+      "slug": "platinum-metallicum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0021",
-      "slug": "sepia-officinalis",
+      "entityId": "R0147",
+      "slug": "coffea-cruda",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
@@ -104,5 +108,5 @@
     "passedCaseCount": 100,
     "failedCaseCount": 0
   },
-  "packageSha256": "0f853d4b098bf6d125454bc555be281526e4f03ce32426c93ddad73625d1ad1e"
+  "packageSha256": "119762655327e6a1ba88d0c53ece24da9975e264f430f849302e7faf7a7527a9"
 }
