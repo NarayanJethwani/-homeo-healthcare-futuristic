@@ -1,88 +1,92 @@
 {
-  "milestoneId": "M9",
-  "packageId": "KEP5-PACKAGE-M9-POLYCREST-REMEDIES-001",
-  "generatedAt": "2026-08-17T10:27:31.440Z",
+  "milestoneId": "M24",
+  "packageId": "KEP6-PACKAGE-M24-REMEDY-WAVE11-001",
+  "sourceCommit": "c7c6ae0ad43e85490ad216ee8053510c93b2982e",
+  "generatedAt": "2026-08-17T10:21:54.992Z",
   "status": "pending_authorization",
   "governance": {
-    "program": "KEP-5",
+    "program": "KEP-6",
     "productionRagActivation": false,
+    "transitionalPublicationFreeze": true,
     "governedProposalsCount": 50,
     "allProposalsDraftOnly": true,
     "ragIneligible": true
   },
   "summary": {
     "totalEntitiesUpgraded": 10,
-    "polycrestRemedyEntitiesCount": 10,
+    "remedyEntitiesCount": 10,
     "evaluationCasesCount": 100,
-    "evaluationPassRate": 1
+    "evaluationPassRate": 1,
+    "wavePromotionCandidate": true,
+    "wavePromotionAchieved": false
   },
   "entities": [
     {
-      "entityId": "R0003",
-      "slug": "lycopodium",
+      "entityId": "R0105",
+      "slug": "abrotanum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0004",
-      "slug": "aconitum-napellus",
+      "entityId": "R0106",
+      "slug": "acalypha-indica",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0005",
-      "slug": "arnica-montana",
+      "entityId": "R0107",
+      "slug": "aceticum-acidum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0007",
-      "slug": "belladonna",
+      "entityId": "R0110",
+      "slug": "ailanthus-glandulosa",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0008",
-      "slug": "bryonia-alba",
+      "entityId": "R0115",
+      "slug": "amyl-nitrosum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0009",
-      "slug": "calcarea-carbonica",
+      "entityId": "R0116",
+      "slug": "angustura-vera",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0012",
-      "slug": "gelsemium-sempervirens",
+      "entityId": "R0117",
+      "slug": "anthracinum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0019",
-      "slug": "pulsatilla-pratensis",
+      "entityId": "R0118",
+      "slug": "antimonium-arsenicicum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0020",
-      "slug": "rhus-toxicodendron",
+      "entityId": "R0120",
+      "slug": "aralia-racemosa",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0021",
-      "slug": "sepia-officinalis",
+      "entityId": "R0121",
+      "slug": "aranea-diadema",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
@@ -104,5 +108,5 @@
     "passedCaseCount": 100,
     "failedCaseCount": 0
   },
-  "packageSha256": "0f853d4b098bf6d125454bc555be281526e4f03ce32426c93ddad73625d1ad1e"
+  "packageSha256": "7de78ef63b3f6fd234c26452baa48fdbabe72411eb6df73644695900ba3b2b2c"
 }
