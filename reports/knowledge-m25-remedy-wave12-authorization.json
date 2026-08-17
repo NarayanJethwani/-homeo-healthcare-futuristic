@@ -1,88 +1,92 @@
 {
-  "milestoneId": "M9",
-  "packageId": "KEP5-PACKAGE-M9-POLYCREST-REMEDIES-001",
-  "generatedAt": "2026-08-17T12:09:30.250Z",
+  "milestoneId": "M25",
+  "packageId": "KEP6-PACKAGE-M25-REMEDY-WAVE12-001",
+  "sourceCommit": "bbd5d9db9ba7d1da8bf07c47d3f3ea411bdea5ed",
+  "generatedAt": "2026-08-17T12:03:49.597Z",
   "status": "pending_authorization",
   "governance": {
-    "program": "KEP-5",
+    "program": "KEP-6",
     "productionRagActivation": false,
+    "transitionalPublicationFreeze": true,
     "governedProposalsCount": 50,
     "allProposalsDraftOnly": true,
     "ragIneligible": true
   },
   "summary": {
     "totalEntitiesUpgraded": 10,
-    "polycrestRemedyEntitiesCount": 10,
+    "remedyEntitiesCount": 10,
     "evaluationCasesCount": 100,
-    "evaluationPassRate": 1
+    "evaluationPassRate": 1,
+    "wavePromotionCandidate": true,
+    "wavePromotionAchieved": false
   },
   "entities": [
     {
-      "entityId": "R0003",
-      "slug": "lycopodium",
+      "entityId": "R0122",
+      "slug": "arsenicum-iodatum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0004",
-      "slug": "aconitum-napellus",
+      "entityId": "R0123",
+      "slug": "arum-triphyllum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0005",
-      "slug": "arnica-montana",
+      "entityId": "R0084",
+      "slug": "asafoetida",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0007",
-      "slug": "belladonna",
+      "entityId": "R0124",
+      "slug": "avena-sativa",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0008",
-      "slug": "bryonia-alba",
+      "entityId": "R0125",
+      "slug": "badiaga",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0009",
-      "slug": "calcarea-carbonica",
+      "entityId": "R0126",
+      "slug": "baryta-muriatica",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0012",
-      "slug": "gelsemium-sempervirens",
+      "entityId": "R0127",
+      "slug": "bellis-perennis",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0019",
-      "slug": "pulsatilla-pratensis",
+      "entityId": "R0128",
+      "slug": "benzoicum-acidum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0020",
-      "slug": "rhus-toxicodendron",
+      "entityId": "R0129",
+      "slug": "bismuthum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0021",
-      "slug": "sepia-officinalis",
+      "entityId": "R0130",
+      "slug": "blatta-orientalis",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
@@ -104,5 +108,5 @@
     "passedCaseCount": 100,
     "failedCaseCount": 0
   },
-  "packageSha256": "0f853d4b098bf6d125454bc555be281526e4f03ce32426c93ddad73625d1ad1e"
+  "packageSha256": "55f80d8e5bd2a5fa2cbb056e351881735a20456cc6dcd9d451cafc73e120c839"
 }
