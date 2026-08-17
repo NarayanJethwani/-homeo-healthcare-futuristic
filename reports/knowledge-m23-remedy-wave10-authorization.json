@@ -1,88 +1,92 @@
 {
-  "milestoneId": "M10",
-  "packageId": "KEP5-PACKAGE-M10-KEY-REMEDIES-WAVE2-001",
-  "generatedAt": "2026-08-17T08:26:03.334Z",
+  "milestoneId": "M23",
+  "packageId": "KEP6-PACKAGE-M23-REMEDY-WAVE10-001",
+  "sourceCommit": "18d7201a557df6820d6335b9c682a77e29df5aac",
+  "generatedAt": "2026-08-16T08:51:14.030Z",
   "status": "pending_authorization",
   "governance": {
-    "program": "KEP-5",
+    "program": "KEP-6",
     "productionRagActivation": false,
+    "transitionalPublicationFreeze": true,
     "governedProposalsCount": 50,
     "allProposalsDraftOnly": true,
     "ragIneligible": true
   },
   "summary": {
     "totalEntitiesUpgraded": 10,
-    "keyRemedyEntitiesCount": 10,
+    "remedyEntitiesCount": 10,
     "evaluationCasesCount": 100,
-    "evaluationPassRate": 1
+    "evaluationPassRate": 1,
+    "wavePromotionCandidate": true,
+    "wavePromotionAchieved": false
   },
   "entities": [
     {
-      "entityId": "R0010",
-      "slug": "carbo-vegetabilis",
+      "entityId": "R0083",
+      "slug": "antimonium-crudum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0011",
-      "slug": "chamomilla",
+      "entityId": "R0085",
+      "slug": "aurum-metallicum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0013",
-      "slug": "hepar-sulphuris-calcareum",
+      "entityId": "R0088",
+      "slug": "berberis-vulgaris",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0014",
-      "slug": "ignatia-amara",
+      "entityId": "R0091",
+      "slug": "calcarea-fluorica",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0015",
-      "slug": "kali-bichromicum",
+      "entityId": "R0092",
+      "slug": "calcarea-phosphorica",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0016",
-      "slug": "mercurius-solubilis",
+      "entityId": "R0093",
+      "slug": "calcarea-sulphurica",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0017",
-      "slug": "natrum-muriaticum",
+      "entityId": "R0094",
+      "slug": "camphora",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0018",
-      "slug": "phosphorus",
+      "entityId": "R0097",
+      "slug": "capsicum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0022",
-      "slug": "silicea-terra",
+      "entityId": "R0119",
+      "slug": "apocynum-cannabinum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0023",
-      "slug": "thuja-occidentalis",
+      "entityId": "R0135",
+      "slug": "calendula-officinalis",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
@@ -104,5 +108,5 @@
     "passedCaseCount": 100,
     "failedCaseCount": 0
   },
-  "packageSha256": "31eeaac88ac5b1af5ae67d07929284390654aea8c2e7db23a6ec143839134bcc"
+  "packageSha256": "02dd8f0986b45826347a16c6cd2e7734b1dc43a1d8119261b3f72d5d65ef4a7c"
 }
