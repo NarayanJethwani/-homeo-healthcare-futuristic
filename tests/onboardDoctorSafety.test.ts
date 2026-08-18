@@ -18,7 +18,8 @@ async function run() {
   assert.equal(packageJson.dependencies["firebase-admin"], "13.6.0");
   assert.ok(getAdminAuth(), "Firebase Auth must load without a CommonJS/ESM crash");
 
-  assert.equal(computeDoctorPlanValidUntil("trial", new Date("2026-07-13T00:00:00.000Z")), "2026-07-27");
+  assert.equal(computeDoctorPlanValidUntil("trial", new Date("2026-07-13T00:00:00.000Z")), "2026-08-13");
+  assert.equal(computeDoctorPlanValidUntil("monthly", new Date("2026-01-31T00:00:00.000Z")), "2026-02-28");
   assert.equal(computeDoctorPlanValidUntil("branch", new Date("2026-07-13T00:00:00.000Z")), "2099-12-31");
 
   assert.equal(onboardDoctorSchema.safeParse({
@@ -26,6 +27,11 @@ async function run() {
     email: "PILOT@EXAMPLE.COM",
     plan: "trial",
   }).success, true);
+  assert.equal(onboardDoctorSchema.safeParse({
+    name: "Dr Pilot",
+    email: "pilot@example.com",
+    plan: "quarterly",
+  }).success, false, "legacy multi-month plans must not be offered to new doctors");
   assert.equal(onboardDoctorSchema.safeParse({
     name: "Dr Pilot",
     email: "pilot@example.com",

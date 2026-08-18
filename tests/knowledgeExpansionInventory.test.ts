@@ -49,7 +49,7 @@ export function runKnowledgeExpansionInventoryTests(): void {
   assert.strictEqual(inventory.summary.independentlyReviewedEntities, 0);
   assert.strictEqual(inventory.summary.governedEvidenceProfiles, 0);
   assert.strictEqual(inventory.summary.claimCitationCompleteEntities, 0);
-  assert.strictEqual(inventory.summary.isolatedEntities, 207);
+  assert.strictEqual(inventory.summary.isolatedEntities, 210);
   assert.strictEqual(inventory.summary.duplicateRelationshipRows, 178);
   assert.strictEqual(inventory.summary.activeRagEntities, 0);
 

@@ -147,7 +147,7 @@ export function TelemedicinePanel({
       treatmentPlan: updatedPlan,
       updatedAt: new Date().toISOString(),
     });
-    setSimulatorStatusMsg(`✅ Applied ${decision.selectedPathway} quotation (₹${decision.quote.finalTotal.toLocaleString("en-IN")}) to pending care plan!`);
+    setSimulatorStatusMsg(`✅ Applied ${decision.recommendation.title} quotation (₹${decision.quote.finalTotal.toLocaleString("en-IN")}) to pending care plan!`);
   };
 
   const handleAddDiscussionNote = () => {

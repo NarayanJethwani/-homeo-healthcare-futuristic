@@ -7,13 +7,13 @@ import Link from "next/link";
 import Magnetic from "./Magnetic";
 
 export default function Hero() {
-  const [adminUrl, setAdminUrl] = useState("https://admin.homeo.healthcare/");
+  const [portalUrl, setPortalUrl] = useState("https://portal.homeo.healthcare/login");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const host = window.location.hostname;
       if (host === "localhost" || host === "127.0.0.1" || host.includes("192.168.")) {
-        setAdminUrl("/admin/dashboard");
+        setPortalUrl("/login");
       }
     }
   }, []);
@@ -103,11 +103,11 @@ export default function Hero() {
           >
             <Magnetic>
               <Link
-                href={adminUrl}
+                href={portalUrl}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-mint/20 hover:border-mint/60 bg-mint/5 hover:bg-mint/10 text-mint-dark hover:text-[#0c6b5e] text-xs font-bold uppercase tracking-wider transition-all duration-300 backdrop-blur-md cursor-pointer"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                Back to Classic
+                Patient and doctor login
               </Link>
             </Magnetic>
           </motion.div>
@@ -118,11 +118,11 @@ export default function Hero() {
             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full glass-panel border-mint/20 text-xs font-semibold uppercase tracking-wider text-mint mb-8 shadow-[0_4px_12px_rgba(20,184,166,0.05)]"
           >
             <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-            <span>Futuristic Homeopathy meets Scientific Precision</span>
+            <span>Physician-led individualized care</span>
           </motion.div>
 
           {/* Heading with split-word typography reveals */}
-          <h1 className="font-serif text-5xl md:text-6xl xl:text-7xl font-semibold tracking-tight text-[#1A2421] leading-[1.08] mb-6 flex flex-wrap">
+          <h1 aria-label="Advanced Homeopathic Care for Modern Life" className="font-serif text-5xl md:text-6xl xl:text-7xl font-semibold tracking-tight text-[#1A2421] leading-[1.08] mb-6 flex flex-wrap">
             {[
               { text: "Advanced", isGradient: false },
               { text: "Homeopathic", isGradient: true },
@@ -131,7 +131,7 @@ export default function Hero() {
               { text: "Modern", isGradient: false },
               { text: "Life", isGradient: false },
             ].map((word, idx) => (
-              <span key={idx} className="inline-block overflow-hidden mr-[0.25em] pb-1">
+              <span key={idx} aria-hidden="true" className="inline-block overflow-hidden mr-[0.25em] pb-1">
                 <motion.span
                   initial={{ y: "100%", rotate: 3 }}
                   animate={{ y: 0, rotate: 0 }}
@@ -155,7 +155,7 @@ export default function Hero() {
             variants={itemVariants}
             className="text-lg md:text-xl text-slate-700 font-semibold tracking-wide max-w-xl mb-10 leading-relaxed"
           >
-            Personalized healing. Scientific understanding. Compassionate care. Discover constitutional therapies tailored to your biological essence.
+            Structured assessment, realistic expectations and compassionate follow-up—online or in person.
           </motion.p>
 
           {/* CTA Buttons */}
@@ -177,7 +177,7 @@ export default function Hero() {
                 data-cursor="explore"
                 className="px-8 py-4 rounded-full glass-panel border-slate-200 hover:border-mint/30 hover:bg-white/60 text-slate-700 font-semibold transition-all duration-500 cursor-pointer text-sm"
               >
-                Explore Treatments
+                Explore conditions
               </a>
             </Magnetic>
           </motion.div>

@@ -1,9 +1,12 @@
 import assert from "assert";
 import {
   CARE_LEVELS_DETAILS,
+  CARE_PLAN_CATALOG,
+  CARE_PLAN_CATALOG_VERSION,
   COMPLETE_HEALTH_TRANSFORMATION_DURATIONS,
   PUBLIC_CARE_LEVEL_KEYS,
   calculateCarePrice,
+  calculateCarePlanTotal,
   calculateCompleteHealthTransformationPrice,
   calculateContinuityCareTotal,
   buildGoogleSheetsCarePeriodWeeksFormula,
@@ -13,8 +16,24 @@ import {
 } from "../src/lib/pricingConfig";
 
 function runPricingPathwayTests() {
-  assert.deepStrictEqual(PUBLIC_CARE_LEVEL_KEYS, ["mild", "moderate", "focused"]);
-  assert.strictEqual(CARE_LEVELS_DETAILS.mild.weeklyPrice, 3_000);
+  assert.deepStrictEqual(PUBLIC_CARE_LEVEL_KEYS, ["mild", "chronic_focused", "moderate", "focused"]);
+  assert.strictEqual(CARE_PLAN_CATALOG_VERSION, "care-plan-catalog-v3");
+  assert.strictEqual(CARE_PLAN_CATALOG.acute_mild_3d.price, 1_000);
+  assert.strictEqual(CARE_PLAN_CATALOG.acute_mild_3d.durationValue, 3);
+  assert.strictEqual(CARE_PLAN_CATALOG.acute_mild_3d.durationUnit, "day");
+  assert.strictEqual(CARE_PLAN_CATALOG.acute_wellness_7d.price, 2_000);
+  assert.strictEqual(CARE_PLAN_CATALOG.acute_wellness_7d.durationValue, 7);
+  assert.strictEqual(CARE_PLAN_CATALOG.chronic_focused_1w.price, 3_000);
+  assert.strictEqual(CARE_PLAN_CATALOG.chronic_integrated_1w.price, 6_000);
+  assert.strictEqual(CARE_PLAN_CATALOG.chronic_complex_1w.price, 9_000);
+  assert.strictEqual(CARE_PLAN_CATALOG.chronic_advanced_1w.price, 12_000);
+  assert.deepStrictEqual(calculateCarePlanTotal("acute_mild_3d"), { listTotal: 1_000, discountPercent: 0, discountAmount: 0, total: 1_000 });
+  assert.throws(() => calculateCarePlanTotal("acute_mild_3d", 2), /fixed 3 days/i);
+  assert.strictEqual(calculateCarePlanTotal("chronic_focused_1w", 4).total, 10_800);
+  assert.strictEqual(CARE_LEVELS_DETAILS.mild.weeklyPrice, 2_000);
+  assert.strictEqual(CARE_LEVELS_DETAILS.mild.title, "Acute Wellness Care");
+  assert.strictEqual(CARE_LEVELS_DETAILS.chronic_focused.weeklyPrice, 3_000);
+  assert.match(CARE_LEVELS_DETAILS.mild.scopeMessage, /not emergency|red flags/i);
   assert.strictEqual(CARE_LEVELS_DETAILS.moderate.weeklyPrice, 6_000);
   assert.strictEqual(CARE_LEVELS_DETAILS.focused.weeklyPrice, 9_000);
   assert.strictEqual(CARE_LEVELS_DETAILS.organ.weeklyPrice, 0);
@@ -61,7 +80,7 @@ function runPricingPathwayTests() {
       additionalAcuteEpisode: true,
       priorityAcuteSupport: true,
     }).total,
-    10_700,
+    8_800,
   );
 
   assert.strictEqual(
@@ -83,14 +102,18 @@ function runPricingPathwayTests() {
   });
 
   assert.strictEqual(toPublicCarePathway("Core Chronic Care"), "moderate");
+  assert.strictEqual(toPublicCarePathway("Focused Chronic Care"), "chronic_focused");
+  assert.strictEqual(toPublicCarePathway("Focused Clinical Care"), "chronic_focused");
   assert.strictEqual(toPublicCarePathway("Deep Constitutional Care"), "focused");
   assert.strictEqual(toPublicCarePathway("Multisystem Integrative Care"), "focused");
 
   const sheetsFormula = buildGoogleSheetsCareRateFormula();
-  assert.match(sheetsFormula, /Focused Clinical/);
+  assert.match(sheetsFormula, /Acute Wellness/);
   assert.match(sheetsFormula, /Integrated Clinical/);
+  assert.match(sheetsFormula, /Focused Chronic/);
   assert.match(sheetsFormula, /Complex Clinical/);
   assert.match(sheetsFormula, /Advanced Physician/);
+  assert.match(sheetsFormula, /2000/);
   assert.match(sheetsFormula, /3000/);
   assert.match(sheetsFormula, /6000/);
   assert.match(sheetsFormula, /9000/);

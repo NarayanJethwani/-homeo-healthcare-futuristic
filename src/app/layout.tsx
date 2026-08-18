@@ -35,7 +35,7 @@ const playfairDisplay = Playfair_Display({
 
 export const metadata: Metadata = {
   title: "Homeo Healthcare | Advanced Homeopathic Care for Modern Life",
-  description: "Experience next-generation personalized homeopathic healing driven by science and deep compassion. Book clinical and online consultations with Dr. Narayan Jethwani.",
+  description: "Physician-led individualized homeopathic care with transparent care pathways, structured follow-up and in-person or online consultations with Dr. Narayan Jethwani.",
   manifest: "/manifest.json",
   keywords: [
     "Homeopathy",
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Homeo Healthcare | Advanced Homeopathic Care for Modern Life",
-    description: "Experience next-generation personalized homeopathic healing driven by science and deep compassion.",
+    description: "Physician-led individualized homeopathic care with transparent pathways and structured follow-up.",
     url: "https://homeo.healthcare",
     siteName: "Homeo Healthcare",
     locale: "en_US",

@@ -20,7 +20,7 @@
     "withdrawnEntities": 3,
     "flagshipEntities": 8,
     "legacyBulkGeneratedEntities": 256,
-    "genericSignalEntities": 27,
+    "genericSignalEntities": 20,
     "independentlyReviewedEntities": 0,
     "governedEvidenceProfiles": 0,
     "claimCitationCompleteEntities": 0,
@@ -1727,398 +1727,6 @@
           "generic-template-detected",
           "independent-review-unproven",
           "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "R0086",
-      "slug": "bells",
-      "entityType": "remedy",
-      "title": "Bells (Bells Common)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "medium"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "traditionally considered in constitutional clinical practice for profiles displaying",
-          "marked physical generalities and thermal characteristics"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "graph-isolated"
-        ]
-      }
-    },
-    {
-      "entityId": "R0087",
-      "slug": "benzoin",
-      "entityType": "remedy",
-      "title": "Benzoin (Benzoin Common)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "medium"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "traditionally considered in constitutional clinical practice for profiles displaying",
-          "marked physical generalities and thermal characteristics"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "graph-isolated"
-        ]
-      }
-    },
-    {
-      "entityId": "R0145",
-      "slug": "cobaltum-metallicum",
-      "entityType": "remedy",
-      "title": "Cobaltum Metallicum (Elemental Cobalt)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "medium"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "traditionally considered in constitutional clinical practice for profiles displaying",
-          "marked physical generalities and thermal characteristics"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "graph-isolated"
-        ]
-      }
-    },
-    {
-      "entityId": "R0146",
-      "slug": "coccus-cacti",
-      "entityType": "remedy",
-      "title": "Coccus Cacti (Cochineal)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "medium"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "traditionally considered in constitutional clinical practice for profiles displaying",
-          "marked physical generalities and thermal characteristics"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "graph-isolated"
-        ]
-      }
-    },
-    {
-      "entityId": "R0148",
-      "slug": "collinsonia-canadensis",
-      "entityType": "remedy",
-      "title": "Collinsonia Canadensis (Stone Root)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "medium"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "traditionally considered in constitutional clinical practice for profiles displaying",
-          "marked physical generalities and thermal characteristics"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "graph-isolated"
-        ]
-      }
-    },
-    {
-      "entityId": "R0149",
-      "slug": "condurango",
-      "entityType": "remedy",
-      "title": "Condurango (Condor Plant)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "medium"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "traditionally considered in constitutional clinical practice for profiles displaying",
-          "marked physical generalities and thermal characteristics"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "graph-isolated"
-        ]
-      }
-    },
-    {
-      "entityId": "R0150",
-      "slug": "copaiva-officinalis",
-      "entityType": "remedy",
-      "title": "Copaiva Officinalis (Balsam of Copaiba)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "medium"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "traditionally considered in constitutional clinical practice for profiles displaying",
-          "marked physical generalities and thermal characteristics"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "graph-isolated"
         ]
       }
     },
@@ -10619,6 +10227,110 @@
       }
     },
     {
+      "entityId": "R0086",
+      "slug": "bells",
+      "entityType": "remedy",
+      "title": "Bellis Perennis (English Daisy / Bruisewort / Bells)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "medium"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 0,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated"
+        ]
+      }
+    },
+    {
+      "entityId": "R0087",
+      "slug": "benzoin",
+      "entityType": "remedy",
+      "title": "Benzoicum Acidum (Benzoic Acid / Gum Benzoin / Benzoin)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "medium"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 0,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated"
+        ]
+      }
+    },
+    {
       "entityId": "R0088",
       "slug": "berberis-vulgaris",
       "entityType": "remedy",
@@ -13583,10 +13295,270 @@
       }
     },
     {
+      "entityId": "R0145",
+      "slug": "cobaltum-metallicum",
+      "entityType": "remedy",
+      "title": "Cobaltum Metallicum (Elemental Cobalt)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "medium"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 0,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated"
+        ]
+      }
+    },
+    {
+      "entityId": "R0146",
+      "slug": "coccus-cacti",
+      "entityType": "remedy",
+      "title": "Coccus Cacti (Cochineal Insect / Dactylopius Coccus)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "medium"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 0,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated"
+        ]
+      }
+    },
+    {
       "entityId": "R0147",
       "slug": "coffea-cruda",
       "entityType": "remedy",
       "title": "Coffea Cruda (Raw Unroasted Coffee)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "medium"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 0,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated"
+        ]
+      }
+    },
+    {
+      "entityId": "R0148",
+      "slug": "collinsonia-canadensis",
+      "entityType": "remedy",
+      "title": "Collinsonia Canadensis (Stone Root / Horse Balm / Richweed)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "medium"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 0,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated"
+        ]
+      }
+    },
+    {
+      "entityId": "R0149",
+      "slug": "condurango",
+      "entityType": "remedy",
+      "title": "Condurango (Condor Plant / Marsdenia Condurango)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "medium"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 0,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated"
+        ]
+      }
+    },
+    {
+      "entityId": "R0150",
+      "slug": "copaiva-officinalis",
+      "entityType": "remedy",
+      "title": "Copaiva Officinalis (Balsam of Copaiba / Copaifera Officinalis)",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",

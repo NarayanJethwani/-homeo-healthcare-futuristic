@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Mail, Phone, Calendar as CalendarIcon, Clock, ChevronRight, ChevronLeft, CheckCircle2, Sparkles, Activity, Folder, FileSpreadsheet, AlertTriangle } from "lucide-react";
+import { User, Mail, Phone, Calendar as CalendarIcon, Clock, ChevronRight, ChevronLeft, CheckCircle2, Sparkles, Activity, AlertTriangle } from "lucide-react";
 import Magnetic from "./Magnetic";
 
 export default function BookingSection() {
@@ -11,13 +11,15 @@ export default function BookingSection() {
     name: "",
     email: "",
     phone: "",
+    age: "",
+    gender: "",
     category: "",
     symptoms: "",
     date: "",
     slot: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submissionResult, setSubmissionResult] = useState<{ folderUrl: string; sheetUrl: string; isMock?: boolean } | null>(null);
+  const [submissionError, setSubmissionError] = useState("");
 
   useEffect(() => {
     const handlePrefill = (e: Event) => {
@@ -64,7 +66,7 @@ export default function BookingSection() {
     "09:00 PM"
   ];
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -88,6 +90,7 @@ export default function BookingSection() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmissionError("");
     try {
       const response = await fetch("/api/intake", {
         method: "POST",
@@ -97,52 +100,42 @@ export default function BookingSection() {
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
+          age: formData.age,
+          gender: formData.gender,
           category: formData.category,
           complaint: formData.symptoms,
-          careLevel: formData.category,
+          careLevel: "Consultation request — physician review pending",
           conditionsCount: 1,
           durationText: `Consultation on ${formData.date} at ${formData.slot}`,
-          finalPrice: 300,
           date: formData.date,
-          slot: formData.slot
+          slot: formData.slot,
+          status: "pending_plan"
         })
       });
       const data = await response.json();
-      if (data.success) {
-        setSubmissionResult({
-          folderUrl: data.folderUrl,
-          sheetUrl: data.sheetUrl,
-          isMock: data.isMock
-        });
-      } else {
-        throw new Error(data.message);
-      }
+      if (!response.ok || !data.success) throw new Error(data.message || "The request could not be submitted.");
+      setStep(4);
     } catch (error) {
-      console.error("Intake automation request failed, using demo fallback links:", error);
-      setSubmissionResult({
-        folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
-        sheetUrl: "/admin/mock-sheet?mockId=P-100234",
-        isMock: true
-      });
+      console.error("Intake request failed:", error);
+      setSubmissionError("We could not send your request. Please try again or contact the clinic by WhatsApp. No appointment has been confirmed.");
     } finally {
       setIsSubmitting(false);
-      setStep(4);
     }
   };
 
-  const isStep1Valid = formData.name && formData.email && formData.phone;
+  const isStep1Valid = formData.name && formData.email && formData.phone && formData.age && formData.gender;
   const isStep2Valid = formData.category && formData.symptoms;
   const isStep3Valid = formData.date && formData.slot;
 
   const getWhatsAppMessageLink = () => {
-    const text = `Hello Dr. Narayan, I have scheduled a consultation request:
+    const text = `Hello Dr. Narayan, I have sent an appointment request:
 - *Name:* ${formData.name}
 - *Category:* ${formData.category}
 - *Date:* ${formData.date}
 - *Time Slot:* ${formData.slot}
 - *Primary Symptoms:* ${formData.symptoms}
 
-Please confirm my appointment.`;
+Please let me know whether this date and time are available.`;
     return `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918446056789"}?text=${encodeURIComponent(text)}`;
   };
 
@@ -183,7 +176,7 @@ Please confirm my appointment.`;
             transition={{ duration: 1, delay: 0.2 }}
             className="text-base text-slate-700 font-semibold"
           >
-            Begin your personalized roadmap to natural vitality. Select clinical or virtual consultations.
+            Request an in-person or online appointment. The clinic confirms availability after reviewing your submission.
           </motion.p>
         </div>
 
@@ -216,7 +209,7 @@ Please confirm my appointment.`;
                       step === s ? "text-[#1A2421]" : "text-slate-400"
                     }`}
                   >
-                    {s === 1 ? "Personal Details" : s === 2 ? "Constitutional Mapping" : "Preferred Slot"}
+                    {s === 1 ? "Personal Details" : s === 2 ? "Health Concern" : "Preferred Time"}
                   </span>
                 </div>
               ))}
@@ -241,10 +234,11 @@ Please confirm my appointment.`;
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Name input */}
                     <div className="relative group">
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Full Name</label>
+                      <label htmlFor="booking-name" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Full Name</label>
                       <div className="relative">
                         <input
                           type="text"
+                          id="booking-name"
                           name="name"
                           value={formData.name}
                           onChange={handleInputChange}
@@ -258,10 +252,11 @@ Please confirm my appointment.`;
 
                     {/* Email input */}
                     <div className="relative group">
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Email Address</label>
+                      <label htmlFor="booking-email" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Email Address</label>
                       <div className="relative">
                         <input
                           type="email"
+                          id="booking-email"
                           name="email"
                           value={formData.email}
                           onChange={handleInputChange}
@@ -274,21 +269,58 @@ Please confirm my appointment.`;
                     </div>
                   </div>
 
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {/* Phone input */}
-                  <div className="relative group max-w-md">
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Phone Number</label>
+                  <div className="relative group">
+                    <label htmlFor="booking-phone" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Phone Number</label>
                     <div className="relative">
                       <input
                         type="tel"
+                        id="booking-phone"
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        placeholder="+1 (555) 000-0000"
+                        placeholder="+91 98765 43210"
                         className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-slate-200 focus:border-mint focus:ring-1 focus:ring-mint outline-none bg-white/40 backdrop-blur-sm transition-all duration-300 font-medium text-sm text-[#1A2421]"
                         required
                       />
                       <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-mint transition-colors" />
                     </div>
+                  </div>
+
+                  <div className="relative group">
+                    <label htmlFor="booking-age" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Age</label>
+                    <input
+                      type="number"
+                      id="booking-age"
+                      name="age"
+                      min="0"
+                      max="120"
+                      value={formData.age}
+                      onChange={handleInputChange}
+                      placeholder="Age"
+                      className="w-full px-4 py-3.5 rounded-2xl border border-slate-200 focus:border-mint focus:ring-1 focus:ring-mint outline-none bg-white/40 transition-all font-medium text-sm text-[#1A2421]"
+                      required
+                    />
+                  </div>
+
+                  <div className="relative group">
+                    <label htmlFor="booking-gender" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Gender</label>
+                    <select
+                      name="gender"
+                      id="booking-gender"
+                      value={formData.gender}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3.5 rounded-2xl border border-slate-200 focus:border-mint focus:ring-1 focus:ring-mint outline-none bg-white/60 transition-all font-medium text-sm text-[#1A2421]"
+                      required
+                    >
+                      <option value="">Select</option>
+                      <option value="Female">Female</option>
+                      <option value="Male">Male</option>
+                      <option value="Non-binary">Non-binary</option>
+                      <option value="Prefer not to say">Prefer not to say</option>
+                    </select>
+                  </div>
                   </div>
 
                   {/* Action buttons */}
@@ -304,7 +336,7 @@ Please confirm my appointment.`;
                             : "bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed"
                         }`}
                       >
-                        Mapping Details
+                        Health Details
                         <ChevronRight className="w-4 h-4" />
                       </button>
                     </Magnetic>
@@ -323,7 +355,7 @@ Please confirm my appointment.`;
                   className="space-y-6"
                 >
                   <div>
-                    <h3 className="text-lg font-bold text-[#1A2421] mb-2">Constitutional Symptom Mapping</h3>
+                    <h3 className="text-lg font-bold text-[#1A2421] mb-2">Tell us about your health concern</h3>
                     <p className="text-xs text-slate-700 mb-6 font-bold">Select the health category requiring evaluation:</p>
                   </div>
 
@@ -334,6 +366,7 @@ Please confirm my appointment.`;
                         key={cat}
                         type="button"
                         onClick={() => selectCategory(cat)}
+                        aria-pressed={formData.category === cat}
                         className={`px-4 py-3 rounded-2xl text-xs font-bold border transition-all duration-300 text-left ${
                           formData.category === cat
                             ? "bg-mint/10 border-mint text-mint-dark font-bold shadow-sm"
@@ -347,11 +380,12 @@ Please confirm my appointment.`;
 
                   {/* Symptom Textarea */}
                   <div className="relative group pt-4">
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                      Symptom History & Mental Profile Description
+                    <label htmlFor="booking-symptoms" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                      Symptoms, duration and current treatment
                     </label>
                     <textarea
                       name="symptoms"
+                      id="booking-symptoms"
                       value={formData.symptoms}
                       onChange={handleInputChange}
                       rows={4}
@@ -403,7 +437,7 @@ Please confirm my appointment.`;
                   transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                   className="space-y-6"
                 >
-                  <h3 className="text-lg font-bold text-[#1A2421] mb-6">Select Date and Consultation Slot</h3>
+                  <h3 className="text-lg font-bold text-[#1A2421] mb-6">Choose a preferred date and time</h3>
 
                   {/* WhatsApp/Call Confirmation Callout */}
                   <div className="glass-panel border-mint/20 bg-mint/5 p-4 rounded-2xl flex items-start gap-3.5 mb-6">
@@ -411,9 +445,9 @@ Please confirm my appointment.`;
                       <Phone className="w-4 h-4" />
                     </div>
                     <div>
-                      <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-1">Instant Activation Required</h4>
+                      <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-1">Clinic confirmation required</h4>
                       <p className="text-xs text-slate-700 font-medium leading-relaxed">
-                        To guarantee and lock your slot, please confirm via{" "}
+                        Your selected time is a preference, not a confirmed appointment. The clinic will verify availability; you may also contact us via{" "}
                         <a href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918446056789"}`} target="_blank" rel="noopener noreferrer" className="font-extrabold text-[#0F766E] hover:underline">
                           WhatsApp
                         </a>{" "}
@@ -421,7 +455,7 @@ Please confirm my appointment.`;
                         <a href={`tel:${process.env.NEXT_PUBLIC_PAYMENT_PHONE || "8446056789"}`} className="font-extrabold text-[#0F766E] hover:underline whitespace-nowrap">
                           {process.env.NEXT_PUBLIC_WHATSAPP_DISPLAY || "+91 84460 56789"}
                         </a>{" "}
-                        immediately after booking.
+                        after sending the request.
                       </p>
                     </div>
                   </div>
@@ -429,10 +463,11 @@ Please confirm my appointment.`;
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {/* Datepicker */}
                     <div className="relative group">
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Preferred Date</label>
+                      <label htmlFor="booking-date" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Preferred Date</label>
                       <div className="relative">
                         <input
                           type="date"
+                          id="booking-date"
                           name="date"
                           value={formData.date}
                           onChange={handleInputChange}
@@ -445,13 +480,14 @@ Please confirm my appointment.`;
  
                     {/* Time Slot Picker */}
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Available Slots</label>
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Preferred Time</label>
                       <div data-lenis-prevent className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[220px] overflow-y-auto pr-1">
                         {slots.map((s) => (
                           <button
                             key={s}
                             type="button"
                             onClick={() => selectSlot(s)}
+                            aria-pressed={formData.slot === s}
                             className={`py-3 px-4 rounded-xl text-xs font-bold border transition-all duration-300 flex items-center justify-center gap-1.5 ${
                               formData.slot === s
                                 ? "bg-mint text-white border-mint shadow-md"
@@ -489,11 +525,17 @@ Please confirm my appointment.`;
                             : "bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed"
                         }`}
                       >
-                        {isSubmitting ? "Processing..." : "Confirm Appointment"}
+                        {isSubmitting ? "Sending request..." : "Request Appointment"}
                         <Activity className="w-4 h-4 animate-pulse" />
                       </button>
                     </Magnetic>
                   </div>
+                  {submissionError && (
+                    <div role="alert" className="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-left text-sm text-red-900">
+                      <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
+                      <span>{submissionError}</span>
+                    </div>
+                  )}
                 </motion.div>
               )}
 
@@ -510,10 +552,10 @@ Please confirm my appointment.`;
                     <CheckCircle2 className="w-10 h-10 text-mint" />
                   </div>
                   
-                  <h3 className="font-serif text-3xl font-bold text-[#1A2421] mb-3">Consultation Scheduled</h3>
+                  <h3 className="font-serif text-3xl font-bold text-[#1A2421] mb-3">Appointment Request Received</h3>
                   
                   <p className="text-slate-700 text-sm font-semibold max-w-md leading-relaxed mb-8">
-                    Your request for a constitutional consultation on <strong className="text-mint-dark">{formData.date}</strong> at <strong className="text-mint-dark">{formData.slot}</strong> has been confirmed. A medical questionnaire has been dispatched to <span className="underline font-bold text-slate-800">{formData.email}</span>.
+                    We received your preferred date of <strong className="text-mint-dark">{formData.date}</strong> at <strong className="text-mint-dark">{formData.slot}</strong>. The clinic must confirm availability before this becomes an appointment.
                   </p>
 
                   <div className="glass-panel border-white/50 p-6 rounded-2xl max-w-sm w-full text-left space-y-2 mb-4 shadow-sm">
@@ -523,54 +565,8 @@ Please confirm my appointment.`;
                     </div>
                     <div className="text-xs font-bold text-slate-800"><strong>Name:</strong> {formData.name}</div>
                     <div className="text-xs font-bold text-slate-800"><strong>Category:</strong> {formData.category}</div>
-                    <div className="text-xs font-bold text-slate-800"><strong>Method:</strong> Global Virtual Consultation</div>
+                    <div className="text-xs font-bold text-slate-800"><strong>Status:</strong> Awaiting clinic confirmation</div>
                   </div>
-
-                  {submissionResult && (
-                    <div className="glass-panel border-white/50 p-6 rounded-2xl max-w-sm w-full text-left space-y-3 mb-8 shadow-sm">
-                      {submissionResult.isMock ? (
-                        <>
-                          <div className="flex items-center gap-1.5 text-xs text-amber-700 font-extrabold uppercase tracking-wider">
-                            <AlertTriangle className="w-4 h-4 text-amber-600 animate-bounce" />
-                            Google API Mock Mode
-                          </div>
-                          <p className="text-[11px] text-slate-700 font-medium">
-                            Operating without Google API credentials. Both links will open the parent folder where records are stored.
-                          </p>
-                        </>
-                      ) : (
-                        <>
-                          <div className="flex items-center gap-1.5 text-xs text-[#0F766E] font-extrabold uppercase tracking-wider">
-                            <CheckCircle2 className="w-4 h-4 text-[#0F766E] animate-pulse" />
-                            Google Workspace Active
-                          </div>
-                          <p className="text-[11px] text-slate-700 font-medium">
-                            Patient folder and clinical spreadsheet generated under Dr. Jethwani&apos;s workspace.
-                          </p>
-                        </>
-                      )}
-                      <div className="flex gap-2.5 pt-1">
-                        <a
-                          href={submissionResult.folderUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex-1 text-center py-2 px-2.5 rounded-xl border border-slate-200 hover:border-slate-800 text-[10px] font-bold text-slate-800 flex items-center justify-center gap-1 bg-white transition-colors cursor-pointer"
-                        >
-                          <Folder className="w-3.5 h-3.5 text-amber-500" />
-                          Folder Link
-                        </a>
-                        <a
-                          href={submissionResult.sheetUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex-1 text-center py-2 px-2.5 rounded-xl border border-slate-200 hover:border-slate-800 text-[10px] font-bold text-slate-800 flex items-center justify-center gap-1 bg-white transition-colors cursor-pointer"
-                        >
-                          <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
-                          Sheet Link
-                        </a>
-                      </div>
-                    </div>
-                  )}
 
                   <div className="flex flex-col sm:flex-row items-center gap-3">
                     <Magnetic>
@@ -583,7 +579,7 @@ Please confirm my appointment.`;
                         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                           <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 0 0 1.333 4.993L2 22l5.13-1.347a9.947 9.947 0 0 0 4.88 1.282h.005c5.505 0 9.99-4.478 9.99-9.985 0-2.667-1.04-5.176-2.93-7.065A9.923 9.923 0 0 0 12.012 2zm5.727 14.045c-.244.693-1.42 1.262-1.956 1.344-.479.073-1.103.137-3.224-.741-2.715-1.124-4.46-3.887-4.597-4.068-.135-.181-1.102-1.464-1.102-2.793 0-1.329.697-1.984.97-2.257.274-.273.595-.341.794-.341.2 0 .399.001.573.01.18.008.419-.07.658.502.244.585.83 2.03.902 2.179.072.15.12.322.02.522-.1.2-.149.324-.298.497-.15.173-.314.385-.448.517-.15.148-.306.31-.132.61.174.3.774 1.278 1.66 2.067.944.844 1.74 1.107 1.989 1.232.25.125.393.104.539-.065.144-.17.622-.723.789-.97.168-.246.335-.207.564-.122.23.085 1.458.687 1.708.812.25.125.416.188.478.297.062.109.062.63-.182 1.323z" />
                         </svg>
-                        Confirm on WhatsApp
+                        Contact clinic on WhatsApp
                       </a>
                     </Magnetic>
 
@@ -596,6 +592,8 @@ Please confirm my appointment.`;
                             name: "",
                             email: "",
                             phone: "",
+                            age: "",
+                            gender: "",
                             category: "",
                             symptoms: "",
                             date: "",
@@ -604,7 +602,7 @@ Please confirm my appointment.`;
                         }}
                         className="px-6 py-3 rounded-full border border-slate-300 hover:border-slate-800 text-slate-800 text-xs font-bold uppercase tracking-wider transition-all duration-500 cursor-pointer"
                       >
-                        Book Another
+                        New Request
                       </button>
                     </Magnetic>
                   </div>

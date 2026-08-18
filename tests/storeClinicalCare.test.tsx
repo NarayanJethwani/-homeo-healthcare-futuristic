@@ -3,6 +3,8 @@ import {
   CLINICAL_CARE_TIER_OPTIONS,
   ALLOWED_CARE_DURATIONS,
   calculateCarePeriodTotalPaise,
+  calculateTierCarePeriodTotalPaise,
+  getTierCarePeriodLabel,
   formatINRFromPaise,
   EMERGENCY_GUIDANCE_NOTICE,
   CLINICAL_CARE_FEE_EXPLANATION,
@@ -41,6 +43,10 @@ for (const weeks of ALLOWED_CARE_DURATIONS) {
 
 assert.equal(formatINRFromPaise(1200000), "₹12,000");
 assert.equal(formatINRFromPaise(2400000), "₹24,000");
+assert.equal(calculateTierCarePeriodTotalPaise("acute_mild", 1), 100000);
+assert.equal(calculateTierCarePeriodTotalPaise("acute_wellness", 1), 200000);
+assert.equal(getTierCarePeriodLabel("acute_mild", 1), "3 days");
+assert.equal(getTierCarePeriodLabel("acute_wellness", 1), "7 days");
 console.log("✅ TEST PASSED: 2. Complete care-period amounts calculate correctly in integer paise");
 
 // Test 3: Absence of legacy package names and checkout language
@@ -56,6 +62,7 @@ const legacyPackageNames = [
 ];
 
 const patientFacingTierNames = Object.values(CLINICAL_CARE_TIER_OPTIONS).map((t) => t.name);
+assert.deepEqual(patientFacingTierNames, ["Mild Acute Care", "Acute Wellness Care", "Focused Clinical Care", "Integrated Chronic Care", "Complex Chronic Care", "Advanced Chronic Care"]);
 
 for (const name of legacyPackageNames) {
   assert.equal(patientFacingTierNames.includes(name), false, `Legacy name '${name}' must not exist in new tier options`);
@@ -98,12 +105,14 @@ if (submissionResult.success) {
   assert.equal(dto.totalEstimatedAmountPaise, 2160000); // ₹24,000 list fee less 10% continuity benefit
   assert.equal(dto.totalEstimatedAmountFormatted, "₹21,600");
   assert.equal(dto.status, "submitted_for_physician_review");
+  assert.equal(dto.carePeriodLabel, "4 weeks");
 
   // Verify NO internal clinical scores or Level 1-4 numbers are exposed
   const dtoKeys = Object.keys(dto);
   assert.equal(dtoKeys.includes("levelNumber"), false);
   assert.equal(dtoKeys.includes("internalScore"), false);
   assert.equal(dtoKeys.includes("physicianNotes"), false);
+  assert.equal(JSON.stringify(dto).includes("complexityScore"), false);
 }
 console.log("✅ TEST PASSED: 5. Assessment submission returns sanitized DTO without internal scores or payment requests");
 
@@ -116,22 +125,29 @@ assert.ok(CLINICAL_CARE_FEE_EXPLANATION.includes("professional time, treatment p
 assert.ok(EXPLICIT_PHYSICIAN_AUTHORITY_STATEMENT.includes("initial advisory assessment"));
 console.log("✅ TEST PASSED: 6. Included services, disclosures, and emergency notices are verified");
 
-// Test 7: Multi-organ complexity calculation & preliminary recommendation engine
+// Test 7: Workload-only guide, acute/chronic separation, and safety gate
 const rec1 = calculatePreliminaryCareRecommendation({ selectedOrganSystems: ["Digestive & Liver Support"] });
 assert.equal(rec1.suggestedTierId, "focused");
 
 const rec2 = calculatePreliminaryCareRecommendation({ selectedOrganSystems: ["Digestive & Liver Support", "Hormones & Metabolism Support"] });
-assert.equal(rec2.suggestedTierId, "integrated");
+assert.equal(rec2.suggestedTierId, "focused");
 
 const rec4 = calculatePreliminaryCareRecommendation({ selectedOrganSystems: ["Digestive", "Hormones", "Skin", "Respiratory"] });
-assert.equal(rec4.suggestedTierId, "complex");
+assert.equal(rec4.suggestedTierId, "focused");
 
 const rec5 = calculatePreliminaryCareRecommendation({ selectedOrganSystems: ["Digestive", "Hormones", "Skin", "Respiratory", "Kidney"] });
-assert.equal(rec5.suggestedTierId, "advanced");
+assert.equal(rec5.suggestedTierId, "focused");
 assert.equal(rec5.disclaimer, EXPLICIT_PHYSICIAN_AUTHORITY_STATEMENT);
-const weightedRec = calculatePreliminaryCareRecommendation({ selectedOrganSystems: ["Digestive"], durationText: "More than 3 years (chronic)", severityRating: 8 });
-assert.equal(weightedRec.suggestedTierId, "complex");
-console.log("✅ TEST PASSED: 7. Multi-organ advisory complexity calculation matches 1/2/3-4/5+ scaling rules");
+assert.equal(calculatePreliminaryCareRecommendation({ careFamily: "acute", supportIntensity: "standard", safetyStatus: "clear" }).suggestedTierId, "acute_mild");
+assert.equal(calculatePreliminaryCareRecommendation({ careFamily: "acute", supportIntensity: "closer", safetyStatus: "clear" }).suggestedTierId, "acute_wellness");
+assert.equal(calculatePreliminaryCareRecommendation({ careFamily: "chronic", supportIntensity: "closer", safetyStatus: "clear" }).suggestedTierId, "integrated");
+assert.equal(calculatePreliminaryCareRecommendation({ careFamily: "chronic", supportIntensity: "frequent", safetyStatus: "clear" }).suggestedTierId, "complex");
+assert.equal(calculatePreliminaryCareRecommendation({ careFamily: "chronic", supportIntensity: "direct", safetyStatus: "clear" }).suggestedTierId, "advanced");
+const blockedRec = calculatePreliminaryCareRecommendation({ careFamily: "acute", supportIntensity: "standard", safetyStatus: "red-flag" });
+assert.equal(blockedRec.blockedBySafetyGate, true);
+const severityOnly = calculatePreliminaryCareRecommendation({ careFamily: "chronic", supportIntensity: "standard", severityRating: 10, priorTreatmentFailures: true });
+assert.equal(severityOnly.suggestedTierId, "focused");
+console.log("✅ TEST PASSED: 7. Public guide uses care family and workload only, with red-flag blocking");
 
 // Test 8: Itemized pharmacy breakdown & governed concessions with mandatory audit fields
 const breakdown = calculateItemizedPharmacyQuotation({
@@ -154,6 +170,9 @@ assert.equal(breakdown.finalTotalPaise, 2104000); // Net ₹19,440 + ₹1,250 + 
 assert.equal(breakdown.finalTotalFormatted, "₹21,040");
 assert.equal(breakdown.concessions[0].approvedBy, "Dr. N. Jethwani");
 assert.equal(breakdown.concessions[0].reason, "Age 65 Senior Citizen Care Support");
+const acuteBreakdown = calculateItemizedPharmacyQuotation({ tierId: "acute_wellness", durationWeeks: 12 });
+assert.equal(acuteBreakdown.professionalFeePaise, 200000);
+assert.equal(acuteBreakdown.continuityDiscountPercent, 0);
 console.log("✅ TEST PASSED: 8. Itemized pharmacy breakdown and governed concessions behave deterministically");
 
 // Test 9: WhatsApp quotation builder & environment-driven payment credentials
@@ -166,7 +185,7 @@ const testQuotation = {
   patientName: "Dr. Test Patient",
   phone: "919999988888",
   tierId: "integrated",
-  tierName: "Integrated Clinical Care",
+  tierName: "Integrated Chronic Care",
   durationWeeks: 4 as const,
   breakdown,
   paymentWorkflow: {
@@ -179,7 +198,7 @@ const testQuotation = {
 };
 
 const waPayload = buildWhatsAppQuotationPayload(testQuotation);
-assert.ok(waPayload.messageText.includes("Integrated Clinical Care"));
+assert.ok(waPayload.messageText.includes("Integrated Chronic Care"));
 assert.ok(waPayload.messageText.includes("₹21,040"));
 assert.ok(waPayload.messageText.includes(paymentConfig.upiId));
 assert.ok(waPayload.whatsappUrl.startsWith("https://wa.me/919999988888?text="));
@@ -190,7 +209,7 @@ const patientWa = buildPatientWhatsAppReviewLink({
   patientName: "Dr. Test Patient",
   phone: "+91 99999 88888",
   submissionId: "CAS-2026-000123",
-  selectedTierName: "Integrated Clinical Care",
+  selectedTierName: "Integrated Chronic Care",
   preferredDurationWeeks: 4,
   totalEstimatedAmountFormatted: "₹24,000",
   mainHealthArea: "Digestive & Liver Support",

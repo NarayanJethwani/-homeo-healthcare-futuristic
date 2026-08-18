@@ -1,7 +1,7 @@
 import { KnowledgeEntity } from "../../types";
 
 export const DryCoughSymptom: KnowledgeEntity = {
-  id: "S0007",
+  id: "S0107",
   slug: "dry-cough",
   entityType: "symptom",
   editorialStatus: "published",
@@ -50,22 +50,22 @@ export const DryCoughSymptom: KnowledgeEntity = {
     ],
     claimCitations: [
       {
-        claimId: "CLM-S0007-001",
+        claimId: "CLM-S0107-001",
         passage: "Chronic dry cough (>8 weeks duration) lacking red flags is most commonly caused by UACS, Asthma, or GERD ('the pathogenic triad').",
         citationIds: ["CIT-0075"]
       },
       {
-        claimId: "CLM-S0007-002",
+        claimId: "CLM-S0107-002",
         passage: "ACE-inhibitor cough occurs in up to 15% of treated patients and typically resolves within 1 to 4 weeks after drug discontinuation.",
         citationIds: ["CIT-0075"]
       },
       {
-        claimId: "CLM-S0007-003",
+        claimId: "CLM-S0107-003",
         passage: "Dry cough accompanied by hemoptysis, systemic constitutional symptoms, or smoking history warrants urgent chest radiography or CT.",
         citationIds: ["CIT-0075"]
       },
       {
-        claimId: "CLM-S0007-004",
+        claimId: "CLM-S0107-004",
         passage: "Homeopathic supportive remedies (e.g., Drosera, Rumex, Spongia) do not replace chest imaging or pulmonology evaluation in chronic persistent cough.",
         citationIds: ["CIT-0023"]
       }

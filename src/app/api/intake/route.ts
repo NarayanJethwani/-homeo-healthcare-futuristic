@@ -9,6 +9,7 @@ import {
 } from "@/lib/googleDrive";
 import { z } from "zod";
 import { mockPatientCache } from "@/lib/mockStore";
+import { CARE_PLAN_CATALOG_VERSION, calculateCarePlanTotal, formatCarePlanDuration, getCarePlan } from "@/lib/pricingConfig";
 
 // In-memory rate limiter: Map of IP -> timestamps of requests
 const ipLimiter = new Map<string, number[]>();
@@ -44,6 +45,8 @@ const intakeSchema = z.object({
   country: z.string().optional().default("India"),
   complaint: z.preprocess((val) => typeof val === "string" && val.trim() ? val : "No chief complaint recorded", z.string()).optional(),
   careLevel: z.string().optional().default("Standard Consultation"),
+  carePlanId: z.enum(["acute_mild_3d", "acute_wellness_7d", "chronic_focused_1w", "chronic_integrated_1w", "chronic_complex_1w", "chronic_advanced_1w"]).optional(),
+  carePlanCatalogVersion: z.string().optional(),
   conditionsCount: z.union([z.string(), z.number()]).optional().transform(val => val !== undefined ? Number(val) : 1),
   durationText: z.string().optional().default("One-Time consultation"),
   finalPrice: z.union([z.string(), z.number()]).optional().transform(val => val !== undefined ? Number(val) : 300),
@@ -53,6 +56,7 @@ const intakeSchema = z.object({
   remainingBalance: z.union([z.string(), z.number()]).optional().transform(val => val !== undefined ? Number(val) : undefined),
   billingCycle: z.preprocess((val) => typeof val === "string" ? val.toLowerCase() : val, z.enum(["weekly", "monthly"])).optional(),
   durationValue: z.union([z.string(), z.number()]).optional().transform(val => val !== undefined ? Number(val) : undefined),
+  durationUnit: z.enum(["day", "week"]).optional(),
   concessionApplied: z.string().optional(),
   overridePrice: z.union([z.string(), z.number()]).optional().transform(val => val !== undefined ? Number(val) : undefined),
   medicineAddons: z.union([z.string(), z.number()]).optional().transform(val => val !== undefined ? Number(val) : undefined),
@@ -154,6 +158,13 @@ export async function POST(request: Request) {
     }
 
     const validatedData = validationResult.data;
+    const selectedPlan = validatedData.carePlanId ? getCarePlan(validatedData.carePlanId) : undefined;
+    const selectedDurationValue = selectedPlan?.family === "acute"
+      ? selectedPlan.durationValue
+      : validatedData.durationValue;
+    const officialCarePeriodTotal = selectedPlan
+      ? calculateCarePlanTotal(selectedPlan.id, selectedPlan.family === "chronic" ? (selectedDurationValue || 1) : 1).total
+      : undefined;
     
     // Extract patient intake data
     const patientData: PatientIntakeData = {
@@ -167,16 +178,18 @@ export async function POST(request: Request) {
       state: validatedData.state,
       country: validatedData.country,
       complaint: validatedData.complaint || "No chief complaint recorded",
-      careLevel: validatedData.careLevel,
+      careLevel: selectedPlan?.title || validatedData.careLevel,
       conditionsCount: validatedData.conditionsCount,
-      durationText: validatedData.durationText,
-      finalPrice: validatedData.finalPrice,
+      durationText: selectedPlan
+        ? `${formatCarePlanDuration({ durationValue: selectedDurationValue || selectedPlan.durationValue, durationUnit: selectedPlan.durationUnit })} Care Period`
+        : validatedData.durationText,
+      finalPrice: body.status === "pending_plan" && !selectedPlan ? 0 : validatedData.finalPrice,
       deliveryMode: validatedData.deliveryMode,
       address: validatedData.address,
       receivedAmount: validatedData.receivedAmount,
       remainingBalance: validatedData.remainingBalance,
       billingCycle: validatedData.billingCycle,
-      durationValue: validatedData.durationValue,
+      durationValue: selectedDurationValue,
       concessionApplied: validatedData.concessionApplied,
       overridePrice: validatedData.overridePrice,
       medicineAddons: validatedData.medicineAddons,
@@ -282,9 +295,12 @@ export async function POST(request: Request) {
         : `${patientData.city}, ${patientData.state}, ${patientData.country}`,
       complaint: patientData.complaint,
       careLevel: patientData.careLevel,
+      ...(validatedData.carePlanId ? { carePlanId: validatedData.carePlanId } : {}),
+      ...(validatedData.carePlanId ? { carePlanCatalogVersion: CARE_PLAN_CATALOG_VERSION } : {}),
       conditionsCount: patientData.conditionsCount,
       durationText: patientData.durationText,
       finalPrice: patientData.finalPrice,
+      ...(officialCarePeriodTotal !== undefined ? { officialCarePeriodTotal } : {}),
       receivedAmount: Number(body.receivedAmount || patientData.finalPrice),
       remainingBalance: Number(body.remainingBalance || 0),
       deliveryMode: patientData.deliveryMode,
@@ -298,7 +314,8 @@ export async function POST(request: Request) {
       createdAt,
       billingCycle: patientData.billingCycle || "Monthly",
       concessionApplied: patientData.concessionApplied || "None",
-      durationValue: patientData.durationValue || 1
+      durationValue: patientData.durationValue || 1,
+      durationUnit: selectedPlan?.durationUnit || validatedData.durationUnit || "week"
     };
 
     // Save to local in-memory fallback cache (for local demo mode)

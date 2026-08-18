@@ -30,7 +30,7 @@ export default function Footer() {
       { name: "Conditions We Treat", href: "/services" },
       { name: "Clinical Protocol", href: "/evidence-based-homeopathy" },
       { name: "Dr. Narayan Jethwani", href: "/dr-narayan-jethwani" },
-      { name: "Treatments Store", href: "/store" },
+      { name: "Care Plans & Fees", href: "/store" },
     ],
     resources: [
       { name: "Clinical Blog", href: "/blogs" },
@@ -69,6 +69,9 @@ export default function Footer() {
       <div className="absolute w-[300px] h-[300px] rounded-full bg-gradient-to-tr from-lavender/5 to-transparent opacity-30 blur-[60px] -bottom-10 left-[10%] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto z-10 relative">
+        <div className="mb-12 rounded-2xl border border-amber-200/80 bg-amber-50/80 p-5 text-sm leading-relaxed text-amber-950">
+          <strong>Medical safety:</strong> This website provides education and planned, non-emergency care. It does not replace diagnosis, emergency services, oncology, surgery or medicines prescribed by another clinician. Never stop or change existing treatment without consulting the prescribing clinician.
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 pb-16">
           
           {/* Brand Info Column */}
@@ -90,7 +93,7 @@ export default function Footer() {
             </Link>
             
             <p className="text-xs text-slate-700 font-medium leading-relaxed max-w-sm">
-              Experience the evolution of natural therapeutics. High-fidelity homeopathic healing targeted directly to your constitutional blueprint.
+              Physician-led individualized homeopathic care with structured assessment, transparent care pathways and planned follow-up.
             </p>
 
             <div className="space-y-3 pt-2">

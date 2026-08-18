@@ -1966,7 +1966,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-mint/20 hover:border-mint/60 bg-mint/5 hover:bg-mint/10 text-mint-dark hover:text-[#0c6b5e] text-xs font-bold uppercase tracking-wider transition-all duration-300 backdrop-blur-md cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              Back to the Future
+              Back to Home
             </Link>
           </Magnetic>
         </motion.div>
@@ -2255,7 +2255,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                         readerTheme === "cream" ? "text-orange-700" :
                         readerTheme === "forest" ? "text-emerald-700" :
                         "text-mint"
-                      }`}>Scientific Essay</span>
+                      }`}>Health education article</span>
                       <h3 className={`text-sm font-bold leading-none ${
                         readerTheme === "sepia" ? "text-amber-900" :
                         readerTheme === "dark" ? "text-zinc-200" :
@@ -2733,6 +2733,10 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                     "border-slate-100"
                   } />
 
+                  <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950">
+                    <strong>Patient safety:</strong> This article is educational and may discuss homeopathic theories or patient experiences that are not established medical facts. It does not diagnose, prescribe, guarantee outcomes or replace emergency, conventional or specialist care. Do not stop prescribed treatment based on this article.
+                  </div>
+
                   {/* Article body content */}
                   <div 
                     onClick={handleContentClick}
@@ -2788,7 +2792,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                         readerTheme === "cream" ? "text-orange-950" :
                         readerTheme === "forest" ? "text-emerald-950" :
                         "text-[#1A2421]"
-                      }`}>Interested in constitutional treatment?</h4>
+                      }`}>Would you like a physician suitability review?</h4>
                       <p className={`text-xs font-semibold ${
                         readerTheme === "sepia" ? "text-amber-700" :
                         readerTheme === "dark" ? "text-zinc-400" :

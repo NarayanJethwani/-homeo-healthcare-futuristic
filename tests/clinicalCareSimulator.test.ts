@@ -1,6 +1,7 @@
 import assert from "assert";
 import {
   applyPhysicianPathwayOverride,
+  applyPhysicianPlanOverride,
   buildClinicalCareQuote,
   recommendClinicalCare,
   type ClinicalCareAssessment,
@@ -24,28 +25,42 @@ function runClinicalCareSimulatorTests() {
     chronicity: "recent",
   });
   assert.strictEqual(acute.pathway, "mild");
-  assert.strictEqual(acute.weeklyFee, 3_000);
+  assert.strictEqual(acute.planId, "acute_mild_3d");
+  assert.strictEqual(acute.weeklyFee, 1_000);
+  assert.strictEqual(acute.durationValue, 3);
+  assert.strictEqual(acute.durationUnit, "day");
   assert.strictEqual(acute.suggestedDurationWeeks, 1);
-  assert.deepStrictEqual(acute.allowedDurationsWeeks, [1, 2, 4, 8, 12]);
+  assert.deepStrictEqual(acute.allowedDurationsWeeks, [1]);
+  const acuteQuote = buildClinicalCareQuote({ recommendation: acute, durationWeeks: 1 });
+  assert.strictEqual(acuteQuote.baseCareTotal, 1_000);
+  assert.strictEqual(acuteQuote.durationValue, 3);
+  assert.strictEqual(acuteQuote.durationUnit, "day");
+  assert.strictEqual(acuteQuote.continuityDiscountPercent, 0);
+  const acuteWellness = applyPhysicianPlanOverride(acute, "acute_wellness_7d");
+  assert.strictEqual(acuteWellness.carePeriodFee, 2_000);
+  assert.strictEqual(acuteWellness.durationValue, 7);
 
-  const constitutional = recommendClinicalCare(standardChronic);
-  assert.strictEqual(constitutional.pathway, "moderate");
-  assert.strictEqual(constitutional.weeklyFee, 6_000);
-  assert.deepStrictEqual(constitutional.allowedDurationsWeeks, [1, 2, 4, 8, 12]);
+  const basePathway = recommendClinicalCare(standardChronic);
+  assert.strictEqual(basePathway.pathway, "chronic_focused");
+  assert.strictEqual(basePathway.planId, "chronic_focused_1w");
+  assert.strictEqual(basePathway.weeklyFee, 3_000);
+  assert.deepStrictEqual(basePathway.allowedDurationsWeeks, [1, 2, 4, 8, 12]);
 
   const organCountAlone = recommendClinicalCare({ ...standardChronic, breadth: "six-plus" });
-  assert.notStrictEqual(organCountAlone.pathway, "comprehensive");
-  assert.match(organCountAlone.cautions.join(" "), /never changes the fee automatically/i);
+  assert.strictEqual(organCountAlone.pathway, basePathway.pathway);
+  assert.strictEqual(organCountAlone.weeklyFee, basePathway.weeklyFee);
+  assert.match(organCountAlone.cautions.join(" "), /never change the fee automatically/i);
 
   const advanced = recommendClinicalCare({
     ...standardChronic,
     breadth: "four-five",
     pathologyDepth: "structural",
     chronicity: "one-five-years",
+    intensity: "frequent",
   });
   assert.strictEqual(advanced.pathway, "focused");
   assert.strictEqual(advanced.weeklyFee, 9_000);
-  assert.strictEqual(advanced.suggestedDurationWeeks, 8);
+  assert.strictEqual(advanced.suggestedDurationWeeks, 4);
 
   const manualComplete = applyPhysicianPathwayOverride(advanced, "comprehensive");
   assert.strictEqual(manualComplete.pathway, "comprehensive");
@@ -56,7 +71,7 @@ function runClinicalCareSimulatorTests() {
     ...standardChronic,
     breadth: "six-plus",
     pathologyDepth: "advanced",
-    intensity: "frequent",
+    intensity: "direct",
     coordination: "extensive",
   });
   assert.strictEqual(complete.pathway, "comprehensive");
@@ -66,8 +81,11 @@ function runClinicalCareSimulatorTests() {
   assert.strictEqual(redFlag.blockedBySafetyGate, true);
   assert.throws(() => buildClinicalCareQuote({ recommendation: redFlag, durationWeeks: 4 }), /safety gate/i);
 
+  const rapidChange = recommendClinicalCare({ ...standardChronic, stability: "rapid-change" });
+  assert.strictEqual(rapidChange.blockedBySafetyGate, true);
+
   const senior = recommendClinicalCare({ ...standardChronic, accessConsideration: "senior" });
-  assert.strictEqual(senior.weeklyFee, constitutional.weeklyFee, "Senior status must never alter the base fee automatically");
+  assert.strictEqual(senior.weeklyFee, basePathway.weeklyFee, "Senior status must never alter the base fee automatically");
 
   const quote = buildClinicalCareQuote({
     recommendation: advanced,
@@ -77,6 +95,10 @@ function runClinicalCareSimulatorTests() {
     concessionAmount: 2_000,
   });
   assert.deepStrictEqual(quote, {
+    planId: "chronic_complex_1w",
+    planFamily: "chronic",
+    durationValue: 4,
+    durationUnit: "week",
     weeklyCareFee: 9_000,
     durationWeeks: 4,
     listCareTotal: 36_000,

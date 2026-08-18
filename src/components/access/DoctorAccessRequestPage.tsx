@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, BadgeCheck, CheckCircle2, Loader2, ShieldCheck, Stethoscope } from "lucide-react";
 import AccessSupport from "@/components/access/AccessSupport";
+import { formatDoctorPortalMonthlyPrice } from "@/lib/doctorSubscriptionConfig";
 
 type FormState = {
   fullName: string;
@@ -152,6 +153,12 @@ export default function DoctorAccessRequestPage() {
           </section>
 
           <aside className="space-y-5">
+            <section className="rounded-3xl border border-mint/20 bg-mint/5 p-6">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-mint">Simple portal subscription</p>
+              <h2 className="mt-2 text-2xl font-black text-slate-900 dark:text-white">First month free</h2>
+              <p className="mt-1 text-lg font-bold text-mint-dark dark:text-mint">Then {formatDoctorPortalMonthlyPrice()}</p>
+              <p className="mt-3 text-xs leading-5 text-slate-600 dark:text-slate-400">One doctor portal plan. Cancel before renewal. Clinical fees, patient care charges and optional external services are separate.</p>
+            </section>
             <section className="rounded-3xl border border-slate-200/70 bg-white/70 p-6 dark:border-slate-800 dark:bg-slate-900/60">
               <div className="flex items-center gap-2 text-mint"><BadgeCheck className="h-5 w-5" /><h2 className="font-bold">What happens next</h2></div>
               <ol className="mt-4 space-y-4 text-sm leading-6 text-slate-600 dark:text-slate-400">

@@ -35,14 +35,14 @@ export default function DoctorProfile() {
 
   const testimonials = [
     {
-      quote: "Dr. Narayan is exceptionally skilled. He detected my swine flu early based on basic reports and cured it quickly. Our entire family has trusted only him for over 5 years.",
+      quote: "Dr. Narayan listened carefully, reviewed my reports and explained the follow-up plan clearly. Our family has valued his thoughtful approach for years.",
       author: "Amol R.",
       location: "Pune, IN",
       yOffset: [0, -10, 0],
       duration: 6,
     },
     {
-      quote: "I've received treatment for diabetes here for 5 years. Dr. Jethwani's clinical expertise, combined with his humble and human approach, has given me wonderful long-term recovery.",
+      quote: "I have received supportive care while continuing diabetes monitoring. Dr. Jethwani's humble approach and clear follow-up have been reassuring.",
       author: "Ramesh D.",
       location: "Pune, IN",
       yOffset: [0, 10, 0],
@@ -50,7 +50,7 @@ export default function DoctorProfile() {
       delay: 0.5,
     },
     {
-      quote: "Highly qualified doctor with excellent experience. His precise constitutional medicines successfully dissolved my kidney stone and helped me avoid a planned surgical operation.",
+      quote: "He reviewed my kidney-stone reports carefully, explained warning signs and coordinated follow-up while I remained under medical assessment.",
       author: "Milind S.",
       location: "Pune, IN",
       yOffset: [0, -8, 0],
@@ -106,7 +106,7 @@ export default function DoctorProfile() {
                   </div>
                   <h3 className="font-serif text-3xl font-bold text-white mb-1 leading-none">Dr. Narayan Jethwani</h3>
                   <p className="text-xs text-white/80 font-semibold tracking-wide">
-                    Senior Homeopath & Genetic Constitutionalist
+                    Senior Consultant Homeopath
                   </p>
                 </div>
               </div>
@@ -174,7 +174,7 @@ export default function DoctorProfile() {
               transition={{ duration: 1, delay: 0.2 }}
               className="text-sm text-slate-700 font-semibold leading-relaxed mb-10"
             >
-              Dr. Narayan Jethwani integrates centuries-old homeopathic knowledge with modern scientific diagnostics. With a focus on genetic mapping and long-term vitality, he provides constitutional remedies that align with your unique biological blueprint.
+              Dr. Narayan Jethwani combines detailed classical homeopathic assessment with review of medical records, appropriate investigations and structured follow-up. Care is individualized and does not replace emergency or specialist treatment.
             </motion.p>
 
             {/* Credentials timeline */}

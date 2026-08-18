@@ -13,22 +13,23 @@ import { EmergencyGuidanceBanner } from "./EmergencyGuidanceBanner";
 import { processCareAssessmentSubmission } from "../services/careAssessmentService";
 import { calculatePreliminaryCareRecommendation } from "../services/careRecommendationEngine";
 import { trackStoreFunnelEvent } from "../services/storeAnalytics";
-import type { ClinicalCareDurationWeeks, PatientIntakeData, SanitizedAssessmentResponseDTO } from "../domain/types";
+import type { ClinicalCareDurationWeeks, PatientIntakeData, SanitizedAssessmentResponseDTO, StoreClinicalCareTierId } from "../domain/types";
 
 const ALLOWED_DURATIONS = new Set<ClinicalCareDurationWeeks>([1, 2, 4, 8, 12]);
 
-function normalizeStoreTier(value: string | null): "focused" | "integrated" | "complex" {
+function normalizeStoreTier(value: string | null): StoreClinicalCareTierId {
   const clean = (value || "").toLowerCase();
+  if (["acute_mild", "acute_mild_3d", "mild acute"].includes(clean)) return "acute_mild";
+  if (["acute_wellness", "acute_wellness_7d", "acute", "wellness", "mild"].includes(clean)) return "acute_wellness";
   if (["integrated", "moderate", "constitutional", "chronic"].includes(clean)) return "integrated";
-  if (["complex", "advanced", "comprehensive"].includes(clean)) return "complex";
-  if (clean === "focused" && value === "focused") return "focused";
-  if (["mild", "acute", "wellness"].includes(clean)) return "focused";
+  if (["complex"].includes(clean)) return "complex";
+  if (["advanced", "comprehensive"].includes(clean)) return "advanced";
   return "focused";
 }
 
 export const StoreClinicalCareView: React.FC = () => {
   const [activeDiscoveryTab, setActiveDiscoveryTab] = useState<"pathways" | "concerns">("pathways");
-  const [selectedTierId, setSelectedTierId] = useState<"focused" | "integrated" | "complex">("focused");
+  const [selectedTierId, setSelectedTierId] = useState<StoreClinicalCareTierId>("focused");
   const [selectedDurationWeeks, setSelectedDurationWeeks] = useState<ClinicalCareDurationWeeks>(4);
   const [pathwayAnswers, setPathwayAnswers] = useState<CarePathwayCheckAnswers>({});
   const [selectedAreaIds, setSelectedAreaIds] = useState<string[]>([]);
@@ -50,19 +51,10 @@ export const StoreClinicalCareView: React.FC = () => {
   }, []);
 
   const preliminaryRec = useMemo(() => {
-    const breadth = pathwayAnswers.healthAreaBreadth || 1;
-    const selectedOrganSystems = Array.from({ length: breadth }, (_, index) => `Health area ${index + 1}`);
-    const durationText = pathwayAnswers.concernDuration === "long-standing"
-      ? "More than 3 years (chronic)"
-      : pathwayAnswers.concernDuration === "established"
-        ? "6 months to 3 years"
-        : "Less than 6 months";
-
     return calculatePreliminaryCareRecommendation({
-      selectedOrganSystems,
-      durationText,
-      severityRating: pathwayAnswers.supportIntensity === "closer" ? 7 : 4,
-      priorTreatmentFailures: pathwayAnswers.supportIntensity === "closer",
+      careFamily: pathwayAnswers.careFamily,
+      supportIntensity: pathwayAnswers.supportIntensity,
+      safetyStatus: pathwayAnswers.safetyStatus,
     });
   }, [pathwayAnswers]);
 
@@ -70,8 +62,11 @@ export const StoreClinicalCareView: React.FC = () => {
 
   useEffect(() => {
     if (answeredCount === 0) return;
-    setSelectedTierId(preliminaryRec.suggestedTierId === "advanced" ? "complex" : preliminaryRec.suggestedTierId);
-  }, [answeredCount, preliminaryRec.suggestedTierId]);
+    if (!preliminaryRec.blockedBySafetyGate) {
+      setSelectedTierId(preliminaryRec.suggestedTierId);
+      if (preliminaryRec.suggestedTierId.startsWith("acute_")) setSelectedDurationWeeks(1);
+    }
+  }, [answeredCount, preliminaryRec.blockedBySafetyGate, preliminaryRec.suggestedTierId]);
 
   const openAssessment = () => {
     setAssessmentOpen(true);
@@ -92,8 +87,6 @@ export const StoreClinicalCareView: React.FC = () => {
     setSelectedAreaTitles(areaTitles);
     setSelectedCondition(conditionName);
     if (areaTitles.length > 0) {
-      const healthAreaBreadth = areaTitles.length >= 5 ? 5 : areaTitles.length >= 3 ? 4 : areaTitles.length === 2 ? 2 : 1;
-      setPathwayAnswers((previous) => ({ ...previous, healthAreaBreadth }));
       trackStoreFunnelEvent("store_health_concern_selected", { healthAreas: areaTitles.length });
     }
   };
@@ -165,6 +158,7 @@ export const StoreClinicalCareView: React.FC = () => {
                   onSelectTier={(tierId) => {
                     const nextTier = normalizeStoreTier(tierId);
                     setSelectedTierId(nextTier);
+                    if (nextTier.startsWith("acute_")) setSelectedDurationWeeks(1);
                     trackStoreFunnelEvent("store_pathway_selected", { pathway: nextTier, durationWeeks: selectedDurationWeeks });
                   }}
                   onSelectDuration={(weeks) => {

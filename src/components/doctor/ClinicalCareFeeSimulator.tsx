@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, CheckCircle2, Plus, ShieldCheck, Trash2 } from "lucide-react";
 import styles from "./ClinicalCareFeeSimulator.module.css";
 import {
-  applyPhysicianPathwayOverride,
+  applyPhysicianPlanOverride,
   buildClinicalCareQuote,
   recommendClinicalCare,
   type AccessConsideration,
@@ -19,12 +19,16 @@ import {
   type PathologyDepth,
   type PharmacyQuoteItem,
 } from "@/lib/clinicalCareSimulator";
-import { CARE_LEVELS_DETAILS, calculateContinuityCareTotal } from "@/lib/pricingConfig";
+import { CARE_PLAN_CATALOG, CARE_PLAN_IDS, calculateCarePlanTotal, formatCarePlanDuration, type CarePlanDurationUnit, type CarePlanFamily, type CarePlanId } from "@/lib/pricingConfig";
 
 export interface ClinicalCareSimulatorDecision {
   assessment: ClinicalCareAssessment;
   recommendation: ClinicalCareRecommendation;
   durationWeeks: number;
+  planId: CarePlanId;
+  planFamily: CarePlanFamily;
+  durationValue: number;
+  durationUnit: CarePlanDurationUnit;
   caseSpecificSupportAmount: number;
   caseSpecificSupportCategory: string;
   caseSpecificSupportReason: string;
@@ -40,6 +44,8 @@ export interface ClinicalCareSimulatorDecision {
   selectionMode: "recommended" | "physician-override";
   recommendedPathway: ClinicalCareRecommendation["pathway"];
   selectedPathway: ClinicalCareRecommendation["pathway"];
+  recommendedPlanId: CarePlanId;
+  selectedPlanId: CarePlanId;
   manualSelectionReason: string;
   pricingRuleVersion: string;
 }
@@ -72,6 +78,14 @@ const clinicalSupportCategories = [
   "Multidisciplinary case conference",
   "Care navigation & records coordination",
 ];
+
+const legacyPathwayPlanMap: Record<string, CarePlanId> = {
+  mild: "acute_wellness_7d",
+  chronic_focused: "chronic_focused_1w",
+  moderate: "chronic_integrated_1w",
+  focused: "chronic_complex_1w",
+  comprehensive: "chronic_advanced_1w",
+};
 
 const breadthLabels: Record<OrganBreadth, string> = {
   one: "1 organ system",
@@ -136,20 +150,20 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
   const [assessment, setAssessment] = useState<ClinicalCareAssessment>({
     breadth: "one",
     pathologyDepth: "functional",
-    chronicity: "months",
+    chronicity: "recent",
     intensity: "standard",
     coordination: "minimal",
     stability: "stable",
     accessConsideration: patientAge && patientAge >= 60 ? "senior" : "none",
   });
   const automaticRecommendation = useMemo(() => recommendClinicalCare(assessment), [assessment]);
-  const [selectedPathway, setSelectedPathway] = useState<"recommended" | ClinicalCareRecommendation["pathway"]>("recommended");
+  const [selectedPlanId, setSelectedPlanId] = useState<"recommended" | CarePlanId>("recommended");
   const [manualSelectionReason, setManualSelectionReason] = useState("");
   const recommendation = useMemo(
-    () => selectedPathway === "recommended"
+    () => selectedPlanId === "recommended"
       ? automaticRecommendation
-      : applyPhysicianPathwayOverride(automaticRecommendation, selectedPathway),
-    [automaticRecommendation, selectedPathway],
+      : applyPhysicianPlanOverride(automaticRecommendation, selectedPlanId),
+    [automaticRecommendation, selectedPlanId],
   );
   const [durationWeeks, setDurationWeeks] = useState(recommendation.suggestedDurationWeeks);
   const [supportAmount, setSupportAmount] = useState(0);
@@ -171,7 +185,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
     const defaultAssessment: ClinicalCareAssessment = {
       breadth: "one",
       pathologyDepth: "functional",
-      chronicity: "months",
+      chronicity: "recent",
       intensity: "standard",
       coordination: "minimal",
       stability: "stable",
@@ -183,7 +197,8 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
       if (saved) {
         const draft = JSON.parse(saved);
         setAssessment(draft.assessment || defaultAssessment);
-        setSelectedPathway(draft.selectedPathway || "recommended");
+        const storedSelection = draft.selectedPlanId || legacyPathwayPlanMap[draft.selectedPathway] || "recommended";
+        setSelectedPlanId(storedSelection === "recommended" || storedSelection in CARE_PLAN_CATALOG ? storedSelection : "recommended");
         setManualSelectionReason(draft.manualSelectionReason || "");
         setDurationWeeks(Number(draft.durationWeeks) || 1);
         setSupportAmount(Number(draft.supportAmount) || 0);
@@ -195,7 +210,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
         setDraftSavedAt(draft.updatedAt || "");
       } else {
         setAssessment(defaultAssessment);
-        setSelectedPathway("recommended");
+        setSelectedPlanId("recommended");
         setManualSelectionReason("");
         setSupportAmount(0);
         setSupportCategory(clinicalSupportCategories[0]);
@@ -216,18 +231,18 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
     if (!draftHydrated) return;
     const updatedAt = new Date().toISOString();
     localStorage.setItem(`homeo.clinical-care-draft.${patientId || "standalone"}`, JSON.stringify({
-      assessment, selectedPathway, manualSelectionReason, durationWeeks, supportAmount, supportCategory,
+      assessment, selectedPlanId, manualSelectionReason, durationWeeks, supportAmount, supportCategory,
       supportReason, concessionAmount, concessionReason, pharmacyItems, updatedAt,
     }));
     setDraftSavedAt(updatedAt);
-  }, [assessment, concessionAmount, concessionReason, draftHydrated, durationWeeks, manualSelectionReason, patientId, pharmacyItems, selectedPathway, supportAmount, supportCategory, supportReason]);
+  }, [assessment, concessionAmount, concessionReason, draftHydrated, durationWeeks, manualSelectionReason, patientId, pharmacyItems, selectedPlanId, supportAmount, supportCategory, supportReason]);
 
   useEffect(() => {
     setDurationWeeks(current => recommendation.allowedDurationsWeeks.includes(current)
       ? current
       : recommendation.suggestedDurationWeeks);
     setConfirmed(false);
-  }, [recommendation.pathway, recommendation.suggestedDurationWeeks]);
+  }, [recommendation.allowedDurationsWeeks, recommendation.planId, recommendation.suggestedDurationWeeks]);
 
   const quote = useMemo(() => {
     if (recommendation.blockedBySafetyGate) return null;
@@ -246,7 +261,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
 
   const missingSupportReason = supportAmount > 0 && supportReason.trim().length < 5;
   const missingConcessionReason = concessionAmount > 0 && concessionReason.trim().length < 5;
-  const missingOverrideReason = selectedPathway !== "recommended" && manualSelectionReason.trim().length < 5;
+  const missingOverrideReason = selectedPlanId !== "recommended" && manualSelectionReason.trim().length < 5;
   const pharmacyItemsTotal = pharmacyItems.reduce((sum, item) => sum + item.amount, 0);
   const canApply = Boolean(quote && confirmed && !missingSupportReason && !missingConcessionReason && !missingOverrideReason);
 
@@ -255,12 +270,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
     setConfirmed(false);
   };
 
-  const pathwayOptions: Array<{ value: ClinicalCareRecommendation["pathway"]; label: string; weeklyFee: number }> = [
-    { value: "mild", label: CARE_LEVELS_DETAILS.mild.title, weeklyFee: CARE_LEVELS_DETAILS.mild.weeklyPrice },
-    { value: "moderate", label: CARE_LEVELS_DETAILS.moderate.title, weeklyFee: CARE_LEVELS_DETAILS.moderate.weeklyPrice },
-    { value: "focused", label: CARE_LEVELS_DETAILS.focused.title, weeklyFee: CARE_LEVELS_DETAILS.focused.weeklyPrice },
-    { value: "comprehensive", label: CARE_LEVELS_DETAILS.comprehensive.title, weeklyFee: CARE_LEVELS_DETAILS.comprehensive.weeklyPrice },
-  ];
+  const pathwayOptions = CARE_PLAN_IDS.map(value => ({ value, ...CARE_PLAN_CATALOG[value] }));
 
   const addPharmacyItem = () => {
     if (pharmacyUnitPrice <= 0 || pharmacyQuantity <= 0) return;
@@ -284,9 +294,9 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
       <div className="mb-5 flex flex-col gap-2 border-b border-slate-200 pb-4 dark:border-slate-700 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-[10px] font-black uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">Doctor decision support</p>
-          <h3 className={`${styles.title} mt-1 text-lg font-bold`}>Clinical Care & Fee Simulator</h3>
+          <h3 className={`${styles.title} mt-1 text-lg font-bold`}>Clinical Care Plan & Quotation Builder</h3>
           <p className={`${styles.bodyText} mt-1 max-w-3xl text-xs leading-relaxed`}>
-            Assess workload first, then build an itemized quotation. Organ-system count, disease name, age and financial circumstances never create an automatic surcharge.
+            Complete the clinical safety and workload review first, then create a separate itemized quotation. Diagnosis, organ-system count, pathology depth, chronicity, age and financial circumstances never increase the fee automatically.
           </p>
         </div>
         <span className="w-fit rounded-full bg-slate-900 px-3 py-1.5 text-[10px] font-bold text-white dark:bg-teal-300 dark:text-slate-950">
@@ -470,35 +480,35 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
             <>
               <p className="text-[10px] font-black uppercase tracking-widest text-teal-300">Suggested pathway</p>
               <h4 className="mt-1 text-xl font-black text-white">{automaticRecommendation.title}</h4>
-              <p className="mt-1 text-[10px] leading-relaxed text-slate-300">The recommendation supports judgment; the treating physician may select any pathway below.</p>
+                  <p className="mt-1 text-[10px] leading-relaxed text-slate-300">This is an administrative workload suggestion after clinical review—not a diagnosis or treatment recommendation. Acute Wellness Care starts at ₹2,000/week for suitable non-emergency cases.</p>
               <label className="mt-4 block">
                 <span className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-slate-300">Pathway decision</span>
                 <select
                   className={`${styles.input} w-full rounded-xl border px-3 py-2.5 text-xs font-bold`}
-                  value={selectedPathway}
+                  value={selectedPlanId}
                   onChange={e => {
-                    setSelectedPathway(e.target.value as "recommended" | ClinicalCareRecommendation["pathway"]);
+                    setSelectedPlanId(e.target.value as "recommended" | CarePlanId);
                     setConfirmed(false);
                   }}
                 >
                   <option value="recommended">Use recommendation — {automaticRecommendation.title}</option>
                   {pathwayOptions.map(option => (
                     <option key={option.value} value={option.value}>
-                      {option.label} — ₹{option.weeklyFee.toLocaleString("en-IN")}/week
+                      {option.title} — ₹{option.price.toLocaleString("en-IN")} / {formatCarePlanDuration(option)}
                     </option>
                   ))}
                 </select>
               </label>
-              {selectedPathway !== "recommended" && (
+              {selectedPlanId !== "recommended" && (
                 <div className="mt-2 rounded-xl border border-sky-400/40 bg-sky-400/10 p-3 text-[10px] leading-relaxed text-sky-100">
                   <p>Manual physician selection: {recommendation.title}. The recommendation remains recorded for audit.</p>
                   <label className="mt-2 block"><span className="mb-1 block font-bold uppercase tracking-wider">Reason for physician selection</span><input className={`${styles.input} w-full rounded-lg border px-3 py-2 text-xs`} value={manualSelectionReason} placeholder="Document the clinical reason" onChange={e => { setManualSelectionReason(e.target.value); setConfirmed(false); }} /></label>
                   {missingOverrideReason && <p className="mt-1 font-bold text-amber-200">A brief reason is required.</p>}
                 </div>
               )}
-              <p className="mt-2 text-sm font-bold text-teal-300">Selected pathway fee: ₹{recommendation.weeklyFee.toLocaleString("en-IN")} / week</p>
-              <label className="mt-4 block"><span className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-slate-300">Care period</span><select className={`${styles.input} w-full rounded-xl border px-3 py-2.5 text-xs font-bold`} value={durationWeeks} onChange={e => { setDurationWeeks(Number(e.target.value)); setConfirmed(false); }}>{recommendation.allowedDurationsWeeks.map(weeks => { const continuity = calculateContinuityCareTotal(recommendation.weeklyFee, weeks); return <option key={weeks} value={weeks}>{weeks} {weeks === 1 ? "week" : "weeks"} · ₹{continuity.total.toLocaleString("en-IN")}{continuity.discountPercent > 0 ? ` · ${continuity.discountPercent}% benefit` : ""}{weeks === 1 && recommendation.pathway !== "mild" ? " · initial period; reassessment required" : ""}</option>; })}</select></label>
-              {durationWeeks === 1 && recommendation.pathway !== "mild" && <p className="mt-2 rounded-lg bg-amber-500/10 px-3 py-2 text-[10px] leading-relaxed text-amber-100">One-week initial care period — physician reassessment is required before continuation.</p>}
+              <p className="mt-2 text-sm font-bold text-teal-300">Selected plan fee: ₹{recommendation.carePeriodFee.toLocaleString("en-IN")} / {recommendation.planFamily === "acute" ? formatCarePlanDuration(recommendation) : "week"}</p>
+              <label className="mt-4 block"><span className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-slate-300">Care period</span><select className={`${styles.input} w-full rounded-xl border px-3 py-2.5 text-xs font-bold`} value={durationWeeks} disabled={recommendation.planFamily === "acute"} onChange={e => { setDurationWeeks(Number(e.target.value)); setConfirmed(false); }}>{recommendation.allowedDurationsWeeks.map(weeks => { const continuity = recommendation.planFamily === "acute" ? calculateCarePlanTotal(recommendation.planId) : calculateCarePlanTotal(recommendation.planId, weeks); return <option key={weeks} value={weeks}>{recommendation.planFamily === "acute" ? formatCarePlanDuration(recommendation) : `${weeks} ${weeks === 1 ? "week" : "weeks"}`} · ₹{continuity.total.toLocaleString("en-IN")}{continuity.discountPercent > 0 ? ` · ${continuity.discountPercent}% benefit` : ""}{recommendation.planFamily === "chronic" && weeks === 1 ? " · initial period; reassessment required" : ""}</option>; })}</select></label>
+              <p className="mt-2 rounded-lg bg-amber-500/10 px-3 py-2 text-[10px] leading-relaxed text-amber-100">Physician reassessment is required before renewal or movement to another plan. This is not emergency care.</p>
               <div className="mt-4 space-y-2">{recommendation.reasons.map(reason => <div key={reason} className="flex gap-2 text-xs leading-relaxed text-slate-200"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" />{reason}</div>)}</div>
               <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-[10px] leading-relaxed text-amber-100">{recommendation.cautions.join(" ")}</div>
               {quote && <div className="mt-5 space-y-2 border-t border-slate-700 pt-4 text-xs"><div className="flex justify-between"><span>List care-period fee</span><strong>₹{quote.listCareTotal.toLocaleString("en-IN")}</strong></div>{quote.continuityDiscountTotal > 0 && <div className="flex justify-between text-teal-300"><span>Continuity care benefit ({quote.continuityDiscountPercent}%)</span><strong>−₹{quote.continuityDiscountTotal.toLocaleString("en-IN")}</strong></div>}<div className="flex justify-between"><span>Care fee after benefit</span><strong>₹{quote.baseCareTotal.toLocaleString("en-IN")}</strong></div>{quote.caseSpecificSupportTotal > 0 && <div className="flex justify-between"><span>Clinical support</span><strong>+₹{quote.caseSpecificSupportTotal.toLocaleString("en-IN")}</strong></div>}{quote.pharmacyTotal > 0 && <div className="flex justify-between"><span>Itemized pharmacy</span><strong>+₹{quote.pharmacyTotal.toLocaleString("en-IN")}</strong></div>}{quote.concessionTotal > 0 && <div className="flex justify-between text-indigo-300"><span>Documented concession</span><strong>−₹{quote.concessionTotal.toLocaleString("en-IN")}</strong></div>}<div className="flex justify-between border-t border-slate-700 pt-3 text-base"><span className="font-black">Pending quotation</span><strong className="text-teal-300">₹{quote.finalTotal.toLocaleString("en-IN")}</strong></div></div>}
@@ -508,7 +518,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
                 const now = new Date();
                 const validUntil = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
                 const quotationId = `QTN-${now.toISOString().slice(0, 10).replaceAll("-", "")}-${Math.floor(1000 + Math.random() * 9000)}`;
-                onApply({ assessment, recommendation, durationWeeks, caseSpecificSupportAmount: supportAmount, caseSpecificSupportCategory: supportCategory, caseSpecificSupportReason: supportReason.trim(), pharmacyItems, concessionAmount: quote.concessionTotal, concessionReason: concessionReason.trim(), quote, physicianConfirmed: true, confirmedAt: now.toISOString(), quotationId, validUntil: validUntil.toISOString(), approvalStatus: "pending-patient-approval", selectionMode: selectedPathway === "recommended" ? "recommended" : "physician-override", recommendedPathway: automaticRecommendation.pathway, selectedPathway: recommendation.pathway, manualSelectionReason: manualSelectionReason.trim(), pricingRuleVersion: recommendation.version });
+                onApply({ assessment, recommendation, durationWeeks, planId: recommendation.planId, planFamily: recommendation.planFamily, durationValue: quote.durationValue, durationUnit: quote.durationUnit, caseSpecificSupportAmount: supportAmount, caseSpecificSupportCategory: supportCategory, caseSpecificSupportReason: supportReason.trim(), pharmacyItems, concessionAmount: quote.concessionTotal, concessionReason: concessionReason.trim(), quote, physicianConfirmed: true, confirmedAt: now.toISOString(), quotationId, validUntil: validUntil.toISOString(), approvalStatus: "pending-patient-approval", selectionMode: selectedPlanId === "recommended" ? "recommended" : "physician-override", recommendedPathway: automaticRecommendation.pathway, selectedPathway: recommendation.pathway, recommendedPlanId: automaticRecommendation.planId, selectedPlanId: recommendation.planId, manualSelectionReason: manualSelectionReason.trim(), pricingRuleVersion: recommendation.version });
               }} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-teal-400 px-4 py-3 text-xs font-black uppercase tracking-wider text-slate-950 hover:bg-teal-300 disabled:cursor-not-allowed disabled:opacity-40"><ShieldCheck className="h-4 w-4" /> Apply to pending plan</button>
             </>
           )}

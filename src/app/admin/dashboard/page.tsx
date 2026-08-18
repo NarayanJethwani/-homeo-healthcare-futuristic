@@ -1,6 +1,6 @@
 "use client";
 
-import { CARE_LEVELS_DETAILS, PRIORITY_ACUTE_SUPPORT_WEEKLY_PRICE, calculateContinuityCareTotal, normalizeCareLevelName, getCareLevelDisplayName } from "@/lib/pricingConfig";
+import { CARE_LEVELS_DETAILS, CARE_PLAN_CATALOG, CARE_PLAN_CATALOG_VERSION, CARE_PLAN_IDS, calculateCarePlanTotal, calculateContinuityCareTotal, formatCarePlanDuration, normalizeCareLevelName, type CarePlanId } from "@/lib/pricingConfig";
 import { INDIA_STATES, findIndiaCity, findIndiaCityByKey, getIndiaCityOptions, makeIndiaLocationKey } from "@/lib/indiaLocations";
 
 import { useState, useEffect, useRef, useMemo } from "react";
@@ -41,7 +41,7 @@ import { PotencySelectionHelper } from "@/features/repertory/components/PotencyS
 import { MATERIA_MEDICA_BOOKS, MateriaMedicaBook } from "@/lib/materiaMedicaData";
 import { ORGANON_EDITIONS, ORGANON_KNOWLEDGE_TREE, ORGANON_APHORISMS, ORGANON_CASES, ACTIVE_RECALL_EXERCISES, TIMELINE_STEPS } from "@/lib/organonData";
 import { db, auth } from "@/lib/firebase";
-import { collection, onSnapshot, query, orderBy, doc, updateDoc, setDoc, where, getDoc, getDocs, deleteDoc } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy, doc, updateDoc, setDoc, where, getDoc, getDocs } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { getKnowledgeGraph, GraphNode } from "@/lib/knowledgeGraph";
 import { runIngestionSimulation, INGESTION_SOURCES } from "@/lib/ingestionPipeline";
@@ -112,6 +112,12 @@ import {
   ClinicalCareFeeSimulator,
   type ClinicalCareSimulatorDecision,
 } from "@/components/doctor/ClinicalCareFeeSimulator";
+import {
+  evaluateIntakeClinicalSafety,
+  type IntakePregnancyStatus,
+  type IntakeRedFlagStatus,
+  type IntakeReviewStatus,
+} from "@/features/dashboard/application/intakeClinicalSafety";
 
 
 const ManageDoctorsPanel = dynamic(() => import("@/components/ManageDoctorsPanel"), {
@@ -237,32 +243,34 @@ interface Patient {
   concessionApplied?: string;
   conditionsCount?: number;
   durationValue?: number;
+  durationUnit?: "day" | "week";
+  carePlanId?: CarePlanId;
+  carePlanCatalogVersion?: string;
   medicineAddons?: { id: string; type: string; details: string; amount: number }[];
   prescriptions?: any[];
 }
 
-const NEW_CASE_CARE_LEVEL_KEYS = ["mild", "moderate", "focused", "comprehensive"] as const;
-const DEFAULT_NEW_CASE_CARE_LEVEL = CARE_LEVELS_DETAILS.mild.title;
-const DEFAULT_NEW_CASE_WEEKLY_PRICE = CARE_LEVELS_DETAILS.mild.weeklyPrice;
+const NEW_CASE_CARE_PLAN_IDS = CARE_PLAN_IDS;
+const DEFAULT_NEW_CASE_PLAN_ID: CarePlanId = "acute_mild_3d";
+const DEFAULT_NEW_CASE_CARE_LEVEL = CARE_PLAN_CATALOG[DEFAULT_NEW_CASE_PLAN_ID].title;
+const DEFAULT_NEW_CASE_PRICE = CARE_PLAN_CATALOG[DEFAULT_NEW_CASE_PLAN_ID].price;
 
 const INVOICE_TEMPLATES = [
-  ...NEW_CASE_CARE_LEVEL_KEYS.flatMap((key) => {
-    const detail = CARE_LEVELS_DETAILS[key];
-    return detail.durations.map((weeks) => ({
-      group: detail.title,
-      label: `${detail.title} · ${weeks} ${weeks === 1 ? "week" : "weeks"}`,
-      description: `${detail.title} — ${weeks}-week physician-confirmed care period`,
-      qty: weeks,
-      unitPrice: detail.weeklyPrice,
-    }));
+  ...NEW_CASE_CARE_PLAN_IDS.flatMap((planId) => {
+    const plan = CARE_PLAN_CATALOG[planId];
+    const durations = plan.family === "acute" ? [1] : [1, 2, 4, 8, 12];
+    return durations.map((weeks) => {
+      const total = calculateCarePlanTotal(planId, weeks).total;
+      const duration = plan.family === "acute" ? formatCarePlanDuration(plan) : `${weeks} ${weeks === 1 ? "week" : "weeks"}`;
+      return {
+        group: plan.title,
+        label: `${plan.title} · ${duration}`,
+        description: `${plan.title} — physician-confirmed ${duration} care period; reassessment required`,
+        qty: 1,
+        unitPrice: total,
+      };
+    });
   }),
-  {
-    group: "Clinical support and delivery",
-    label: "Priority Acute Support · 1 week",
-    description: "Priority Acute Support — 1-week physician-assigned add-on",
-    qty: 1,
-    unitPrice: PRIORITY_ACUTE_SUPPORT_WEEKLY_PRICE,
-  },
   {
     group: "Clinical support and delivery",
     label: "Domestic medicine preparation & delivery",
@@ -787,20 +795,13 @@ const getCareLevelKey = (level: string) => {
   return normalizeCareLevelName(level);
 };
 
-const getCareLevelRate = (level: string, cycle: string, conditions: number = 1) => {
-  const key = getCareLevelKey(level);
-  const isWeekly = cycle === "Weekly";
-  const basePrice = isWeekly ? CARE_LEVELS_DETAILS[key].weeklyPrice : CARE_LEVELS_DETAILS[key].monthlyPrice;
-  void conditions;
-  return basePrice;
-};
-
 const calculatePlannerPricing = (
   level: string,
   cycle: "monthly" | "weekly",
   duration: number,
   conditions: number
 ) => {
+  void conditions;
   const details = CARE_LEVELS_DETAILS[level as keyof typeof CARE_LEVELS_DETAILS] || CARE_LEVELS_DETAILS.focused;
   const durationWeeks = cycle === "weekly" ? duration : duration * 4;
   const continuity = calculateContinuityCareTotal(details.weeklyPrice, durationWeeks);
@@ -1121,10 +1122,13 @@ export default function AdminDashboard() {
         const list: Clinician[] = [];
         querySnapshot.forEach((docSnap) => {
           const data = docSnap.data();
+          const rawRole = String(data.role || "").toLowerCase();
+          if (!["doctor", "admin", "super-admin", "clinical-reviewer"].includes(rawRole)) return;
+          const role = normalizeRole(rawRole);
           list.push({
             uid: docSnap.id,
             name: data.name || data.displayName || data.email || "Clinician",
-            role: data.role || "doctor",
+            role,
             email: data.email || ""
           });
         });
@@ -1192,14 +1196,14 @@ export default function AdminDashboard() {
 
   // Step 3: Constitutional Capture States
   const [constMentalState, setConstMentalState] = useState<string>("");
-  const [constEmotionalPattern, setConstEmotionalPattern] = useState<string>("Anxious/Restless");
-  const [constThermalState, setConstThermalState] = useState<"Hot" | "Chilly" | "Mixed">("Mixed");
+  const [constEmotionalPattern, setConstEmotionalPattern] = useState<string>("");
+  const [constThermalState, setConstThermalState] = useState<"Not recorded" | "Hot" | "Chilly" | "Mixed">("Not recorded");
   const [constFoodDesires, setConstFoodDesires] = useState<string>("");
   const [constFoodAversions, setConstFoodAversions] = useState<string>("");
   const [constSleepPattern, setConstSleepPattern] = useState<string>("");
   const [constDreams, setConstDreams] = useState<string>("");
-  const [constEnergyLevel, setConstEnergyLevel] = useState<number>(6);
-  const [constMiasmIndicators, setConstMiasmIndicators] = useState<string[]>(["Psora"]);
+  const [constEnergyLevel, setConstEnergyLevel] = useState<number | null>(null);
+  const [constMiasmIndicators, setConstMiasmIndicators] = useState<string[]>([]);
 
   // Step 4: Diagnostic Clues States
   const [diagDiagnosis, setDiagDiagnosis] = useState<string>("");
@@ -1207,6 +1211,13 @@ export default function AdminDashboard() {
   const [diagImaging, setDiagImaging] = useState<string>("");
   const [diagPastTreatments, setDiagPastTreatments] = useState<string>("");
   const [diagCurrentMeds, setDiagCurrentMeds] = useState<string>("");
+  const [intakeMedicationReviewStatus, setIntakeMedicationReviewStatus] = useState<IntakeReviewStatus>("not-reviewed");
+  const [intakeAllergyReviewStatus, setIntakeAllergyReviewStatus] = useState<IntakeReviewStatus>("not-reviewed");
+  const [intakeAllergies, setIntakeAllergies] = useState<string>("");
+  const [intakeRedFlagStatus, setIntakeRedFlagStatus] = useState<IntakeRedFlagStatus>("not-screened");
+  const [intakeRedFlagDetails, setIntakeRedFlagDetails] = useState<string>("");
+  const [intakePregnancyStatus, setIntakePregnancyStatus] = useState<IntakePregnancyStatus>("not-assessed");
+  const [intakeSafetyMessage, setIntakeSafetyMessage] = useState<string>("");
 
   // Navigation and Sizing Controls
   const [intakeStep, setIntakeStep] = useState<number>(1);
@@ -1422,6 +1433,29 @@ export default function AdminDashboard() {
 
   // Triggering authentic analysis
   const handleSmartAction = async (subTask: string) => {
+    const hpiAnswerCount = intakeChatMessages.filter(message => message.sender === "user").length;
+    const safetyAssessment = evaluateIntakeClinicalSafety({
+      complaint: intakeComplaint,
+      hpiAnswerCount,
+      medicationsStatus: intakeMedicationReviewStatus,
+      medications: diagCurrentMeds,
+      allergiesStatus: intakeAllergyReviewStatus,
+      allergies: intakeAllergies,
+      redFlagStatus: intakeRedFlagStatus,
+      redFlagDetails: intakeRedFlagDetails,
+      pregnancyStatus: intakePregnancyStatus,
+    });
+    if (!safetyAssessment.canSynthesize) {
+      setSynthesisOutput(null);
+      setIntakeResult(null);
+      setIntakeSafetyMessage(
+        [...safetyAssessment.blockingReasons, ...safetyAssessment.missingRequirements].join(" "),
+      );
+      setIntakeStep(4);
+      return;
+    }
+
+    setIntakeSafetyMessage("");
     setIsIntakeLoading(true);
     try {
       const activePatient = selectedPatientId ? patients.find((p) => p.id === selectedPatientId) : null;
@@ -1432,18 +1466,18 @@ export default function AdminDashboard() {
 
       const bodyPayload = {
         complaint: intakeComplaint,
-        thermalGenerals: `State: ${constThermalState}. Food Desires: ${constFoodDesires}. Food Aversions: ${constFoodAversions}. Sleep: ${constSleepPattern}. Dreams: ${constDreams}. Energy Level: ${constEnergyLevel}/10. Miasms: ${constMiasmIndicators.join(", ")}`,
+        thermalGenerals: `State: ${constThermalState}. Food Desires: ${constFoodDesires || "Not recorded"}. Food Aversions: ${constFoodAversions || "Not recorded"}. Sleep: ${constSleepPattern || "Not recorded"}. Dreams: ${constDreams || "Not recorded"}. Energy Level: ${constEnergyLevel === null ? "Not recorded" : `${constEnergyLevel}/10`}. Miasms: ${constMiasmIndicators.join(", ") || "Not recorded"}`,
         mentalProfile: `State: ${constMentalState}. Pattern: ${constEmotionalPattern}`,
-        suppressionHistory: `Past: ${diagPastTreatments || 'None'}. Current Meds: ${diagCurrentMeds || 'None'}`,
+        suppressionHistory: `Past treatment: ${diagPastTreatments || "Not recorded"}. Current medicines: ${intakeMedicationReviewStatus === "none-known" ? "None reported after review" : diagCurrentMeds || "Reviewed; details not entered"}. Allergies: ${intakeAllergyReviewStatus === "none-known" ? "None reported after review" : intakeAllergies || "Reviewed; details not entered"}.`,
         patientInfo: activePatient ? {
           name: activePatient.name,
           age: activePatient.age,
           gender: activePatient.gender,
-          complaint: activePatient.complaint
+          complaint: intakeComplaint || activePatient.complaint
         } : {
-          name: "34-year-old Patient",
-          age: "34",
-          gender: "Female",
+          name: "Unlinked intake",
+          age: "Not recorded",
+          gender: "Not recorded",
           complaint: intakeComplaint
         },
         chatAnswers: chatAnswersText,
@@ -1454,6 +1488,15 @@ export default function AdminDashboard() {
           pastTreatments: diagPastTreatments,
           currentMeds: diagCurrentMeds
         },
+        clinicalSafety: {
+          hpiAnswerCount,
+          medicationsStatus: intakeMedicationReviewStatus,
+          allergiesStatus: intakeAllergyReviewStatus,
+          allergies: intakeAllergies,
+          redFlagStatus: intakeRedFlagStatus,
+          redFlagDetails: intakeRedFlagDetails,
+          pregnancyStatus: intakePregnancyStatus,
+        },
         smartActionType: subTask
       };
 
@@ -1462,10 +1505,16 @@ export default function AdminDashboard() {
         const parsed = JSON.parse(data.analysis);
         setSynthesisOutput(parsed);
         setIntakeResult(parsed);
+      } else {
+        setSynthesisOutput(null);
+        setIntakeResult(null);
+        setIntakeSafetyMessage(data.error || "AI synthesis could not be completed safely.");
       }
     } catch (err) {
       console.error(err);
-      alert("AI analysis complete: loaded diagnostic matching layers.");
+      setSynthesisOutput(null);
+      setIntakeResult(null);
+      setIntakeSafetyMessage("AI synthesis failed. No clinical inference or repertory data was generated.");
     } finally {
       setIsIntakeLoading(false);
     }
@@ -1473,6 +1522,11 @@ export default function AdminDashboard() {
 
   // Kent Rubrics transport mapping helper
   const transportCaseToRepertory = (recommendedRubrics: string[]) => {
+    if (!intakeSafetyAssessment.canSynthesize || !synthesisOutput || recommendedRubrics.length === 0) {
+      setIntakeSafetyMessage("Complete the clinical safety gate and generate evidence-based rubrics before transport to the repertory.");
+      setIntakeStep(4);
+      return;
+    }
     const newRubrics: JethwaniSymptomConfig[] = [];
     recommendedRubrics.forEach((rubStr) => {
       const lower = rubStr.toLowerCase();
@@ -1525,17 +1579,6 @@ export default function AdminDashboard() {
         });
       }
     });
-
-    if (newRubrics.length === 0) {
-      if (intakeComplaint.toLowerCase().includes("stress")) {
-        newRubrics.push({ rubricId: "jeth_a_burnout", severity: 7, frequency: "frequent", impact: "moderate" });
-        newRubrics.push({ rubricId: "jeth_a_anticipatory_dread", severity: 6, frequency: "occasional", impact: "mild" });
-      } else if (intakeComplaint.toLowerCase().includes("migraine")) {
-        newRubrics.push({ rubricId: "jeth_d_migraine_throbbing", severity: 8, frequency: "occasional", impact: "severe" });
-      } else if (intakeComplaint.toLowerCase().includes("anxiety")) {
-        newRubrics.push({ rubricId: "jeth_a_anticipatory_dread", severity: 7, frequency: "frequent", impact: "moderate" });
-      }
-    }
 
     setSelectedJethwaniRubrics(newRubrics);
     if (constThermalState === "Chilly") {
@@ -3580,7 +3623,7 @@ export default function AdminDashboard() {
       return;
     }
 
-    const durationText = `${plannerSimulatorDecision.durationWeeks}-Week Care Plan`;
+    const durationText = `${plannerSimulatorDecision.durationValue}-${plannerSimulatorDecision.durationUnit === "day" ? "Day" : "Week"} Care Plan`;
     
     // Get dynamic recommendation details
     const recommendation = plannerSimulatorDecision.recommendation;
@@ -3589,9 +3632,12 @@ export default function AdminDashboard() {
       id: Math.random().toString(36).substring(2, 9),
       createdAt: new Date().toISOString(),
       careLevel: recommendation.title,
+      carePlanId: plannerSimulatorDecision.planId,
+      carePlanCatalogVersion: CARE_PLAN_CATALOG_VERSION,
       conditionsCount: plannerConditionsCount,
       careIntensity: recommendation.followUpLabel,
-      durationValue: plannerSimulatorDecision.durationWeeks,
+      durationValue: plannerSimulatorDecision.durationValue,
+      durationUnit: plannerSimulatorDecision.durationUnit,
       durationText: durationText,
       followUpFrequency: recommendation.followUpLabel,
       finalPrice: calculatedPrices.finalPrice,
@@ -3616,6 +3662,8 @@ export default function AdminDashboard() {
       approvalStatus: plannerSimulatorDecision.approvalStatus,
       recommendedPathway: plannerSimulatorDecision.recommendedPathway,
       selectedPathway: plannerSimulatorDecision.selectedPathway,
+      recommendedPlanId: plannerSimulatorDecision.recommendedPlanId,
+      selectedPlanId: plannerSimulatorDecision.selectedPlanId,
       selectionMode: plannerSimulatorDecision.selectionMode,
       manualSelectionReason: plannerSimulatorDecision.manualSelectionReason,
       pricingRuleVersion: plannerSimulatorDecision.pricingRuleVersion,
@@ -3627,6 +3675,8 @@ export default function AdminDashboard() {
           quotationId: plannerSimulatorDecision.quotationId,
           recommendedPathway: plannerSimulatorDecision.recommendedPathway,
           selectedPathway: plannerSimulatorDecision.selectedPathway,
+          recommendedPlanId: plannerSimulatorDecision.recommendedPlanId,
+          selectedPlanId: plannerSimulatorDecision.selectedPlanId,
           selectionMode: plannerSimulatorDecision.selectionMode,
           reason: plannerSimulatorDecision.manualSelectionReason || "Simulator recommendation accepted",
           actor: "physician",
@@ -3639,6 +3689,8 @@ export default function AdminDashboard() {
 
     const updatedFields = {
       careLevel: recommendation.title,
+      carePlanId: plannerSimulatorDecision.planId,
+      carePlanCatalogVersion: CARE_PLAN_CATALOG_VERSION,
       durationText: durationText,
       finalPrice: calculatedPrices.finalPrice,
       receivedAmount: plannerReceived,
@@ -3646,7 +3698,8 @@ export default function AdminDashboard() {
       billingCycle: "weekly" as const,
       concessionApplied: plannerSimulatorDecision.concessionAmount > 0 ? "Documented manual concession" : "None",
       conditionsCount: plannerConditionsCount,
-      durationValue: plannerSimulatorDecision.durationWeeks,
+      durationValue: plannerSimulatorDecision.durationValue,
+      durationUnit: plannerSimulatorDecision.durationUnit,
       medicineAddons: plannerMedicineAddons,
       treatmentPlans: updatedPlans
     };
@@ -5235,15 +5288,16 @@ export default function AdminDashboard() {
     state: "",
     country: "India",
     complaint: "",
+    carePlanId: DEFAULT_NEW_CASE_PLAN_ID,
     careLevel: DEFAULT_NEW_CASE_CARE_LEVEL,
     billingCycle: "Weekly",
     concessionType: "None",
-    durationText: "1-Week Care Period",
+    durationText: "3-Day Care Period",
     conditionsCount: 1,
-    basePrice: DEFAULT_NEW_CASE_WEEKLY_PRICE,
+    basePrice: DEFAULT_NEW_CASE_PRICE,
     discountOverride: 0,
-    finalPrice: DEFAULT_NEW_CASE_WEEKLY_PRICE,
-    receivedAmount: DEFAULT_NEW_CASE_WEEKLY_PRICE,
+    finalPrice: DEFAULT_NEW_CASE_PRICE,
+    receivedAmount: DEFAULT_NEW_CASE_PRICE,
     remainingBalance: 0
   });
   const [isCreatingCase, setIsCreatingCase] = useState(false);
@@ -5403,7 +5457,7 @@ export default function AdminDashboard() {
         : "";
       setInvoiceItems([
         {
-          description: `${approvedPlan.careLevel || "Clinical Care"} — ${approvedPlan.durationValue || quote.durationWeeks}-week care period${continuityLabel}`,
+          description: `${approvedPlan.careLevel || "Clinical Care"} — ${approvedPlan.durationValue || quote.durationValue || quote.durationWeeks} ${(approvedPlan.durationUnit || quote.durationUnit || "week")}${(approvedPlan.durationValue || quote.durationValue || quote.durationWeeks) === 1 ? "" : "s"} care period${continuityLabel}`,
           qty: 1,
           unitPrice: quote.baseCareTotal,
           amount: quote.baseCareTotal,
@@ -6039,12 +6093,14 @@ Homeo Healthcare`;
 
 
 
-  const getNewCaseCareOptionLabel = (key: (typeof NEW_CASE_CARE_LEVEL_KEYS)[number]) => {
-    const detail = CARE_LEVELS_DETAILS[key];
-    const weeks = Math.max(1, getDurationValue(newCaseForm.durationText));
-    const total = detail.weeklyPrice * weeks;
-    const pricePrefix = detail.pricePrefix ? `${detail.pricePrefix} ` : "";
-    return `${detail.icon} ${detail.title} — ${pricePrefix}₹${detail.weeklyPrice.toLocaleString("en-IN")}/week · ₹${total.toLocaleString("en-IN")} for ${weeks} ${weeks === 1 ? "week" : "weeks"}`;
+  const getNewCaseCareOptionLabel = (planId: CarePlanId) => {
+    const plan = CARE_PLAN_CATALOG[planId];
+    return `${plan.title} — ₹${plan.price.toLocaleString("en-IN")} / ${formatCarePlanDuration(plan)}`;
+  };
+
+  const getCarePlanIdFromSelection = (selection: string): CarePlanId => {
+    if (selection in CARE_PLAN_CATALOG) return selection as CarePlanId;
+    return CARE_PLAN_IDS.find(planId => CARE_PLAN_CATALOG[planId].title === selection) || DEFAULT_NEW_CASE_PLAN_ID;
   };
 
   const calculateCaseFormPricing = (
@@ -6057,9 +6113,10 @@ Homeo Healthcare`;
     conditionsCount: number = 1,
     manualFinalPrice?: number
   ) => {
-    const rate = getCareLevelRate(level, billingCycle, conditionsCount);
+    const planId = getCarePlanIdFromSelection(level);
+    const plan = CARE_PLAN_CATALOG[planId];
     const val = getDurationValue(durationText);
-    const base = rate * val;
+    const base = calculateCarePlanTotal(planId, plan.family === "chronic" ? val : 1).total;
     
     const discountPercent = 0;
     const durationDiscountAmount = 0;
@@ -6084,11 +6141,17 @@ Homeo Healthcare`;
     };
   };
 
-  const handleCareLevelChange = (level: string) => {
-    const pricing = calculateCaseFormPricing(level, newCaseForm.durationText, newCaseForm.age, newCaseForm.discountOverride, newCaseForm.billingCycle, newCaseForm.concessionType, newCaseForm.conditionsCount);
+  const handleCareLevelChange = (planId: CarePlanId) => {
+    const plan = CARE_PLAN_CATALOG[planId];
+    const durationText = plan.family === "acute"
+      ? `${plan.durationValue}-Day Care Period`
+      : "1-Week Care Period";
+    const pricing = calculateCaseFormPricing(planId, durationText, newCaseForm.age, newCaseForm.discountOverride, newCaseForm.billingCycle, newCaseForm.concessionType, newCaseForm.conditionsCount);
     setNewCaseForm(prev => ({
       ...prev,
-      careLevel: level,
+      carePlanId: planId,
+      careLevel: plan.title,
+      durationText,
       basePrice: pricing.basePrice,
       finalPrice: pricing.finalPrice,
       receivedAmount: pricing.finalPrice,
@@ -6311,6 +6374,8 @@ Homeo Healthcare`;
           state: newCaseForm.state,
           country: newCaseForm.country,
           complaint: newCaseForm.complaint,
+          carePlanId: newCaseForm.carePlanId,
+          carePlanCatalogVersion: CARE_PLAN_CATALOG_VERSION,
           careLevel: newCaseForm.careLevel,
           conditionsCount: newCaseForm.conditionsCount,
           durationText: newCaseForm.durationText,
@@ -6319,7 +6384,10 @@ Homeo Healthcare`;
           remainingBalance: newCaseForm.remainingBalance,
           assignedDoctor: session?.uid || "unassigned",
           billingCycle: newCaseForm.billingCycle,
-          durationValue: getDurationValue(newCaseForm.durationText),
+          durationValue: CARE_PLAN_CATALOG[newCaseForm.carePlanId].family === "acute"
+            ? CARE_PLAN_CATALOG[newCaseForm.carePlanId].durationValue
+            : getDurationValue(newCaseForm.durationText),
+          durationUnit: CARE_PLAN_CATALOG[newCaseForm.carePlanId].durationUnit,
           concessionApplied: concessionVal,
           overridePrice: newCaseForm.finalPrice,
           medicineAddons: 0,
@@ -6351,6 +6419,8 @@ Homeo Healthcare`;
             email: newCaseForm.email,
             location: `${newCaseForm.city || "N/A"}, ${newCaseForm.state || "N/A"}, ${newCaseForm.country}`,
             complaint: newCaseForm.complaint,
+            carePlanId: newCaseForm.carePlanId,
+            carePlanCatalogVersion: CARE_PLAN_CATALOG_VERSION,
             careLevel: newCaseForm.careLevel,
             durationText: newCaseForm.durationText,
             finalPrice: newCaseForm.finalPrice,
@@ -6364,7 +6434,8 @@ Homeo Healthcare`;
             billingCycle: newCaseForm.billingCycle,
             concessionApplied: concessionVal,
             conditionsCount: newCaseForm.conditionsCount,
-            durationValue: getDurationValue(newCaseForm.durationText)
+            durationValue: CARE_PLAN_CATALOG[newCaseForm.carePlanId].family === "acute" ? CARE_PLAN_CATALOG[newCaseForm.carePlanId].durationValue : getDurationValue(newCaseForm.durationText),
+            durationUnit: CARE_PLAN_CATALOG[newCaseForm.carePlanId].durationUnit,
           } as any;
           if (isPlanningRegisteredPatient) {
             setPatients(prev => prev.map(p => p.id === planningPatientId ? newPatient : p));
@@ -6384,15 +6455,16 @@ Homeo Healthcare`;
           state: "",
           country: "India",
           complaint: "",
+          carePlanId: DEFAULT_NEW_CASE_PLAN_ID,
           careLevel: DEFAULT_NEW_CASE_CARE_LEVEL,
           billingCycle: "Weekly",
           concessionType: "None",
-          durationText: "1-Week Care Period",
+          durationText: "3-Day Care Period",
           conditionsCount: 1,
-          basePrice: DEFAULT_NEW_CASE_WEEKLY_PRICE,
+          basePrice: DEFAULT_NEW_CASE_PRICE,
           discountOverride: 0,
-          finalPrice: DEFAULT_NEW_CASE_WEEKLY_PRICE,
-          receivedAmount: DEFAULT_NEW_CASE_WEEKLY_PRICE,
+          finalPrice: DEFAULT_NEW_CASE_PRICE,
+          receivedAmount: DEFAULT_NEW_CASE_PRICE,
           remainingBalance: 0
         });
       } else {
@@ -6428,6 +6500,8 @@ Homeo Healthcare`;
         email: newCaseForm.email,
         location: `${newCaseForm.city || "N/A"}, ${newCaseForm.state || "N/A"}, ${newCaseForm.country}`,
         complaint: newCaseForm.complaint,
+        carePlanId: newCaseForm.carePlanId,
+        carePlanCatalogVersion: CARE_PLAN_CATALOG_VERSION,
         careLevel: newCaseForm.careLevel,
         durationText: newCaseForm.durationText,
         finalPrice: newCaseForm.finalPrice,
@@ -6441,7 +6515,8 @@ Homeo Healthcare`;
         billingCycle: newCaseForm.billingCycle,
         concessionApplied: concessionVal,
         conditionsCount: newCaseForm.conditionsCount,
-        durationValue: getDurationValue(newCaseForm.durationText)
+        durationValue: CARE_PLAN_CATALOG[newCaseForm.carePlanId].family === "acute" ? CARE_PLAN_CATALOG[newCaseForm.carePlanId].durationValue : getDurationValue(newCaseForm.durationText),
+        durationUnit: CARE_PLAN_CATALOG[newCaseForm.carePlanId].durationUnit,
       } as any;
       
       try {
@@ -6497,10 +6572,12 @@ Homeo Healthcare`;
     const ageVal = patient.age || "30";
     const ageNum = parseInt(ageVal) || 0;
     const concession = ageNum >= 60 ? "Senior" : "None";
-    const careLevel = "🌱 Acute & Wellness Care";
-    const duration = "1-Month Consultation";
-    const cycle = "Monthly";
-    const pricing = calculateCaseFormPricing(careLevel, duration, ageVal, 0, cycle, concession, 1);
+    const carePlanId: CarePlanId = patient.carePlanId || DEFAULT_NEW_CASE_PLAN_ID;
+    const selectedPlan = CARE_PLAN_CATALOG[carePlanId];
+    const careLevel = selectedPlan.title;
+    const duration = selectedPlan.family === "acute" ? `${selectedPlan.durationValue}-Day Care Period` : "1-Week Care Period";
+    const cycle = "Weekly";
+    const pricing = calculateCaseFormPricing(carePlanId, duration, ageVal, 0, cycle, concession, 1);
 
     setNewCaseForm({
       name: patient.name,
@@ -6512,6 +6589,7 @@ Homeo Healthcare`;
       state,
       country,
       complaint: patient.complaint || "",
+      carePlanId,
       careLevel: careLevel,
       billingCycle: cycle,
       concessionType: concession,
@@ -6597,10 +6675,11 @@ Homeo Healthcare`;
         const ageVal = age || "30";
         const ageNum = parseInt(ageVal) || 0;
         const concession = ageNum >= 60 ? "Senior" : "None";
-        const careLevel = "⚡ Constitutional Care";
-        const duration = "1-Month Consultation";
-        const cycle = "Monthly";
-        const pricing = calculateCaseFormPricing(careLevel, duration, ageVal, 0, cycle, concession, 1);
+        const carePlanId: CarePlanId = "chronic_focused_1w";
+        const careLevel = CARE_PLAN_CATALOG[carePlanId].title;
+        const duration = "1-Week Care Period";
+        const cycle = "Weekly";
+        const pricing = calculateCaseFormPricing(carePlanId, duration, ageVal, 0, cycle, concession, 1);
 
         // Prefill New Case Form
         setNewCaseForm({
@@ -6613,6 +6692,7 @@ Homeo Healthcare`;
           state: state || "",
           country: "India",
           complaint,
+          carePlanId,
           careLevel: careLevel,
           billingCycle: cycle,
           concessionType: concession,
@@ -6732,37 +6812,6 @@ Homeo Healthcare`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  };
-
-  const handleClearAllPatients = async () => {
-    if (!confirm("WARNING: Are you sure you want to permanently clear all patient records from Firestore to start fresh? This action cannot be undone!")) {
-      return;
-    }
-    try {
-      const q = query(collection(db, "patients"));
-      const querySnapshot = await getDocs(q);
-      const deletePromises: Promise<any>[] = [];
-      querySnapshot.forEach((docSnap) => {
-        deletePromises.push(deleteDoc(doc(db, "patients", docSnap.id)));
-      });
-      await Promise.all(deletePromises);
-      alert("All patient records successfully cleared from the database!");
-    } catch (err: any) {
-      console.error("Error clearing patient records:", err);
-      alert("Failed to clear patient records: " + (err.message || err));
-    }
-  };
-
-  const deletePatient = async (patientId: string) => {
-    if (!confirm("Are you sure you want to permanently delete this patient record from Firestore? This action will not delete Google Drive files.")) {
-      return;
-    }
-    try {
-      await deleteDoc(doc(db, "patients", patientId));
-    } catch (err: any) {
-      console.error("Error deleting patient record:", err);
-      alert("Failed to delete patient record: " + (err.message || err));
-    }
   };
 
   const handleGoogleSheetImport = async () => {
@@ -6998,10 +7047,11 @@ Homeo Healthcare`;
     const ageVal = patient.age || "30";
     const ageNum = parseInt(ageVal) || 0;
     const concession = ageNum >= 60 ? "Senior" : "None";
-    const careLevel = "⚡ Constitutional Care";
-    const duration = "1-Month Consultation";
-    const cycle = "Monthly";
-    const pricing = calculateCaseFormPricing(careLevel, duration, ageVal, 0, cycle, concession, 1);
+    const carePlanId: CarePlanId = "chronic_focused_1w";
+    const careLevel = CARE_PLAN_CATALOG[carePlanId].title;
+    const duration = "1-Week Care Period";
+    const cycle = "Weekly";
+    const pricing = calculateCaseFormPricing(carePlanId, duration, ageVal, 0, cycle, concession, 1);
     
     // Prefill new case taking form
     setNewCaseForm({
@@ -7014,6 +7064,7 @@ Homeo Healthcare`;
       state: patient.state || "",
       country: "India",
       complaint: patient.complaint,
+      carePlanId,
       careLevel: careLevel,
       billingCycle: cycle,
       concessionType: concession,
@@ -8829,13 +8880,30 @@ ${err.message || err}`);
 
   const computedCompleteness = Math.min(
     100,
-    (intakeComplaint ? 15 : 0) +
-    (intakeChatMessages.length > 1 ? 25 : 0) +
-    (constMentalState ? 15 : 0) +
-    (constFoodDesires ? 10 : 0) +
-    (diagDiagnosis ? 20 : 0) +
-    (diagLabs ? 15 : 0)
+    (intakeComplaint.trim().length >= 10 ? 20 : 0) +
+    (intakeChatMessages.filter(message => message.sender === "user").length >= 2 ? 20 : 0) +
+    (constMentalState ? 10 : 0) +
+    (constFoodDesires || constSleepPattern ? 10 : 0) +
+    (diagDiagnosis || diagLabs ? 10 : 0) +
+    (intakeMedicationReviewStatus !== "not-reviewed" ? 10 : 0) +
+    (intakeAllergyReviewStatus !== "not-reviewed" ? 10 : 0) +
+    (intakeRedFlagStatus !== "not-screened" ? 10 : 0)
   );
+
+  const intakeSafetyAssessment = evaluateIntakeClinicalSafety({
+    complaint: intakeComplaint,
+    hpiAnswerCount: intakeChatMessages.filter(message => message.sender === "user").length,
+    medicationsStatus: intakeMedicationReviewStatus,
+    medications: diagCurrentMeds,
+    allergiesStatus: intakeAllergyReviewStatus,
+    allergies: intakeAllergies,
+    redFlagStatus: intakeRedFlagStatus,
+    redFlagDetails: intakeRedFlagDetails,
+    pregnancyStatus: intakePregnancyStatus,
+  });
+  const synthesisRubrics: string[] = Array.isArray(synthesisOutput?.clinical_recommendations?.rubrics_to_consider)
+    ? synthesisOutput.clinical_recommendations.rubrics_to_consider.filter((rubric: unknown): rubric is string => typeof rubric === "string" && rubric.trim().length > 0)
+    : [];
 
   const computedQuality = 
     computedCompleteness < 30 ? "Poor" :
@@ -9513,7 +9581,7 @@ ${err.message || err}`);
                           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Common Case Anchors</span>
                           <div className="flex flex-wrap gap-1.5">
                             {[
-                              { label: "Stress & Anxiety (34yo)", value: "34-year-old patient presenting with intense chronic work stress, anticipatory health anxiety, sleep onset insomnia, and physical fatigue. Wants natural support to restore energy balance." },
+                              { label: "Stress & Anxiety", value: "Patient presenting with chronic work stress, anticipatory health anxiety, sleep onset insomnia, and physical fatigue." },
                               { label: "Chronic Migraine", value: "Severe migraine attacks triggered by stress, light, and sleep deprivation. Better from cool air." },
                               { label: "PCOS & Irregular Menses", value: "Polycystic Ovarian Syndrome (PCOS) presenting with highly irregular menses, acne, and sweet cravings." },
                               { label: "IBS & Distension", value: "Irritable Bowel Syndrome (IBS) with painful abdominal bloating and flatulence worse late afternoon." },
@@ -9631,6 +9699,7 @@ ${err.message || err}`);
                               onChange={(e) => setConstEmotionalPattern(e.target.value)}
                               className="p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-xs font-semibold text-slate-700 outline-none focus:border-mint"
                             >
+                              <option value="">-- Not recorded --</option>
                               <option value="Anxious/Restless">Anxious / Restless Control</option>
                               <option value="Perfectionistic">Perfectionistic / Fastidious</option>
                               <option value="Suppressed Grief">Suppressed Grief / Silent</option>
@@ -9711,13 +9780,13 @@ ${err.message || err}`);
                         <div className="flex flex-col gap-1">
                           <div className="flex items-center justify-between">
                             <label className="text-[9px] uppercase font-bold text-slate-400">Vital Energy level (1-10)</label>
-                            <span className="text-xs font-bold text-mint font-mono">{constEnergyLevel}/10</span>
+                            <span className="text-xs font-bold text-mint font-mono">{constEnergyLevel === null ? "Not recorded" : `${constEnergyLevel}/10`}</span>
                           </div>
                           <input
                             type="range"
                             min="1"
                             max="10"
-                            value={constEnergyLevel}
+                            value={constEnergyLevel ?? 5}
                             onChange={(e) => setConstEnergyLevel(Number(e.target.value))}
                             className="w-full accent-mint h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer"
                           />
@@ -9759,6 +9828,21 @@ ${err.message || err}`);
                     {/* STEP 4: Diagnostic Clues */}
                     {intakeStep === 4 && (
                       <div className="space-y-4">
+                        <div className={`rounded-2xl border p-3 ${intakeSafetyAssessment.emergencyReferralRequired ? "border-rose-300 bg-rose-50" : intakeSafetyAssessment.canSynthesize ? "border-emerald-200 bg-emerald-50" : "border-amber-200 bg-amber-50"}`}>
+                          <div className="flex items-start gap-2">
+                            <ShieldAlert className={`mt-0.5 h-4 w-4 shrink-0 ${intakeSafetyAssessment.emergencyReferralRequired ? "text-rose-600" : intakeSafetyAssessment.canSynthesize ? "text-emerald-600" : "text-amber-600"}`} />
+                            <div>
+                              <p className="text-[10px] font-black uppercase tracking-wider text-slate-800">Mandatory clinical safety gate</p>
+                              <p className="mt-1 text-[10px] leading-relaxed text-slate-600">
+                                {intakeSafetyAssessment.emergencyReferralRequired
+                                  ? "Urgent red flags are present. AI synthesis and repertory transfer are blocked until escalation is completed."
+                                  : intakeSafetyAssessment.canSynthesize
+                                    ? "Minimum complaint, HPI, medicines, allergy, and red-flag checks are complete."
+                                    : "Complete every safety review below before AI synthesis or repertory transfer."}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
                         <div className="flex flex-col gap-1">
                           <label className="text-[9px] uppercase font-bold text-slate-400">Clinical Diagnosis (Allopathic)</label>
                           <input
@@ -9788,7 +9872,7 @@ ${err.message || err}`);
                           />
                         </div>
                         <div className="flex flex-col gap-1">
-                          <label className="text-[9px] uppercase font-bold text-slate-400">Past & Current Suppressions</label>
+                          <label className="text-[9px] uppercase font-bold text-slate-400">Past Treatments</label>
                           <input
                             type="text"
                             value={diagPastTreatments}
@@ -9797,6 +9881,74 @@ ${err.message || err}`);
                             className="p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-xs font-semibold text-slate-700 outline-none focus:border-mint"
                           />
                         </div>
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                          <div className="flex flex-col gap-1">
+                            <label className="text-[9px] uppercase font-bold text-slate-400">Current Medicines Review *</label>
+                            <select
+                              value={intakeMedicationReviewStatus}
+                              onChange={(e) => setIntakeMedicationReviewStatus(e.target.value as IntakeReviewStatus)}
+                              className="p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-xs font-semibold text-slate-700 outline-none focus:border-mint"
+                            >
+                              <option value="not-reviewed">Not reviewed</option>
+                              <option value="none-known">Reviewed — none reported</option>
+                              <option value="recorded">Reviewed — medicines recorded</option>
+                            </select>
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <label className="text-[9px] uppercase font-bold text-slate-400">Allergy Review *</label>
+                            <select
+                              value={intakeAllergyReviewStatus}
+                              onChange={(e) => setIntakeAllergyReviewStatus(e.target.value as IntakeReviewStatus)}
+                              className="p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-xs font-semibold text-slate-700 outline-none focus:border-mint"
+                            >
+                              <option value="not-reviewed">Not reviewed</option>
+                              <option value="none-known">Reviewed — none reported</option>
+                              <option value="recorded">Reviewed — allergies recorded</option>
+                            </select>
+                          </div>
+                        </div>
+                        {intakeMedicationReviewStatus === "recorded" && (
+                          <div className="flex flex-col gap-1">
+                            <label className="text-[9px] uppercase font-bold text-slate-400">Current Medicines & Conventional Treatment</label>
+                            <textarea value={diagCurrentMeds} onChange={(e) => setDiagCurrentMeds(e.target.value)} placeholder="Medicine, strength, schedule, and indication" className="p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-xs font-semibold text-slate-700 outline-none focus:border-mint min-h-[60px]" />
+                          </div>
+                        )}
+                        {intakeAllergyReviewStatus === "recorded" && (
+                          <div className="flex flex-col gap-1">
+                            <label className="text-[9px] uppercase font-bold text-slate-400">Allergies & Reactions</label>
+                            <textarea value={intakeAllergies} onChange={(e) => setIntakeAllergies(e.target.value)} placeholder="Substance, medicine, or treatment and observed reaction" className="p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-xs font-semibold text-slate-700 outline-none focus:border-mint min-h-[60px]" />
+                          </div>
+                        )}
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                          <div className="flex flex-col gap-1">
+                            <label className="text-[9px] uppercase font-bold text-slate-400">Pregnancy / Lactation</label>
+                            <select value={intakePregnancyStatus} onChange={(e) => setIntakePregnancyStatus(e.target.value as IntakePregnancyStatus)} className="p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-xs font-semibold text-slate-700 outline-none focus:border-mint">
+                              <option value="not-assessed">Not assessed</option>
+                              <option value="not-applicable">Not applicable</option>
+                              <option value="not-pregnant">Not pregnant / lactating</option>
+                              <option value="pregnant">Pregnant</option>
+                              <option value="lactating">Lactating</option>
+                            </select>
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <label className="text-[9px] uppercase font-bold text-slate-400">Urgent Red-Flag Screen *</label>
+                            <select value={intakeRedFlagStatus} onChange={(e) => setIntakeRedFlagStatus(e.target.value as IntakeRedFlagStatus)} className="p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-xs font-semibold text-slate-700 outline-none focus:border-mint">
+                              <option value="not-screened">Not screened</option>
+                              <option value="none">Completed — no red flags found</option>
+                              <option value="present">Red flag present — escalate</option>
+                            </select>
+                          </div>
+                        </div>
+                        {intakeRedFlagStatus === "present" && (
+                          <div className="flex flex-col gap-1 rounded-2xl border border-rose-300 bg-rose-50 p-3">
+                            <label className="text-[9px] uppercase font-black text-rose-700">Red Flag & Escalation Action *</label>
+                            <textarea value={intakeRedFlagDetails} onChange={(e) => setIntakeRedFlagDetails(e.target.value)} placeholder="Document the finding, immediate assessment, referral, or emergency action" className="min-h-[70px] rounded-xl border border-rose-200 bg-white p-2.5 text-xs font-semibold text-slate-700 outline-none focus:border-rose-500" />
+                            <p className="text-[10px] font-bold leading-relaxed text-rose-700">This portal is not emergency medical care. Complete appropriate emergency assessment or referral before complementary-care planning.</p>
+                          </div>
+                        )}
+                        {intakeSafetyMessage && (
+                          <p role="alert" className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-[10px] font-bold leading-relaxed text-amber-800">{intakeSafetyMessage}</p>
+                        )}
                       </div>
                     )}
                   </div>
@@ -9882,16 +10034,9 @@ ${err.message || err}`);
                         <span className="text-[10px] font-mono text-mint animate-pulse">Running Gemini AI Synthesizer...</span>
                       )}
                       <button
-                        onClick={() => {
-                          const rubrics = synthesisOutput?.clinical_recommendations?.rubrics_to_consider || [
-                            "MIND; Anxiety, failure, of",
-                            "GENERALITIES; Cold, aggravation",
-                            "STOMACH; Flatulence, distension",
-                            "SKIN; Itching, warmth of bed"
-                          ];
-                          transportCaseToRepertory(rubrics);
-                        }}
-                        className="px-2.5 py-1 bg-emerald-500/10 hover:bg-emerald-500 border border-emerald-500/30 hover:border-emerald-500 rounded-xl text-[9px] font-extrabold uppercase text-emerald-400 hover:text-white transition-all cursor-pointer flex items-center gap-1 shadow-sm"
+                        onClick={() => transportCaseToRepertory(synthesisRubrics)}
+                        disabled={synthesisRubrics.length === 0 || !intakeSafetyAssessment.canSynthesize}
+                        className="px-2.5 py-1 bg-emerald-500/10 hover:bg-emerald-500 border border-emerald-500/30 hover:border-emerald-500 rounded-xl text-[9px] font-extrabold uppercase text-emerald-400 hover:text-white transition-all cursor-pointer flex items-center gap-1 shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
                       >
                         <Zap className="w-3 h-3 text-emerald-450 animate-bounce" />
                         <span>⚡ Transport to Repertory™</span>
@@ -9933,180 +10078,65 @@ ${err.message || err}`);
                     className="flex-grow overflow-y-auto pr-1 space-y-4 min-h-0"
                     style={{ scrollBehavior: "smooth" }}
                   >
-                    {/* WIDGET 1: Case Summary */}
-                    <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 space-y-2">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono flex items-center gap-1.5">
-                        <Activity className="w-3.5 h-3.5 text-mint" />
-                        Case HPI Summary
-                      </span>
-                      <p className="text-xs text-slate-200 leading-relaxed font-sans">
-                        {synthesisOutput?.symptom_synthesis?.chief_complaint_analysis || 
-                          intakeComplaint || 
-                          "No complaint description logged. Go to Step 1 to enter coordinates."}
-                      </p>
-                      {(synthesisOutput?.symptom_synthesis?.hpi_timeline || (intakeChatMessages.length > 1)) && (
-                        <div className="border-t border-slate-800/50 pt-2 mt-2">
-                          <span className="text-[9px] text-slate-400 font-bold uppercase block">Timeline coordinates</span>
-                          <p className="text-[11px] text-slate-300 leading-relaxed mt-0.5">
-                            {synthesisOutput?.symptom_synthesis?.hpi_timeline || 
-                              `Case initiated. Responses recorded: ${intakeChatMessages.filter(m => m.sender === 'user').length} coordinates obtained via guided interview.`}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* WIDGET 2: Constitutional Pattern */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3.5 space-y-1.5">
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 font-mono block">Constitutional Archetype</span>
-                        <span className="text-xs font-bold text-mint font-sans block">
-                          {constEmotionalPattern === "Collapsed Exhaustion" ? "Phosphoric Acid / Kalium Carb Type" :
-                           constEmotionalPattern === "Perfectionistic" ? "Arsenicum Album / Nux Vomica Type" :
-                           constEmotionalPattern === "Suppressed Grief" ? "Ignatia / Natrum Mur Type" :
-                           "Arsenicum / Pulsatilla Axis"}
-                        </span>
-                        <span className="text-[10px] text-slate-300 block font-sans">
-                          {constEmotionalPattern === "Collapsed Exhaustion" ? "Marked by vital burnout, deep physical fatigue, and coldness." :
-                           constEmotionalPattern === "Perfectionistic" ? "Marked by high control, anxiety over order, and restlessness." :
-                           constEmotionalPattern === "Suppressed Grief" ? "Marked by silent processing, sighs, and emotional blockages." :
-                           "Marked by anticipatory anxiety, restlessness, and heat/cold sensitivity."}
-                        </span>
-                      </div>
-
-                      {/* Thermal axis */}
-                      <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3.5 space-y-1.5">
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 font-mono block">Thermal Orientation</span>
-                        <div className="flex items-center space-x-2">
-                          <span className={`text-[10px] uppercase font-mono font-extrabold px-2.5 py-0.5 rounded-full ${
-                            constThermalState === "Chilly" ? "bg-blue-500/20 text-blue-300 border border-blue-500/30" :
-                            constThermalState === "Hot" ? "bg-red-500/20 text-red-300 border border-red-500/30" :
-                            "bg-purple-500/20 text-purple-300 border border-purple-500/30"
-                          }`}>
-                            {constThermalState}
-                          </span>
-                        </div>
-                        <span className="text-[10px] text-slate-400 block font-sans">
-                          {synthesisOutput?.symptom_synthesis?.thermal_axis || 
-                            `Thermals set to ${constThermalState}. Matches remedies responsive to environmental changes.`}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* WIDGET 3: Probable Miasm State */}
-                    <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 space-y-2.5">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono block">Miasmatic Breakdown</span>
-                      <div className="grid grid-cols-5 gap-2">
-                        {[
-                          { name: "Psora", val: constMiasmIndicators.includes("Psora") ? 75 : 40 },
-                          { name: "Sycosis", val: constMiasmIndicators.includes("Sycosis") ? 80 : 20 },
-                          { name: "Syphilis", val: constMiasmIndicators.includes("Syphilis") ? 70 : 10 },
-                          { name: "Tubercular", val: constMiasmIndicators.includes("Tubercular") ? 65 : 15 },
-                          { name: "Cancerinic", val: constMiasmIndicators.includes("Cancerinic") ? 60 : 15 }
-                        ].map((miasm) => (
-                          <div key={miasm.name} className="flex flex-col space-y-1">
-                            <span className="text-[9px] font-bold text-slate-400 font-mono text-center">{miasm.name}</span>
-                            <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                              <div className="bg-mint h-1.5 rounded-full" style={{ width: `${miasm.val}%` }} />
-                            </div>
-                            <span className="text-[9px] font-bold text-slate-200 text-center font-mono">{miasm.val}%</span>
+                    {!synthesisOutput ? (
+                      <div className={`rounded-2xl border p-5 ${intakeSafetyAssessment.emergencyReferralRequired ? "border-rose-500/50 bg-rose-500/10" : "border-amber-500/30 bg-amber-500/10"}`}>
+                        <div className="flex items-start gap-3">
+                          <ShieldAlert className={`mt-0.5 h-5 w-5 shrink-0 ${intakeSafetyAssessment.emergencyReferralRequired ? "text-rose-300" : "text-amber-300"}`} />
+                          <div>
+                            <h4 className="text-sm font-black text-white">
+                              {intakeSafetyAssessment.emergencyReferralRequired ? "Urgent assessment or referral required" : "Insufficient verified information"}
+                            </h4>
+                            <p className="mt-1 text-xs leading-relaxed text-slate-300">No archetype, miasmatic percentage, rubric, remedy candidate, or confidence-style score will be shown until the mandatory safety gate is complete and a clinician requests synthesis.</p>
+                            {[...intakeSafetyAssessment.blockingReasons, ...intakeSafetyAssessment.missingRequirements].length > 0 && (
+                              <ul className="mt-3 list-disc space-y-1 pl-4 text-[11px] leading-relaxed text-slate-300">
+                                {[...intakeSafetyAssessment.blockingReasons, ...intakeSafetyAssessment.missingRequirements].map(requirement => <li key={requirement}>{requirement}</li>)}
+                              </ul>
+                            )}
                           </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* WIDGET 4: Key Kent Rubrics */}
-                    <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 space-y-3">
-                      <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono flex items-center gap-1.5">
-                          <Layers className="w-3.5 h-3.5 text-mint" />
-                          Key Kent Rubrics
-                        </span>
-                        
-                        {/* Transport Button */}
-                        <button
-                          onClick={() => {
-                            const rubrics = synthesisOutput?.clinical_recommendations?.rubrics_to_consider || [
-                              "MIND; Anxiety, failure, of",
-                              "GENERALITIES; Cold, aggravation",
-                              "STOMACH; Flatulence, distension",
-                              "SKIN; Itching, warmth of bed"
-                            ];
-                            transportCaseToRepertory(rubrics);
-                          }}
-                          className="px-2.5 py-1 bg-mint hover:bg-mint-dark text-white rounded-lg text-[9px] font-extrabold uppercase transition-all flex items-center gap-1 shadow-sm cursor-pointer"
-                        >
-                          <Zap className="w-3 h-3 text-white" />
-                          <span>Transport Case</span>
-                        </button>
-                      </div>
-
-                      <div className="flex flex-wrap gap-1.5">
-                        {(synthesisOutput?.clinical_recommendations?.rubrics_to_consider || [
-                          "MIND; Anxiety, failure, of",
-                          "GENERALITIES; Cold, aggravation",
-                          "STOMACH; Flatulence, distension",
-                          "SKIN; Itching, warmth of bed",
-                          "MIND; Anticipatory stage anxiety",
-                          "SLEEP; Insomnia, from work exhaustion",
-                          "GENERALITIES; Vital energy collapsed"
-                        ]).map((rubric: string, i: number) => (
-                          <span
-                            key={i}
-                            className="bg-slate-900 border border-slate-800 px-2 py-1 rounded-xl text-[10px] font-semibold text-slate-300 font-mono"
-                          >
-                            {rubric}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* WIDGET 5: Leading Remedy Group */}
-                    <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 space-y-3">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono block">Leading Candidates</span>
-                      <div className="space-y-2">
-                        {[
-                          { name: "Arsenicum Album", score: constEmotionalPattern === "Perfectionistic" ? 92 : 75, details: "Anxiety, restlessness, fastidious. Chilly, better from heat." },
-                          { name: "Lycopodium Clavatum", score: intakeComplaint.toLowerCase().includes("ibs") ? 94 : 78, details: "IBS flatulence worse 4-8pm, warm drinks craving." },
-                          { name: "Nux Vomica", score: constEmotionalPattern === "Perfectionistic" || intakeComplaint.toLowerCase().includes("stress") ? 88 : 72, details: "Irritable, competitive, work stress. Highly chilly." },
-                          { name: "Sulphur", score: intakeComplaint.toLowerCase().includes("skin") || constThermalState === "Hot" ? 91 : 68, details: "Hot-blooded, skin itching worse bed warmth, sweets craving." }
-                        ].map((remedy) => (
-                          <div key={remedy.name} className="flex items-start justify-between border-b border-slate-800/30 pb-2 last:border-0 last:pb-0 gap-3">
-                            <div className="flex-grow">
-                              <div className="flex items-center justify-between mb-0.5">
-                                <span className="text-xs font-bold text-slate-200">{remedy.name}</span>
-                                <span className="text-[10px] font-bold text-mint font-mono">{remedy.score}%</span>
-                              </div>
-                              <div className="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
-                                <div className="bg-mint h-1 rounded-full" style={{ width: `${remedy.score}%` }} />
-                              </div>
-                              <span className="text-[10px] text-slate-400 mt-1 block">{remedy.details}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* WIDGET 6: Missing Info / Remaining Questions */}
-                    <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 space-y-2">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono block">Missing Information & Questions</span>
-                      <ul className="list-disc pl-4 text-xs text-slate-300 space-y-1 mt-1 font-sans">
-                        {(synthesisOutput?.clinical_recommendations?.suggested_questions || [
-                          "Has the patient noticed any specific time modalities (e.g. afternoon or morning aggregates)?",
-                          "Confirm desires or aversion to salt and sour foods.",
-                          "How does the patient feel in damp cold vs. dry cold?"
-                        ]).map((q: string, i: number) => (
-                          <li key={i} className="leading-relaxed">{q}</li>
-                        ))}
-                      </ul>
-                      {computedCompleteness < 85 && (
-                        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-2.5 mt-2 flex items-start gap-2">
-                          <AlertTriangle className="w-3.5 h-3.5 text-amber-400 flex-shrink-0 mt-0.5" />
-                          <span className="text-[10px] text-amber-300 leading-relaxed font-sans">
-                            Case confidence limited due to missing parameters (completeness at {computedCompleteness}%). Complete more guided chat questions to increase diagnostic coverage.
-                          </span>
                         </div>
-                      )}
-                    </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 space-y-2">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono flex items-center gap-1.5"><Activity className="w-3.5 h-3.5 text-mint" />Evidence-linked intake summary</span>
+                          <p className="text-xs text-slate-200 leading-relaxed font-sans">{synthesisOutput?.symptom_synthesis?.chief_complaint_analysis || "The AI response did not provide a complaint summary."}</p>
+                          {synthesisOutput?.symptom_synthesis?.hpi_timeline && <p className="border-t border-slate-800/50 pt-2 text-[11px] leading-relaxed text-slate-300"><strong className="text-slate-400">HPI timeline:</strong> {synthesisOutput.symptom_synthesis.hpi_timeline}</p>}
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                          <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3.5 space-y-1.5">
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 font-mono block">Recorded constitutional observations</span>
+                            <span className="text-xs font-bold text-mint font-sans block">{constEmotionalPattern || "Not recorded"}</span>
+                            <span className="text-[10px] text-slate-300 block font-sans">{synthesisOutput?.symptom_synthesis?.constitutional_tendencies || "No additional constitutional observation was supplied."}</span>
+                          </div>
+                          <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3.5 space-y-1.5">
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 font-mono block">Thermal orientation</span>
+                            <span className="text-xs font-bold text-mint font-sans block">{constThermalState}</span>
+                            <span className="text-[10px] text-slate-300 block font-sans">{synthesisOutput?.symptom_synthesis?.thermal_axis || "No AI thermal summary was supplied."}</span>
+                          </div>
+                        </div>
+
+                        <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 space-y-2">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono block">Miasmatic orientation — narrative advisory</span>
+                          <p className="text-xs leading-relaxed text-slate-300">{synthesisOutput?.clinical_recommendations?.miasmatic_orientation || "No miasmatic narrative was supplied."}</p>
+                          <p className="text-[10px] leading-relaxed text-amber-300">No percentage is displayed because these categories are not calibrated clinical probabilities.</p>
+                        </div>
+
+                        <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 space-y-3">
+                          <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono flex items-center gap-1.5"><Layers className="w-3.5 h-3.5 text-mint" />AI-suggested rubrics for clinician review</span>
+                            <button onClick={() => transportCaseToRepertory(synthesisRubrics)} disabled={synthesisRubrics.length === 0 || !intakeSafetyAssessment.canSynthesize} className="px-2.5 py-1 bg-mint hover:bg-mint-dark text-white rounded-lg text-[9px] font-extrabold uppercase transition-all flex items-center gap-1 shadow-sm cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"><Zap className="w-3 h-3 text-white" /><span>Review in Repertory</span></button>
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">{synthesisRubrics.length > 0 ? synthesisRubrics.map((rubric, index) => <span key={`${rubric}-${index}`} className="bg-slate-900 border border-slate-800 px-2 py-1 rounded-xl text-[10px] font-semibold text-slate-300 font-mono">{rubric}</span>) : <span className="text-[10px] text-slate-400">No rubrics were supplied.</span>}</div>
+                        </div>
+
+                        <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 space-y-2">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono block">Clarifying questions</span>
+                          {Array.isArray(synthesisOutput?.clinical_recommendations?.suggested_questions) && synthesisOutput.clinical_recommendations.suggested_questions.length > 0 ? <ul className="list-disc pl-4 text-xs text-slate-300 space-y-1 mt-1 font-sans">{synthesisOutput.clinical_recommendations.suggested_questions.map((question: string, index: number) => <li key={`${question}-${index}`} className="leading-relaxed">{question}</li>)}</ul> : <p className="text-[10px] text-slate-400">No clarifying questions were supplied.</p>}
+                          <div className="bg-slate-800/60 border border-slate-700 rounded-xl p-2.5 mt-2 text-[10px] leading-relaxed text-slate-300">Intake synthesis does not generate a prescription or remedy probability. Any rubric must be independently reviewed by the clinician.</div>
+                        </div>
+                      </>
+                    )}
                   </div>
 
                   {/* Sticky Footer: Smart Actions (Generate Sub-reports) */}
@@ -10121,7 +10151,7 @@ ${err.message || err}`);
                       <button
                         key={btn.key}
                         onClick={() => handleSmartAction(btn.key)}
-                        disabled={isIntakeLoading}
+                        disabled={isIntakeLoading || !intakeSafetyAssessment.canSynthesize}
                         className="py-1.5 px-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-[10px] font-bold text-slate-300 hover:text-white transition-all cursor-pointer flex items-center gap-1 shadow-sm"
                       >
                         <Sparkles className="w-3 h-3 text-mint" />
@@ -11380,7 +11410,7 @@ ${err.message || err}`);
                             <option value="">-- Select Patient Profile --</option>
                             {patients.map((p) => (
                               <option key={p.id} value={p.id}>
-                                {p.name} ({p.phone || p.email || p.id})
+                                {p.name} (UHID: {p.id})
                               </option>
                             ))}
                           </select>
@@ -11736,7 +11766,7 @@ ${err.message || err}`);
                                     <option value="">-- Choose Patient --</option>
                                     {patients.map((p) => (
                                       <option key={p.id} value={p.id}>
-                                        {p.name} ({p.phone || p.email || p.id})
+                                        {p.name} (UHID: {p.id})
                                       </option>
                                     ))}
                                   </select>
@@ -12248,7 +12278,7 @@ ${err.message || err}`);
                         <option value="">-- [Custom / Self-Input] --</option>
                         {patients.map((pat) => (
                           <option key={pat.id} value={pat.id}>
-                            {pat.name} ({pat.age}y, {pat.gender}) {pat.phone ? `• ${pat.phone}` : ""}
+                            {pat.name} ({pat.age}y, {pat.gender}) · UHID {pat.id}
                           </option>
                         ))}
                       </select>
@@ -12625,15 +12655,16 @@ ${err.message || err}`);
                                 state: "",
                                 country: "India",
                                 complaint: "",
+                                carePlanId: DEFAULT_NEW_CASE_PLAN_ID,
                                 careLevel: DEFAULT_NEW_CASE_CARE_LEVEL,
                                 billingCycle: "Weekly",
                                 concessionType: "None",
-                                durationText: "1-Week Care Period",
+                                durationText: "3-Day Care Period",
                                 conditionsCount: 1,
-                                basePrice: DEFAULT_NEW_CASE_WEEKLY_PRICE,
+                                basePrice: DEFAULT_NEW_CASE_PRICE,
                                 discountOverride: 0,
-                                finalPrice: DEFAULT_NEW_CASE_WEEKLY_PRICE,
-                                receivedAmount: DEFAULT_NEW_CASE_WEEKLY_PRICE,
+                                finalPrice: DEFAULT_NEW_CASE_PRICE,
+                                receivedAmount: DEFAULT_NEW_CASE_PRICE,
                                 remainingBalance: 0
                               });
                               setIsNewCaseModalOpen(true);
@@ -12652,7 +12683,7 @@ ${err.message || err}`);
                           <option value="">-- Standalone Billing Calculator --</option>
                           {patients.map((pat) => (
                             <option key={pat.id} value={pat.id}>
-                              {pat.name} ({pat.age}y, {pat.gender}) {pat.phone ? `• ${pat.phone}` : ""}
+                              {pat.name} ({pat.age}y, {pat.gender}) · UHID {pat.id}
                             </option>
                           ))}
                         </select>
@@ -12690,7 +12721,7 @@ ${err.message || err}`);
                           <div className="space-y-1.5">
                             <div className="flex items-center gap-2 font-black text-teal-800 dark:text-teal-200"><CheckCircle className="h-4 w-4" /> Physician-confirmed pending plan</div>
                             <div className="font-bold text-slate-850 dark:text-white">{plannerSimulatorDecision.recommendation.title}</div>
-                            <div className="text-slate-600 dark:text-slate-300">{plannerSimulatorDecision.durationWeeks} weeks · ₹{plannerSimulatorDecision.quote.finalTotal.toLocaleString("en-IN")} pending quotation</div>
+                            <div className="text-slate-600 dark:text-slate-300">{plannerSimulatorDecision.durationValue} {plannerSimulatorDecision.durationValue === 1 ? plannerSimulatorDecision.durationUnit : `${plannerSimulatorDecision.durationUnit}s`} · ₹{plannerSimulatorDecision.quote.finalTotal.toLocaleString("en-IN")} pending quotation</div>
                             <div className="text-[10px] leading-relaxed text-slate-500 dark:text-slate-400">Organ breadth is recorded as a complexity indicator; it did not automatically calculate the fee.</div>
                           </div>
                         ) : (
@@ -13276,11 +13307,11 @@ ${err.message || err}`);
                           if (!plannerSimulatorDecision) return;
                           const decision = plannerSimulatorDecision;
                           const items = [
-                            { label: `${decision.durationWeeks}-week care period after ${decision.quote.continuityDiscountPercent}% continuity benefit (list fee ₹${decision.quote.listCareTotal.toLocaleString("en-IN")})`, amount: decision.quote.baseCareTotal },
+                            { label: `${decision.durationValue} ${decision.durationValue === 1 ? decision.durationUnit : `${decision.durationUnit}s`} care period${decision.quote.continuityDiscountPercent > 0 ? ` after ${decision.quote.continuityDiscountPercent}% continuity benefit (list fee ₹${decision.quote.listCareTotal.toLocaleString("en-IN")})` : ""}`, amount: decision.quote.baseCareTotal },
                             ...(decision.quote.caseSpecificSupportTotal > 0 ? [{ label: "Case-Specific Clinical Support", amount: decision.quote.caseSpecificSupportTotal }] : []),
                             ...decision.pharmacyItems.map(item => ({ label: `${item.type}: ${item.details}`, amount: item.amount })),
                           ];
-                          const response = await fetch("/api/clinical-quotation/pdf", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ quotationId: decision.quotationId, patientName: activePatient?.name || "Patient", issuedAt: decision.confirmedAt, validUntil: decision.validUntil, approvalStatus: decision.approvalStatus, recommendedPathway: CARE_LEVELS_DETAILS[decision.recommendedPathway].title, selectedPathway: decision.recommendation.title, selectionMode: decision.selectionMode, manualSelectionReason: decision.manualSelectionReason, carePeriodWeeks: decision.durationWeeks, weeklyFee: decision.quote.weeklyCareFee, rationale: decision.recommendation.reasons, items, concessionAmount: decision.quote.concessionTotal, finalTotal: decision.quote.finalTotal, pricingRuleVersion: decision.pricingRuleVersion }) });
+                          const response = await fetch("/api/clinical-quotation/pdf", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ quotationId: decision.quotationId, patientName: activePatient?.name || "Patient", issuedAt: decision.confirmedAt, validUntil: decision.validUntil, approvalStatus: decision.approvalStatus, recommendedPathway: CARE_PLAN_CATALOG[decision.recommendedPlanId].title, selectedPathway: decision.recommendation.title, selectionMode: decision.selectionMode, manualSelectionReason: decision.manualSelectionReason, carePlanId: decision.planId, carePlanCatalogVersion: CARE_PLAN_CATALOG_VERSION, carePeriodWeeks: decision.planFamily === "chronic" ? decision.durationWeeks : undefined, carePeriodValue: decision.durationValue, carePeriodUnit: decision.durationUnit, weeklyFee: decision.planFamily === "chronic" ? decision.quote.weeklyCareFee : undefined, carePeriodFee: decision.recommendation.carePeriodFee, rationale: decision.recommendation.reasons, items, concessionAmount: decision.quote.concessionTotal, finalTotal: decision.quote.finalTotal, pricingRuleVersion: decision.pricingRuleVersion }) });
                           if (!response.ok) { alert("Unable to generate the PDF quotation."); return; }
                           const blob = await response.blob();
                           const url = URL.createObjectURL(blob);
@@ -14450,15 +14481,16 @@ ${err.message || err}`);
                         state: "",
                         country: "India",
                         complaint: "",
+                        carePlanId: DEFAULT_NEW_CASE_PLAN_ID,
                         careLevel: DEFAULT_NEW_CASE_CARE_LEVEL,
                         billingCycle: "Weekly",
                         concessionType: "None",
-                        durationText: "1-Week Care Period",
+                        durationText: "3-Day Care Period",
                         conditionsCount: 1,
-                        basePrice: DEFAULT_NEW_CASE_WEEKLY_PRICE,
+                        basePrice: DEFAULT_NEW_CASE_PRICE,
                         discountOverride: 0,
-                        finalPrice: DEFAULT_NEW_CASE_WEEKLY_PRICE,
-                        receivedAmount: DEFAULT_NEW_CASE_WEEKLY_PRICE,
+                        finalPrice: DEFAULT_NEW_CASE_PRICE,
+                        receivedAmount: DEFAULT_NEW_CASE_PRICE,
                         remainingBalance: 0
                       });
                       setIsNewCaseModalOpen(true);
@@ -14489,18 +14521,8 @@ ${err.message || err}`);
                     <span>Download Patient List (Excel)</span>
                   </button>
 
-                  {isSuperAdmin && (
-                    <button
-                      onClick={handleClearAllPatients}
-                      className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4.5 py-2.5 rounded-full border border-rose-200 hover:border-rose-600 hover:bg-rose-50 text-rose-600 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm cursor-pointer"
-                    >
-                      <Trash2 className="w-4 h-4 text-rose-500" />
-                      <span>Clear All Patient Data</span>
-                    </button>
-                  )}
-
                   {/* Sheet Opening Mode Toggle */}
-                  <div className="flex items-center gap-1 px-2 py-1 rounded-xl border border-slate-200 bg-white text-[10px] font-bold shadow-sm">
+                  {process.env.NODE_ENV !== "production" && <div className="flex items-center gap-1 px-2 py-1 rounded-xl border border-slate-200 bg-white text-[10px] font-bold shadow-sm">
                     <span className="text-slate-400 uppercase tracking-wider text-[8px] px-1 mr-0.5">Sheet Mode:</span>
                     <button
                       onClick={() => handleToggleSheetMode("real")}
@@ -14526,7 +14548,7 @@ ${err.message || err}`);
                     >
                       Mock
                     </button>
-                  </div>
+                  </div>}
 
                   <div className="text-[10px] text-slate-500 font-semibold bg-slate-900/5 px-4 py-2.5 rounded-xl border border-slate-900/5 whitespace-nowrap">
                     Showing <strong>{filteredPatients.length}</strong> cases
@@ -14698,14 +14720,6 @@ ${err.message || err}`);
                           <span>Portal</span>
                         </button>
 
-                        {/* Delete Patient Action */}
-                        <button
-                          onClick={() => deletePatient(patient.id)}
-                          className="w-10 h-10 rounded-full border border-rose-200 hover:border-rose-650 hover:bg-rose-50/50 text-rose-600 flex items-center justify-center transition-all bg-white dark:bg-slate-950 shadow-sm cursor-pointer"
-                          title="Delete Patient Record from Database"
-                        >
-                          <Trash2 className="w-4 h-4 text-rose-500" />
-                        </button>
                       </div>
                     </motion.div>
                   ))
@@ -22895,7 +22909,7 @@ ${err.message || err}`);
                           <option value="">-- Manual Sandbox Mode --</option>
                           {patients.map((p) => (
                             <option key={p.id} value={p.id}>
-                              {p.name} ({p.phone || p.id})
+                              {p.name} (UHID: {p.id})
                             </option>
                           ))}
                         </select>
@@ -28424,15 +28438,14 @@ Exported on: ${new Date().toLocaleDateString()}
                       <div>
                         <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Recommended Care Intensity</label>
                         <select
-                          value={newCaseForm.careLevel}
-                          onChange={(e) => handleCareLevelChange(e.target.value)}
+                          value={newCaseForm.carePlanId}
+                          onChange={(e) => handleCareLevelChange(e.target.value as CarePlanId)}
                           className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
                         >
-                          {NEW_CASE_CARE_LEVEL_KEYS.map((key) => {
-                            const detail = CARE_LEVELS_DETAILS[key];
+                          {NEW_CASE_CARE_PLAN_IDS.map((planId) => {
                             return (
-                              <option key={key} value={detail.title}>
-                                {getNewCaseCareOptionLabel(key)}
+                              <option key={planId} value={planId}>
+                                {getNewCaseCareOptionLabel(planId)}
                               </option>
                             );
                           })}
@@ -28443,7 +28456,9 @@ Exported on: ${new Date().toLocaleDateString()}
                       <div>
                         <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Pricing Basis</label>
                         <div className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50 text-xs font-semibold text-[#1A2421]">
-                          Weekly care rate · physician-confirmed care period
+                          {CARE_PLAN_CATALOG[newCaseForm.carePlanId].family === "acute"
+                            ? "Fixed short care period · physician reassessment required before renewal"
+                            : "Weekly chronic care rate · continuity benefit applies only to confirmed multi-week periods"}
                         </div>
                       </div>
 
@@ -28455,9 +28470,13 @@ Exported on: ${new Date().toLocaleDateString()}
                           onChange={(e) => handleDurationChange(e.target.value)}
                           className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
                         >
-                          {CARE_LEVELS_DETAILS[normalizeCareLevelName(newCaseForm.careLevel)].durations.map((weeks) => (
+                          {CARE_PLAN_CATALOG[newCaseForm.carePlanId].family === "acute" ? (
+                            <option value={`${CARE_PLAN_CATALOG[newCaseForm.carePlanId].durationValue}-Day Care Period`}>
+                              {CARE_PLAN_CATALOG[newCaseForm.carePlanId].durationValue}-Day Care Period · reassessment required
+                            </option>
+                          ) : [1, 2, 4, 8, 12].map((weeks) => (
                             <option key={weeks} value={`${weeks}-Week Care Period`}>
-                              {weeks}-Week Care Period
+                              {weeks}-Week Care Period{weeks === 1 ? " · initial period; reassessment required" : ""}
                             </option>
                           ))}
                         </select>

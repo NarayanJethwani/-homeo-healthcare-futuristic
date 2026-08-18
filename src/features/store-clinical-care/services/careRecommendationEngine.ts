@@ -1,9 +1,10 @@
 import {
   CLINICAL_CARE_TIER_OPTIONS,
   EXPLICIT_PHYSICIAN_AUTHORITY_STATEMENT,
-  calculateCarePeriodTotalPaise,
-  calculateListCarePeriodTotalPaise,
-  getCarePeriodContinuityBenefit,
+  calculateTierCarePeriodTotalPaise,
+  calculateTierListCarePeriodTotalPaise,
+  getTierCarePeriodLabel,
+  getTierContinuityBenefit,
   formatINRFromPaise,
   getClinicPaymentConfiguration,
   type ClinicalCareDurationWeeks,
@@ -11,6 +12,7 @@ import {
   type ItemizedPharmacyBreakdown,
   type GovernedConcession,
   type OfficialClinicalQuotation,
+  type StoreClinicalCareTierId,
 } from "../domain/types";
 
 export interface PreliminaryRecommendationInput {
@@ -19,80 +21,42 @@ export interface PreliminaryRecommendationInput {
   severityRating?: number; // 1-10
   priorTreatmentFailures?: boolean;
   age?: number | string;
+  careFamily?: "acute" | "chronic" | "unsure";
+  supportIntensity?: "standard" | "closer" | "frequent" | "direct" | "unsure";
+  safetyStatus?: "clear" | "unsure" | "red-flag";
 }
 
 /**
- * Multi-factor advisory recommendation engine.
- * Calculates an advisory pathway recommendation based on organ count, chronicity, severity, and prior treatment history.
- * PURELY ADVISORY — the treating physician retains full clinical authority to confirm or modify.
+ * Patient-facing administrative guide. Diagnosis, organ count, severity, age,
+ * and treatment history never increase the fee automatically.
  */
 export function calculatePreliminaryCareRecommendation(
   input: PreliminaryRecommendationInput
 ): PreliminaryCareRecommendation {
-  const organs = input.selectedOrganSystems || [];
-  const organCount = organs.length;
+  const organCount = (input.selectedOrganSystems || []).length;
+  const blockedBySafetyGate = input.safetyStatus === "red-flag" || input.safetyStatus === "unsure";
+  const inferredAcute = input.careFamily === "acute" || (input.careFamily === undefined && /recent|less than 1 month|acute/i.test(input.durationText || ""));
+  const intensity = input.supportIntensity || "standard";
+  let tierId: StoreClinicalCareTierId;
+  if (inferredAcute) tierId = intensity === "standard" ? "acute_mild" : "acute_wellness";
+  else if (intensity === "direct") tierId = "advanced";
+  else if (intensity === "frequent") tierId = "complex";
+  else if (intensity === "closer") tierId = "integrated";
+  else tierId = "focused";
 
-  // Base tier mapping from organ system count
-  let tierId: "focused" | "integrated" | "complex" | "advanced" = "focused";
-  let baseScore = 1;
-
-  if (organCount <= 1) {
-    tierId = "focused";
-    baseScore = 1;
-  } else if (organCount === 2) {
-    tierId = "integrated";
-    baseScore = 2;
-  } else if (organCount >= 3 && organCount <= 4) {
-    tierId = "complex";
-    baseScore = 3;
-  } else {
-    tierId = "advanced";
-    baseScore = 4;
-  }
-
-  // Weighting factors: Chronicity & Severity
-  let weightAddition = 0;
-  const durationLower = (input.durationText || "").toLowerCase();
-  if (durationLower.includes("3 year") || durationLower.includes("5 year") || durationLower.includes("chronic") || durationLower.includes("long-standing")) {
-    weightAddition += 1;
-  }
-
-  if (input.severityRating && input.severityRating >= 7) {
-    weightAddition += 1;
-  }
-
-  if (input.priorTreatmentFailures) {
-    weightAddition += 1;
-  }
-
-  const complexityScore = baseScore + weightAddition;
-
-  if (complexityScore <= 1) tierId = "focused";
-  else if (complexityScore === 2) tierId = "integrated";
-  else if (complexityScore === 3) tierId = "complex";
-  else tierId = "advanced";
-
-  // Advisory rationale synthesis
-  const rationaleParts: string[] = [];
-  if (organCount > 0) {
-    rationaleParts.push(`Reported ${organCount} primary organ system ${organCount === 1 ? "area" : "areas"} (${organs.join(", ")})`);
-  } else {
-    rationaleParts.push("Single primary health concern");
-  }
-
-  if (weightAddition > 0) {
-    rationaleParts.push(`Layered clinical complexity indicators (chronicity / severity weighting +${weightAddition})`);
-  }
-
-  const rationale = rationaleParts.join("; ") + ".";
+  const rationale = blockedBySafetyGate
+    ? "Please seek urgent clinical assessment before choosing or requesting a care plan."
+    : inferredAcute
+      ? "A short non-emergency care period may be a suitable starting point after physician review."
+      : `${intensity === "standard" || intensity === "unsure" ? "Standard" : intensity} planned follow-up selected; the physician confirms the final scope.`;
   const tier = CLINICAL_CARE_TIER_OPTIONS[tierId] || CLINICAL_CARE_TIER_OPTIONS.focused;
 
   return {
     suggestedTierId: tierId,
     suggestedTierName: tier.name,
     selectedOrganCount: organCount,
-    complexityScore,
     rationale,
+    blockedBySafetyGate,
     disclaimer: EXPLICIT_PHYSICIAN_AUTHORITY_STATEMENT,
   };
 }
@@ -119,12 +83,12 @@ export interface QuotationCalculationInput {
 export function calculateItemizedPharmacyQuotation(
   input: QuotationCalculationInput
 ): ItemizedPharmacyBreakdown {
-  const tierKey = input.tierId && CLINICAL_CARE_TIER_OPTIONS[input.tierId] ? input.tierId : "integrated";
+  const tierKey = input.tierId && input.tierId in CLINICAL_CARE_TIER_OPTIONS ? input.tierId as keyof typeof CLINICAL_CARE_TIER_OPTIONS : "integrated";
   const tier = CLINICAL_CARE_TIER_OPTIONS[tierKey];
 
-  const listProfessionalFeePaise = calculateListCarePeriodTotalPaise(tier.weeklyRatePaise, input.durationWeeks);
-  const professionalFeePaise = calculateCarePeriodTotalPaise(tier.weeklyRatePaise, input.durationWeeks);
-  const continuityDiscountPercent = getCarePeriodContinuityBenefit(input.durationWeeks);
+  const listProfessionalFeePaise = calculateTierListCarePeriodTotalPaise(tier.id, input.durationWeeks);
+  const professionalFeePaise = calculateTierCarePeriodTotalPaise(tier.id, input.durationWeeks);
+  const continuityDiscountPercent = getTierContinuityBenefit(tier.id, input.durationWeeks);
   const continuityDiscountPaise = listProfessionalFeePaise - professionalFeePaise;
   const brandedPaise = Math.max(0, Math.round(input.specialBrandedMedicinesPaise || 0));
   const courierPaise = Math.max(0, Math.round(input.courierFeePaise || 0));
@@ -199,6 +163,7 @@ export function buildWhatsAppQuotationPayload(quotation: OfficialClinicalQuotati
 } {
   const { upiId, bankDetails } = getClinicPaymentConfiguration();
   const bd = quotation.breakdown;
+  const carePeriodLabel = getTierCarePeriodLabel(quotation.tierId, quotation.durationWeeks);
 
   const lines: string[] = [
     "*Homeo Healthcare*",
@@ -209,7 +174,7 @@ export function buildWhatsAppQuotationPayload(quotation: OfficialClinicalQuotati
     "",
     "Recommended Plan:",
     `• ${quotation.tierName}`,
-    `• ${quotation.durationWeeks} Weeks`,
+    `• ${carePeriodLabel}`,
     "",
     `Professional Care Fee:\n${formatINRFromPaise(bd.listProfessionalFeePaise)}`,
   ];
@@ -273,6 +238,7 @@ export function buildPatientWhatsAppReviewLink(data: {
   submissionId?: string;
   selectedTierName: string;
   preferredDurationWeeks: number;
+  carePeriodLabel?: string;
   totalEstimatedAmountFormatted: string;
   mainHealthArea: string;
   concernDescription?: string;
@@ -290,7 +256,7 @@ export function buildPatientWhatsAppReviewLink(data: {
     data.submissionId ? `• *Assessment Ref*: ${data.submissionId}` : "",
     `• *Primary Health Area*: ${data.mainHealthArea}`,
     `• *Selected Care Tier*: ${data.selectedTierName}`,
-    `• *Planned Care Period*: ${data.preferredDurationWeeks} Weeks`,
+    `• *Planned Care Period*: ${data.carePeriodLabel || `${data.preferredDurationWeeks} Weeks`}`,
     `• *Estimated Total Fee*: ${data.totalEstimatedAmountFormatted}`,
   ].filter(Boolean);
 
