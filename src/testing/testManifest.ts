@@ -1677,6 +1677,13 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "M26 KEP-6 Remedy Coverage Wave 13 (10 major classical remedies - R0089, R0131, R0132, R0090, R0134, R0133, R0095, R0096, R0137, R0136) v1.1.0 upgrades, 50 draft graph proposals, 100-case offline evaluation with 20 negative controls, clinical safety boundaries, and human wave promotion authorization boundary"
   },
   {
+    "path": "tests/knowledgeKEP6RemedyWave14.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M27 KEP-6 Remedy Coverage Wave 14 (10 major classical remedies - R0138, R0139, R0140, R0141, R0142, R0143, R0099, R0034, R0144, R0100) v1.1.0 upgrades, 50 draft graph proposals, 100-case offline evaluation with 20 negative controls, clinical safety boundaries, and human wave promotion authorization boundary"
+  },
+  {
     "path": "tests/softLaunchManualPayment.test.ts",
     "status": "active",
     "ownerArea": "commerce-pricing",
