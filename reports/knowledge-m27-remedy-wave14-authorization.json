@@ -1,88 +1,92 @@
 {
-  "milestoneId": "M9",
-  "packageId": "KEP5-PACKAGE-M9-POLYCREST-REMEDIES-001",
-  "generatedAt": "2026-08-18T08:39:59.260Z",
+  "milestoneId": "M27",
+  "packageId": "KEP6-PACKAGE-M27-REMEDY-WAVE14-001",
+  "sourceCommit": "ad2db8e3df6c792484be9d126beae68d7a31b307",
+  "generatedAt": "2026-08-18T08:20:51.463Z",
   "status": "pending_authorization",
   "governance": {
-    "program": "KEP-5",
+    "program": "KEP-6",
     "productionRagActivation": false,
+    "transitionalPublicationFreeze": true,
     "governedProposalsCount": 50,
     "allProposalsDraftOnly": true,
     "ragIneligible": true
   },
   "summary": {
     "totalEntitiesUpgraded": 10,
-    "polycrestRemedyEntitiesCount": 10,
+    "remedyEntitiesCount": 10,
     "evaluationCasesCount": 100,
-    "evaluationPassRate": 1
+    "evaluationPassRate": 1,
+    "wavePromotionCandidate": true,
+    "wavePromotionAchieved": false
   },
   "entities": [
     {
-      "entityId": "R0003",
-      "slug": "lycopodium",
+      "entityId": "R0138",
+      "slug": "carduus-marianus",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0004",
-      "slug": "aconitum-napellus",
+      "entityId": "R0139",
+      "slug": "caulophyllum-thalictroides",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0005",
-      "slug": "arnica-montana",
+      "entityId": "R0140",
+      "slug": "cedron",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0007",
-      "slug": "belladonna",
+      "entityId": "R0141",
+      "slug": "cereus-bonplandii",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0008",
-      "slug": "bryonia-alba",
+      "entityId": "R0142",
+      "slug": "chimaphila-umbellata",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0009",
-      "slug": "calcarea-carbonica",
+      "entityId": "R0143",
+      "slug": "chininum-sulphuricum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0012",
-      "slug": "gelsemium-sempervirens",
+      "entityId": "R0099",
+      "slug": "cicuta-virosa",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0019",
-      "slug": "pulsatilla-pratensis",
+      "entityId": "R0034",
+      "slug": "cina-maritima",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0020",
-      "slug": "rhus-toxicodendron",
+      "entityId": "R0144",
+      "slug": "cistus-canadensis",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
-      "entityId": "R0021",
-      "slug": "sepia-officinalis",
+      "entityId": "R0100",
+      "slug": "clematis",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
@@ -104,5 +108,5 @@
     "passedCaseCount": 100,
     "failedCaseCount": 0
   },
-  "packageSha256": "0f853d4b098bf6d125454bc555be281526e4f03ce32426c93ddad73625d1ad1e"
+  "packageSha256": "82d2daa1ef501168cbd857f77749c9b17f493117925c1daa5ca90e849e8f8efd"
 }
