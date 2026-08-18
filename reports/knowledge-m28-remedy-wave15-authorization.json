@@ -1,0 +1,91 @@
+{
+  "milestoneId": "M28",
+  "packageId": "KEP6-PACKAGE-M28-REMEDY-WAVE15-001",
+  "sourceCommit": "f1125c15935d7f81135b48b32a4f550f807a0008",
+  "generatedAt": "2026-08-18T12:26:23.647Z",
+  "status": "pending_authorization",
+  "governance": {
+    "program": "KEP-6",
+    "productionRagActivation": false,
+    "transitionalPublicationFreeze": true,
+    "governedProposalsCount": 35,
+    "allProposalsDraftOnly": true,
+    "ragIneligible": true
+  },
+  "summary": {
+    "totalEntitiesUpgraded": 7,
+    "remedyEntitiesCount": 7,
+    "evaluationCasesCount": 70,
+    "evaluationPassRate": 1,
+    "wavePromotionCandidate": true,
+    "wavePromotionAchieved": false
+  },
+  "entities": [
+    {
+      "entityId": "R0086",
+      "slug": "bells",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0087",
+      "slug": "benzoin",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0145",
+      "slug": "cobaltum-metallicum",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0146",
+      "slug": "coccus-cacti",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0148",
+      "slug": "collinsonia-canadensis",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0149",
+      "slug": "condurango",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0150",
+      "slug": "copaiva-officinalis",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    }
+  ],
+  "evaluation": {
+    "caseCount": 70,
+    "entityCount": 7,
+    "minimumCasesPerEntity": 10,
+    "recallAt5": 1,
+    "meanReciprocalRank": 1,
+    "citationPrecision": 1,
+    "unsupportedClaimFailureCount": 0,
+    "emergencyEscalationFailureCount": 0,
+    "abstentionFailureCount": 0,
+    "staleRevisionLeakageCount": 0,
+    "crossEntityConfusionCount": 0,
+    "withdrawnContentLeakageCount": 0,
+    "passedCaseCount": 70,
+    "failedCaseCount": 0
+  },
+  "packageSha256": "c4eee14acd3c4597c1ec9cde7d7406c6bcb40704d77d53e0dde67f0c8df174c9"
+}
