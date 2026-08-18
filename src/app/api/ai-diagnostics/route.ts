@@ -4,6 +4,7 @@ import { getKnowledgeGraph } from "@/lib/knowledgeGraph";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, collection, addDoc } from "firebase/firestore";
 import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
+import { evaluateIntakeClinicalSafety } from "@/features/dashboard/application/intakeClinicalSafety";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -12,7 +13,7 @@ function compileLocalSynthesisResponse(taskType: string, body: any): any {
   const patientName = body?.patientInfo?.name || body?.patientName || "Patient";
   const age = body?.patientInfo?.age || body?.age || "35";
   const gender = body?.patientInfo?.gender || body?.gender || "Male";
-  const complaint = body?.patientInfo?.complaint || body?.complaint || "Chronic complaints";
+  const complaint = body?.complaint || body?.patientInfo?.complaint || "Complaint not recorded";
 
   if (taskType === "clinical_reasoning") {
     const rubrics = body?.rubrics || [];
@@ -205,32 +206,27 @@ function compileLocalSynthesisResponse(taskType: string, body: any): any {
     const thermals = body?.thermalGenerals || "Unspecified thermal profile";
     const mentals = body?.mentalProfile || "Unspecified mental/emotional state";
     const suppression = body?.suppressionHistory || "No suppression history noted";
+    const documentedHpi = typeof body?.chatAnswers === "string" ? body.chatAnswers.trim() : "";
 
     return {
       success: true,
       isMock: true,
       analysis: {
         symptom_synthesis: {
-          chief_complaint_analysis: `Chronic manifestation of ${complaint} in a ${age}-year-old ${gender}. Symptoms show a gradual onset with marked functional disturbances.`,
-          hpi_timeline: `Onset traced back 6-12 months following a period of high emotional stress and physical fatigue. Symptoms are intermittent but progressive. Suppression history: ${suppression}.`,
-          constitutional_tendencies: `Constitutional profile indicates sensitivity aligned with: ${thermals}. Psoric-dominated reaction capacity.`,
-          emotional_triggers: `Stress and anxiety profile: ${mentals}. Suppression history details: ${suppression}.`,
-          thermal_axis: `Thermal reaction profile: ${thermals}.`,
-          suppression_history: `Prior suppressive history noted: ${suppression}.`
+          chief_complaint_analysis: `Recorded chief complaint: ${complaint}.`,
+          hpi_timeline: documentedHpi || "No HPI timeline was supplied.",
+          constitutional_tendencies: `Recorded observations only: ${thermals}.`,
+          emotional_triggers: `Recorded observations only: ${mentals}.`,
+          thermal_axis: thermals,
+          suppression_history: suppression
         },
         clinical_recommendations: {
-          rubrics_to_consider: [
-            `GENERALS - ${thermals.toUpperCase().includes("WARM") ? "WARM" : "COLD"} - agg.`,
-            `MIND - ANXIETY - ${mentals.toLowerCase().includes("health") ? "health, about" : "future, about"}`,
-            "GENERALS - COLD - damp weather agg.",
-            "STOMACH - BLOATING - eating, after"
-          ],
+          rubrics_to_consider: [],
           suggested_questions: [
-            "Does the patient experience any sudden sinking sensation around 11 AM?",
-            "Are the burning sensations worse from the warmth of the bed?",
-            "How does the patient feel emotionally when consoled during irritable states?"
+            "Confirm the exact onset, course, aggravating factors, and relieving factors in the patient's own words.",
+            "Confirm relevant examination findings and whether conventional assessment or investigation is required."
           ],
-          miasmatic_orientation: "Predominantly Psoric, with active Sycotic layering shown in tissue fluid retention and bloating."
+          miasmatic_orientation: "Not generated in local safe mode; clinician review is required."
         }
       }
     };
@@ -1076,7 +1072,7 @@ Perform clinical reasoning analysis. Return the exact JSON structure specified a
   }
 
   if (taskType === "intake") {
-    const systemPrompt = `You are the AI Clinical Intake Engine. Your goal is to synthesize the patient's intake information (complaint, HPI, PMH, mental/emotional, thermals, food desires/aversions, sleep modalities, suppression history) into a highly structured homeopathic assessment.
+    const systemPrompt = `You are an advisory Clinical Intake summarization assistant. Summarize only facts explicitly supplied by the clinician. Never invent onset, duration, causation, examination findings, diagnoses, constitutional types, miasmatic percentages, remedy candidates, potency, prescription, or confidence probabilities. Suggested rubrics are unverified text candidates for clinician review and must be returned as an empty array when the supplied evidence does not directly support them. This output must not delay conventional assessment, emergency care, or referral.
 You MUST return a JSON object with this EXACT schema:
 {
   "symptom_synthesis": {
@@ -1090,7 +1086,7 @@ You MUST return a JSON object with this EXACT schema:
   "clinical_recommendations": {
     "rubrics_to_consider": ["string rubric names matching Kent classical index"],
     "suggested_questions": ["string clarifying questions for the next consultation"],
-    "miasmatic_orientation": "string detail of dominant miasmatic expression"
+    "miasmatic_orientation": "string narrative advisory without percentages, or Not established from supplied information"
   }
 }`;
     const userPrompt = `Patient Intake Details:
@@ -1099,7 +1095,12 @@ You MUST return a JSON object with this EXACT schema:
 - Chief Complaint: ${complaint}
 - Thermal / General Modal States: ${body?.thermalGenerals || "Unspecified"}
 - Mental / Emotional Profile: ${body?.mentalProfile || "Unspecified"}
-- Previous suppression details: ${body?.suppressionHistory || "Unspecified"}`;
+- Previous suppression details: ${body?.suppressionHistory || "Unspecified"}
+- Documented HPI answers: ${body?.chatAnswers || "Unspecified"}
+- Medicines review: ${body?.clinicalSafety?.medicationsStatus || "not reviewed"}
+- Allergy review: ${body?.clinicalSafety?.allergiesStatus || "not reviewed"}
+- Red-flag screen: ${body?.clinicalSafety?.redFlagStatus || "not screened"}
+- Pregnancy/lactation status: ${body?.clinicalSafety?.pregnancyStatus || "not assessed"}`;
     return { systemPrompt, userPrompt };
   }
 
@@ -1394,6 +1395,31 @@ export async function POST(request: NextRequest) {
     const apiKey = process.env.GEMINI_API_KEY;
     const body = await request.json();
     taskType = body.taskType || "synthesis";
+
+    if (taskType === "intake") {
+      const documentedAnswerCount = typeof body?.chatAnswers === "string"
+        ? (body.chatAnswers.match(/(?:^|\n)Q\d+:/g) || []).length
+        : 0;
+      const safetyAssessment = evaluateIntakeClinicalSafety({
+        complaint: body?.complaint,
+        hpiAnswerCount: documentedAnswerCount,
+        medicationsStatus: body?.clinicalSafety?.medicationsStatus,
+        medications: body?.diagnosticClues?.currentMeds,
+        allergiesStatus: body?.clinicalSafety?.allergiesStatus,
+        allergies: body?.clinicalSafety?.allergies,
+        redFlagStatus: body?.clinicalSafety?.redFlagStatus,
+        redFlagDetails: body?.clinicalSafety?.redFlagDetails,
+        pregnancyStatus: body?.clinicalSafety?.pregnancyStatus,
+      });
+      if (!safetyAssessment.canSynthesize) {
+        return NextResponse.json({
+          success: false,
+          code: safetyAssessment.emergencyReferralRequired ? "URGENT_REFERRAL_REQUIRED" : "INTAKE_SAFETY_GATE_INCOMPLETE",
+          error: [...safetyAssessment.blockingReasons, ...safetyAssessment.missingRequirements].join(" "),
+          safetyAssessment,
+        }, { status: 422 });
+      }
+    }
 
     localResponse = compileLocalSynthesisResponse(taskType, body);
 

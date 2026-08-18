@@ -23,38 +23,38 @@ export default function TheExperience() {
   const steps = [
     {
       icon: <ClipboardList className="w-5 h-5 text-mint" />,
-      title: "Personalized Diagnosis",
-      desc: "An in-depth, multi-dimensional assessment tracking physical, emotional, and hereditary blueprints to map your constitutional profile.",
+      title: "Structured Assessment",
+      desc: "A detailed review of your symptoms, medical history, current medicines, investigations, priorities and care goals.",
       align: "left",
     },
     {
       icon: <Flame className="w-5 h-5 text-aqua" />,
-      title: "Root-Cause Approach",
-      desc: "Tracing conditions back to their cellular, emotional, or environmental origin, bypassing simple temporary symptom suppression.",
+      title: "Whole-Person Review",
+      desc: "Identifying symptom patterns, possible triggers and factors that may need conventional investigation or referral.",
       align: "right",
     },
     {
       icon: <Sparkles className="w-5 h-5 text-lavender" />,
-      title: "Constitutional Treatment",
-      desc: "Prescribing highly individual, bio-active micro-dilutions formulated to trigger natural immunological restoration.",
+      title: "Individualized Plan",
+      desc: "The physician explains the proposed homeopathic approach, scope, limits, follow-up plan and alternatives before you begin.",
       align: "left",
     },
     {
       icon: <Heart className="w-5 h-5 text-rose-500" />,
       title: "Holistic Care",
-      desc: "Weaving mental resilience, nervous system alignment, and endocrine health into a single unified recovery program.",
+      desc: "Considering physical symptoms, emotional wellbeing, sleep, nutrition and the treatment already provided by your medical team.",
       align: "right",
     },
     {
       icon: <Compass className="w-5 h-5 text-sky" />,
       title: "Lifestyle Guidance",
-      desc: "Tailored dietary rhythms, circadian sleep optimization, and neuro-meditative exercises to support the remedies.",
+      desc: "Practical guidance on diet, sleep, activity and symptom tracking when it is appropriate for your individual situation.",
       align: "left",
     },
     {
       icon: <ShieldCheck className="w-5 h-5 text-mint" />,
-      title: "Long-Term Wellness",
-      desc: "Establishing cellular homeostasis to build robust long-term defense systems and prevent future disease recurrences.",
+      title: "Review and Reassessment",
+      desc: "Monitoring progress against agreed goals and modifying, pausing or referring care when the expected response is not seen.",
       align: "right",
     },
   ];
@@ -95,7 +95,7 @@ export default function TheExperience() {
             transition={{ duration: 1, delay: 0.2 }}
             className="text-base text-slate-700 font-semibold"
           >
-            A high-fidelity therapeutic model built to transition your body from defense to harmony.
+            A clear, physician-led process with safety checks, informed choices and planned reassessment.
           </motion.p>
         </div>
 

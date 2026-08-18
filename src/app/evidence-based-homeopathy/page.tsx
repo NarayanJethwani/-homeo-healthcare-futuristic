@@ -41,10 +41,10 @@ export default function EvidenceBasedHomeopathyPage() {
     {
       num: "02",
       title: "Scientific Integration",
-      desc: "Remedies validated against RCTs, systematic reviews, and observational studies. Where evidence exists, it guides — where it doesn’t, classical principles lead.",
+      desc: "Published research is reviewed alongside clinical context, patient preference and the limitations of the available evidence.",
       icon: <Compass className="w-5 h-5 text-aqua" />,
       extended: {
-        corePhilosophy: "We bridge the gap between historical empirical observations and modern scientific standards, reviewing clinical trials and nanoscience research to justify remedy choices.",
+        corePhilosophy: "We distinguish historical homeopathic principles from modern evidence and discuss uncertainty rather than presenting a proposed mechanism as established fact.",
         clinicalLiterature: [
           "Cochrane Systematic Reviews on high-dilution therapeutics",
           "PubMed/MEDLINE clinical trials (RCTs) for acute and chronic conditions",
@@ -55,7 +55,7 @@ export default function EvidenceBasedHomeopathyPage() {
           "Verifying remedy actions through in-vitro and in-vivo research data."
         ],
         caseReasoning: "In cases of allergic rhinitis, we integrate clinical trial evidence of Galphimia Glauca. If the patient's individual presentation aligns, the remedy is selected with double validation: symptom similarity and trial efficacy.",
-        remSelection: "Nanoparticle theory reveals that serial dilution combined with succussion (agitation) produces stable nanoparticles of the starting material, which interface with cellular signal pathways."
+        remSelection: "Proposed mechanisms for high dilutions remain uncertain and should not be presented as established cellular effects. Remedy selection is documented as a homeopathic clinical decision."
       }
     },
     {
@@ -101,10 +101,10 @@ export default function EvidenceBasedHomeopathyPage() {
     {
       num: "05",
       title: "Integrative Safety",
-      desc: "Treatment designed to work alongside conventional care. No dangerous interactions. Patient safety is non-negotiable.",
+      desc: "Care is adjunctive to conventional treatment. Medicines, supplements and changing symptoms are reviewed for safety and referral needs.",
       icon: <Heart className="w-5 h-5 text-teal-500" />,
       extended: {
-        corePhilosophy: "We promote a collaborative, integrative model. Our treatments do not interfere with conventional prescriptions (antibiotics, steroids, chemotherapeutics) and have no toxic side effects.",
+        corePhilosophy: "We promote a collaborative model. Existing prescriptions are not stopped or altered by this service, and any new symptom or suspected adverse event requires appropriate medical review.",
         clinicalLiterature: [
           "Pharmacovigilance guidelines for complementary medicine",
           "Inter-system medical interaction studies",
@@ -114,7 +114,7 @@ export default function EvidenceBasedHomeopathyPage() {
           "Routine safety panels (Complete Blood Count, Liver/Kidney function monitoring).",
           "Screening for adverse events or target organ toxicity."
         ],
-        caseReasoning: "A patient undergoing chemotherapy receives homeopathic support to manage nausea and fatigue. The micro-diluted remedies do not bind to oncological drug receptor sites, ensuring zero chemical interference while supporting cellular recovery.",
+        caseReasoning: "Any patient receiving cancer treatment remains under the oncology team's direction. Complementary support is considered only with the oncology team informed and never delays assessment of nausea, fatigue, infection or other treatment effects.",
         remSelection: "Strict compliance with safety protocols. If a patient shows signs of acute surgical emergency or severe infection, we halt homeopathic adjustment and refer them immediately to conventional emergency care."
       }
     },
@@ -199,7 +199,7 @@ export default function EvidenceBasedHomeopathyPage() {
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-mint/20 hover:border-mint/60 bg-mint/5 hover:bg-mint/10 text-mint-dark hover:text-[#0c6b5e] text-xs font-bold uppercase tracking-wider transition-all duration-300 backdrop-blur-md cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              Back to the Future
+              Back to Home
             </Link>
           </Magnetic>
         </motion.div>
@@ -231,7 +231,7 @@ export default function EvidenceBasedHomeopathyPage() {
             transition={{ duration: 1, delay: 0.2 }}
             className="text-base md:text-lg text-slate-700 dark:text-slate-300 font-semibold leading-relaxed mb-8 max-w-3xl"
           >
-            A rigorous clinical framework integrating 200 years of classical homeopathic wisdom with modern scientific research, biomarker tracking, and measurable patient outcomes.
+            A structured clinical framework separating homeopathic tradition, available research, patient-reported outcomes and appropriate conventional diagnostics.
           </motion.p>
 
           <motion.div
@@ -268,7 +268,7 @@ export default function EvidenceBasedHomeopathyPage() {
               Six Pillars of Evidence-Based Practice
             </h2>
             <p className="text-sm text-slate-700 dark:text-slate-300 font-semibold leading-relaxed">
-              We operate at the interface of historical therapeutics and contemporary medical scrutiny. Click any pillar to view detailed clinical literature standards, validations, and case examples.
+              We document historical practice, available evidence, its limitations and the safety boundaries that determine when conventional referral is required.
             </p>
           </div>
 
@@ -353,7 +353,7 @@ export default function EvidenceBasedHomeopathyPage() {
               Biomarker & Diagnostic Monitoring
             </h2>
             <p className="text-sm text-slate-700 dark:text-slate-300 font-semibold leading-relaxed">
-              We utilize state-of-the-art laboratory testing and radiological imaging to monitor tissue recovery, track inflammation levels, and scientifically document your recovery path.
+              Existing laboratory and imaging results are reviewed when clinically relevant. Repeat testing is requested only when appropriate and interpreted with conventional medical standards.
             </p>
           </div>
 

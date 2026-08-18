@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authorizeRequest } from "@/lib/security/apiAuth";
+import {
+  computeCurrentDoctorSubscriptionValidUntil,
+  isCurrentDoctorSubscriptionPlan,
+} from "@/lib/doctorSubscriptionConfig";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -7,11 +11,11 @@ export const runtime = "nodejs";
 /**
  * POST /api/admin/extend-subscription
  *
- * Admin-only: extends (or starts trial for) a doctor's subscription.
+ * Admin-only: renews a doctor's subscription after onboarding.
  *
  * Body:
  *   doctorUid  – The doctor's Firebase UID
- *   plan       – "trial" | "monthly" | "quarterly" | "annual"
+ *   plan       – "monthly" | "branch" (the one-month trial is created only during onboarding)
  *   note?      – Optional note (e.g. "Paid via UPI - screenshot confirmed")
  */
 export async function POST(request: NextRequest) {
@@ -22,14 +26,14 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { doctorUid, plan, note = "" } = body;
 
-    if (!doctorUid || !plan) {
+    if (!doctorUid || !isCurrentDoctorSubscriptionPlan(plan) || plan === "trial") {
       return NextResponse.json(
-        { success: false, message: "doctorUid and plan are required." },
+        { success: false, message: "doctorUid and a renewable plan are required. Trials cannot be renewed." },
         { status: 400 }
       );
     }
 
-    const validUntil = computeValidUntil(plan);
+    const validUntil = computeCurrentDoctorSubscriptionValidUntil(plan);
     const renewedAt   = new Date().toISOString();
 
     const subscriptionUpdate = {
@@ -71,18 +75,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-/** Compute ISO date (YYYY-MM-DD) from today based on plan */
-function computeValidUntil(plan: string): string {
-  if (plan === "branch") return "2099-12-31"; // Permanent access for branch doctors
-  const d = new Date();
-  switch (plan) {
-    case "trial":     d.setDate(d.getDate() + 14);   break;  // 14-day trial
-    case "monthly":   d.setMonth(d.getMonth() + 1);   break;
-    case "quarterly": d.setMonth(d.getMonth() + 3);   break;
-    case "annual":    d.setFullYear(d.getFullYear() + 1); break;
-    default:          d.setMonth(d.getMonth() + 1);   break;
-  }
-  return d.toISOString().split("T")[0];
 }

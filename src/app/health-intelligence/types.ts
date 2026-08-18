@@ -96,7 +96,7 @@ export interface HealthDigitalTwin {
   }>;
   history: HealthHistoryEntry[];
   organLoad: Record<string, number>;
-  riskLevel: Record<string, { level: "Low" | "Moderate" | "High"; pct: number }>;
+  riskLevel: Record<string, { level: "Not assessed" | "Low" | "Moderate" | "High"; pct: number }>;
   constitutional?: ConstitutionalProfile;
   biologicalAge?: BiologicalAgeMetrics;
   activeRulesFlags: string[];

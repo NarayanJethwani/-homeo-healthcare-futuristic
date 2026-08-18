@@ -1,15 +1,15 @@
 import React from "react";
-import { Activity, CalendarClock, HeartPulse, Sparkles } from "lucide-react";
+import { Activity, AlertTriangle, CalendarClock, Sparkles } from "lucide-react";
 import type { PreliminaryCareRecommendation } from "../domain/types";
 
-export type HealthAreaBreadth = 1 | 2 | 4 | 5;
-export type ConcernDuration = "recent" | "established" | "long-standing";
-export type SupportIntensity = "standard" | "closer" | "unsure";
+export type CareFamilyAnswer = "acute" | "chronic" | "unsure";
+export type SupportIntensity = "standard" | "closer" | "frequent" | "direct" | "unsure";
+export type SafetyStatus = "clear" | "unsure" | "red-flag";
 
 export interface CarePathwayCheckAnswers {
-  healthAreaBreadth?: HealthAreaBreadth;
-  concernDuration?: ConcernDuration;
+  careFamily?: CareFamilyAnswer;
   supportIntensity?: SupportIntensity;
+  safetyStatus?: SafetyStatus;
 }
 
 interface CarePathwayCheckProps {
@@ -30,9 +30,9 @@ export const CarePathwayCheck: React.FC<CarePathwayCheckProps> = ({
   recommendation,
   onChange,
 }) => {
-  const completed = Number(Boolean(answers.healthAreaBreadth))
-    + Number(Boolean(answers.concernDuration))
-    + Number(Boolean(answers.supportIntensity));
+  const completed = Number(Boolean(answers.careFamily))
+    + Number(Boolean(answers.supportIntensity))
+    + Number(Boolean(answers.safetyStatus));
 
   return (
     <section aria-labelledby="pathway-check-heading" className="mb-12 overflow-hidden rounded-[2rem] border border-slate-200 bg-white/90 shadow-[0_20px_70px_rgba(26,36,33,0.08)]">
@@ -42,37 +42,37 @@ export const CarePathwayCheck: React.FC<CarePathwayCheckProps> = ({
         </span>
         <h2 id="pathway-check-heading" className="mt-2 font-serif text-3xl font-semibold md:text-4xl">Start with three simple questions</h2>
         <p className="mt-2 max-w-3xl text-sm font-semibold leading-relaxed text-slate-300">
-          No personal details are required. This preliminary guide helps select a starting pathway; your physician makes the final clinical decision.
+          No personal details are required. This guide separates acute and chronic care, checks the emergency boundary, and never prices by diagnosis or organ count.
         </p>
       </div>
 
       <div className="grid gap-5 p-6 md:grid-cols-3 md:p-8">
         <fieldset className="rounded-3xl border border-slate-200 bg-slate-50/70 p-5">
-          <legend className="sr-only">Number of health areas</legend>
-          <div className="flex items-center gap-2 text-sm font-black text-[#1A2421]"><HeartPulse className="h-4 w-4 text-mint" /> Health areas involved</div>
-          <div className="mt-4 grid grid-cols-2 gap-2">
-            {([[1, "One"], [2, "Two"], [4, "Three–four"], [5, "Five+"]] as const).map(([value, label]) => (
-              <button key={value} type="button" aria-pressed={answers.healthAreaBreadth === value} onClick={() => onChange({ ...answers, healthAreaBreadth: value })} className={choiceClass(answers.healthAreaBreadth === value)}>{label}</button>
-            ))}
-          </div>
-        </fieldset>
-
-        <fieldset className="rounded-3xl border border-slate-200 bg-slate-50/70 p-5">
-          <legend className="sr-only">Duration of concern</legend>
-          <div className="flex items-center gap-2 text-sm font-black text-[#1A2421]"><CalendarClock className="h-4 w-4 text-mint" /> How long has it persisted?</div>
+          <legend className="sr-only">Care timeframe</legend>
+          <div className="flex items-center gap-2 text-sm font-black text-[#1A2421]"><CalendarClock className="h-4 w-4 text-mint" /> Which best describes the need?</div>
           <div className="mt-4 grid gap-2">
-            {([["recent", "Less than 6 months"], ["established", "6 months–3 years"], ["long-standing", "More than 3 years"]] as const).map(([value, label]) => (
-              <button key={value} type="button" aria-pressed={answers.concernDuration === value} onClick={() => onChange({ ...answers, concernDuration: value })} className={choiceClass(answers.concernDuration === value)}>{label}</button>
+            {([["acute", "Recent or short-term"], ["chronic", "Ongoing or recurring"], ["unsure", "Not sure yet"]] as const).map(([value, label]) => (
+              <button key={value} type="button" aria-pressed={answers.careFamily === value} onClick={() => onChange({ ...answers, careFamily: value })} className={choiceClass(answers.careFamily === value)}>{label}</button>
             ))}
           </div>
         </fieldset>
 
         <fieldset className="rounded-3xl border border-slate-200 bg-slate-50/70 p-5">
           <legend className="sr-only">Support intensity</legend>
-          <div className="flex items-center gap-2 text-sm font-black text-[#1A2421]"><Activity className="h-4 w-4 text-mint" /> Support you expect</div>
+          <div className="flex items-center gap-2 text-sm font-black text-[#1A2421]"><Activity className="h-4 w-4 text-mint" /> Follow-up workload expected</div>
           <div className="mt-4 grid gap-2">
-            {([["standard", "Planned follow-up"], ["closer", "Closer monitoring"], ["unsure", "Not sure yet"]] as const).map(([value, label]) => (
+            {([["standard", "Standard planned review"], ["closer", "Closer review / records"], ["frequent", "Frequent review / coordination"], ["direct", "Direct supervision"], ["unsure", "Not sure yet"]] as const).map(([value, label]) => (
               <button key={value} type="button" aria-pressed={answers.supportIntensity === value} onClick={() => onChange({ ...answers, supportIntensity: value })} className={choiceClass(answers.supportIntensity === value)}>{label}</button>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset className="rounded-3xl border border-slate-200 bg-slate-50/70 p-5">
+          <legend className="sr-only">Emergency warning signs</legend>
+          <div className="flex items-center gap-2 text-sm font-black text-[#1A2421]"><AlertTriangle className="h-4 w-4 text-amber-600" /> Emergency warning signs now?</div>
+          <div className="mt-4 grid gap-2">
+            {([["clear", "No warning signs"], ["unsure", "Not sure"], ["red-flag", "Yes"]] as const).map(([value, label]) => (
+              <button key={value} type="button" aria-pressed={answers.safetyStatus === value} onClick={() => onChange({ ...answers, safetyStatus: value })} className={choiceClass(answers.safetyStatus === value)}>{label}</button>
             ))}
           </div>
         </fieldset>
@@ -82,7 +82,7 @@ export const CarePathwayCheck: React.FC<CarePathwayCheckProps> = ({
         <div>
           <span className="text-[10px] font-black uppercase tracking-[0.18em] text-mint-dark">Preliminary recommendation</span>
           <h3 className="mt-1 font-serif text-2xl font-bold text-[#1A2421]">
-            {completed === 0 ? "Answer the questions to personalize your starting point" : recommendation.suggestedTierName}
+            {completed === 0 ? "Answer the questions to identify a safe starting point" : recommendation.blockedBySafetyGate ? "Urgent assessment before plan selection" : recommendation.suggestedTierName}
           </h3>
           {completed > 0 && <p className="mt-1 text-xs font-semibold leading-relaxed text-slate-600">{recommendation.rationale}</p>}
         </div>

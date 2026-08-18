@@ -1,7 +1,7 @@
 import { KnowledgeEntity } from "../../types";
 
 export const ItchingSymptom: KnowledgeEntity = {
-  id: "S0014",
+  id: "S0114",
   slug: "itching",
   entityType: "symptom",
   editorialStatus: "published",
@@ -50,22 +50,22 @@ export const ItchingSymptom: KnowledgeEntity = {
     ],
     claimCitations: [
       {
-        claimId: "CLM-S0014-001",
+        claimId: "CLM-S0114-001",
         passage: "Generalized pruritus in the absence of primary skin lesions requires systematic evaluation for underlying hepatic, renal, hematologic, thyroid, or malignant disease.",
         citationIds: ["CIT-0079"]
       },
       {
-        claimId: "CLM-S0014-002",
+        claimId: "CLM-S0114-002",
         passage: "Severe generalized itching accompanied by jaundice or elevated serum bile acids indicates cholestatic hepatobiliary obstruction.",
         citationIds: ["CIT-0079"]
       },
       {
-        claimId: "CLM-S0014-003",
+        claimId: "CLM-S0114-003",
         passage: "Aquagenic pruritus without visible rash is a classical symptom of Polycythemia Vera, requiring complete blood count and JAK2 V617F mutation testing.",
         citationIds: ["CIT-0079"]
       },
       {
-        claimId: "CLM-S0014-004",
+        claimId: "CLM-S0114-004",
         passage: "Homeopathic topical and internal supportive care (e.g., Sulphur, Graphites, Rhus Tox) does not substitute for hepatobiliary or hematologic evaluation in non-dermatologic systemic pruritus.",
         citationIds: ["CIT-0023"]
       }

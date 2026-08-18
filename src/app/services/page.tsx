@@ -42,77 +42,77 @@ export default function ServicesPage() {
   const conditionsList = [
     {
       title: "Heart & Cardiovascular",
-      desc: "Autonomic regulation for hypertension, palpitations, cholesterol management, and post-cardiac recovery support.",
+      desc: "Supportive care for people with hypertension, palpitations or cholesterol concerns alongside medical evaluation and monitoring.",
       icon: <Heart className="w-5 h-5 text-rose-500" />,
       tags: ["Hypertension", "Palpitations", "Cholesterol", "Recovery"],
       glowColor: "radial-gradient(circle at center, rgba(244,63,94,0.4) 0%, rgba(168,85,247,0.2) 50%, transparent 100%)",
     },
     {
       title: "Lungs & Respiratory",
-      desc: "Strengthen respiratory immunity and alleviate asthma, COPD, chronic bronchitis, and sinusitis organically.",
+      desc: "Supportive care for asthma, COPD, chronic bronchitis and sinus symptoms without replacing prescribed inhalers or specialist care.",
       icon: <Wind className="w-5 h-5 text-cyan-500" />,
       tags: ["Asthma", "COPD", "Sinusitis", "Bronchitis"],
       glowColor: "radial-gradient(circle at center, rgba(6,182,212,0.4) 0%, rgba(20,184,166,0.2) 50%, transparent 100%)",
     },
     {
       title: "Neuro & Mental Health",
-      desc: "Address chronic migraines, anxiety, mild depression, sleep disturbances, and neurological tension.",
+      desc: "Supportive care for recurring migraine, anxiety, mild low mood and sleep difficulty, with referral for warning signs.",
       icon: <Brain className="w-5 h-5 text-indigo-500" />,
       tags: ["Migraine", "Anxiety", "Insomnia", "Stress"],
       glowColor: "radial-gradient(circle at center, rgba(99,102,241,0.4) 0%, rgba(168,85,247,0.2) 50%, transparent 100%)",
     },
     {
       title: "Joints & Spine",
-      desc: "Reduce joint inflammation and friction in osteoarthritis, rheumatoid arthritis, gout, and spondylosis.",
+      desc: "Supportive symptom and wellbeing care for osteoarthritis, rheumatoid arthritis, gout, spondylosis and back pain.",
       icon: <Activity className="w-5 h-5 text-amber-500" />,
       tags: ["Arthritis", "Gout", "Spondylosis", "Back Pain"],
       glowColor: "radial-gradient(circle at center, rgba(245,158,11,0.4) 0%, rgba(244,63,94,0.2) 50%, transparent 100%)",
     },
     {
       title: "Skin Disorders",
-      desc: "Gentle, non-suppressive constitutional therapies to heal eczema, psoriasis, acne, and vitiligo at the roots.",
+      desc: "Individualized supportive care for people living with eczema, psoriasis, acne and vitiligo.",
       icon: <Sparkles className="w-5 h-5 text-teal-500" />,
       tags: ["Eczema", "Psoriasis", "Acne", "Vitiligo"],
       glowColor: "radial-gradient(circle at center, rgba(20,184,166,0.4) 0%, rgba(6,182,212,0.2) 50%, transparent 100%)",
     },
     {
       title: "Digestive Health",
-      desc: "Calm hypersensitive GI tracts to manage IBS, chronic acidity, GERD, colitis, and sluggish liver issues.",
+      desc: "Supportive care for IBS, recurring acidity, GERD and digestive symptoms after appropriate assessment.",
       icon: <Shield className="w-5 h-5 text-emerald-500" />,
       tags: ["IBS", "Acidity", "GERD", "Colitis"],
       glowColor: "radial-gradient(circle at center, rgba(16,185,129,0.4) 0%, rgba(20,184,166,0.2) 50%, transparent 100%)",
     },
     {
       title: "Paediatric Care",
-      desc: "Safe, sweet constitutional remedies to build immunity, manage recurrent tonsillitis, asthma, and growth dynamics.",
+      desc: "Age-appropriate supportive care for recurring childhood concerns after clinical assessment and safeguarding review.",
       icon: <Baby className="w-5 h-5 text-amber-600" />,
       tags: ["Immunity", "Tonsils", "Growth", "Behavior"],
       glowColor: "radial-gradient(circle at center, rgba(217,119,6,0.35) 0%, rgba(16,185,129,0.2) 50%, transparent 100%)",
     },
     {
       title: "Hormonal & Thyroid",
-      desc: "Endocrine balance for hypothyroidism, hyperthyroidism, PCOS, and supportive care for diabetes and weight.",
+      desc: "Supportive care for people managing thyroid disorders, PCOS, diabetes or weight concerns with ongoing medical monitoring.",
       icon: <Dna className="w-5 h-5 text-purple-500" />,
       tags: ["Thyroid", "PCOS", "Diabetes", "Metabolism"],
       glowColor: "radial-gradient(circle at center, rgba(168,85,247,0.4) 0%, rgba(99,102,241,0.2) 50%, transparent 100%)",
     },
     {
       title: "Autoimmune Disorders",
-      desc: "Calm systemic auto-responses in lupus, Hashimoto's thyroiditis, and offer supportive care for CKD.",
+      desc: "Adjunctive wellbeing support for people under specialist care for lupus, Hashimoto's thyroiditis, rheumatoid disease or CKD.",
       icon: <ShieldAlert className="w-5 h-5 text-red-500" />,
       tags: ["Lupus", "Hashimoto's", "CKD Support", "RA"],
       glowColor: "radial-gradient(circle at center, rgba(239,68,68,0.35) 0%, rgba(168,85,247,0.2) 50%, transparent 100%)",
     },
     {
       title: "Allergies",
-      desc: "Desensitize immune reactions to pollen, dust, food, and chronic hives (urticaria) permanently.",
+      desc: "Supportive care for allergic rhinitis and recurring urticaria; severe or food-related reactions require conventional allergy planning.",
       icon: <ShieldOff className="w-5 h-5 text-orange-500" />,
       tags: ["Rhinitis", "Food Allergy", "Urticaria", "Dust"],
       glowColor: "radial-gradient(circle at center, rgba(249,115,22,0.35) 0%, rgba(20,184,166,0.2) 50%, transparent 100%)",
     },
     {
       title: "Integrative Cancer Care",
-      desc: "Supportive homeopathic care alongside oncology to mitigate side effects of chemo and radiation.",
+      desc: "Adjunctive wellbeing support only with the oncology team informed. It never replaces cancer treatment or urgent oncology advice.",
       icon: <Sprout className="w-5 h-5 text-lime-600" />,
       tags: ["Supportive", "Chemo Support", "Nausea", "Fatigue"],
       glowColor: "radial-gradient(circle at center, rgba(132,204,22,0.4) 0%, rgba(20,184,166,0.2) 50%, transparent 100%)",
@@ -128,7 +128,7 @@ export default function ServicesPage() {
   const differentiators = [
     {
       title: "Evidence-Based Protocol",
-      desc: "Classical homeopathy validated by modern clinical research. Outcomes tracked with measurable parameters.",
+      desc: "Clinical decisions documented with clear goals, symptom measures and appropriate investigations; evidence limits are discussed honestly.",
       icon: <ShieldCheck className="w-6 h-6 text-mint" />
     },
     {
@@ -138,12 +138,12 @@ export default function ServicesPage() {
     },
     {
       title: "20+ Years Experience",
-      desc: "10,000+ patients treated. Complex, multi-system chronic cases successfully managed at Pune clinics.",
+      desc: "More than two decades of clinical practice involving acute and complex chronic presentations at Pune clinics.",
       icon: <Sparkles className="w-6 h-6 text-lavender-dark" />
     },
     {
       title: "Integrative Approach",
-      desc: "Works safely alongside conventional medications. We collaborate with your existing medical specialists.",
+      desc: "Designed as adjunctive care. Existing medicines are not stopped or changed without the prescribing clinician.",
       icon: <Heart className="w-6 h-6 text-rose-500" />
     },
     {
@@ -153,7 +153,7 @@ export default function ServicesPage() {
     },
     {
       title: "Ethical Practice",
-      desc: "Honest clinical prognosis. No false promises. We tell you exactly what results to expect.",
+      desc: "Realistic expectations, documented consent, safety-net advice and referral when a case falls outside scope.",
       icon: <Shield className="w-6 h-6 text-emerald-600" />
     }
   ];
@@ -205,7 +205,7 @@ export default function ServicesPage() {
             transition={{ duration: 1, delay: 0.2 }}
             className="text-base md:text-lg text-slate-700 font-semibold leading-relaxed"
           >
-            Providing individualized, root-cause homeopathic care for chronic, complex, and recurring health conditions across all ages and organ systems.
+            Individualized physician-led homeopathic care for suitable acute and chronic concerns, with clear boundaries for urgent and specialist care.
           </motion.p>
         </div>
 
@@ -252,7 +252,7 @@ export default function ServicesPage() {
             <div className="mt-4 flex-grow flex flex-col justify-end">
               <h3 className="text-xl font-bold text-[#1A2421] mb-2 leading-none">Not Listed Here?</h3>
               <p className="text-xs text-slate-700 font-semibold leading-relaxed mb-4">
-                We handle broad spectrum multi-system chronic ailments. Book a direct consultation for clinical diagnostics.
+                Request a physician review so we can clarify suitability, required investigations and the safest next step.
               </p>
               <div className="flex items-center gap-2 text-xs font-bold text-mint group-hover:translate-x-1 transition-transform">
                 Book Consultation <ArrowRight className="w-4 h-4" />
@@ -268,7 +268,7 @@ export default function ServicesPage() {
               What Makes Us Different
             </h2>
             <p className="text-sm md:text-base text-slate-700 font-semibold leading-relaxed">
-              At Homeo Healthcare, we redefine classical homeopathic healing through clinical rigor, patient-centered timelines, and modern scientific indicators.
+              Our approach combines individualized homeopathic assessment with documented goals, planned review and appropriate conventional referral.
             </p>
           </div>
 

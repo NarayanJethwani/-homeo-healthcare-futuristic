@@ -7,10 +7,11 @@ import {
 } from "lucide-react";
 import {
   CLINICAL_CARE_TIER_OPTIONS,
-  calculateCarePeriodTotalPaise,
-  calculateListCarePeriodTotalPaise,
+  calculateTierCarePeriodTotalPaise,
+  calculateTierListCarePeriodTotalPaise,
   formatINRFromPaise,
-  getCarePeriodContinuityBenefit,
+  getTierCarePeriodLabel,
+  getTierContinuityBenefit,
   type PatientJourneyStep,
   type PatientIntakeData,
   type ClinicalCareDurationWeeks,
@@ -141,15 +142,17 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
     }
     setValidationErrors([]);
 
-    const selectedTier = CLINICAL_CARE_TIER_OPTIONS[data.selectedTierId] || CLINICAL_CARE_TIER_OPTIONS.integrated;
-    const totalPaise = calculateCarePeriodTotalPaise(selectedTier.weeklyRatePaise, data.preferredDurationWeeks);
+    const selectedTier = CLINICAL_CARE_TIER_OPTIONS[data.selectedTierId as keyof typeof CLINICAL_CARE_TIER_OPTIONS] || CLINICAL_CARE_TIER_OPTIONS.integrated;
+    const totalPaise = calculateTierCarePeriodTotalPaise(selectedTier.id, data.preferredDurationWeeks);
     const totalFormatted = formatINRFromPaise(totalPaise);
+    const carePeriodLabel = getTierCarePeriodLabel(selectedTier.id, data.preferredDurationWeeks);
 
     const waPayload = buildPatientWhatsAppReviewLink({
       patientName: data.patientName,
       phone: data.phone,
       selectedTierName: selectedTier.name,
       preferredDurationWeeks: data.preferredDurationWeeks,
+      carePeriodLabel,
       totalEstimatedAmountFormatted: totalFormatted,
       mainHealthArea: data.mainHealthArea,
       concernDescription: data.concernDescription,
@@ -163,10 +166,11 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
     await onSubmitAssessment(data);
   };
 
-  const selectedTier = CLINICAL_CARE_TIER_OPTIONS[data.selectedTierId] || CLINICAL_CARE_TIER_OPTIONS.integrated;
-  const totalPaise = calculateCarePeriodTotalPaise(selectedTier.weeklyRatePaise, data.preferredDurationWeeks);
-  const listTotalPaise = calculateListCarePeriodTotalPaise(selectedTier.weeklyRatePaise, data.preferredDurationWeeks);
-  const continuityPercent = getCarePeriodContinuityBenefit(data.preferredDurationWeeks);
+  const selectedTier = CLINICAL_CARE_TIER_OPTIONS[data.selectedTierId as keyof typeof CLINICAL_CARE_TIER_OPTIONS] || CLINICAL_CARE_TIER_OPTIONS.integrated;
+  const totalPaise = calculateTierCarePeriodTotalPaise(selectedTier.id, data.preferredDurationWeeks);
+  const listTotalPaise = calculateTierListCarePeriodTotalPaise(selectedTier.id, data.preferredDurationWeeks);
+  const continuityPercent = getTierContinuityBenefit(selectedTier.id, data.preferredDurationWeeks);
+  const carePeriodLabel = getTierCarePeriodLabel(selectedTier.id, data.preferredDurationWeeks);
   const totalFormatted = formatINRFromPaise(totalPaise);
 
   return (
@@ -378,7 +382,7 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
               <span className="text-[10px] font-black uppercase tracking-wider text-mint">Review your selected care</span>
               <h4 className="mt-1 font-serif text-2xl font-bold text-[#1A2421]">{selectedTier.name}</h4>
               <dl className="mt-4 space-y-2 text-xs">
-                <div className="flex justify-between gap-4"><dt className="font-semibold text-slate-500">Planned care period</dt><dd className="font-bold text-[#1A2421]">{data.preferredDurationWeeks} weeks</dd></div>
+                <div className="flex justify-between gap-4"><dt className="font-semibold text-slate-500">Planned care period</dt><dd className="font-bold text-[#1A2421]">{carePeriodLabel}</dd></div>
                 <div className="flex justify-between gap-4"><dt className="font-semibold text-slate-500">Care fee before benefit</dt><dd className="font-bold text-[#1A2421]">{formatINRFromPaise(listTotalPaise)}</dd></div>
                 {continuityPercent > 0 && <div className="flex justify-between gap-4 text-emerald-700"><dt className="font-bold">Continuity benefit ({continuityPercent}%)</dt><dd className="font-black">−{formatINRFromPaise(listTotalPaise - totalPaise)}</dd></div>}
                 <div className="flex justify-between gap-4 border-t border-slate-200 pt-3"><dt className="font-bold text-slate-700">Estimated care fee</dt><dd className="text-base font-black text-[#1A2421]">{totalFormatted}</dd></div>

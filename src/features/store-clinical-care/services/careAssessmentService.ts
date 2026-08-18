@@ -1,8 +1,10 @@
 import { randomUUID } from "crypto";
+import { CARE_PLAN_CATALOG } from "@/lib/pricingConfig";
 import {
   CLINICAL_CARE_TIER_OPTIONS,
   ALLOWED_CARE_DURATIONS,
-  calculateCarePeriodTotalPaise,
+  calculateTierCarePeriodTotalPaise,
+  getTierCarePeriodLabel,
   formatINRFromPaise,
   type PatientIntakeData,
   type ClinicalCareDurationWeeks,
@@ -34,7 +36,10 @@ export function validatePatientIntake(data: Partial<PatientIntakeData>): CareAss
     errors.push("Please provide a brief description of your main concern (minimum 10 characters).");
   }
 
-  if (!data.preferredDurationWeeks || !ALLOWED_CARE_DURATIONS.includes(data.preferredDurationWeeks as ClinicalCareDurationWeeks)) {
+  const selectedTier = data.selectedTierId && data.selectedTierId in CLINICAL_CARE_TIER_OPTIONS
+    ? CLINICAL_CARE_TIER_OPTIONS[data.selectedTierId as keyof typeof CLINICAL_CARE_TIER_OPTIONS]
+    : undefined;
+  if (selectedTier?.family !== "acute" && (!data.preferredDurationWeeks || !ALLOWED_CARE_DURATIONS.includes(data.preferredDurationWeeks as ClinicalCareDurationWeeks))) {
     errors.push("Please select a valid care duration (1, 2, 4, 8, or 12 weeks).");
   }
 
@@ -68,21 +73,26 @@ export function processCareAssessmentSubmission(
     };
   }
 
+  const requestedTier = data.selectedTierId && data.selectedTierId in CLINICAL_CARE_TIER_OPTIONS
+    ? CLINICAL_CARE_TIER_OPTIONS[data.selectedTierId as keyof typeof CLINICAL_CARE_TIER_OPTIONS]
+    : CLINICAL_CARE_TIER_OPTIONS.focused;
   const preliminaryRecommendation = calculatePreliminaryCareRecommendation({
-    selectedOrganSystems: data.selectedOrganSystems || (data.mainHealthArea ? [data.mainHealthArea] : []),
-    durationText: data.durationText,
-    age: data.age,
+    careFamily: requestedTier.family,
+    supportIntensity: requestedTier.id === "advanced" ? "direct" : requestedTier.id === "complex" ? "frequent" : requestedTier.id === "integrated" || requestedTier.id === "acute_wellness" ? "closer" : "standard",
+    safetyStatus: "clear",
   });
 
-  const tierKey = data.selectedTierId && CLINICAL_CARE_TIER_OPTIONS[data.selectedTierId]
+  const tierKey = data.selectedTierId && data.selectedTierId in CLINICAL_CARE_TIER_OPTIONS
     ? data.selectedTierId
     : preliminaryRecommendation.suggestedTierId;
 
-  const tier = CLINICAL_CARE_TIER_OPTIONS[tierKey] || CLINICAL_CARE_TIER_OPTIONS.focused;
+  const tier = CLINICAL_CARE_TIER_OPTIONS[tierKey as keyof typeof CLINICAL_CARE_TIER_OPTIONS] || CLINICAL_CARE_TIER_OPTIONS.focused;
   const durationWeeks = (data.preferredDurationWeeks || 4) as ClinicalCareDurationWeeks;
 
-  const totalPaise = calculateCarePeriodTotalPaise(tier.weeklyRatePaise, durationWeeks);
+  const totalPaise = calculateTierCarePeriodTotalPaise(tier.id, durationWeeks);
   const totalFormatted = formatINRFromPaise(totalPaise);
+  const carePeriodLabel = getTierCarePeriodLabel(tier.id, durationWeeks);
+  const plan = CARE_PLAN_CATALOG[tier.carePlanId];
 
   const submissionId = `CAS-${new Date().getFullYear()}-${randomUUID().slice(0, 8).toUpperCase()}`;
 
@@ -93,6 +103,9 @@ export function processCareAssessmentSubmission(
     patientName: data.patientName!.trim(),
     mainHealthArea: data.mainHealthArea!.trim(),
     preferredDurationWeeks: durationWeeks,
+    carePeriodLabel,
+    carePeriodValue: tier.family === "acute" ? plan.durationValue : durationWeeks,
+    carePeriodUnit: tier.family === "acute" ? "day" : "week",
     totalEstimatedAmountPaise: totalPaise,
     totalEstimatedAmountFormatted: totalFormatted,
     preliminaryRecommendation,

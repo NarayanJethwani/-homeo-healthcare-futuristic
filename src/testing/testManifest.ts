@@ -153,6 +153,13 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "Validates physician care recommendations, safety gates, pathway overrides, and itemized quotation calculations"
   },
   {
+    "path": "tests/intakeClinicalSafety.test.ts",
+    "status": "active",
+    "ownerArea": "clinical-intake",
+    "testLayer": "unit",
+    "reason": "Validates the intake completeness gate, medication and allergy review requirements, and red-flag quotation blocking"
+  },
+  {
     "path": "tests/clinicalQuotationPdf.test.ts",
     "status": "active",
     "ownerArea": "commerce-pricing",

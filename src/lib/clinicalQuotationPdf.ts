@@ -13,8 +13,13 @@ export interface ClinicalQuotationPdfData {
   selectedPathway: string;
   selectionMode: string;
   manualSelectionReason?: string;
-  carePeriodWeeks: number;
-  weeklyFee: number;
+  carePlanId?: string;
+  carePlanCatalogVersion?: string;
+  carePeriodWeeks?: number;
+  carePeriodValue?: number;
+  carePeriodUnit?: "day" | "week";
+  weeklyFee?: number;
+  carePeriodFee?: number;
   rationale: string[];
   items: ClinicalQuotationPdfItem[];
   concessionAmount: number;
@@ -78,10 +83,13 @@ export function buildClinicalQuotationPdf(data: ClinicalQuotationPdfData): Uint8
   if (data.manualSelectionReason) {
     for (const line of wrap(`Documented reason: ${data.manualSelectionReason}`)) { text(commands, line, 44, y, 9); y -= 13; }
   }
-  text(commands, `Care period: ${data.carePeriodWeeks} ${data.carePeriodWeeks === 1 ? "week" : "weeks"} at ${money(data.weeklyFee)} per week`, 44, y, 10, true); y -= 25;
-  if (data.carePeriodWeeks === 1 && !data.selectedPathway.toLowerCase().includes("acute")) {
-    text(commands, "One-week initial care period - physician reassessment is required before continuation.", 44, y, 8, true, "0.70 0.38 0.02"); y -= 22;
-  }
+  const carePeriodValue = data.carePeriodValue ?? data.carePeriodWeeks ?? 1;
+  const carePeriodUnit = data.carePeriodUnit ?? "week";
+  const periodFee = data.carePeriodFee ?? data.weeklyFee ?? 0;
+  const periodLabel = `${carePeriodValue} ${carePeriodValue === 1 ? carePeriodUnit : `${carePeriodUnit}s`}`;
+  const rateLabel = carePeriodUnit === "week" ? `${money(periodFee)} per week` : `${money(periodFee)} for the care period`;
+  text(commands, `Care period: ${periodLabel} at ${rateLabel}`, 44, y, 10, true); y -= 25;
+  text(commands, "Physician reassessment is required before continuation or movement to another plan. Not emergency care.", 44, y, 8, true, "0.70 0.38 0.02"); y -= 22;
 
   text(commands, "CLINICAL RATIONALE", 44, y, 10, true, "0.04 0.48 0.43"); y -= 17;
   for (const reason of data.rationale.slice(0, 5)) {
@@ -103,7 +111,7 @@ export function buildClinicalQuotationPdf(data: ClinicalQuotationPdfData): Uint8
   text(commands, money(data.finalTotal), 425, y - 7, 13, true, "0.04 0.48 0.43");
 
   text(commands, "No payment is requested by this document. Patient approval and physician confirmation precede invoicing.", 44, 75, 8.5, true, "0.28 0.36 0.40");
-  text(commands, `Pricing record: ${data.pricingRuleVersion}`, 44, 58, 7.5, false, "0.40 0.46 0.50");
+  text(commands, `Pricing record: ${data.pricingRuleVersion}${data.carePlanCatalogVersion ? ` | ${data.carePlanCatalogVersion}` : ""}`, 44, 58, 7.5, false, "0.40 0.46 0.50");
   text(commands, "Homeo Healthcare | Individual clinical care", 44, 40, 8, true, "0.04 0.48 0.43");
 
   const stream = commands.join("\n");

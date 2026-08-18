@@ -58,7 +58,7 @@ export const CURATED_COLLECTIONS: ClinicalCollection[] = [
     iconName: "Wind",
     entityIds: [
       "D0005", "D0006", "D0007", "D0035", // Allergic Rhinitis, Sinusitis, Asthma, Bronchitis
-      "S0007", "S0011", "S0026", // Sneezing, Cough, Dyspnea
+      "S0107", "S0011", "S0026", // Dry Cough, Cough, Dyspnea
       "R0008", "R0009", "R0012", "R0015", // Arsenicum Alb, Belladonna, Hepar Sulph, Gelsemium
       "L0001", "L0004" // CBC, Chest X-Ray
     ]

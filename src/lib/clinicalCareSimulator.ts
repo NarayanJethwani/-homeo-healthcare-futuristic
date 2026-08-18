@@ -1,10 +1,15 @@
 import {
+  CARE_PLAN_CATALOG,
   CARE_LEVELS_DETAILS,
+  calculateCarePlanTotal,
   calculateContinuityCareTotal,
+  type CarePlanDurationUnit,
+  type CarePlanFamily,
+  type CarePlanId,
   type CareLevelKey,
 } from "./pricingConfig";
 
-export const CLINICAL_CARE_SIMULATOR_VERSION = "clinical-care-simulator-v1";
+export const CLINICAL_CARE_SIMULATOR_VERSION = "clinical-care-simulator-v3";
 
 export type OrganBreadth = "one" | "two-three" | "four-five" | "six-plus" | "unsure";
 export type PathologyDepth = "functional" | "established" | "structural" | "advanced";
@@ -25,9 +30,14 @@ export interface ClinicalCareAssessment {
 }
 
 export interface ClinicalCareRecommendation {
-  pathway: Extract<CareLevelKey, "mild" | "moderate" | "focused" | "comprehensive">;
+  planId: CarePlanId;
+  planFamily: CarePlanFamily;
+  pathway: Extract<CareLevelKey, "mild" | "chronic_focused" | "moderate" | "focused" | "comprehensive">;
   title: string;
   weeklyFee: number;
+  carePeriodFee: number;
+  durationValue: number;
+  durationUnit: CarePlanDurationUnit;
   suggestedDurationWeeks: number;
   allowedDurationsWeeks: readonly number[];
   followUpLabel: string;
@@ -57,6 +67,10 @@ export interface ClinicalCareQuoteInput {
 }
 
 export interface ClinicalCareQuote {
+  planId: CarePlanId;
+  planFamily: CarePlanFamily;
+  durationValue: number;
+  durationUnit: CarePlanDurationUnit;
   weeklyCareFee: number;
   durationWeeks: number;
   listCareTotal: number;
@@ -70,18 +84,16 @@ export interface ClinicalCareQuote {
   finalTotal: number;
 }
 
-const ADVANCED_BREADTH = new Set<OrganBreadth>(["four-five", "six-plus"]);
-const ADVANCED_DEPTH = new Set<PathologyDepth>(["structural", "advanced"]);
-const LONG_CHRONICITY = new Set<CaseChronicity>(["one-five-years", "over-five-years"]);
-const ENHANCED_INTENSITY = new Set<CareIntensity>(["closer", "frequent", "direct"]);
-const COORDINATION_BURDEN = new Set<CoordinationLoad>(["records", "multi-clinician", "extensive"]);
-
-function durationFor(pathway: ClinicalCareRecommendation["pathway"], assessment: ClinicalCareAssessment) {
-  if (pathway === "mild") return assessment.stability === "fluctuating" ? 2 : 1;
-  if (pathway === "comprehensive") return 2;
-  if (assessment.chronicity === "over-five-years") return 12;
-  if (assessment.chronicity === "one-five-years") return 8;
-  return 4;
+function planIdFor(assessment: ClinicalCareAssessment): CarePlanId {
+  if (assessment.chronicity === "recent") {
+    return assessment.intensity === "standard" && assessment.coordination === "minimal"
+      ? "acute_mild_3d"
+      : "acute_wellness_7d";
+  }
+  if (assessment.intensity === "direct" || assessment.coordination === "extensive") return "chronic_advanced_1w";
+  if (assessment.intensity === "frequent" || assessment.coordination === "multi-clinician") return "chronic_complex_1w";
+  if (assessment.intensity === "closer" || assessment.coordination === "records") return "chronic_integrated_1w";
+  return "chronic_focused_1w";
 }
 
 function followUpFor(intensity: CareIntensity) {
@@ -92,43 +104,28 @@ function followUpFor(intensity: CareIntensity) {
 }
 
 export function recommendClinicalCare(assessment: ClinicalCareAssessment): ClinicalCareRecommendation {
-  const blockedBySafetyGate = assessment.stability === "red-flag";
-  const advancedTriggers = [
-    ADVANCED_BREADTH.has(assessment.breadth),
-    ADVANCED_DEPTH.has(assessment.pathologyDepth),
-    LONG_CHRONICITY.has(assessment.chronicity),
-    ENHANCED_INTENSITY.has(assessment.intensity),
-    COORDINATION_BURDEN.has(assessment.coordination),
+  const blockedBySafetyGate = assessment.stability === "red-flag" || assessment.stability === "rapid-change";
+  // Case duration selects the acute or chronic family; only explicitly selected
+  // delivery workload influences the tier within that family.
+  const planId = planIdFor(assessment);
+  const plan = CARE_PLAN_CATALOG[planId];
+  const pathway = plan.legacyCareLevelKey as ClinicalCareRecommendation["pathway"];
+
+  const workloadTriggers = [
+    assessment.intensity !== "standard",
+    assessment.coordination !== "minimal",
   ].filter(Boolean).length;
 
-  const completeTrigger = assessment.intensity === "direct" || (
-    assessment.intensity === "frequent" &&
-    (assessment.pathologyDepth === "advanced" || assessment.coordination === "extensive")
-  );
-  const acuteTrigger = assessment.chronicity === "recent" &&
-    assessment.pathologyDepth === "functional" &&
-    assessment.intensity === "standard" &&
-    assessment.coordination === "minimal" &&
-    !ADVANCED_BREADTH.has(assessment.breadth);
-
-  let pathway: ClinicalCareRecommendation["pathway"] = "moderate";
-  if (acuteTrigger) pathway = "mild";
-  else if (completeTrigger) pathway = "comprehensive";
-  else if (advancedTriggers >= 2) pathway = "focused";
-
-  const detail = CARE_LEVELS_DETAILS[pathway];
   const reasons: string[] = [];
-  if (acuteTrigger) reasons.push("Recent, stable presentation with standard follow-up needs");
-  if (ADVANCED_BREADTH.has(assessment.breadth)) reasons.push("Broad multi-system involvement informs workload review");
-  if (ADVANCED_DEPTH.has(assessment.pathologyDepth)) reasons.push("Established structural or advanced pathology requires deeper review");
-  if (LONG_CHRONICITY.has(assessment.chronicity)) reasons.push("Long-standing case history supports a longer review period");
-  if (ENHANCED_INTENSITY.has(assessment.intensity)) reasons.push(followUpFor(assessment.intensity));
-  if (COORDINATION_BURDEN.has(assessment.coordination)) reasons.push("Records or care-coordination workload is clinically relevant");
-  if (reasons.length === 0) reasons.push("Chronic or recurring presentation suited to constitutional assessment");
+  if (assessment.intensity !== "standard") reasons.push(followUpFor(assessment.intensity));
+  if (assessment.coordination !== "minimal") reasons.push("Documented records or care-coordination workload");
+  if (reasons.length === 0) reasons.push(assessment.chronicity === "recent"
+    ? "Standard short-term review with minimal coordination; physician confirmation is required"
+    : "Focused chronic care with standard follow-up and minimal coordination");
 
   const cautions = [
-    "Organ-system count is an assessment indicator and never changes the fee automatically.",
-    "Pathology influences the recommendation only through actual review, monitoring, or coordination needs.",
+    "Diagnosis, organ-system count, pathology depth, and age never change the fee automatically.",
+    "The physician must confirm clinical suitability separately from the administrative quotation.",
   ];
   if (assessment.accessConsideration !== "none") {
     cautions.push("Age or financial circumstances may support a documented concession, never a surcharge or reduced clinical scope.");
@@ -138,17 +135,22 @@ export function recommendClinicalCare(assessment: ClinicalCareAssessment): Clini
   }
 
   return {
+    planId,
+    planFamily: plan.family,
     pathway,
-    title: detail.title,
-    weeklyFee: detail.weeklyPrice,
-    suggestedDurationWeeks: durationFor(pathway, assessment),
-    allowedDurationsWeeks: detail.durations,
+    title: plan.title,
+    weeklyFee: plan.price,
+    carePeriodFee: plan.price,
+    durationValue: plan.durationValue,
+    durationUnit: plan.durationUnit,
+    suggestedDurationWeeks: plan.family === "chronic" ? CARE_LEVELS_DETAILS[pathway].defaultDurationWeeks : 1,
+    allowedDurationsWeeks: plan.family === "chronic" ? CARE_LEVELS_DETAILS[pathway].durations : [1],
     followUpLabel: followUpFor(assessment.intensity),
     reasons,
     cautions,
     requiresPhysicianConfirmation: true,
     blockedBySafetyGate,
-    workloadTriggers: advancedTriggers,
+    workloadTriggers,
     version: CLINICAL_CARE_SIMULATOR_VERSION,
   };
 }
@@ -157,22 +159,39 @@ export function applyPhysicianPathwayOverride(
   recommendation: ClinicalCareRecommendation,
   pathway: ClinicalCareRecommendation["pathway"],
 ): ClinicalCareRecommendation {
-  const detail = CARE_LEVELS_DETAILS[pathway];
-  const suggestedDurationWeeks = detail.durations.includes(recommendation.suggestedDurationWeeks)
-    ? recommendation.suggestedDurationWeeks
-    : detail.durations[0];
+  const planByPathway: Record<ClinicalCareRecommendation["pathway"], CarePlanId> = {
+    mild: "acute_wellness_7d",
+    chronic_focused: "chronic_focused_1w",
+    moderate: "chronic_integrated_1w",
+    focused: "chronic_complex_1w",
+    comprehensive: "chronic_advanced_1w",
+  };
+  return applyPhysicianPlanOverride(recommendation, planByPathway[pathway]);
+}
 
+export function applyPhysicianPlanOverride(
+  recommendation: ClinicalCareRecommendation,
+  planId: CarePlanId,
+): ClinicalCareRecommendation {
+  const plan = CARE_PLAN_CATALOG[planId];
+  const pathway = plan.legacyCareLevelKey as ClinicalCareRecommendation["pathway"];
+  const allowedDurationsWeeks = plan.family === "chronic" ? CARE_LEVELS_DETAILS[pathway].durations : [1];
+  const suggestedDurationWeeks = allowedDurationsWeeks.includes(recommendation.suggestedDurationWeeks)
+    ? recommendation.suggestedDurationWeeks
+    : 1;
   return {
     ...recommendation,
+    planId,
+    planFamily: plan.family,
     pathway,
-    title: detail.title,
-    weeklyFee: detail.weeklyPrice,
+    title: plan.title,
+    weeklyFee: plan.price,
+    carePeriodFee: plan.price,
+    durationValue: plan.durationValue,
+    durationUnit: plan.durationUnit,
     suggestedDurationWeeks,
-    allowedDurationsWeeks: detail.durations,
-    reasons: [
-      `Physician manually selected ${detail.title} after clinical review`,
-      ...recommendation.reasons,
-    ],
+    allowedDurationsWeeks,
+    reasons: [`Physician manually selected ${plan.title} after clinical review`, ...recommendation.reasons],
   };
 }
 
@@ -187,12 +206,18 @@ export function buildClinicalCareQuote(input: ClinicalCareQuoteInput): ClinicalC
 
   const caseSpecificSupportTotal = Math.max(0, Number(input.caseSpecificSupportAmount || 0));
   const pharmacyTotal = (input.pharmacyItems || []).reduce((sum, item) => sum + Math.max(0, Number(item.amount || 0)), 0);
-  const continuity = calculateContinuityCareTotal(recommendation.weeklyFee, input.durationWeeks);
+  const continuity = recommendation.planFamily === "acute"
+    ? calculateCarePlanTotal(recommendation.planId)
+    : calculateContinuityCareTotal(recommendation.weeklyFee, input.durationWeeks);
   const baseCareTotal = continuity.total;
   const subtotal = baseCareTotal + caseSpecificSupportTotal + pharmacyTotal;
   const concessionTotal = Math.min(subtotal, Math.max(0, Number(input.concessionAmount || 0)));
 
   return {
+    planId: recommendation.planId,
+    planFamily: recommendation.planFamily,
+    durationValue: recommendation.planFamily === "acute" ? recommendation.durationValue : input.durationWeeks,
+    durationUnit: recommendation.durationUnit,
     weeklyCareFee: recommendation.weeklyFee,
     durationWeeks: input.durationWeeks,
     listCareTotal: continuity.listTotal,

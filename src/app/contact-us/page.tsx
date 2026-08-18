@@ -14,7 +14,7 @@ export default function ContactUsPage() {
     name: "",
     email: "",
     phone: "",
-    subject: "Constitutional Consultation",
+    subject: "Appointment request",
     message: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,21 +23,12 @@ export default function ContactUsPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate API delay
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmitSuccess(true);
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        subject: "Constitutional Consultation",
-        message: ""
-      });
-      // Clear message after 5 seconds
-      setTimeout(() => setSubmitSuccess(false), 5000);
-    }, 1200);
+
+    const message = `Hello Homeo Healthcare, I would like to make an inquiry.\n\nName: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nSubject: ${formData.subject}\nMessage: ${formData.message}`;
+    window.open(`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918446056789"}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    setIsSubmitting(false);
+    setSubmitSuccess(true);
+    setTimeout(() => setSubmitSuccess(false), 5000);
   };
 
   const clinics = [
@@ -117,7 +108,7 @@ export default function ContactUsPage() {
             transition={{ duration: 1, delay: 0.2 }}
             className="text-base text-slate-700 font-semibold leading-relaxed"
           >
-            Connect with us for standard in-person consultation across Pune, or schedule high-fidelity online telehealth care active worldwide.
+            Contact the clinic for an in-person or online appointment request, directions, account help or general care-plan questions.
           </motion.p>
         </div>
 
@@ -284,22 +275,22 @@ export default function ContactUsPage() {
                     onChange={(e) => setFormData({...formData, subject: e.target.value})}
                     className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 focus:border-mint bg-white/60 focus:bg-white text-xs outline-none transition-all"
                   >
-                    <option value="Constitutional Consultation">Constitutional Consultation</option>
-                    <option value="Skin/Psoriasis Recovery">Skin/Psoriasis Recovery</option>
-                    <option value="Respiratory/Asthma Program">Respiratory/Asthma Program</option>
-                    <option value="Pediatric Wellness Program">Pediatric Wellness Program</option>
-                    <option value="General Chronic Alignment">General Chronic Alignment</option>
+                    <option value="Appointment request">Appointment request</option>
+                    <option value="Acute care question">Acute care question</option>
+                    <option value="Chronic care question">Chronic care question</option>
+                    <option value="Existing patient follow-up">Existing patient follow-up</option>
+                    <option value="Portal access help">Portal access help</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-[10px] text-slate-700 uppercase tracking-widest mb-1.5">Your Medical Message</label>
+                  <label className="block text-[10px] text-slate-700 uppercase tracking-widest mb-1.5">Your Message</label>
                   <textarea
                     rows={4}
                     required
                     value={formData.message}
                     onChange={(e) => setFormData({...formData, message: e.target.value})}
-                    placeholder="Briefly describe your chronic symptoms, duration, prior medication, and diagnostic details..."
+                    placeholder="Tell us how the clinic can help. Do not include passwords, OTPs or detailed medical records."
                     className="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:border-mint bg-white/60 focus:bg-white text-xs outline-none transition-all placeholder:text-slate-500 resize-none"
                   />
                 </div>
@@ -311,7 +302,7 @@ export default function ContactUsPage() {
                       disabled={isSubmitting}
                       className="w-full py-4 bg-mint hover:bg-mint-dark text-white rounded-full font-bold uppercase tracking-wider text-xs shadow-sm shadow-mint/10 transition-all duration-300 flex items-center justify-center gap-2 disabled:bg-slate-350 cursor-pointer"
                     >
-                      {isSubmitting ? "Transmitting..." : "Send Clinical Message"}
+                      {isSubmitting ? "Preparing..." : "Continue on WhatsApp"}
                       <Send className="w-3.5 h-3.5" />
                     </button>
                   </Magnetic>
@@ -329,7 +320,7 @@ export default function ContactUsPage() {
                   >
                     <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
                     <div className="text-xs font-semibold leading-relaxed">
-                      Message transmitted successfully. Our Baner clinic OPD desks will call or WhatsApp you within 24 hours.
+                      Your inquiry has been prepared in WhatsApp. Send it there to contact the clinic; no appointment is confirmed yet.
                     </div>
                   </motion.div>
                 )}
@@ -347,7 +338,7 @@ export default function ContactUsPage() {
             </div>
             <h3 className="text-2xl font-bold text-[#1A2421]">Can't Visit in Person? Consult Online</h3>
             <p className="text-xs md:text-sm text-slate-700 font-semibold leading-relaxed">
-              We offer the exact same clinical thoroughness as an in-person visit. Set up video calls via WhatsApp Video, Google Meet, or Zoom. Homeopathic remedies are securely shipped to patients across India, USA, UK, UAE, Australia, and worldwide.
+              Video review may be suitable when examination is not required. The physician may ask for local examination, investigations or specialist care. Medicine delivery depends on destination rules and is confirmed separately.
             </p>
           </div>
           
@@ -357,7 +348,7 @@ export default function ContactUsPage() {
                 onClick={() => window.open("https://wa.me/918446056789", "_blank")}
                 className="w-full sm:w-auto px-6 py-3.5 bg-mint hover:bg-mint-dark text-white rounded-full text-xs font-bold uppercase tracking-wider transition-colors duration-300 flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                Book on WhatsApp Video
+                Request an online consultation
               </button>
             </Magnetic>
           </div>

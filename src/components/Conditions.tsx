@@ -204,56 +204,56 @@ export default function Conditions() {
   const conditionsData = [
     {
       title: "Skin Disorders",
-      desc: "Gentle, non-suppressive constitutional therapies to heal eczema, psoriasis, acne, and stubborn chronic dermatitis.",
+      desc: "Individualized supportive care for people living with eczema, psoriasis, acne and recurring dermatitis.",
       icon: <Layers className="w-5 h-5 text-mint-dark" />,
       tags: ["Eczema", "Psoriasis", "Acne", "Dermatitis"],
       glowColor: "radial-gradient(circle at center, rgba(20,184,166,0.4) 0%, rgba(168,85,247,0.2) 50%, rgba(6,182,212,0.05) 75%, transparent 100%)",
     },
     {
       title: "Respiratory Care",
-      desc: "Strengthen respiratory immunity and alleviate asthma, chronic allergies, bronchitis, and sinus inflammation.",
+      desc: "Supportive care for asthma, recurring allergies, bronchitis and sinus symptoms alongside appropriate medical management.",
       icon: <Wind className="w-5 h-5 text-aqua-dark" />,
       tags: ["Asthma", "Allergies", "Sinusitis", "Bronchitis"],
       glowColor: "radial-gradient(circle at center, rgba(6,182,212,0.4) 0%, rgba(246,128,148,0.25) 50%, rgba(245,158,11,0.05) 75%, transparent 100%)",
     },
     {
       title: "Arthritis & Joints",
-      desc: "Manage pain and reduce joint inflammation organically to restore mobility in osteoarthritis and rheumatoid conditions.",
+      desc: "Supportive symptom and wellbeing care for osteoarthritis, rheumatoid conditions, gout and recurring joint pain.",
       icon: <Activity className="w-5 h-5 text-amber-600" />,
       tags: ["Joint Pain", "Gout", "Osteo-Arthritis", "Rheumatoid"],
       glowColor: "radial-gradient(circle at center, rgba(245,158,11,0.35) 0%, rgba(244,63,94,0.25) 50%, rgba(20,184,166,0.05) 75%, transparent 100%)",
     },
     {
       title: "Kidney Stones",
-      desc: "Natural dissolution of renal calculi and crystalline deposits, offering relief without invasive interventions.",
+      desc: "Supportive care for urinary symptoms while stone size, obstruction, infection and kidney function are medically assessed.",
       icon: <Gem className="w-5 h-5 text-sky-dark" />,
       tags: ["Renal Stones", "Dysuria", "Uric Acid", "Calculi"],
       glowColor: "radial-gradient(circle at center, rgba(14,165,233,0.4) 0%, rgba(168,85,247,0.25) 50%, rgba(20,184,166,0.05) 75%, transparent 100%)",
     },
     {
       title: "Liver Disorders",
-      desc: "Stimulate hepatic cell rejuvenation and treat fatty liver, sluggish digestion, and metabolic disorders.",
+      desc: "Supportive care for people managing fatty liver, digestive symptoms and metabolic concerns with appropriate monitoring.",
       icon: <HeartPulse className="w-5 h-5 text-rose-600" />,
       tags: ["Fatty Liver", "Jaundice", "Sluggish Liver", "Detox"],
       glowColor: "radial-gradient(circle at center, rgba(244,63,94,0.35) 0%, rgba(168,85,247,0.25) 55%, rgba(6,182,212,0.05) 75%, transparent 100%)",
     },
     {
       title: "Child Health",
-      desc: "Safe, sweet remedies to build innate immunity, treat pediatric asthma, tonsillitis, and behavioral dynamics.",
+      desc: "Age-appropriate supportive care for recurring childhood concerns after clinical assessment and safeguarding review.",
       icon: <Baby className="w-5 h-5 text-emerald-600" />,
       tags: ["Immunity", "Tonsillitis", "Dentition", "Allergies"],
       glowColor: "radial-gradient(circle at center, rgba(16,185,129,0.4) 0%, rgba(6,182,212,0.25) 50%, rgba(245,158,11,0.05) 75%, transparent 100%)",
     },
     {
       title: "Mental Wellness",
-      desc: "Restore calm and neurological balance. Address chronic stress, anxiety, sleep issues, and mild depression.",
+      desc: "Supportive care for stress, sleep difficulty and mild emotional symptoms, with referral when specialist care is needed.",
       icon: <Brain className="w-5 h-5 text-lavender-dark" />,
       tags: ["Anxiety", "Insomnia", "Stress", "Depression"],
       glowColor: "radial-gradient(circle at center, rgba(168,85,247,0.4) 0%, rgba(14,165,233,0.25) 50%, rgba(244,63,94,0.05) 75%, transparent 100%)",
     },
     {
       title: "Gut Health",
-      desc: "Calm hypersensitive tracts to relieve IBS, acid reflux, chronic indigestion, and gut-barrier vulnerabilities.",
+      desc: "Individualized supportive care for IBS, reflux and recurring digestive symptoms after red flags are excluded.",
       icon: <Shield className="w-5 h-5 text-indigo-600" />,
       tags: ["IBS", "Acidity", "Reflux", "Indigestion"],
       glowColor: "radial-gradient(circle at center, rgba(99,102,241,0.35) 0%, rgba(20,184,166,0.25) 50%, rgba(245,158,11,0.05) 75%, transparent 100%)",
@@ -309,7 +309,7 @@ export default function Conditions() {
             transition={{ duration: 1, delay: 0.2 }}
             className="text-base text-slate-700 font-semibold leading-relaxed"
           >
-            Unlike conventional treatments that focus on suppressing symptoms, advanced homeopathy targets your underlying constitutional vulnerability, working in harmony with your body&apos;s natural self-healing mechanisms.
+            We review the whole patient—including symptoms, medical history, current treatment and goals—to plan individualized supportive care. Existing medicines should not be stopped or changed without the prescribing clinician.
           </motion.p>
         </div>
 

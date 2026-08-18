@@ -10,7 +10,7 @@ const FAQ_ITEMS: FAQItem[] = [
   {
     question: "How is my care level and recommended pathway determined?",
     answer:
-      "Your initial recommendation is based on the number of organ systems involved, symptom duration, and clinical complexity. Your treating physician reviews your complete clinical history and confirms or adjusts the care pathway to suit your needs.",
+      "The public guide separates acute from chronic care and asks about the follow-up or coordination workload you expect. Diagnosis, organ-system count, symptom severity, age, and financial circumstances do not automatically increase the fee. Your physician confirms clinical suitability, scope, and the final quotation.",
   },
   {
     question: "Are routine homeopathic medicines included in the care fee?",

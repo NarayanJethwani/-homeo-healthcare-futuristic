@@ -13,6 +13,7 @@ import {
   CLINICAL_CARE_TIER_OPTIONS,
   formatINRFromPaise,
   getClinicPaymentConfiguration,
+  getTierCarePeriodLabel,
   type ClinicalCareDurationWeeks,
   type OfficialClinicalQuotation,
   type SanitizedAssessmentResponseDTO,
@@ -83,7 +84,7 @@ export const PhysicianQuotationBuilder: React.FC<PhysicianQuotationBuilderProps>
   ]);
 
   const officialQuotation: OfficialClinicalQuotation = useMemo(() => {
-    const tier = CLINICAL_CARE_TIER_OPTIONS[tierId] || CLINICAL_CARE_TIER_OPTIONS.integrated;
+    const tier = CLINICAL_CARE_TIER_OPTIONS[tierId as keyof typeof CLINICAL_CARE_TIER_OPTIONS] || CLINICAL_CARE_TIER_OPTIONS.integrated;
     return {
       quotationId: `QTN-${new Date().getFullYear()}-${assessmentResponse.submissionId.slice(-6)}`,
       submissionId: assessmentResponse.submissionId,
@@ -137,7 +138,7 @@ export const PhysicianQuotationBuilder: React.FC<PhysicianQuotationBuilderProps>
           Internal Advisory Assessment Result (Clinician Only):
         </span>
         <p className="font-semibold text-slate-700">
-          Suggested Pathway: <strong className="text-mint-dark">{rec.suggestedTierName}</strong> — Complexity Score: {rec.complexityScore} ({rec.selectedOrganCount} Organ Systems Selected)
+          Suggested starting plan: <strong className="text-mint-dark">{rec.suggestedTierName}</strong>. The final plan is selected from documented care workload—not diagnosis or organ count.
         </p>
         <p className="text-slate-500 italic">{rec.rationale}</p>
       </div>
@@ -152,12 +153,12 @@ export const PhysicianQuotationBuilder: React.FC<PhysicianQuotationBuilderProps>
           <select
             id="tier-select"
             value={tierId}
-            onChange={(e) => setTierId(e.target.value)}
+            onChange={(e) => { const nextTier = CLINICAL_CARE_TIER_OPTIONS[e.target.value as keyof typeof CLINICAL_CARE_TIER_OPTIONS]; setTierId(e.target.value); if (nextTier?.family === "acute") setDurationWeeks(1); }}
             className="w-full rounded-2xl border border-slate-200 bg-white p-3.5 text-xs font-bold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
           >
             {Object.values(CLINICAL_CARE_TIER_OPTIONS).map((t) => (
               <option key={t.id} value={t.id}>
-                {t.name} (₹{t.weeklyRateINR.toLocaleString("en-IN")}/wk)
+                {t.name} (₹{t.weeklyRateINR.toLocaleString("en-IN")}{t.family === "acute" ? ` / ${getTierCarePeriodLabel(t.id, 1)}` : "/week"})
               </option>
             ))}
           </select>
@@ -171,6 +172,7 @@ export const PhysicianQuotationBuilder: React.FC<PhysicianQuotationBuilderProps>
           <select
             id="duration-select"
             value={durationWeeks}
+            disabled={(CLINICAL_CARE_TIER_OPTIONS[tierId as keyof typeof CLINICAL_CARE_TIER_OPTIONS] || CLINICAL_CARE_TIER_OPTIONS.focused).family === "acute"}
             onChange={(e) => setDurationWeeks(Number(e.target.value) as ClinicalCareDurationWeeks)}
             className="w-full rounded-2xl border border-slate-200 bg-white p-3.5 text-xs font-bold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
           >

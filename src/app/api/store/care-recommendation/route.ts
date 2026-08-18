@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   CLINICAL_CARE_TIER_OPTIONS,
-  calculateCarePeriodTotalPaise,
-  calculateListCarePeriodTotalPaise,
+  calculateTierCarePeriodTotalPaise,
+  calculateTierListCarePeriodTotalPaise,
   formatINRFromPaise,
-  getCarePeriodContinuityBenefit,
+  getTierCarePeriodLabel,
+  getTierContinuityBenefit,
   type ClinicalCareDurationWeeks,
+  type StoreClinicalCareTierId,
 } from "@/features/store-clinical-care/domain/types";
 
 export async function POST(request: NextRequest) {
@@ -13,12 +15,12 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { tierId, durationWeeks } = body;
 
-    const tierKey = tierId && CLINICAL_CARE_TIER_OPTIONS[tierId] ? tierId : "integrated";
+    const tierKey: StoreClinicalCareTierId = typeof tierId === "string" && tierId in CLINICAL_CARE_TIER_OPTIONS ? tierId as StoreClinicalCareTierId : "integrated";
     const weeks = ([1, 2, 4, 8, 12].includes(Number(durationWeeks)) ? Number(durationWeeks) : 4) as ClinicalCareDurationWeeks;
 
     const tier = CLINICAL_CARE_TIER_OPTIONS[tierKey];
-    const listTotalPaise = calculateListCarePeriodTotalPaise(tier.weeklyRatePaise, weeks);
-    const totalPaise = calculateCarePeriodTotalPaise(tier.weeklyRatePaise, weeks);
+    const listTotalPaise = calculateTierListCarePeriodTotalPaise(tier.id, weeks);
+    const totalPaise = calculateTierCarePeriodTotalPaise(tier.id, weeks);
 
     return NextResponse.json(
       {
@@ -29,9 +31,10 @@ export async function POST(request: NextRequest) {
           weeklyRatePaise: tier.weeklyRatePaise,
           weeklyRateFormatted: formatINRFromPaise(tier.weeklyRatePaise),
           durationWeeks: weeks,
+          carePeriodLabel: getTierCarePeriodLabel(tier.id, weeks),
           listTotalPaise,
           listTotalFormatted: formatINRFromPaise(listTotalPaise),
-          continuityDiscountPercent: getCarePeriodContinuityBenefit(weeks),
+          continuityDiscountPercent: getTierContinuityBenefit(tier.id, weeks),
           continuityDiscountPaise: listTotalPaise - totalPaise,
           totalPaise,
           totalFormatted: formatINRFromPaise(totalPaise),

@@ -1,7 +1,7 @@
 import { KnowledgeEntity } from "../../types";
 
 export const BackPainSymptom: KnowledgeEntity = {
-  id: "S0005",
+  id: "S0105",
   slug: "back-pain",
   entityType: "symptom",
   editorialStatus: "published",
@@ -50,22 +50,22 @@ export const BackPainSymptom: KnowledgeEntity = {
     ],
     claimCitations: [
       {
-        claimId: "CLM-S0005-001",
+        claimId: "CLM-S0105-001",
         passage: "Acute low back pain with acute urinary retention or saddle anesthesia indicates Cauda Equina Syndrome requiring emergency spinal decompression surgery within 24-48 hours.",
         citationIds: ["CIT-0074"]
       },
       {
-        claimId: "CLM-S0005-002",
+        claimId: "CLM-S0105-002",
         passage: "ACP 2017 guidelines recommend non-pharmacologic therapies as initial management for acute or subacute non-radicular low back pain.",
         citationIds: ["CIT-0074"]
       },
       {
-        claimId: "CLM-S0005-003",
+        claimId: "CLM-S0105-003",
         passage: "Routine lumbar spine imaging is not indicated for uncomplicated acute back pain lacking red flag clinical indicators.",
         citationIds: ["CIT-0074"]
       },
       {
-        claimId: "CLM-S0005-004",
+        claimId: "CLM-S0105-004",
         passage: "Homeopathic supportive remedies (e.g., Rhus Tox, Bryonia) do not substitute for emergency MRI and surgical consultation in progressive neurological deficit.",
         citationIds: ["CIT-0023"]
       }

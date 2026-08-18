@@ -5,6 +5,7 @@ import Conditions from "@/components/Conditions";
 import TheExperience from "@/components/TheExperience";
 import DoctorProfile from "@/components/DoctorProfile";
 import BookingSection from "@/components/BookingSection";
+import PatientCareGuide from "@/components/PatientCareGuide";
 
 export default async function Home() {
   const headersList = await headers();
@@ -18,6 +19,9 @@ export default async function Home() {
     <>
       {/* Section 1: Hero */}
       <Hero />
+
+      {/* Patient-first care pathway and safety boundary */}
+      <PatientCareGuide />
 
       {/* Section 2: Conditions Grid */}
       <Conditions />

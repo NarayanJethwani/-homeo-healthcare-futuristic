@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { collection, query, orderBy, onSnapshot, getDocs, where } from "firebase/firestore";
+import { DOCTOR_PORTAL_MONTHLY_PRICE_INR, formatDoctorPortalMonthlyPrice } from "@/lib/doctorSubscriptionConfig";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -36,19 +37,19 @@ interface DoctorRecord {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const PLAN_LABELS: Record<string, string> = {
-  trial:     "Free Trial (14 days)",
+  trial:     "First Month Free",
   branch:    "Branch Doctor (Permanent)",
-  monthly:   "Monthly — ₹2,999",
-  quarterly: "quarterly — ₹7,999",
-  annual:    "Annual — ₹29,999",
+  monthly:   `Monthly — ₹${DOCTOR_PORTAL_MONTHLY_PRICE_INR.toLocaleString("en-IN")}`,
+  quarterly: "Legacy Quarterly (renew monthly)",
+  annual:    "Legacy Annual (renew monthly)",
 };
 
 const PLAN_PRICES: Record<string, string> = {
   trial:     "Free",
   branch:    "Branch (Free)",
-  monthly:   "₹2,999/mo",
-  quarterly: "₹7,999/qtr",
-  annual:    "₹29,999/yr",
+  monthly:   formatDoctorPortalMonthlyPrice(),
+  quarterly: "Legacy plan",
+  annual:    "Legacy plan",
 };
 
 const MOCK_DOCTORS: DoctorRecord[] = [
@@ -160,7 +161,7 @@ export default function ManageDoctorsPanel() {
     doctors.reduce((s, d) => s + (d.patientCount ?? 0), 0);
   const monthlyRevenue = doctors.reduce((sum, d) => {
     if (!d.subscription || d.subscription.plan === "trial" || d.subscription.plan === "branch") return sum;
-    const rates: Record<string, number> = { monthly: 2999, quarterly: 2667, annual: 2500 };
+    const rates: Record<string, number> = { monthly: DOCTOR_PORTAL_MONTHLY_PRICE_INR, quarterly: DOCTOR_PORTAL_MONTHLY_PRICE_INR, annual: DOCTOR_PORTAL_MONTHLY_PRICE_INR };
     return sum + (rates[d.subscription.plan] ?? 0);
   }, 0);
 
@@ -541,11 +542,9 @@ export default function ManageDoctorsPanel() {
                   <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">Starting Plan</label>
                   <div className="grid grid-cols-2 gap-2">
                     {[
-                      { value: "trial",     label: "Free Trial",  sub: "14 days free", highlight: true },
+                      { value: "trial",     label: "First Month Free",  sub: "Then ₹1,000/month", highlight: true },
                       { value: "branch",    label: "Branch Doctor", sub: "Permanent access" },
-                      { value: "monthly",   label: "Monthly",     sub: "₹2,999/mo" },
-                      { value: "quarterly", label: "Quarterly",   sub: "₹7,999/qtr" },
-                      { value: "annual",    label: "Annual",      sub: "₹29,999/yr" },
+                      { value: "monthly",   label: "Monthly",     sub: "₹1,000/month" },
                     ].map(plan => (
                       <button key={plan.value} type="button"
                         onClick={() => setInviteForm({ ...inviteForm, plan: plan.value })}
@@ -639,9 +638,7 @@ export default function ManageDoctorsPanel() {
                   <div className="space-y-2">
                     {[
                       { value: "branch",    label: "Branch Doctor (Permanent)", price: "Free", duration: "Permanent access" },
-                      { value: "monthly",   label: "Monthly",   price: "₹2,999",  duration: "30 days from today" },
-                      { value: "quarterly", label: "Quarterly", price: "₹7,999",  duration: "90 days from today" },
-                      { value: "annual",    label: "Annual",    price: "₹29,999", duration: "365 days from today" },
+                      { value: "monthly",   label: "Doctor Portal Monthly", price: "₹1,000", duration: "1 month from today" },
                     ].map(plan => (
                       <button key={plan.value} type="button"
                         onClick={() => setExtendPlan(plan.value)}

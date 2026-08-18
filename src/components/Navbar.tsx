@@ -76,7 +76,7 @@ export default function Navbar() {
     { name: "Protocol", href: "/evidence-based-homeopathy", icon: ClipboardList, color: "bg-purple-500/10 text-purple-600 dark:text-purple-400" },
     { name: "Intelligence", href: "/health-intelligence", icon: ClipboardList, color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" },
     { name: "Dr Jethwani", href: "/dr-narayan-jethwani", icon: User, color: "bg-blue-500/10 text-blue-600 dark:text-blue-400" },
-    { name: "Treatments", href: "/store", icon: ShoppingBag, color: "bg-amber-500/10 text-amber-600 dark:text-amber-400" },
+    { name: "Care Plans", href: "/store", icon: ShoppingBag, color: "bg-amber-500/10 text-amber-600 dark:text-amber-400" },
     { name: "Blog", href: "/blogs", icon: BookOpen, color: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400" },
     { name: "Knowledge", href: "/knowledge", icon: BookOpen, color: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400" },
     { name: "Contact", href: "/contact-us", icon: Mail, color: "bg-rose-500/10 text-rose-600 dark:text-rose-400" },
@@ -170,7 +170,7 @@ export default function Navbar() {
                   data-cursor="explore"
                   className="glass-panel border-[#0F766E]/20 hover:border-mint/50 bg-[#0F766E]/5 hover:bg-mint/10 text-slate-700 dark:text-zinc-200 hover:text-mint dark:hover:text-mint px-4 py-2 rounded-full text-[11px] font-bold tracking-wider uppercase transition-all duration-500 flex items-center gap-1 cursor-pointer"
                 >
-                  Clinical Workspace
+                  Patient / Doctor Login
                 </a>
               </Magnetic>
 

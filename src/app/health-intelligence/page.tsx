@@ -653,37 +653,37 @@ Dr. Jethwani advises focusing on core vitality reserves rather than treating sym
 }
 
 const DEFAULT_TWIN: HealthDigitalTwin = {
-  overallScore: 100,
+  overallScore: 0,
   systemScores: {
-    endocrine: 100,
-    cardiovascular: 100,
-    digestive: 100,
-    respiratory: 100,
-    skin: 100,
-    neurological: 100,
-    immune: 100,
-    mentalHealth: 100
+    endocrine: 0,
+    cardiovascular: 0,
+    digestive: 0,
+    respiratory: 0,
+    skin: 0,
+    neurological: 0,
+    immune: 0,
+    mentalHealth: 0
   },
   completedAssessments: {},
   history: [],
   organLoad: {
-    pancreas: 10,
-    thyroid: 10,
-    heart: 10,
-    arteries: 10,
-    gut: 10,
-    liver: 10,
-    lungs: 10,
-    dermis: 10,
-    adrenals: 10,
-    brain: 10
+    pancreas: 0,
+    thyroid: 0,
+    heart: 0,
+    arteries: 0,
+    gut: 0,
+    liver: 0,
+    lungs: 0,
+    dermis: 0,
+    adrenals: 0,
+    brain: 0
   },
   riskLevel: {
-    metabolic: { level: "Low", pct: 15 },
-    cardio: { level: "Low", pct: 12 },
-    endocrine: { level: "Low", pct: 10 },
-    digestive: { level: "Low", pct: 15 },
-    respiratory: { level: "Low", pct: 8 }
+    metabolic: { level: "Not assessed", pct: 0 },
+    cardio: { level: "Not assessed", pct: 0 },
+    endocrine: { level: "Not assessed", pct: 0 },
+    digestive: { level: "Not assessed", pct: 0 },
+    respiratory: { level: "Not assessed", pct: 0 }
   },
   activeRulesFlags: [],
   priorityGoals: [
@@ -756,6 +756,7 @@ export default function HealthIntelligencePage() {
   const [dragActive, setDragActive] = useState(false);
   const labUploadCardRef = useRef<HTMLDivElement>(null);
   const labResultsRef = useRef<HTMLDivElement>(null);
+  const hasAssessmentData = Object.keys(digitalTwin.completedAssessments).length > 0 || Boolean(digitalTwin.biologicalAge) || Boolean(labResult);
 
   // Scroll helper
   const scrollToUpload = () => {
@@ -1057,12 +1058,22 @@ export default function HealthIntelligencePage() {
       try {
         const twin = JSON.parse(saved);
         if (twin && typeof twin === "object") {
+          const hasStoredEvidence = Object.keys(twin.completedAssessments || {}).length > 0 || Boolean(twin.biologicalAge) || Boolean(twin.labResult);
           const safeTwin = {
             ...DEFAULT_TWIN,
             ...twin,
+            overallScore: hasStoredEvidence ? twin.overallScore ?? 0 : 0,
             systemScores: {
               ...DEFAULT_TWIN.systemScores,
-              ...(twin.systemScores || {})
+              ...(hasStoredEvidence ? twin.systemScores || {} : {})
+            },
+            organLoad: {
+              ...DEFAULT_TWIN.organLoad,
+              ...(hasStoredEvidence ? twin.organLoad || {} : {})
+            },
+            riskLevel: {
+              ...DEFAULT_TWIN.riskLevel,
+              ...(hasStoredEvidence ? twin.riskLevel || {} : {})
             },
             completedAssessments: twin.completedAssessments || {},
             activeRulesFlags: twin.activeRulesFlags || [],
@@ -1178,31 +1189,7 @@ export default function HealthIntelligencePage() {
 
   // Wearable & Clinical Portal Integration Sync handlers
   const handleToggleWearable = (device: "Apple Health" | "Google Fit" | "Fitbit" | "Garmin") => {
-    const updatedWearables = { ...(digitalTwin.wearables || {
-      "Apple Health": { device: "Apple Health", connected: false },
-      "Google Fit": { device: "Google Fit", connected: false },
-      "Fitbit": { device: "Fitbit", connected: false },
-      "Garmin": { device: "Garmin", connected: false }
-    }) };
-    const currentDevice = updatedWearables[device] || { device, connected: false };
-    
-    if (currentDevice.connected) {
-      updatedWearables[device] = { device, connected: false };
-    } else {
-      const metricsData = generateWearableMetrics();
-      updatedWearables[device] = {
-        device,
-        connected: true,
-        lastSync: metricsData.lastSync,
-        metrics: metricsData.metrics
-      };
-      alert(`${device} successfully linked to HIOS™. Epigenetic and cardiorespiratory telemetry synced.`);
-    }
-    
-    saveDigitalTwin({
-      ...digitalTwin,
-      wearables: updatedWearables
-    });
+    alert(`${device} connection is not yet available. No account or health data has been connected.`);
   };
 
   const handleToggleClinicalPortal = () => {
@@ -1275,12 +1262,15 @@ export default function HealthIntelligencePage() {
           email: connectForm.email,
           city: connectForm.city,
           complaint: selfAssessmentDetails,
-          careLevel: "Digital Twin Intake",
-          status: "pending"
+          careLevel: "Patient-entered health overview — clinician review pending",
+          status: "pending_plan"
         })
       });
 
       const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Portal connection request failed");
+      }
 
       const now = new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
       const lastSyncDate = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" });
@@ -1288,10 +1278,10 @@ export default function HealthIntelligencePage() {
       saveDigitalTwin({
         ...digitalTwin,
         clinicalPortal: {
-          connected: true,
+          connected: false,
           lastSync: `${lastSyncDate} at ${now}`,
           portalId: data.patientId || portalId,
-          doctorApproved: true
+          doctorApproved: false
         }
       });
 
@@ -1302,21 +1292,7 @@ export default function HealthIntelligencePage() {
 
     } catch (err) {
       console.error("Clinical sync registration failed:", err);
-      alert("Database connection failed. Digital Twin synced in sandbox fallback mode.");
-      
-      const portalId = `HCP-2026-${Math.round(1000 + Math.random() * 9000)}`;
-      const now = new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-      const lastSyncDate = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" });
-      
-      saveDigitalTwin({
-        ...digitalTwin,
-        clinicalPortal: {
-          connected: true,
-          lastSync: `${lastSyncDate} at ${now}`,
-          portalId,
-          doctorApproved: true
-        }
-      });
+      alert("We could not send the portal connection request. No clinical account has been connected. Please try again or contact the clinic.");
       setIsConnectModalOpen(false);
     } finally {
       setIsConnecting(false);
@@ -2458,7 +2434,7 @@ export default function HealthIntelligencePage() {
                     My Health Intelligence Dashboard
                   </h1>
                   <p className="text-xs text-slate-500 dark:text-zinc-400">
-                    Personalized precision medicine portal & epigenetic health tracker.
+                    Educational self-assessments and patient-entered health tracking. Not a diagnosis or medical-device score.
                   </p>
                 </div>
                 
@@ -2541,13 +2517,12 @@ export default function HealthIntelligencePage() {
                       />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-xl font-black text-slate-900 dark:text-white font-mono">{digitalTwin.overallScore}%</span>
-                      <span className="text-[7.5px] font-bold text-slate-400 uppercase tracking-widest">Score</span>
+                      <span className="text-xl font-black text-slate-900 dark:text-white font-mono">{hasAssessmentData ? `${digitalTwin.overallScore}%` : "—"}</span>
+                      <span className="text-[7.5px] font-bold text-slate-400 uppercase tracking-widest">{hasAssessmentData ? "Self-report" : "Not assessed"}</span>
                     </div>
                   </div>
-                  <div className="mt-2 flex items-center gap-1 text-[10px] text-emerald-500 font-bold">
-                    <TrendingUp className="w-3.5 h-3.5" />
-                    <span>Up +3% this month</span>
+                  <div className="mt-2 text-[10px] text-slate-500 font-bold">
+                    {hasAssessmentData ? "Educational trend only" : "Complete an assessment to begin"}
                   </div>
                 </div>
 
@@ -2565,7 +2540,7 @@ export default function HealthIntelligencePage() {
                         className="stroke-teal-500 fill-none" 
                         strokeWidth="5"
                         strokeDasharray={226.2}
-                        strokeDashoffset={226.2 - (226.2 * (digitalTwin.systemScores.endocrine * 0.9 + 10)) / 100}
+                        strokeDashoffset={226.2 - (226.2 * (hasAssessmentData ? digitalTwin.systemScores.endocrine * 0.9 + 10 : 0)) / 100}
                         strokeLinecap="round"
                       />
                       {/* Middle Ring: Endocrine (Radius 27) */}
@@ -2602,7 +2577,7 @@ export default function HealthIntelligencePage() {
 
                 {/* Gauge 3: Epigenetic Longevity Index */}
                 <div className="glass-panel bg-white/40 dark:bg-slate-950/10 border border-slate-150 dark:border-slate-850 p-5 rounded-2xl flex flex-col justify-between">
-                  <span className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 text-center block mb-2">Epigenetic longevity</span>
+                  <span className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 text-center block mb-2">Lifestyle age estimate</span>
                   
                   {digitalTwin.biologicalAge ? (
                     <div className="space-y-2.5 text-center">
@@ -2620,12 +2595,12 @@ export default function HealthIntelligencePage() {
                     </div>
                   ) : (
                     <div className="text-center py-2 space-y-2 flex-grow flex flex-col justify-center items-center">
-                      <p className="text-[10px] text-slate-500">Epigenetic clock not calibrated.</p>
+                      <p className="text-[10px] text-slate-500">No lifestyle estimate completed.</p>
                       <button
                         onClick={() => handleSelectProfile("biological_age")}
                         className="py-1.5 px-3 bg-violet-500 hover:bg-violet-600 text-white font-bold rounded-lg text-[9px] uppercase tracking-wider cursor-pointer border-none transition-colors"
                       >
-                        Calibrate Age
+                        Start questionnaire
                       </button>
                     </div>
                   )}
@@ -2633,23 +2608,23 @@ export default function HealthIntelligencePage() {
 
                 {/* Gauge 4: Public Health Index (Priority 11) */}
                 <div className="glass-panel bg-white/40 dark:bg-slate-950/10 border border-slate-150 dark:border-slate-850 p-5 rounded-2xl flex flex-col justify-between">
-                  <span className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 text-center block mb-2">Public Health Index™</span>
+                  <span className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 text-center block mb-2">Self-assessment status</span>
                   <div className="space-y-2">
                     <div className="flex justify-between items-center text-[10px] font-semibold">
                       <span className="text-slate-500">Stress Burden Index</span>
-                      <span className="font-mono font-bold text-amber-500">64%</span>
+                      <span className="font-mono font-bold text-slate-500">Not assessed</span>
                     </div>
                     <div className="flex justify-between items-center text-[10px] font-semibold">
                       <span className="text-slate-500">Sleep Quality Index</span>
-                      <span className="font-mono font-bold text-emerald-500">68/100</span>
+                      <span className="font-mono font-bold text-slate-500">Not assessed</span>
                     </div>
                     <div className="flex justify-between items-center text-[10px] font-semibold">
                       <span className="text-slate-500">Metabolic Risks</span>
-                      <span className="font-mono font-bold text-rose-500">38%</span>
+                      <span className="font-mono font-bold text-slate-500">Not assessed</span>
                     </div>
                     <div className="flex justify-between items-center text-[10px] font-semibold">
                       <span className="text-slate-500">Thyroid Wellness</span>
-                      <span className="font-mono font-bold text-teal-500">76%</span>
+                      <span className="font-mono font-bold text-slate-500">Not assessed</span>
                     </div>
                   </div>
                 </div>
@@ -2694,42 +2669,31 @@ export default function HealthIntelligencePage() {
               </div>
               )}
 
-            {/* FUTURE-READY: HEALTH OS & SYNC INTEGRATIONS */}
+            {/* Planned integrations */}
             <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/70 dark:bg-slate-900/65 rounded-[28px] p-5 shadow-sm space-y-4">
               <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
-                Health OS & Wearable Sync
+                Planned wearable integrations
               </span>
 
               {/* Wearable integrations */}
               <div className="space-y-3">
                 <div className="text-[9.5px] font-extrabold uppercase tracking-widest text-slate-500">
-                  Wearable Connections:
+                  Not currently connected to this website
                 </div>
                 <div className="grid grid-cols-2 gap-2.5">
                   {(["Apple Health", "Google Fit", "Fitbit", "Garmin"] as const).map(device => {
-                    const status = (digitalTwin.wearables || {})[device] || { device, connected: false };
                     return (
                       <button
                         key={device}
-                        onClick={() => handleToggleWearable(device)}
-                        className={`p-3 rounded-xl border text-left cursor-pointer transition-all flex flex-col justify-between h-[70px] ${
-                          status.connected
-                            ? "bg-mint/5 border-mint text-slate-800 dark:text-zinc-150"
-                            : "bg-slate-50/50 dark:bg-slate-950/20 border-slate-150 dark:border-slate-850 hover:bg-slate-100/30 text-slate-500"
-                        }`}
+                        type="button"
+                        disabled
+                        className="p-3 rounded-xl border text-left flex flex-col justify-between h-[70px] bg-slate-50/50 dark:bg-slate-950/20 border-slate-150 dark:border-slate-850 text-slate-500 cursor-not-allowed"
                       >
                         <div className="flex justify-between items-center w-full">
                           <span className="text-[10.5px] font-bold">{device}</span>
-                          <span className={`w-1.5 h-1.5 rounded-full ${status.connected ? "bg-emerald-500" : "bg-slate-300"}`} />
+                          <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
                         </div>
-                        {status.connected && status.metrics ? (
-                          <div className="text-[8.5px] text-slate-450 leading-none space-y-0.5 font-bold">
-                            <div>HR: {status.metrics.heartRateAvg} bpm</div>
-                            <div>Steps: {status.metrics.steps}</div>
-                          </div>
-                        ) : (
-                          <span className="text-[8.5px] text-slate-400 font-bold uppercase tracking-wider">Connect</span>
-                        )}
+                        <span className="text-[8.5px] text-slate-400 font-bold uppercase tracking-wider">Coming soon</span>
                       </button>
                     );
                   })}
@@ -2892,15 +2856,15 @@ export default function HealthIntelligencePage() {
                         <div className="space-y-2 text-center md:text-left">
                           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-mint/15 dark:bg-mint/5 text-[9.5px] font-bold uppercase tracking-wider text-mint shadow-sm">
                             <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-                            <span>Clinical OS Active</span>
+                            <span>Educational tracking</span>
                           </div>
                           <h2 className="font-serif text-xl md:text-2xl font-bold text-slate-900 dark:text-white leading-tight">
-                            Personal Health Digital Twin
+                            Personal Health Overview
                           </h2>
                           <p className="text-xs text-slate-500 dark:text-zinc-400 max-w-md leading-relaxed">
                             {Object.keys(digitalTwin.completedAssessments).length > 0
-                              ? "Your clinical digital twin computes multi-system organ risks, active diathesis states, and suggests preventative medical screenings."
-                              : "Configure your biological twin. Complete self-assessments or upload laboratory reports to calibrate your homeostatic telemetry."}
+                              ? "Review your self-reported answers and uploaded information with a clinician before making healthcare decisions."
+                              : "No health score has been calculated. Complete an optional self-assessment or upload a report for educational review."}
                           </p>
                         </div>
 
@@ -2931,27 +2895,27 @@ export default function HealthIntelligencePage() {
                       {/* System Reserves Grid */}
                       <div className="space-y-4">
                         <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
-                          System Reserves Assessment Dashboard
+                          Self-reported system overview
                         </span>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           {Object.keys(digitalTwin.systemScores).map(key => {
-                            const score = digitalTwin.systemScores[key as keyof SystemScores] || 100;
+                            const score = digitalTwin.systemScores[key as keyof SystemScores] ?? 0;
                             const label = key.charAt(0).toUpperCase() + key.slice(1);
                             
                             // Determine status
-                            let status = "Optimal";
-                            let statusColor = "text-emerald-500 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-100/20";
-                            let ringColor = "stroke-emerald-500";
+                            let status = hasAssessmentData ? "Higher reserve" : "Not assessed";
+                            let statusColor = hasAssessmentData ? "text-emerald-500 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-100/20" : "text-slate-500 bg-slate-50 dark:bg-slate-900 border-slate-200";
+                            let ringColor = hasAssessmentData ? "stroke-emerald-500" : "stroke-slate-300";
                             
-                            if (score < 55) {
+                            if (hasAssessmentData && score < 55) {
                               status = "Depleted";
                               statusColor = "text-rose-500 bg-rose-50 dark:bg-rose-950/20 border-rose-100/20";
                               ringColor = "stroke-rose-500";
-                            } else if (score < 75) {
+                            } else if (hasAssessmentData && score < 75) {
                               status = "Sluggish";
                               statusColor = "text-amber-500 bg-amber-50 dark:bg-amber-950/20 border-amber-100/20";
                               ringColor = "stroke-amber-500";
-                            } else if (score < 90) {
+                            } else if (hasAssessmentData && score < 90) {
                               status = "Compensated";
                               statusColor = "text-teal-500 bg-teal-50 dark:teal-950/20 border-teal-100/20";
                               ringColor = "stroke-teal-500";
@@ -2982,7 +2946,7 @@ export default function HealthIntelligencePage() {
                                     />
                                   </svg>
                                   <div className="absolute inset-0 flex items-center justify-center">
-                                    <span className="text-sm font-black text-slate-800 dark:text-white font-mono">{score}%</span>
+                                    <span className="text-sm font-black text-slate-800 dark:text-white font-mono">{hasAssessmentData ? `${score}%` : "—"}</span>
                                   </div>
                                 </div>
 
@@ -3000,16 +2964,16 @@ export default function HealthIntelligencePage() {
                         {/* Organ Loads */}
                         <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/70 dark:bg-slate-900/65 rounded-[28px] p-5 space-y-4">
                           <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
-                            Computed Organ Stress Loads
+                            Self-reported symptom loads
                           </span>
                           <div className="space-y-3">
                             {Object.keys(digitalTwin.organLoad).slice(0, 5).map(organ => {
-                              const load = digitalTwin.organLoad[organ] || 10;
+                              const load = digitalTwin.organLoad[organ] ?? 0;
                               return (
                                 <div key={organ} className="space-y-1">
                                   <div className="flex justify-between items-center text-[10px] font-bold">
                                     <span className="text-slate-650 dark:text-zinc-350 capitalize">{organ}</span>
-                                    <span className={`font-mono ${load > 60 ? "text-rose-500" : load > 30 ? "text-amber-500" : "text-emerald-500"}`}>{load}%</span>
+                                    <span className={`font-mono ${load > 60 ? "text-rose-500" : load > 30 ? "text-amber-500" : "text-slate-500"}`}>{hasAssessmentData ? `${load}%` : "Not assessed"}</span>
                                   </div>
                                   <div className="w-full bg-slate-100 dark:bg-slate-800/80 h-1.5 rounded-full overflow-hidden">
                                     <div 
@@ -3028,7 +2992,7 @@ export default function HealthIntelligencePage() {
                         {/* Miasmatic Burden */}
                         <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/70 dark:bg-slate-900/65 rounded-[28px] p-5 space-y-4">
                           <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
-                            Miasmatic Burden Profile
+                            Historical homeopathic profile
                           </span>
                           
                           <div className="space-y-4">
@@ -3036,11 +3000,11 @@ export default function HealthIntelligencePage() {
                             <div className="space-y-1">
                               <div className="flex justify-between items-center text-[10.5px] font-bold">
                                 <span className="text-amber-500 uppercase tracking-wider">Psora (Functional Strain)</span>
-                                <span className="font-mono text-amber-500">{hiosAnalysis.miasmaticProfile?.psora || 30}%</span>
+                                <span className="font-mono text-amber-500">{hasAssessmentData ? `${hiosAnalysis.miasmaticProfile?.psora || 0}%` : "Not assessed"}</span>
                               </div>
                               <p className="text-[9.5px] text-slate-400 leading-normal">Governs basic dry skin, transient allergies, nervous irritation, and hyper-sensitivities.</p>
                               <div className="w-full bg-slate-100 dark:bg-slate-800/80 h-2 rounded-full overflow-hidden">
-                                <div className="bg-amber-500 h-full rounded-full" style={{ width: `${hiosAnalysis.miasmaticProfile?.psora || 30}%` }} />
+                                <div className="bg-amber-500 h-full rounded-full" style={{ width: `${hasAssessmentData ? hiosAnalysis.miasmaticProfile?.psora || 0 : 0}%` }} />
                               </div>
                             </div>
                             
@@ -3048,11 +3012,11 @@ export default function HealthIntelligencePage() {
                             <div className="space-y-1">
                               <div className="flex justify-between items-center text-[10.5px] font-bold">
                                 <span className="text-teal-500 uppercase tracking-wider">Sycosis (Excess / Adiposity)</span>
-                                <span className="font-mono text-teal-500">{hiosAnalysis.miasmaticProfile?.sycosis || 20}%</span>
+                                <span className="font-mono text-teal-500">{hasAssessmentData ? `${hiosAnalysis.miasmaticProfile?.sycosis || 0}%` : "Not assessed"}</span>
                               </div>
                               <p className="text-[9.5px] text-slate-400 leading-normal">Governs water retention, fat deposition, cyst growths, skin tags, and slow sluggish metabolism.</p>
                               <div className="w-full bg-slate-100 dark:bg-slate-800/80 h-2 rounded-full overflow-hidden">
-                                <div className="bg-teal-500 h-full rounded-full" style={{ width: `${hiosAnalysis.miasmaticProfile?.sycosis || 20}%` }} />
+                                <div className="bg-teal-500 h-full rounded-full" style={{ width: `${hasAssessmentData ? hiosAnalysis.miasmaticProfile?.sycosis || 0 : 0}%` }} />
                               </div>
                             </div>
 
@@ -3060,11 +3024,11 @@ export default function HealthIntelligencePage() {
                             <div className="space-y-1">
                               <div className="flex justify-between items-center text-[10.5px] font-bold">
                                 <span className="text-rose-500 uppercase tracking-wider">Syphilis (Destructive / Organic)</span>
-                                <span className="font-mono text-rose-500">{hiosAnalysis.miasmaticProfile?.syphilis || 10}%</span>
+                                <span className="font-mono text-rose-500">{hasAssessmentData ? `${hiosAnalysis.miasmaticProfile?.syphilis || 0}%` : "Not assessed"}</span>
                               </div>
                               <p className="text-[9.5px] text-slate-400 leading-normal">Governs cracks, ulcers, memory decays, vascular stiffness, and organic degeneration trends.</p>
                               <div className="w-full bg-slate-100 dark:bg-slate-800/80 h-2 rounded-full overflow-hidden">
-                                <div className="bg-rose-500 h-full rounded-full" style={{ width: `${hiosAnalysis.miasmaticProfile?.syphilis || 10}%` }} />
+                                <div className="bg-rose-500 h-full rounded-full" style={{ width: `${hasAssessmentData ? hiosAnalysis.miasmaticProfile?.syphilis || 0 : 0}%` }} />
                               </div>
                             </div>
                           </div>

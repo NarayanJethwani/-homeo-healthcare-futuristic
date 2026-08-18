@@ -4,53 +4,88 @@
  */
 
 import {
+  CARE_PLAN_CATALOG,
   calculateContinuityCareTotal,
   getContinuityDiscountPercentage,
+  type CarePlanId,
 } from "@/lib/pricingConfig";
 
 export type ClinicalCareDurationWeeks = 1 | 2 | 4 | 8 | 12;
+export type StoreClinicalCareTierId = "acute_mild" | "acute_wellness" | "focused" | "integrated" | "complex" | "advanced";
 
 export interface ClinicalCareTierOption {
-  id: string;
-  name: string; // Patient-facing name only (e.g. "Focused Clinical Care")
+  id: StoreClinicalCareTierId;
+  carePlanId: CarePlanId;
+  family: "acute" | "chronic";
+  name: string;
   weeklyRatePaise: number; // Integer paise per week
   weeklyRateINR: number; // Reference weekly INR
   description: string;
   recommendedFor: string;
 }
 
-export const CLINICAL_CARE_TIER_OPTIONS: Record<string, ClinicalCareTierOption> = {
+const planPaise = (planId: CarePlanId) => CARE_PLAN_CATALOG[planId].price * 100;
+
+export const CLINICAL_CARE_TIER_OPTIONS: Record<StoreClinicalCareTierId, ClinicalCareTierOption> = {
+  acute_mild: {
+    id: "acute_mild",
+    carePlanId: "acute_mild_3d",
+    family: "acute",
+    name: "Mild Acute Care",
+    weeklyRatePaise: planPaise("acute_mild_3d"),
+    weeklyRateINR: CARE_PLAN_CATALOG.acute_mild_3d.price,
+    description: "Three-day physician-reviewed support for one suitable mild, non-emergency acute concern.",
+    recommendedFor: "A mild, recent concern after emergency warning signs have been excluded",
+  },
+  acute_wellness: {
+    id: "acute_wellness",
+    carePlanId: "acute_wellness_7d",
+    family: "acute",
+    name: "Acute Wellness Care",
+    weeklyRatePaise: planPaise("acute_wellness_7d"),
+    weeklyRateINR: CARE_PLAN_CATALOG.acute_wellness_7d.price,
+    description: "Seven-day physician-reviewed support for a suitable non-emergency acute concern.",
+    recommendedFor: "Short-term support needing a longer review window",
+  },
   focused: {
     id: "focused",
+    carePlanId: "chronic_focused_1w",
+    family: "chronic",
     name: "Focused Clinical Care",
-    weeklyRatePaise: 300000,
-    weeklyRateINR: 3000,
-    description: "Coordinated physician care for specific, localized, or early-stage health concerns.",
-    recommendedFor: "Single primary health concern or focused follow-up care",
+    weeklyRatePaise: planPaise("chronic_focused_1w"),
+    weeklyRateINR: CARE_PLAN_CATALOG.chronic_focused_1w.price,
+    description: "Focused physician-led care for one defined, non-emergency concern with standard weekly follow-up.",
+    recommendedFor: "A suitable subacute, acute-transition, or chronic concern within an agreed scope",
   },
   integrated: {
     id: "integrated",
-    name: "Integrated Clinical Care",
-    weeklyRatePaise: 600000,
-    weeklyRateINR: 6000,
-    description: "Comprehensive care managing multiple interrelated systems and constitutional balance.",
-    recommendedFor: "Multiple related health conditions requiring constitutional synthesis",
+    carePlanId: "chronic_integrated_1w",
+    family: "chronic",
+    name: "Integrated Chronic Care",
+    weeklyRatePaise: planPaise("chronic_integrated_1w"),
+    weeklyRateINR: CARE_PLAN_CATALOG.chronic_integrated_1w.price,
+    description: "Integrated physician-led care requiring closer planned review or records coordination.",
+    recommendedFor: "Chronic care requiring closer review or records coordination",
   },
   complex: {
     id: "complex",
-    name: "Complex Clinical Care",
-    weeklyRatePaise: 900000,
-    weeklyRateINR: 9000,
-    description: "Intensive physician supervision for long-standing, multi-layered pathological conditions.",
-    recommendedFor: "Chronic, long-standing, or multi-systemic pathological concerns",
+    carePlanId: "chronic_complex_1w",
+    family: "chronic",
+    name: "Complex Chronic Care",
+    weeklyRatePaise: planPaise("chronic_complex_1w"),
+    weeklyRateINR: CARE_PLAN_CATALOG.chronic_complex_1w.price,
+    description: "Enhanced physician supervision for chronic care requiring frequent review or coordination.",
+    recommendedFor: "Frequent planned review or multi-clinician coordination",
   },
   advanced: {
     id: "advanced",
-    name: "Advanced Physician Care",
-    weeklyRatePaise: 1200000,
-    weeklyRateINR: 12000,
-    description: "Close clinical oversight, frequent reviews, and specialized treatment planning.",
-    recommendedFor: "High-complexity cases requiring frequent physician monitoring and adjustment",
+    carePlanId: "chronic_advanced_1w",
+    family: "chronic",
+    name: "Advanced Chronic Care",
+    weeklyRatePaise: planPaise("chronic_advanced_1w"),
+    weeklyRateINR: CARE_PLAN_CATALOG.chronic_advanced_1w.price,
+    description: "Direct physician supervision and high-frequency review for high-workload chronic care.",
+    recommendedFor: "Direct supervision or extensive care coordination after physician review",
   },
 };
 
@@ -75,6 +110,30 @@ export function calculateListCarePeriodTotalPaise(
 
 export function getCarePeriodContinuityBenefit(durationWeeks: ClinicalCareDurationWeeks): number {
   return getContinuityDiscountPercentage(durationWeeks);
+}
+
+export function getTierCarePeriodLabel(tierId: string, durationWeeks: ClinicalCareDurationWeeks): string {
+  const tier = CLINICAL_CARE_TIER_OPTIONS[tierId as StoreClinicalCareTierId] || CLINICAL_CARE_TIER_OPTIONS.focused;
+  if (tier.family === "acute") {
+    const plan = CARE_PLAN_CATALOG[tier.carePlanId];
+    return `${plan.durationValue} ${plan.durationValue === 1 ? plan.durationUnit : `${plan.durationUnit}s`}`;
+  }
+  return `${durationWeeks} ${durationWeeks === 1 ? "week" : "weeks"}`;
+}
+
+export function calculateTierCarePeriodTotalPaise(tierId: string, durationWeeks: ClinicalCareDurationWeeks): number {
+  const tier = CLINICAL_CARE_TIER_OPTIONS[tierId as StoreClinicalCareTierId] || CLINICAL_CARE_TIER_OPTIONS.focused;
+  return tier.family === "acute" ? tier.weeklyRatePaise : calculateCarePeriodTotalPaise(tier.weeklyRatePaise, durationWeeks);
+}
+
+export function calculateTierListCarePeriodTotalPaise(tierId: string, durationWeeks: ClinicalCareDurationWeeks): number {
+  const tier = CLINICAL_CARE_TIER_OPTIONS[tierId as StoreClinicalCareTierId] || CLINICAL_CARE_TIER_OPTIONS.focused;
+  return tier.family === "acute" ? tier.weeklyRatePaise : calculateListCarePeriodTotalPaise(tier.weeklyRatePaise, durationWeeks);
+}
+
+export function getTierContinuityBenefit(tierId: string, durationWeeks: ClinicalCareDurationWeeks): number {
+  const tier = CLINICAL_CARE_TIER_OPTIONS[tierId as StoreClinicalCareTierId] || CLINICAL_CARE_TIER_OPTIONS.focused;
+  return tier.family === "acute" ? 0 : getCarePeriodContinuityBenefit(durationWeeks);
 }
 
 export function formatINRFromPaise(paise: number): string {
@@ -134,11 +193,11 @@ export interface PatientIntakeData {
 }
 
 export interface PreliminaryCareRecommendation {
-  suggestedTierId: "focused" | "integrated" | "complex" | "advanced";
+  suggestedTierId: StoreClinicalCareTierId;
   suggestedTierName: string;
   selectedOrganCount: number;
-  complexityScore: number;
   rationale: string;
+  blockedBySafetyGate?: boolean;
   disclaimer: string; // EXPLICIT_PHYSICIAN_AUTHORITY_STATEMENT
 }
 
@@ -200,6 +259,9 @@ export interface SanitizedAssessmentResponseDTO {
   patientName: string;
   mainHealthArea: string;
   preferredDurationWeeks: number;
+  carePeriodLabel: string;
+  carePeriodValue: number;
+  carePeriodUnit: "day" | "week";
   totalEstimatedAmountPaise: number;
   totalEstimatedAmountFormatted: string;
   preliminaryRecommendation: PreliminaryCareRecommendation;

@@ -17,6 +17,7 @@ export const SubmissionSuccessView: React.FC<SubmissionSuccessViewProps> = ({
     submissionId: response.submissionId,
     selectedTierName: response.preliminaryRecommendation.suggestedTierName,
     preferredDurationWeeks: response.preferredDurationWeeks,
+    carePeriodLabel: response.carePeriodLabel,
     totalEstimatedAmountFormatted: response.totalEstimatedAmountFormatted,
     mainHealthArea: response.mainHealthArea,
   });
@@ -44,7 +45,7 @@ export const SubmissionSuccessView: React.FC<SubmissionSuccessViewProps> = ({
           <div>
             <span className="font-bold text-emerald-950 text-sm block">Direct Doctor Assistance & WhatsApp Review</span>
             <span className="text-xs text-emerald-800 font-semibold">
-              Connect directly with Dr. Jethwani (+91 8446056789) for immediate clinical guidance.
+              Send your prepared review request to Dr. Jethwani (+91 8446056789). This is not an emergency response channel.
             </span>
           </div>
         </div>
@@ -77,7 +78,7 @@ export const SubmissionSuccessView: React.FC<SubmissionSuccessViewProps> = ({
         </div>
         <div className="flex justify-between border-b border-slate-100 pb-2">
           <span className="text-slate-500">Planned Care Period:</span>
-          <span className="font-bold text-[#1A2421]">{response.preferredDurationWeeks} Weeks</span>
+          <span className="font-bold text-[#1A2421]">{response.carePeriodLabel}</span>
         </div>
         <div className="flex justify-between border-b border-slate-100 pb-2">
           <span className="text-slate-500">Estimated Total Amount:</span>

@@ -1,12 +1,39 @@
 export type CareLevelKey =
   | "mild"
+  | "chronic_focused"
   | "moderate"
   | "focused"
   | "organ"
   | "comprehensive"
   | "acute_critical";
 
-export type PublicCarePathwayKey = "mild" | "moderate" | "focused";
+export type PublicCarePathwayKey = "mild" | "chronic_focused" | "moderate" | "focused";
+
+export const CARE_PLAN_CATALOG_VERSION = "care-plan-catalog-v3";
+
+export type CarePlanId =
+  | "acute_mild_3d"
+  | "acute_wellness_7d"
+  | "chronic_focused_1w"
+  | "chronic_integrated_1w"
+  | "chronic_complex_1w"
+  | "chronic_advanced_1w";
+
+export type CarePlanFamily = "acute" | "chronic";
+export type CarePlanDurationUnit = "day" | "week";
+
+export interface CarePlanDefinition {
+  id: CarePlanId;
+  family: CarePlanFamily;
+  title: string;
+  price: number;
+  durationValue: number;
+  durationUnit: CarePlanDurationUnit;
+  legacyCareLevelKey: Extract<CareLevelKey, "mild" | "chronic_focused" | "moderate" | "focused" | "comprehensive">;
+  scope: string;
+  reassessmentRequired: boolean;
+  emergencyCare: false;
+}
 
 export interface CareLevelDetail {
   title: string;
@@ -31,7 +58,8 @@ export interface CareLevelDetail {
   clinicianConfirmationRequired?: boolean;
 }
 
-const ACUTE_WEEKLY_PRICE = 3_000; // Focused Clinical Care (₹3,000 / wk)
+const ACUTE_WELLNESS_WEEKLY_PRICE = 2_000; // Acute Wellness Care (from ₹2,000 / wk)
+const CHRONIC_FOCUSED_WEEKLY_PRICE = 3_000; // Focused Clinical Care (₹3,000 / wk)
 const CONSTITUTIONAL_WEEKLY_PRICE = 6_000; // Integrated Clinical Care (₹6,000 / wk)
 const ADVANCED_WEEKLY_PRICE = 9_000; // Complex Clinical Care (₹9,000 / wk)
 
@@ -79,35 +107,155 @@ export function calculateContinuityCareTotal(unitPrice: number, durationWeeks: n
 
 export const PUBLIC_CARE_LEVEL_KEYS: readonly PublicCarePathwayKey[] = [
   "mild",
+  "chronic_focused",
   "moderate",
   "focused",
 ] as const;
 
+export const CARE_PLAN_CATALOG: Record<CarePlanId, CarePlanDefinition> = {
+  acute_mild_3d: {
+    id: "acute_mild_3d",
+    family: "acute",
+    title: "Mild Acute Care",
+    price: 1_000,
+    durationValue: 3,
+    durationUnit: "day",
+    legacyCareLevelKey: "mild",
+    scope: "Short physician-reviewed support for one suitable mild, non-emergency acute concern.",
+    reassessmentRequired: true,
+    emergencyCare: false,
+  },
+  acute_wellness_7d: {
+    id: "acute_wellness_7d",
+    family: "acute",
+    title: "Acute Wellness Care",
+    price: 2_000,
+    durationValue: 7,
+    durationUnit: "day",
+    legacyCareLevelKey: "mild",
+    scope: "Seven-day physician-reviewed support for a suitable non-emergency acute concern.",
+    reassessmentRequired: true,
+    emergencyCare: false,
+  },
+  chronic_focused_1w: {
+    id: "chronic_focused_1w",
+    family: "chronic",
+    title: "Focused Clinical Care",
+    price: 3_000,
+    durationValue: 1,
+    durationUnit: "week",
+    legacyCareLevelKey: "chronic_focused",
+    scope: "Focused physician-led care for one defined, non-emergency concern requiring a weekly care period.",
+    reassessmentRequired: true,
+    emergencyCare: false,
+  },
+  chronic_integrated_1w: {
+    id: "chronic_integrated_1w",
+    family: "chronic",
+    title: "Integrated Chronic Care",
+    price: 6_000,
+    durationValue: 1,
+    durationUnit: "week",
+    legacyCareLevelKey: "moderate",
+    scope: "Integrated physician-led care for related chronic concerns requiring closer review.",
+    reassessmentRequired: true,
+    emergencyCare: false,
+  },
+  chronic_complex_1w: {
+    id: "chronic_complex_1w",
+    family: "chronic",
+    title: "Complex Chronic Care",
+    price: 9_000,
+    durationValue: 1,
+    durationUnit: "week",
+    legacyCareLevelKey: "focused",
+    scope: "Enhanced physician supervision for complex chronic care within an agreed scope.",
+    reassessmentRequired: true,
+    emergencyCare: false,
+  },
+  chronic_advanced_1w: {
+    id: "chronic_advanced_1w",
+    family: "chronic",
+    title: "Advanced Chronic Care",
+    price: 12_000,
+    durationValue: 1,
+    durationUnit: "week",
+    legacyCareLevelKey: "comprehensive",
+    scope: "Advanced physician-led care with frequent monitoring for high-workload chronic cases.",
+    reassessmentRequired: true,
+    emergencyCare: false,
+  },
+};
+
+export const CARE_PLAN_IDS = Object.keys(CARE_PLAN_CATALOG) as CarePlanId[];
+
+export function getCarePlan(planId: CarePlanId): CarePlanDefinition {
+  return CARE_PLAN_CATALOG[planId];
+}
+
+export function formatCarePlanDuration(plan: Pick<CarePlanDefinition, "durationValue" | "durationUnit">): string {
+  return `${plan.durationValue} ${plan.durationValue === 1 ? plan.durationUnit : `${plan.durationUnit}s`}`;
+}
+
+export function calculateCarePlanTotal(planId: CarePlanId, chronicDurationWeeks = 1) {
+  const plan = getCarePlan(planId);
+  if (plan.family === "acute") {
+    if (chronicDurationWeeks !== 1) throw new Error(`${plan.title} is a fixed ${formatCarePlanDuration(plan)} plan`);
+    return { listTotal: plan.price, discountPercent: 0, discountAmount: 0, total: plan.price };
+  }
+  if (!STANDARD_CARE_PERIOD_DURATIONS.includes(chronicDurationWeeks as ContinuityDurationWeeks)) {
+    throw new Error(`Unsupported duration for ${plan.title}: ${chronicDurationWeeks} weeks`);
+  }
+  return calculateContinuityCareTotal(plan.price, chronicDurationWeeks);
+}
+
 export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
   mild: {
-    title: "Focused Clinical Care",
-    subtitle: "Coordinated physician care for specific, localized, or early-stage health concerns",
-    weeklyPrice: ACUTE_WEEKLY_PRICE,
-    monthlyPrice: calculateContinuityCareTotal(ACUTE_WEEKLY_PRICE, 4).total,
-    badge: "Focused Care",
+    title: "Acute Wellness Care",
+    subtitle: "Short, physician-reviewed support for suitable non-emergency acute concerns and focused wellness follow-up",
+    weeklyPrice: ACUTE_WELLNESS_WEEKLY_PRICE,
+    monthlyPrice: calculateContinuityCareTotal(ACUTE_WELLNESS_WEEKLY_PRICE, 4).total,
+    badge: "Starts at ₹2,000/week",
     icon: "🌱",
     colorClass: "text-teal-700 border-teal-200/60 bg-teal-50/70",
     glowColor: "rgba(20,184,166,0.15)",
     surchargeWeekly: 0,
     surchargeMonthly: 0,
-    complexityLabel: "Focused",
-    description: "Coordinated physician care for specific, localized, or early-stage health concerns.",
-    scopeMessage: "Single primary health concern or localized follow-up care is included. Confirmed by treating physician.",
-    bestFor: ["Single primary health concern", "Localized symptoms", "Focused follow-up care"],
+    complexityLabel: "Acute & wellness",
+    description: "Short, physician-reviewed support for suitable non-emergency acute concerns and focused wellness follow-up.",
+    scopeMessage: "Starts at ₹2,000 per week for one physician-confirmed, non-emergency acute concern or a focused wellness follow-up. Red flags require urgent assessment or referral before a plan or quotation is created.",
+    bestFor: ["Suitable non-emergency acute concerns", "One focused wellness goal", "Short physician-reviewed follow-up"],
     features: [
       "Physician consultation and clinical assessment",
       "Individualized treatment plan",
-      "Routine homeopathic medicines included",
-      "Standard follow-up during the care period",
+      "Documented safety and red-flag review",
+      "Standard follow-up during the confirmed care period",
     ],
     durations: STANDARD_CARE_PERIOD_DURATIONS,
     defaultDurationWeeks: 1,
-    legacyNames: ["Essential Acute & Wellness Care", "Acute & Wellness Care", "Focused Care"],
+    legacyNames: ["Essential Acute & Wellness Care", "Acute & Wellness Care"],
+    pricePrefix: "From",
+  },
+  chronic_focused: {
+    title: "Focused Clinical Care",
+    subtitle: "Focused physician-led care for one defined subacute, acute-transition, or chronic concern",
+    weeklyPrice: CHRONIC_FOCUSED_WEEKLY_PRICE,
+    monthlyPrice: calculateContinuityCareTotal(CHRONIC_FOCUSED_WEEKLY_PRICE, 4).total,
+    badge: "Focused",
+    icon: "🌿",
+    colorClass: "text-emerald-700 border-emerald-200/60 bg-emerald-50/70",
+    glowColor: "rgba(16,185,129,0.15)",
+    surchargeWeekly: 0,
+    surchargeMonthly: 0,
+    complexityLabel: "Focused clinical",
+    description: "Focused physician-led care for one defined, non-emergency concern requiring standard weekly follow-up.",
+    scopeMessage: "₹3,000 per week for a physician-confirmed focused clinical care period. Suitable cases may be subacute, transitioning from acute care, or chronic.",
+    bestFor: ["One defined non-emergency concern", "Subacute, acute-transition, or chronic care", "Standard scheduled follow-up"],
+    features: ["Physician assessment", "Documented care scope", "Individualized plan", "Scheduled reassessment"],
+    durations: STANDARD_CARE_PERIOD_DURATIONS,
+    defaultDurationWeeks: 1,
+    legacyNames: ["Focused Chronic Care", "Focused Care"],
+    clinicianConfirmationRequired: true,
   },
   moderate: {
     title: "Integrated Clinical Care",
@@ -208,7 +356,7 @@ export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
     icon: "🚨",
     complexityLabel: "Priority",
     description: "Faster access and closer short-term monitoring for suitable acute cases.",
-    scopeMessage: "Add to Focused Clinical Care for ₹2,000 per week. This is not emergency medical care.",
+    scopeMessage: "Optional physician-assigned support alongside Acute Wellness Care for ₹2,000 per week. This is not emergency medical care and is never added automatically.",
     bestFor: ["Priority appointment access", "Closer short-term monitoring", "Suitable acute cases"],
     features: ["Priority access", "Defined response window", "Closer monitoring", "Physician-directed use"],
     durations: [1, 2, 4],
@@ -223,6 +371,7 @@ export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
 
 export const surchargesLookup: Record<CareLevelKey, { unitWeekly: number; unitMonthly: number }> = {
   mild: { unitWeekly: 0, unitMonthly: 0 },
+  chronic_focused: { unitWeekly: 0, unitMonthly: 0 },
   moderate: { unitWeekly: 0, unitMonthly: 0 },
   focused: { unitWeekly: 0, unitMonthly: 0 },
   organ: { unitWeekly: 0, unitMonthly: 0 },
@@ -298,21 +447,23 @@ export function normalizeCareLevelName(input: string): CareLevelKey {
   if (!input) return "moderate";
   const clean = input.toLowerCase().trim();
 
-  if (["mild", "moderate", "focused", "organ", "comprehensive", "acute_critical"].includes(clean)) {
+  if (["mild", "chronic_focused", "moderate", "focused", "organ", "comprehensive", "acute_critical"].includes(clean)) {
     return clean as CareLevelKey;
   }
-  if (clean.includes("advanced physician") || clean.includes("complete") || clean.includes("multisystem")) return "comprehensive";
+  if (clean.includes("advanced physician") || clean.includes("advanced chronic") || clean.includes("complete") || clean.includes("multisystem")) return "comprehensive";
   if (clean.includes("pathology") || clean.includes("records")) return "organ";
   if (clean.includes("priority") || clean.includes("critical") || clean.includes("intensive acute")) return "acute_critical";
   if (clean.includes("complex") || clean.includes("advanced") || clean.includes("deep") || clean.includes("systemic")) return "focused";
-  if (clean.includes("integrated") || clean.includes("constitutional") || clean.includes("chronic") || clean.includes("core") || clean.includes("standard")) return "moderate";
-  if (clean.includes("focused clinical") || clean.includes("wellness") || clean.includes("essential") || clean.includes("acute")) return "mild";
+  if (clean.includes("focused chronic") || clean.includes("focused clinical") || clean === "focused care") return "chronic_focused";
+  if (clean.includes("integrated") || clean.includes("constitutional") || clean.includes("core") || clean.includes("standard chronic")) return "moderate";
+  if (clean.includes("wellness") || clean.includes("essential") || clean.includes("acute")) return "mild";
   return "moderate";
 }
 
 export function toPublicCarePathway(input: string): PublicCarePathwayKey {
   const normalized = normalizeCareLevelName(input);
   if (normalized === "mild") return "mild";
+  if (normalized === "chronic_focused") return "chronic_focused";
   if (normalized === "moderate") return "moderate";
   return "focused";
 }
@@ -332,7 +483,7 @@ export function buildGoogleSheetsCareRateFormula(
   const rate = (weekly: number) => `${weekly}`;
   const has = (term: string) => `ISNUMBER(SEARCH("${term}", ${careLevelCell}))`;
 
-  return `=IF(OR(${has("Advanced Physician")}, ${has("Complete")}, ${has("Multisystem")}), ${rate(CARE_LEVELS_DETAILS.comprehensive.weeklyPrice)}, IF(OR(${has("Case-Specific")}, ${has("Records")}, ${has("Pathology Support")}), 0, IF(OR(${has("Priority")}, ${has("Critical")}), ${rate(CARE_LEVELS_DETAILS.acute_critical.weeklyPrice)}, IF(OR(${has("Complex Clinical")}, ${has("Advanced Constitutional")}, ${has("Deep")}, ${has("Systemic")}), ${rate(CARE_LEVELS_DETAILS.focused.weeklyPrice)}, IF(OR(${has("Integrated Clinical")}, ${has("Constitutional")}, ${has("Chronic")}, ${has("Core")}), ${rate(CARE_LEVELS_DETAILS.moderate.weeklyPrice)}, IF(OR(${has("Focused Clinical")}, ${has("Wellness")}, ${has("Acute")}, ${has("Essential")}), ${rate(CARE_LEVELS_DETAILS.mild.weeklyPrice)}, 0))))))`;
+  return `=IF(OR(${has("Advanced Physician")}, ${has("Advanced Chronic")}, ${has("Complete")}, ${has("Multisystem")}), ${rate(CARE_LEVELS_DETAILS.comprehensive.weeklyPrice)}, IF(OR(${has("Case-Specific")}, ${has("Records")}, ${has("Pathology Support")}), 0, IF(OR(${has("Priority")}, ${has("Critical")}), ${rate(CARE_LEVELS_DETAILS.acute_critical.weeklyPrice)}, IF(OR(${has("Complex Clinical")}, ${has("Complex Chronic")}, ${has("Advanced Constitutional")}, ${has("Deep")}, ${has("Systemic")}), ${rate(CARE_LEVELS_DETAILS.focused.weeklyPrice)}, IF(OR(${has("Integrated Clinical")}, ${has("Integrated Chronic")}, ${has("Constitutional")}, ${has("Core")}), ${rate(CARE_LEVELS_DETAILS.moderate.weeklyPrice)}, IF(OR(${has("Focused Chronic")}, ${has("Focused Clinical")}), ${rate(CARE_LEVELS_DETAILS.chronic_focused.weeklyPrice)}, IF(OR(${has("Acute Wellness")}, ${has("Mild Acute")}, ${has("Wellness")}, ${has("Acute")}, ${has("Essential")}), ${rate(CARE_LEVELS_DETAILS.mild.weeklyPrice)}, 0)))))))`;
 }
 
 export function buildGoogleSheetsCarePeriodWeeksFormula(

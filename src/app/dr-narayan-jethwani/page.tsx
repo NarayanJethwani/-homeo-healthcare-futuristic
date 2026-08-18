@@ -57,8 +57,8 @@ export default function DoctorProfilePage() {
   const stats = [
     { value: "20+", label: "Years Experience" },
     { value: "10k+", label: "Patients Treated" },
-    { value: "100+", label: "Conditions Treated" },
-    { value: "0%", label: "Side Effects" }
+    { value: "100+", label: "Care Areas" },
+    { value: "Safety", label: "Conventional Care Respected" }
   ];
 
   const handleWhatsAppChat = () => {
@@ -82,11 +82,11 @@ export default function DoctorProfilePage() {
         >
           <Magnetic>
             <Link
-              href="https://homeo.healthcare"
+              href="/"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-mint/20 hover:border-mint/60 bg-mint/5 hover:bg-mint/10 text-mint-dark hover:text-[#0c6b5e] text-xs font-bold uppercase tracking-wider transition-all duration-300 backdrop-blur-md cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              Back to the Future
+              Back to Home
             </Link>
           </Magnetic>
         </motion.div>
@@ -122,7 +122,7 @@ export default function DoctorProfilePage() {
                   <h4 className="text-xl font-serif font-bold text-white">Dr. Narayan B. Jethwani</h4>
                   <p className="text-xs font-bold text-mint uppercase tracking-wider mt-0.5">BHMS · MD (Hom.)</p>
                   <p className="text-[10px] text-white/85 font-medium mt-2.5 italic max-w-xs leading-relaxed">
-                    "Healing is not about suppressing a chemical reading; it is about restoring the core vitality of the human system."
+                  "Good care begins with listening carefully, setting realistic goals and reviewing progress honestly."
                   </p>
                 </div>
               </div>
@@ -174,7 +174,7 @@ export default function DoctorProfilePage() {
                   Having treated thousands of patients suffering from complex, chronic, and multi-systemic disorders, Dr. Jethwani pioneered the <strong className="text-[#1A2421]">Evidence-Based Homeopathy</strong> framework. This methodology bridges the profound healing principles of classical homeopathy with objective biomarker reporting and modern outcome measures.
                 </p>
                 <p>
-                  He specializes in evaluating deep-seated constitutional blocks and prescribing remedies that restore systemic equilibrium, without creating dependency or chemical side effects.
+                  He specializes in detailed homeopathic case assessment, individualized prescribing and planned outcome review while respecting existing conventional treatment and referral needs.
                 </p>
               </motion.div>
             </div>
