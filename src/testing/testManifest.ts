@@ -24,6 +24,13 @@ export interface TestSuiteManifestEntry {
 
 export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
   {
+    "path": "tests/medicalAcademyLiterature.test.ts",
+    "status": "active",
+    "ownerArea": "medical-academy",
+    "testLayer": "security",
+    "reason": "Validates bounded PubMed retrieval, citation normalization, DOI allowlisting, input handling, and same-origin route enforcement"
+  },
+  {
     "path": "tests/patientPortalLinking.test.ts",
     "status": "active",
     "ownerArea": "access-governance",
@@ -1703,6 +1710,13 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "ownerArea": "knowledge-expansion",
     "testLayer": "governance",
     "reason": "M29 KEP-7 Relationship Governance & Activation Foundation, formal lifecycle (draft->under_review->approved/rejected->governed), fail-closed contract (governed != pub != rag), 35 M28 proposal adjudication, graph integrity, and 8-dimension offline evaluation"
+  },
+  {
+    "path": "tests/knowledgeKEP7RagRetrievalEvaluationM30.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M30 KEP-7 Governed RAG Eligibility & Pilot Retrieval Evaluation, controlled 6-entity flagship cohort, individual preflight gates, governed retrieval adapter, grounding explainer, and zero-tolerance safety and forbidden-knowledge leakage gates"
   },
   {
     "path": "tests/softLaunchManualPayment.test.ts",

@@ -22,6 +22,17 @@ const CIEWorkspace = dynamic(() => import("./CIEWorkspace"), {
   ssr: false,
   loading: () => <div className="p-8 text-center text-slate-400">Loading Clinical Intelligence Engine...</div>
 });
+const MedicalAcademyWorkspace = dynamic(
+  () => import("@/features/medical-academy/components/MedicalAcademyWorkspace"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-full items-center justify-center bg-slate-100 text-sm text-slate-500 dark:bg-slate-950 dark:text-slate-400">
+        Loading OSTM™ Interactive Human Anatomy Atlas…
+      </div>
+    ),
+  },
+);
 import { REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, CLARKE_CHAPTERS, BOGER_CHAPTERS, KNERR_CHAPTERS, BOENNINGHAUSEN_CHAPTERS, GENTRY_CHAPTERS, SYNOPTIC_CHAPTERS, JAHR_CHAPTERS, LIPPE_CHAPTERS, HERING_SPECIALIZED_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA as JETHWANI_REPERTORY_DATA_ORIG, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices, setRepertoryData } from "@/lib/repertoryData";
 import { isRubricScoringEnabled } from "@/features/repertory/scoring/repertoryScoringPolicy";
 import { getTopWorkbenchRemedyColumns, projectWorkbenchScores } from "@/features/repertory/scoring/repertoryWorkbenchScoring";
@@ -853,6 +864,7 @@ export default function AdminDashboard() {
   const [cieSubTab, setCieSubTab] = useState<"cockpit" | "intake" | "miasms" | "reports">("cockpit");
   const [immersiveMode, setImmersiveMode] = useState(false);
   const [academyMode, setAcademyMode] = useState("dashboard");
+  const [academyExperience, setAcademyExperience] = useState<"original-atlas" | "study-workspace">("original-atlas");
   const [isDiagnosticsDrawerOpen, setIsDiagnosticsDrawerOpen] = useState(false);
   const [authReady, setAuthReady] = useState(false);
 
@@ -1083,19 +1095,38 @@ export default function AdminDashboard() {
       const checkUrlTab = () => {
         const params = new URLSearchParams(window.location.search);
         const tabParam = params.get("tab");
+        const viewParam = params.get("view");
+        const academyModeParam = params.get("academy_mode") || params.get("academyMode");
+        const hideSidebarParam = params.get("hide_sidebar") || params.get("hideSidebar");
+        const academyExpParam = params.get("academy_experience") || params.get("academyExperience");
+
         const validTabs = [
           "dashboard", "intake", "patients", "diagnostics", "analyzer", 
           "diet-lifestyle", "treatment-planner", "nexus-atlas", "learning-hub", "communication", 
-          "ai-router", "health-intelligence", "cie"
+          "ai-router", "health-intelligence", "cie", "medical-academy"
         ];
         
-        if (tabParam && validTabs.includes(tabParam)) {
+        if (viewParam === "medical-academy" || tabParam === "medical-academy") {
+          setActiveTab("medical-academy");
+        } else if (tabParam && validTabs.includes(tabParam)) {
           setActiveTab(tabParam as any);
         } else {
           const hash = window.location.hash.replace("#", "");
-          if (hash && validTabs.includes(hash)) {
+          if (hash === "medical-academy" || (hash && validTabs.includes(hash))) {
             setActiveTab(hash as any);
           }
+        }
+
+        if (academyModeParam) {
+          setAcademyMode(academyModeParam);
+        }
+
+        if (hideSidebarParam === "true" || hideSidebarParam === "1") {
+          setIsSidebarCollapsed(true);
+        }
+
+        if (academyExpParam === "study-workspace" || academyExpParam === "original-atlas") {
+          setAcademyExperience(academyExpParam);
         }
       };
       
@@ -1103,17 +1134,7 @@ export default function AdminDashboard() {
       window.addEventListener("hashchange", checkUrlTab);
       return () => window.removeEventListener("hashchange", checkUrlTab);
     }
-  }, []);
-
-  useEffect(() => {
-    const handleIframeMessage = (event: MessageEvent) => {
-      if (event.data?.type === "toggle-immersive-mode") {
-        setImmersiveMode(!!event.data.active);
-      }
-    };
-    window.addEventListener("message", handleIframeMessage);
-    return () => window.removeEventListener("message", handleIframeMessage);
-  }, []);
+  }, [setIsSidebarCollapsed]);
 
   useEffect(() => {
     const fetchClinicians = async () => {
@@ -1169,25 +1190,12 @@ export default function AdminDashboard() {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const academyIframeRef = useRef<HTMLIFrameElement>(null);
-
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [intakeChatMessages]);
 
-  useEffect(() => {
-    if (activeTab === "medical-academy" && academyIframeRef.current?.contentWindow) {
-      academyIframeRef.current.contentWindow.postMessage({
-        type: "cios-settings-sync",
-        theme,
-        fontSize: globalFontSize,
-        zoomLevel: globalLayoutZoom,
-        readingWidth: globalReadingWidth
-      }, "*");
-    }
-  }, [activeTab, theme, globalFontSize, globalLayoutZoom, globalReadingWidth]);
   const [intakeInterviewIndex, setIntakeInterviewIndex] = useState<number>(0);
   const [intakeChatInput, setIntakeChatInput] = useState<string>("");
   const [intakeInterviewActive, setIntakeInterviewActive] = useState<boolean>(false);
@@ -2513,16 +2521,33 @@ export default function AdminDashboard() {
         setSelectedPatientId(patientParam);
       }
       const tabParam = params.get("tab");
+      const viewParam = params.get("view");
+      const academyModeParam = params.get("academy_mode") || params.get("academyMode");
+      const hideSidebarParam = params.get("hide_sidebar") || params.get("hideSidebar");
+      const academyExpParam = params.get("academy_experience") || params.get("academyExperience");
+
       const validTabs = [
         "dashboard", "intake", "patients", "diagnostics", "analyzer", 
         "diet-lifestyle", "treatment-planner", "nexus-atlas", "learning-hub", "communication", 
-        "ai-router", "health-intelligence", "cie"
+        "ai-router", "health-intelligence", "cie", "medical-academy"
       ];
-      if (tabParam && validTabs.includes(tabParam)) {
+      if (viewParam === "medical-academy" || tabParam === "medical-academy") {
+        setActiveTab("medical-academy");
+      } else if (tabParam && validTabs.includes(tabParam)) {
         setActiveTab(tabParam as any);
       }
+
+      if (academyModeParam) {
+        setAcademyMode(academyModeParam);
+      }
+      if (hideSidebarParam === "true" || hideSidebarParam === "1") {
+        setIsSidebarCollapsed(true);
+      }
+      if (academyExpParam === "study-workspace" || academyExpParam === "original-atlas") {
+        setAcademyExperience(academyExpParam);
+      }
     }
-  }, [patients]);
+  }, [patients, setIsSidebarCollapsed]);
 
   // Dynamically synchronize and prefill the Diet & Lifestyle Restrictions field when the selected patient changes
   const lastPrefilledDietPatientIdRef = useRef<string>("");
@@ -6071,12 +6096,6 @@ Homeo Healthcare`;
       const mode = modeMap[subSectionId];
       if (mode) {
         setAcademyMode(mode);
-        if (academyIframeRef.current?.contentWindow) {
-          academyIframeRef.current.contentWindow.postMessage({
-            type: "cios-academy-mode-switch",
-            mode: mode
-          }, "*");
-        }
       }
     }
     if (action) {
@@ -14390,23 +14409,48 @@ ${err.message || err}`);
           {/* TAB: Medical Academy (3D Anatomy & Clinical Twin Lab) */}
           {activeTab === "medical-academy" && (
             <div className="w-full h-full relative overflow-hidden">
-              <iframe 
-                ref={academyIframeRef}
-                src={`https://clinical-intelligence-engine.vercel.app?view=medical-academy&hide_sidebar=true&theme=${theme}&font=${globalFontSize}&zoom=${globalLayoutZoom}&width=${globalReadingWidth}&academy_mode=${academyMode}`} 
-                className="w-full h-full border-none"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; microphone"
-                allowFullScreen
-              />
-              {/* Floating Exit Button for Immersive Mode */}
-              {immersiveMode && (
-                <button
-                  onClick={() => setImmersiveMode(false)}
-                  className="fixed top-4 right-4 z-[9999] px-4 py-2.5 bg-white/95 hover:bg-white text-slate-750 hover:text-rose-600 border border-slate-200/80 rounded-2xl text-[10.5px] font-bold uppercase tracking-wider shadow-[0_8px_30px_rgba(15,23,42,0.12)] hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-1.5 cursor-pointer"
-                  title="Exit Full Screen"
-                >
-                  <Minimize2 className="w-3.5 h-3.5 text-rose-500 animate-pulse" />
-                  <span>Exit Immersive</span>
-                </button>
+              {academyExperience === "original-atlas" ? (
+                <>
+                  <iframe
+                    key={academyMode}
+                    title="OSTM™ Interactive Human Anatomy Atlas"
+                    src={`https://clinical-intelligence-academy-v2.vercel.app/index.html?view=medical-academy&hide_sidebar=true&academy_mode=${encodeURIComponent(academyMode === "dashboard" ? "explore" : academyMode)}`}
+                    className="h-full w-full border-0 bg-slate-950 min-h-[calc(100vh-80px)]"
+                    allow="autoplay; clipboard-write; microphone"
+                  />
+                  <div className="absolute right-4 top-4 z-20 flex rounded-xl border border-slate-200/80 bg-white/95 p-1 shadow-lg backdrop-blur dark:border-slate-700/80 dark:bg-slate-900/95">
+                    <button
+                      type="button"
+                      className="rounded-lg bg-teal-600 px-3 py-2 text-[11px] font-semibold text-white shadow-sm"
+                      aria-pressed="true"
+                    >
+                      Original 3D Atlas
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAcademyExperience("study-workspace")}
+                      className="rounded-lg px-3 py-2 text-[11px] font-semibold text-slate-600 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                      aria-pressed="false"
+                    >
+                      Study workspace
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="h-full w-full relative">
+                  <button
+                    type="button"
+                    onClick={() => setAcademyExperience("original-atlas")}
+                    className="absolute right-4 top-4 z-20 rounded-xl border border-teal-200 bg-white/95 px-3 py-2 text-[11px] font-semibold text-teal-700 shadow-lg backdrop-blur transition hover:bg-teal-50 dark:border-teal-800 dark:bg-slate-900/95 dark:text-teal-300 dark:hover:bg-slate-800"
+                  >
+                    Return to original 3D Atlas
+                  </button>
+                  <MedicalAcademyWorkspace
+                    initialSection={academyMode}
+                    isImmersive={immersiveMode}
+                    onImmersiveChange={setImmersiveMode}
+                  />
+                </div>
               )}
             </div>
           )}

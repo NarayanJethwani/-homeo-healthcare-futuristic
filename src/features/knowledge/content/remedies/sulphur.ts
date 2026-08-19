@@ -83,7 +83,7 @@ export const SulphurRemedy: KnowledgeEntity = {
     potencies: ["6C", "30C", "200C", "1M"],
     safetyNotes:
       "Historical homeopathic descriptions reflect traditional materia medica concepts. Homeopathic remedies do not replace conventional medical evaluation or evidence-based treatments for serious dermatological, infectious, or systemic medical conditions.",
-    references: ["CIT-0001", "CIT-0002", "CIT-0023", "CIT-0024"],
+    references: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007", "CIT-0023", "CIT-0024"],
     faqs: [
       {
         question: "Why does Sulphur itching worsen with warmth of bed?",
@@ -107,22 +107,22 @@ export const SulphurRemedy: KnowledgeEntity = {
       claimId: "R0001-KEYNOTES",
       statement:
         "Classical materia medica identifies Sulphur keynotes as burning soles, vertex heat, intense itching aggravated by warmth of bed, and 5 AM morning diarrhea.",
-      citationIds: ["CIT-0001", "CIT-0002"],
-      passageId: "CIT-0001-SULPHUR-KEYNOTES",
+      citationIds: ["CIT-0004", "CIT-0006"],
+      passageId: "CIT-0004-SULPHUR-KEYNOTES",
     },
     {
       claimId: "R0001-MODALITIES",
       statement:
         "Sulphur modalities feature marked aggravation from bathing, standing, and bed warmth, with amelioration in open cool air.",
-      citationIds: ["CIT-0002"],
-      passageId: "CIT-0002-SULPHUR-MODALITIES",
+      citationIds: ["CIT-0005", "CIT-0007"],
+      passageId: "CIT-0005-SULPHUR-MODALITIES",
     },
     {
       claimId: "R0001-TRADITIONAL-USE",
       statement:
         "Samuel Hahnemann designated Sulphur as the primary anti-psoric polychrest for chronic systemic reactivity.",
-      citationIds: ["CIT-0001"],
-      passageId: "CIT-0001-ORGANON-PSORA",
+      citationIds: ["CIT-0004", "CIT-0005"],
+      passageId: "CIT-0004-ORGANON-PSORA",
     },
     {
       claimId: "R0001-SAFETY-LIMITATIONS",
