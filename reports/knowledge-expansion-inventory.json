@@ -24,7 +24,7 @@
     "independentlyReviewedEntities": 0,
     "governedEvidenceProfiles": 0,
     "claimCitationCompleteEntities": 0,
-    "isolatedEntities": 207,
+    "isolatedEntities": 210,
     "duplicateRelationshipRows": 178,
     "activeRagEntities": 0
   },
@@ -5514,6 +5514,165 @@
       },
       "evidence": {
         "referenceCount": 5,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 30,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "S0105",
+      "slug": "back-pain",
+      "entityType": "symptom",
+      "title": "Low Back Pain",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": false,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 2,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 30,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "S0107",
+      "slug": "dry-cough",
+      "entityType": "symptom",
+      "title": "Dry Cough (Non-Productive Cough)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": false,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 2,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 30,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "S0114",
+      "slug": "itching",
+      "entityType": "symptom",
+      "title": "Itching (Pruritus)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": false,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 2,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
@@ -13763,58 +13922,6 @@
       }
     },
     {
-      "entityId": "S0005",
-      "slug": "back-pain",
-      "entityType": "symptom",
-      "title": "Low Back Pain",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": false,
-        "genericTemplateDetected": false,
-        "genericTemplateSignals": []
-      },
-      "evidence": {
-        "referenceCount": 2,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 1,
-        "duplicateRelationshipRows": 1,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 20,
-        "recommendation": "independent-review-and-enrichment",
-        "reasons": [
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
       "entityId": "S0006",
       "slug": "bloating",
       "entityType": "symptom",
@@ -13887,58 +13994,6 @@
       },
       "evidence": {
         "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 1,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 20,
-        "recommendation": "independent-review-and-enrichment",
-        "reasons": [
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "S0007",
-      "slug": "dry-cough",
-      "entityType": "symptom",
-      "title": "Dry Cough (Non-Productive Cough)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": false,
-        "genericTemplateDetected": false,
-        "genericTemplateSignals": []
-      },
-      "evidence": {
-        "referenceCount": 2,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
@@ -14131,58 +14186,6 @@
       "slug": "knee-pain",
       "entityType": "symptom",
       "title": "Knee Pain",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": false,
-        "genericTemplateDetected": false,
-        "genericTemplateSignals": []
-      },
-      "evidence": {
-        "referenceCount": 2,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 1,
-        "duplicateRelationshipRows": 1,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 20,
-        "recommendation": "independent-review-and-enrichment",
-        "reasons": [
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "S0014",
-      "slug": "itching",
-      "entityType": "symptom",
-      "title": "Itching (Pruritus)",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",

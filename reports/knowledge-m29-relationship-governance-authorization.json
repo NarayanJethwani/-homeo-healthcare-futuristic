@@ -1,0 +1,77 @@
+{
+  "milestoneId": "M29",
+  "packageId": "KEP7-PACKAGE-M29-RELATIONSHIP-GOVERNANCE-001",
+  "sourceCommit": "68a1610e91b2b4de5dbf831b0c79de2303f82641",
+  "generatedAt": "2026-08-19T03:08:17.702Z",
+  "status": "pending_authorization",
+  "governance": {
+    "program": "KEP-7",
+    "productionRagActivation": false,
+    "transitionalPublicationFreeze": true,
+    "coreInvariantPreserved": "governed != publicationEligible != ragEligible",
+    "totalProposalsAdjudicated": 35,
+    "governedRelationshipsCount": 35,
+    "publicationEligibleCount": 0,
+    "ragEligibleCount": 0
+  },
+  "evaluation": {
+    "totalCases": 20,
+    "passedCases": 20,
+    "failedCases": 0,
+    "negativeControlsCount": 16,
+    "negativeControlsPassed": 16,
+    "dimensionCounts": {
+      "relationship-integrity": 2,
+      "citation-fidelity": 3,
+      "governance-state-enforcement": 4,
+      "publication-gating": 2,
+      "rag-gating": 2,
+      "contradiction-detection": 2,
+      "emergency-safety-preservation": 3,
+      "auditability": 2
+    },
+    "dimensionPassRates": {
+      "relationship-integrity": 1,
+      "citation-fidelity": 1,
+      "governance-state-enforcement": 1,
+      "publication-gating": 1,
+      "rag-gating": 1,
+      "contradiction-detection": 1,
+      "emergency-safety-preservation": 1,
+      "auditability": 1
+    },
+    "governedRelationshipsCount": 35,
+    "publicationEligibleCount": 0,
+    "ragEligibleCount": 0
+  },
+  "graphIntegrity": {
+    "totalRelationships": 35,
+    "byStatus": {
+      "draft": 0,
+      "under_review": 0,
+      "approved": 0,
+      "rejected": 0,
+      "governed": 35,
+      "withdrawn": 0,
+      "superseded": 0
+    },
+    "byRelationshipType": {
+      "traditional_profile_association": 35
+    },
+    "bySourceEntityType": {
+      "unknown": 35
+    },
+    "byTargetEntityType": {
+      "concept": 35
+    },
+    "totalUniqueSourceEntities": 7,
+    "totalUniqueTargetEntities": 35,
+    "connectedEntitiesCount": 7,
+    "isolatedEntitiesCount": 0,
+    "publicationEligibleCount": 0,
+    "ragEligibleCount": 0,
+    "validationErrorsCount": 0,
+    "validationWarningsCount": 0
+  },
+  "packageSha256": "03d85207df61a10ea00e2f6fac5e1e2636c4a173e16d873c21c7a72913f870e0"
+}
