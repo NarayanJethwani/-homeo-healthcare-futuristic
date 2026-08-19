@@ -1698,6 +1698,13 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "M28 KEP-6 Remedy Coverage Wave 15 (Final 7 classical remedies - R0086, R0087, R0145, R0146, R0148, R0149, R0150) v1.1.0 upgrades, 35 draft graph proposals, 70-case offline evaluation with 14 negative controls, clinical safety boundaries, and 100% complete classical remedy governance closure"
   },
   {
+    "path": "tests/knowledgeKEP7RelationshipGovernanceM29.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M29 KEP-7 Relationship Governance & Activation Foundation, formal lifecycle (draft->under_review->approved/rejected->governed), fail-closed contract (governed != pub != rag), 35 M28 proposal adjudication, graph integrity, and 8-dimension offline evaluation"
+  },
+  {
     "path": "tests/softLaunchManualPayment.test.ts",
     "status": "active",
     "ownerArea": "commerce-pricing",
