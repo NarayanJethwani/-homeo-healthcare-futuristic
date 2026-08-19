@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-19T13:29:29.994Z",
-  "mode": "production",
+  "generatedAt": "2026-08-19T16:00:33.571Z",
+  "mode": "release",
   "releaseState": "production-deployment-ready",
   "results": [
     {
@@ -8,110 +8,110 @@
       "command": "npx eslint",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 33194
+      "durationMs": 34290
     },
     {
       "id": "typecheck",
       "command": "npx tsc --noEmit -p tsconfig.json",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 9527
+      "durationMs": 9137
     },
     {
       "id": "test:ui",
       "command": "npx vitest run tests/knowledgeGraphExplorer.test.tsx tests/hydrationAndTiming.test.tsx tests/graphPerformance.test.tsx tests/miasmaticFiltering.test.tsx tests/providerTelemetryDashboard.test.tsx tests/consultationWorkspace.test.tsx",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 4937
+      "durationMs": 4283
     },
     {
       "id": "harness-validation",
       "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/firestoreHarnessValidation.test.ts",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 1584
+      "durationMs": 1546
     },
     {
       "id": "test:unit",
       "command": "npm run test:unit",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 1189595
+      "durationMs": 313806
     },
     {
       "id": "snapshot-reconciliation",
       "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/repertory/reconcileSnapshot.ts --release v1.2.0",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 3642
+      "durationMs": 4169
     },
     {
       "id": "source-validation",
       "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/repertory/validateSource.ts --source clarke_clinical_1904 --record acq_clarke_1904_001",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 2444
+      "durationMs": 2558
     },
     {
       "id": "security-test:adminProxySecurity.test",
       "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/adminProxySecurity.test.ts",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 1881
+      "durationMs": 1697
     },
     {
       "id": "security-test:rbacSecurity.test",
       "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/rbacSecurity.test.ts",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 2283
+      "durationMs": 1835
     },
     {
       "id": "security-test:repertoryEntitlementExport.test",
       "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryEntitlementExport.test.ts",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 1297
+      "durationMs": 865
     },
     {
       "id": "security-test:repertoryExportRoute.test",
       "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryExportRoute.test.ts",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 1452
+      "durationMs": 1272
     },
     {
       "id": "security-test:repertorySessionExportService.test",
       "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertorySessionExportService.test.ts",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 1237
+      "durationMs": 1263
     },
     {
       "id": "security-test:repertoryExportAuthorization.test",
       "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryExportAuthorization.test.ts",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 1799
+      "durationMs": 1892
     },
     {
       "id": "security-test:aiSecurityBoundary.test",
       "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/aiSecurityBoundary.test.ts",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 14718
+      "durationMs": 14685
     },
     {
       "id": "security-test:repertoryRouteSecurity.test",
       "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryRouteSecurity.test.ts",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 3552
+      "durationMs": 3431
     },
     {
       "id": "security-static-audit",
       "status": "passed",
-      "durationMs": 28247,
+      "durationMs": 26961,
       "details": {
         "docs/operations/PRODUCTION_READINESS_CHECKLIST.md": "verified",
         "docs/operations/RELEASE_GOVERNANCE.md": "verified",
@@ -125,10 +125,59 @@
       "command": "npm run build",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 59663
+      "durationMs": 58713
+    },
+    {
+      "id": "rules-unit-testing",
+      "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/firestoreRulesClient.test.ts",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 2560
+    },
+    {
+      "id": "durable-consistency-test",
+      "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryDurableConsistency.test.ts",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 13184
+    },
+    {
+      "id": "approval-persistence-test",
+      "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryApprovalPersistence.test.ts",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 1341
+    },
+    {
+      "id": "activation-gate-test",
+      "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryProductionActivationGate.test.ts",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 1950
+    },
+    {
+      "id": "artifact-deployment-test",
+      "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryArtifactDeployment.test.ts",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 1587
+    },
+    {
+      "id": "clarke-safety-test",
+      "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryClarkeSafety.test.ts",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 2050
+    },
+    {
+      "id": "snapshot-activation-test",
+      "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertorySnapshotActivation.test.ts",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 3132
     }
   ],
-  "headSha": "6632361e569f08c92b24005cb3f4e306796921fe",
+  "headSha": "4639ff9adbf358aa79bdc044d57801fcebc65c4b",
   "dirtyAtStart": false,
   "dirtyAtEnd": false
 }
