@@ -12,7 +12,14 @@ export type AnatomySystemId =
   | "nervous"
   | "respiratory"
   | "renal"
-  | "digestive";
+  | "digestive"
+  | "skeletal"
+  | "muscular"
+  | "endocrine"
+  | "lymphatic"
+  | "reproductive"
+  | "integumentary"
+  | "sensory";
 
 export type AnatomyRegionId =
   | "right-hypochondriac"
@@ -307,6 +314,90 @@ export const ANATOMY_SYSTEMS: AnatomySystem[] = [
       evidenceType: "Open textbook",
       reviewedOn: "2026-08-19",
     },
+  },
+  {
+    id: "skeletal",
+    name: "Skeletal system",
+    shortName: "Skeleton",
+    accent: "#64748b",
+    lightAccent: "#f8fafc",
+    overview: "The skeletal system provides support and protection, acts as a framework for movement, stores minerals, and contains marrow involved in blood-cell production.",
+    structures: ["Axial skeleton", "Appendicular skeleton", "Joints", "Cartilage", "Bone marrow"],
+    functions: ["Support and protect organs", "Provide levers for movement", "Store minerals and support haematopoiesis"],
+    clinicalConnections: ["Fracture localization", "Joint alignment and movement", "Bone density and marrow function"],
+    reference: { title: "7.1 Divisions of the Skeletal System — Anatomy and Physiology 2e", publisher: "OpenStax, Rice University", url: "https://openstax.org/books/anatomy-and-physiology-2e/pages/7-1-divisions-of-the-skeletal-system", evidenceType: "Open textbook", reviewedOn: "2026-08-19" },
+  },
+  {
+    id: "muscular",
+    name: "Muscular system",
+    shortName: "Muscles",
+    accent: "#dc2626",
+    lightAccent: "#fef2f2",
+    overview: "Skeletal muscles generate voluntary movement and maintain posture, while smooth and cardiac muscle support organ and circulatory function.",
+    structures: ["Skeletal muscles", "Tendons and aponeuroses", "Fascial compartments", "Smooth muscle", "Cardiac muscle"],
+    functions: ["Generate movement", "Maintain posture and joint stability", "Produce heat"],
+    clinicalConnections: ["Muscle groups and actions", "Tendon injury", "Motor-unit and neuromuscular assessment"],
+    reference: { title: "10.2 Skeletal Muscle — Anatomy and Physiology 2e", publisher: "OpenStax, Rice University", url: "https://openstax.org/books/anatomy-and-physiology-2e/pages/10-2-skeletal-muscle", evidenceType: "Open textbook", reviewedOn: "2026-08-19" },
+  },
+  {
+    id: "endocrine",
+    name: "Endocrine system",
+    shortName: "Endocrine",
+    accent: "#d97706",
+    lightAccent: "#fffbeb",
+    overview: "The endocrine system uses hormones released into the circulation to coordinate metabolism, growth, reproduction, stress responses, and internal homeostasis.",
+    structures: ["Hypothalamus and pituitary", "Thyroid and parathyroids", "Adrenal glands", "Endocrine pancreas", "Gonads and pineal gland"],
+    functions: ["Coordinate long-range chemical signalling", "Regulate metabolism and growth", "Support reproduction and stress adaptation"],
+    clinicalConnections: ["Hormone feedback loops", "Thyroid and adrenal axes", "Glucose regulation"],
+    reference: { title: "17.1 An Overview of the Endocrine System — Anatomy and Physiology 2e", publisher: "OpenStax, Rice University", url: "https://openstax.org/books/anatomy-and-physiology-2e/pages/17-1-an-overview-of-the-endocrine-system", evidenceType: "Open textbook", reviewedOn: "2026-08-19" },
+  },
+  {
+    id: "lymphatic",
+    name: "Lymphatic and immune system",
+    shortName: "Lymphatic",
+    accent: "#16a34a",
+    lightAccent: "#f0fdf4",
+    overview: "The lymphatic system returns interstitial fluid to the circulation, transports absorbed lipids, and provides organs and pathways for immune surveillance.",
+    structures: ["Lymphatic vessels", "Lymph nodes", "Spleen", "Thymus", "Tonsils and mucosa-associated lymphoid tissue"],
+    functions: ["Return tissue fluid to blood", "Transport dietary lipids", "Support immune surveillance and lymphocyte activity"],
+    clinicalConnections: ["Lymph-node drainage", "Oedema and impaired lymph flow", "Spleen and thymus function"],
+    reference: { title: "21.1 Anatomy of the Lymphatic and Immune Systems — Anatomy and Physiology 2e", publisher: "OpenStax, Rice University", url: "https://openstax.org/books/anatomy-and-physiology-2e/pages/21-1-anatomy-of-the-lymphatic-and-immune-systems", evidenceType: "Open textbook", reviewedOn: "2026-08-19" },
+  },
+  {
+    id: "reproductive",
+    name: "Reproductive system",
+    shortName: "Reproductive",
+    accent: "#db2777",
+    lightAccent: "#fdf2f8",
+    overview: "The reproductive system produces gametes and sex hormones and includes sex-specific internal and external structures involved in reproduction.",
+    structures: ["Gonads", "Reproductive ducts", "Accessory glands", "External genitalia", "Uterus and associated structures"],
+    functions: ["Produce gametes", "Secrete reproductive hormones", "Support fertilization, gestation, or gamete delivery"],
+    clinicalConnections: ["Pelvic anatomy", "Gonadal and duct anatomy", "Reproductive endocrine regulation"],
+    reference: { title: "27.1 Anatomy and Physiology of the Male Reproductive System — Anatomy and Physiology 2e", publisher: "OpenStax, Rice University", url: "https://openstax.org/books/anatomy-and-physiology-2e/pages/27-1-anatomy-and-physiology-of-the-male-reproductive-system", evidenceType: "Open textbook", reviewedOn: "2026-08-19" },
+  },
+  {
+    id: "integumentary",
+    name: "Integumentary system",
+    shortName: "Skin",
+    accent: "#c2410c",
+    lightAccent: "#fff7ed",
+    overview: "The integumentary system forms the body's external barrier through skin and its appendages, contributing to protection, sensation, temperature control, and vitamin D synthesis.",
+    structures: ["Epidermis", "Dermis", "Subcutaneous tissue", "Hair and nails", "Sweat and sebaceous glands"],
+    functions: ["Provide a protective barrier", "Support sensation and thermoregulation", "Contribute to vitamin D synthesis"],
+    clinicalConnections: ["Skin layers and wound depth", "Burn surface assessment", "Cutaneous glands and appendages"],
+    reference: { title: "5.1 Layers of the Skin — Anatomy and Physiology 2e", publisher: "OpenStax, Rice University", url: "https://openstax.org/books/anatomy-and-physiology-2e/pages/5-1-layers-of-the-skin", evidenceType: "Open textbook", reviewedOn: "2026-08-19" },
+  },
+  {
+    id: "sensory",
+    name: "Special sensory system",
+    shortName: "Sense organs",
+    accent: "#2563eb",
+    lightAccent: "#eff6ff",
+    overview: "Specialized sensory organs transduce light, sound, head movement, taste, and smell into neural signals interpreted by the central nervous system.",
+    structures: ["Eye and retina", "External, middle, and inner ear", "Vestibular apparatus", "Olfactory epithelium", "Taste buds"],
+    functions: ["Transduce specialized stimuli", "Support vision and hearing", "Maintain balance and spatial orientation"],
+    clinicalConnections: ["Visual pathways", "Hearing and vestibular anatomy", "Cranial-nerve sensory pathways"],
+    reference: { title: "14.1 Sensory Perception — Anatomy and Physiology 2e", publisher: "OpenStax, Rice University", url: "https://openstax.org/books/anatomy-and-physiology-2e/pages/14-1-sensory-perception", evidenceType: "Open textbook", reviewedOn: "2026-08-19" },
   },
 ];
 

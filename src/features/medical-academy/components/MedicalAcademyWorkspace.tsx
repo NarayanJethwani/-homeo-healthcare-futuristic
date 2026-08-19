@@ -55,6 +55,7 @@ import {
 
 type CopilotMode = "teach" | "quiz" | "research" | "homeopathy";
 type AtlasLayer = "systems" | "regions";
+type AtlasViewMode = "3d" | "2d";
 
 interface CopilotMessage {
   id: string;
@@ -135,10 +136,10 @@ const SECTION_ICONS: Record<AcademySection, typeof BookOpen> = {
   certify: Award,
 };
 
-const SYSTEM_BUTTON_POSITION: Record<
+const SYSTEM_BUTTON_POSITION: Partial<Record<
   AnatomySystemId,
   { left: string; top: string; label: string }
-> = {
+>> = {
   nervous: { left: "50%", top: "10%", label: "Brain and nervous system" },
   respiratory: { left: "50%", top: "29%", label: "Lungs and respiratory system" },
   cardiovascular: { left: "50%", top: "38%", label: "Heart and cardiovascular system" },
@@ -247,7 +248,7 @@ function AcademyHome({ onNavigate }: { onNavigate: (section: AcademySection) => 
   const cards = [
     {
       title: "Interactive anatomy",
-      copy: "Explore five core systems and nine abdominopelvic regions using an accessible layered map.",
+      copy: "Rotate a full 3D body, explore twelve system layers, or switch to the accessible 2D regional map.",
       icon: Search,
       action: "Open atlas",
       target: "explore" as const,
@@ -470,7 +471,7 @@ function BodyMap({
       </svg>
       {layer === "systems" && (Object.keys(SYSTEM_BUTTON_POSITION) as AnatomySystemId[]).map((id) => {
         const system = getAnatomySystem(id);
-        const position = SYSTEM_BUTTON_POSITION[id];
+        const position = SYSTEM_BUTTON_POSITION[id]!;
         const isSelected = selected === id;
         return (
           <button
@@ -522,11 +523,32 @@ function BodyMap({
   );
 }
 
+function ThreeDAnatomyViewer({ resetToken }: { resetToken: number }) {
+  return (
+    <div className="relative mt-5 overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-inner">
+      <iframe
+        key={resetToken}
+        title="Interactive full human body anatomy model"
+        src="https://sketchfab.com/models/9b0b079953b840bc9a13f524b60041e4/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_watermark=1&ui_annotations=1&ui_help=1"
+        className="h-[590px] w-full border-0"
+        loading="lazy"
+        allow="autoplay; fullscreen; xr-spatial-tracking"
+        allowFullScreen
+      />
+      <div className="pointer-events-none absolute left-3 top-3 rounded-full border border-white/15 bg-slate-950/85 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white backdrop-blur">
+        Drag to rotate · scroll to zoom
+      </div>
+    </div>
+  );
+}
+
 function AnatomyAtlas({ selected, onSelect }: { selected: AnatomySystemId; onSelect: (id: AnatomySystemId) => void }) {
   const system = getAnatomySystem(selected);
+  const [viewMode, setViewMode] = useState<AtlasViewMode>("3d");
   const [layer, setLayer] = useState<AtlasLayer>("systems");
   const [selectedRegion, setSelectedRegion] = useState<AnatomyRegionId>("epigastric");
   const [detailTab, setDetailTab] = useState<"structures" | "functions" | "clinical">("structures");
+  const [viewerResetToken, setViewerResetToken] = useState(0);
   const region = ANATOMY_REGIONS.find((item) => item.id === selectedRegion) ?? ANATOMY_REGIONS[1];
 
   const detailItems =
@@ -545,12 +567,16 @@ function AnatomyAtlas({ selected, onSelect }: { selected: AnatomySystemId; onSel
           </p>
           <h2 className="mt-2 text-2xl font-semibold text-slate-950 dark:text-white">System explorer</h2>
         </div>
-        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
-          <Activity className="h-3.5 w-3.5 text-emerald-500" /> Fast 2D mode · no external model required
+        <div className="inline-flex w-fit rounded-xl border border-slate-200 bg-slate-100 p-1 dark:border-slate-700 dark:bg-slate-900" aria-label="Atlas view">
+          {([['3d', '3D full body'], ['2d', '2D fast mode']] as const).map(([id, label]) => (
+            <button key={id} type="button" onClick={() => setViewMode(id)} aria-pressed={viewMode === id} className={`min-h-9 rounded-lg px-3 text-[11px] font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${viewMode === id ? "bg-slate-950 text-white shadow-sm dark:bg-teal-400 dark:text-slate-950" : "text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white"}`}>
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
-      <div className="grid overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 lg:grid-cols-[180px_minmax(260px,0.8fr)_minmax(300px,1.2fr)]">
+      <div className="grid overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 lg:grid-cols-[210px_minmax(420px,1.35fr)_minmax(320px,1fr)]">
         <aside className="border-b border-slate-200 bg-slate-50/80 p-3 dark:border-slate-800 dark:bg-slate-950/50 lg:border-b-0 lg:border-r">
           <p className="px-2 pb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Atlas layer</p>
           <div className="mb-4 grid grid-cols-2 gap-1 rounded-xl bg-slate-200/70 p-1 dark:bg-slate-800">
@@ -558,9 +584,12 @@ function AnatomyAtlas({ selected, onSelect }: { selected: AnatomySystemId; onSel
               <button
                 key={id}
                 type="button"
-                onClick={() => setLayer(id)}
-                aria-pressed={layer === id}
-                className={`min-h-9 rounded-lg px-2 text-[11px] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${layer === id ? "bg-white text-slate-950 shadow-sm dark:bg-slate-700 dark:text-white" : "text-slate-500 dark:text-slate-300"}`}
+                onClick={() => {
+                  setLayer(id);
+                  if (id === "regions") setViewMode("2d");
+                }}
+                aria-pressed={layer === id && (id === "systems" || viewMode === "2d")}
+                className={`min-h-9 rounded-lg px-2 text-[11px] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${layer === id && (id === "systems" || viewMode === "2d") ? "bg-white text-slate-950 shadow-sm dark:bg-slate-700 dark:text-white" : "text-slate-500 dark:text-slate-300"}`}
               >
                 {label}
               </button>
@@ -590,16 +619,17 @@ function AnatomyAtlas({ selected, onSelect }: { selected: AnatomySystemId; onSel
           </div>
         </aside>
 
-        <div className="relative min-h-[520px] border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white px-6 py-5 dark:border-slate-800 dark:from-slate-950 dark:to-slate-900 lg:border-b-0 lg:border-r">
+        <div className="relative min-h-[650px] border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white px-5 py-5 dark:border-slate-800 dark:from-slate-950 dark:to-slate-900 lg:border-b-0 lg:border-r">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">Anterior view · {layer} layer</p>
-              <p className="mt-1 text-xs text-slate-500">{layer === "systems" ? "Select a highlighted organ system" : "Select one of the nine standard regions"}</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">{viewMode === "3d" ? "Interactive 3D full body" : `Anterior view · ${layer} layer`}</p>
+              <p className="mt-1 text-xs text-slate-500">{viewMode === "3d" ? "Rotate, zoom, animate, and select model structures" : layer === "systems" ? "Select a highlighted organ system" : "Select one of the nine standard regions"}</p>
             </div>
             <button
               type="button"
               onClick={() => {
-                if (layer === "systems") onSelect("cardiovascular");
+                if (viewMode === "3d") setViewerResetToken((value) => value + 1);
+                else if (layer === "systems") onSelect("cardiovascular");
                 else setSelectedRegion("epigastric");
               }}
               className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-600 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
@@ -607,11 +637,21 @@ function AnatomyAtlas({ selected, onSelect }: { selected: AnatomySystemId; onSel
               <RotateCcw className="h-3.5 w-3.5" /> Reset
             </button>
           </div>
-          <BodyMap layer={layer} selected={selected} selectedRegion={selectedRegion} onSelect={onSelect} onSelectRegion={setSelectedRegion} />
+          {viewMode === "3d" ? (
+            <>
+              <ThreeDAnatomyViewer resetToken={viewerResetToken} />
+              <div className="mt-3 flex flex-col gap-2 text-[10px] leading-4 text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+                <span>Visualization includes skeleton, muscles, brain, lungs, heart, circulation, digestive and urinary structures, skin and sense organs.</span>
+                <a href="https://sketchfab.com/3d-models/animated-full-human-body-anatomy-9b0b079953b840bc9a13f524b60041e4" target="_blank" rel="noreferrer" className="inline-flex shrink-0 items-center gap-1 font-semibold text-teal-700 underline underline-offset-2 dark:text-teal-300">Model details <ExternalLink className="h-3 w-3" /></a>
+              </div>
+            </>
+          ) : (
+            <BodyMap layer={layer} selected={selected} selectedRegion={selectedRegion} onSelect={onSelect} onSelectRegion={setSelectedRegion} />
+          )}
         </div>
 
         <section className="min-w-0 p-5 sm:p-6" aria-live="polite">
-          {layer === "regions" ? (
+          {viewMode === "2d" && layer === "regions" ? (
             <>
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">Selected region</p>
               <h3 className="mt-1 text-xl font-semibold text-slate-950 dark:text-white">{region.name}</h3>
