@@ -1,0 +1,150 @@
+{
+  "milestoneId": "M30",
+  "packageId": "KEP7-PACKAGE-M30-RAG-RETRIEVAL-PILOT-001",
+  "sourceCommit": "6632361e569f08c92b24005cb3f4e306796921fe",
+  "generatedAt": "2026-08-19T12:41:40.831Z",
+  "status": "pending_authorization",
+  "governance": {
+    "program": "KEP-7",
+    "productionRagActivation": false,
+    "transitionalPublicationFreeze": true,
+    "cohortId": "CONTROLLED-RAG-COHORT-V1",
+    "controlledEntities": [
+      "D0001",
+      "D0002",
+      "R0001",
+      "R0002",
+      "L0001",
+      "L0002"
+    ],
+    "zeroToleranceGates": {
+      "zeroUnauthorizedRetrieval": true,
+      "zeroEmergencyRegressions": true,
+      "zeroForbiddenLeakage": true,
+      "zeroUnsupportedClaims": true
+    }
+  },
+  "cohort": {
+    "cohortId": "CONTROLLED-RAG-COHORT-V1",
+    "schemaVersion": "1.0.0",
+    "isCohortReady": true,
+    "totalCohortEntities": 6,
+    "eligibleEntitiesCount": 6,
+    "ineligibleEntitiesCount": 0,
+    "entityPreflightResults": [
+      {
+        "entityId": "D0001",
+        "slug": "gastroesophageal-reflux-disease",
+        "isEligible": true,
+        "governanceVersion": "1.1.0",
+        "editorialStatus": "published",
+        "citationIntegrityPassed": true,
+        "safetyChecksPassed": true,
+        "withdrawnCheckPassed": true,
+        "independentReviewPassed": true,
+        "allowlistPassed": true,
+        "reasons": [],
+        "evaluatedAt": "2026-08-19T12:41:40.759Z"
+      },
+      {
+        "entityId": "D0002",
+        "slug": "eczema",
+        "isEligible": true,
+        "governanceVersion": "1.1.0",
+        "editorialStatus": "published",
+        "citationIntegrityPassed": true,
+        "safetyChecksPassed": true,
+        "withdrawnCheckPassed": true,
+        "independentReviewPassed": true,
+        "allowlistPassed": true,
+        "reasons": [],
+        "evaluatedAt": "2026-08-19T12:41:40.762Z"
+      },
+      {
+        "entityId": "R0001",
+        "slug": "sulphur",
+        "isEligible": true,
+        "governanceVersion": "1.1.0",
+        "editorialStatus": "published",
+        "citationIntegrityPassed": true,
+        "safetyChecksPassed": true,
+        "withdrawnCheckPassed": true,
+        "independentReviewPassed": true,
+        "allowlistPassed": true,
+        "reasons": [],
+        "evaluatedAt": "2026-08-19T12:41:40.762Z"
+      },
+      {
+        "entityId": "R0002",
+        "slug": "nux-vomica",
+        "isEligible": true,
+        "governanceVersion": "1.1.0",
+        "editorialStatus": "published",
+        "citationIntegrityPassed": true,
+        "safetyChecksPassed": true,
+        "withdrawnCheckPassed": true,
+        "independentReviewPassed": true,
+        "allowlistPassed": true,
+        "reasons": [],
+        "evaluatedAt": "2026-08-19T12:41:40.762Z"
+      },
+      {
+        "entityId": "L0001",
+        "slug": "cbc",
+        "isEligible": true,
+        "governanceVersion": "1.1.0",
+        "editorialStatus": "published",
+        "citationIntegrityPassed": true,
+        "safetyChecksPassed": true,
+        "withdrawnCheckPassed": true,
+        "independentReviewPassed": true,
+        "allowlistPassed": true,
+        "reasons": [],
+        "evaluatedAt": "2026-08-19T12:41:40.762Z"
+      },
+      {
+        "entityId": "L0002",
+        "slug": "tsh",
+        "isEligible": true,
+        "governanceVersion": "1.1.0",
+        "editorialStatus": "published",
+        "citationIntegrityPassed": true,
+        "safetyChecksPassed": true,
+        "withdrawnCheckPassed": true,
+        "independentReviewPassed": true,
+        "allowlistPassed": true,
+        "reasons": [],
+        "evaluatedAt": "2026-08-19T12:41:40.762Z"
+      }
+    ],
+    "evaluatedAt": "2026-08-19T12:41:40.763Z"
+  },
+  "evaluation": {
+    "totalCases": 17,
+    "passedCases": 17,
+    "failedCases": 0,
+    "passRate": 1,
+    "negativeControlsTotal": 9,
+    "negativeControlsPassed": 9,
+    "eligibleSetPrecision": 1,
+    "retrievalRecallAt5": 1,
+    "citationPrecision": 1,
+    "unsupportedClaimRate": 0,
+    "abstentionCorrectness": 1,
+    "emergencyEscalationPreservation": 1,
+    "crossEntityGroundingScore": 1,
+    "forbiddenKnowledgeLeakageRate": 0,
+    "zeroTolerancePassed": true,
+    "dimensionPassRates": {
+      "retrieval-recall": 1,
+      "eligible-set-precision": 1,
+      "citation-precision": 1,
+      "unsupported-claim-rate": 1,
+      "abstention-correctness": 1,
+      "emergency-escalation-preservation": 1,
+      "cross-entity-grounding": 1,
+      "forbidden-knowledge-leakage": 1
+    }
+  },
+  "packageSha256": "66ecc4ce829bf40c61e25f8f36887d9dd69f9ff7bf98d9208875748f623a96af"
+}
