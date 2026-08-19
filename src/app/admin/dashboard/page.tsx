@@ -14408,50 +14408,74 @@ ${err.message || err}`);
 
           {/* TAB: Medical Academy (3D Anatomy & Clinical Twin Lab) */}
           {activeTab === "medical-academy" && (
-            <div className="w-full h-full relative overflow-hidden">
-              {academyExperience === "original-atlas" ? (
-                <>
-                  <iframe
-                    key={academyMode}
-                    title="OSTM™ Interactive Human Anatomy Atlas"
-                    src={`https://clinical-intelligence-academy-v2.vercel.app/index.html?view=medical-academy&hide_sidebar=true&academy_mode=${encodeURIComponent(academyMode === "dashboard" ? "explore" : academyMode)}`}
-                    className="h-full w-full border-0 bg-slate-950 min-h-[calc(100vh-80px)]"
-                    allow="autoplay; clipboard-write; microphone"
-                  />
-                  <div className="absolute right-4 top-4 z-20 flex rounded-xl border border-slate-200/80 bg-white/95 p-1 shadow-lg backdrop-blur dark:border-slate-700/80 dark:bg-slate-900/95">
+            <div className="w-full h-full flex flex-col overflow-hidden">
+              {/* Clean, Non-Overlapping Academy Top Banner */}
+              <div className="flex-shrink-0 z-30 flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-slate-900 border-b border-slate-800 text-white shadow-md">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-teal-500/20 text-teal-400 border border-teal-500/30">
+                    <Activity className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-sm tracking-tight text-white">
+                        OSTM™ Interactive Human Anatomy Atlas
+                      </span>
+                      <span className="rounded-full bg-teal-950 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-teal-300 border border-teal-800">
+                        {academyExperience === "original-atlas" ? "Flagship 3D Atlas" : "Study Workspace"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Non-overlapping Switcher Controls */}
+                <div className="flex items-center gap-2">
+                  <div className="flex rounded-xl border border-slate-700 bg-slate-800/90 p-1 shadow-inner">
                     <button
                       type="button"
-                      className="rounded-lg bg-teal-600 px-3 py-2 text-[11px] font-semibold text-white shadow-sm"
-                      aria-pressed="true"
+                      onClick={() => setAcademyExperience("original-atlas")}
+                      className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                        academyExperience === "original-atlas"
+                          ? "bg-teal-600 text-white shadow-sm"
+                          : "text-slate-400 hover:text-white hover:bg-slate-700/60"
+                      }`}
+                      aria-pressed={academyExperience === "original-atlas"}
                     >
-                      Original 3D Atlas
+                      🗺️ Original 3D Atlas
                     </button>
                     <button
                       type="button"
                       onClick={() => setAcademyExperience("study-workspace")}
-                      className="rounded-lg px-3 py-2 text-[11px] font-semibold text-slate-600 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
-                      aria-pressed="false"
+                      className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                        academyExperience === "study-workspace"
+                          ? "bg-teal-600 text-white shadow-sm"
+                          : "text-slate-400 hover:text-white hover:bg-slate-700/60"
+                      }`}
+                      aria-pressed={academyExperience === "study-workspace"}
                     >
-                      Study workspace
+                      📚 Study Workspace
                     </button>
                   </div>
-                </>
-              ) : (
-                <div className="h-full w-full relative">
-                  <button
-                    type="button"
-                    onClick={() => setAcademyExperience("original-atlas")}
-                    className="absolute right-4 top-4 z-20 rounded-xl border border-teal-200 bg-white/95 px-3 py-2 text-[11px] font-semibold text-teal-700 shadow-lg backdrop-blur transition hover:bg-teal-50 dark:border-teal-800 dark:bg-slate-900/95 dark:text-teal-300 dark:hover:bg-slate-800"
-                  >
-                    Return to original 3D Atlas
-                  </button>
+                </div>
+              </div>
+
+              {/* Academy Content Surface */}
+              <div className="flex-1 w-full relative overflow-hidden bg-slate-950">
+                {academyExperience === "original-atlas" ? (
+                  <iframe
+                    key={academyMode}
+                    title="OSTM™ Interactive Human Anatomy Atlas"
+                    src={`https://clinical-intelligence-academy-v2.vercel.app/index.html?view=medical-academy&hide_sidebar=true&academy_mode=${encodeURIComponent(academyMode === "dashboard" ? "explore" : academyMode)}`}
+                    className="h-full w-full border-0 bg-slate-950 min-h-[calc(100vh-130px)]"
+                    allow="autoplay; clipboard-write; microphone"
+                  />
+                ) : (
                   <MedicalAcademyWorkspace
                     initialSection={academyMode}
                     isImmersive={immersiveMode}
                     onImmersiveChange={setImmersiveMode}
                   />
-                </div>
-              )}
+                )}
+              </div>
             </div>
           )}
 
