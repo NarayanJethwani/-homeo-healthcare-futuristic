@@ -1870,6 +1870,48 @@ async function runTests() {
     IPRateLimiter.resetAll();
   });
 
+  await test("53. Consult AI success responses preserve normalized evidence metadata", async () => {
+    resetMockState();
+    const originalConsult = mockDeps.aiRouterService.consultAI;
+    mockDeps.aiRouterService.consultAI = async () => ({
+      success: true,
+      response: "Educational anatomy response.",
+      providerUsed: "Knowledge Base (Local)",
+      modelUsed: "Vector Search",
+      latencyMs: 4,
+      retryCount: 0,
+      cacheHit: false,
+      knowledgeHit: true,
+      citations: ["  OpenStax Anatomy and Physiology 2e  ", "", "Reviewed anatomy source"]
+    });
+
+    try {
+      const request = new NextRequest("http://localhost:3000/api/consult-ai", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          mode: "public",
+          query: "Explain the anatomy of the heart for study.",
+          lang: "en"
+        })
+      });
+      const handler = createConsultAIHandler(mockDeps);
+      const response = await handler(request);
+      const payload = await response.json();
+
+      assert.strictEqual(response.status, 200);
+      assert.deepStrictEqual(payload.citations, [
+        "OpenStax Anatomy and Physiology 2e",
+        "Reviewed anatomy source"
+      ]);
+      assert.strictEqual(payload.evidenceStatus, "grounded");
+      assert.strictEqual(payload.knowledgeHit, true);
+      assert.strictEqual(payload.cacheHit, false);
+    } finally {
+      mockDeps.aiRouterService.consultAI = originalConsult;
+    }
+  });
+
   console.log(`\nSprint 27 Tests Completed. Passed: ${passedCount} | Failed: ${failedCount}`);
   if (failedCount > 0) {
     process.exit(1);

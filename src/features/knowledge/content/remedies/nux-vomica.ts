@@ -83,7 +83,7 @@ export const NuxVomicaRemedy: KnowledgeEntity = {
     potencies: ["6C", "30C", "200C", "1M"],
     safetyNotes:
       "CRUDE Strychnos nux-vomica seeds contain poisonous alkaloids (strychnine and brucine). Homeopathic preparations use high potencies diluted beyond toxicological risk according to pharmacopoeial standards. Un-diluted crude plant material is toxic and strictly prohibited. Homeopathic preparations do not replace emergency medical care for acute gastrointestinal obstruction, organ pathology, or acute toxicities.",
-    references: ["CIT-0001", "CIT-0002", "CIT-0023", "CIT-0024"],
+    references: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007", "CIT-0023", "CIT-0024"],
     faqs: [
       {
         question: "What is 'ineffectual urging' in Nux Vomica digestive profiles?",
@@ -107,22 +107,22 @@ export const NuxVomicaRemedy: KnowledgeEntity = {
       claimId: "R0002-KEYNOTES",
       statement:
         "Classical materia medica identifies Nux Vomica keynotes as ineffectual urging for stool, extreme chilliness, morning 3 AM waking, and hypersensitivity to sensory stimuli.",
-      citationIds: ["CIT-0001", "CIT-0002"],
-      passageId: "CIT-0001-NUX-VOMICA-KEYNOTES",
+      citationIds: ["CIT-0004", "CIT-0006"],
+      passageId: "CIT-0004-NUX-VOMICA-KEYNOTES",
     },
     {
       claimId: "R0002-MODALITIES",
       statement:
         "Nux Vomica modalities feature marked aggravation from cold drafts, early morning, and stimulants, with amelioration from warmth and quiet rest.",
-      citationIds: ["CIT-0002"],
-      passageId: "CIT-0002-NUX-VOMICA-MODALITIES",
+      citationIds: ["CIT-0005", "CIT-0007"],
+      passageId: "CIT-0005-NUX-VOMICA-MODALITIES",
     },
     {
       claimId: "R0002-TRADITIONAL-USE",
       statement:
         "Samuel Hahnemann designated Nux Vomica as a primary remedy for ailments arising from sedentary lifestyle, mental overwork, and toxic over-stimulation.",
-      citationIds: ["CIT-0001"],
-      passageId: "CIT-0001-ORGANON-STIMULANTS",
+      citationIds: ["CIT-0004", "CIT-0005"],
+      passageId: "CIT-0004-ORGANON-STIMULANTS",
     },
     {
       claimId: "R0002-SAFETY-LIMITATIONS",

@@ -698,6 +698,13 @@ export function createConsultAIHandler(deps: ConsultAIDependencies) {
       }
 
       const responseHeaders = headers;
+      const citations = Array.isArray(result.citations)
+        ? result.citations
+            .filter((citation: unknown): citation is string => typeof citation === "string")
+            .map((citation: string) => citation.trim())
+            .filter(Boolean)
+            .slice(0, 10)
+        : [];
       return NextResponse.json(
         {
           success: true,
@@ -705,7 +712,11 @@ export function createConsultAIHandler(deps: ConsultAIDependencies) {
           providerUsed: result.providerUsed,
           modelUsed: result.modelUsed,
           latencyMs: result.latencyMs,
-          correlationId
+          correlationId,
+          citations,
+          evidenceStatus: citations.length > 0 ? "grounded" : "ungrounded",
+          knowledgeHit: Boolean(result.knowledgeHit),
+          cacheHit: Boolean(result.cacheHit)
         },
         { status: 200, headers: responseHeaders }
       );
