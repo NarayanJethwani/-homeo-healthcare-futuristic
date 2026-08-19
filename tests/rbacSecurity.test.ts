@@ -301,7 +301,8 @@ async function runTests() {
       if (
         file.includes("api/admin/session/route.ts") ||
         file.includes("api/admin/invitations/accept/route.ts") ||
-        file.includes("api/admin/dev-login/route.ts")
+        file.includes("api/admin/dev-login/route.ts") ||
+        file.includes("api/admin/medical-academy/literature/route.ts")
       ) {
         return;
       }

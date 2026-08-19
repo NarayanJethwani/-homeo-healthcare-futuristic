@@ -527,7 +527,7 @@
         "genericTemplateSignals": []
       },
       "evidence": {
-        "referenceCount": 4,
+        "referenceCount": 6,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
@@ -579,7 +579,7 @@
         "genericTemplateSignals": []
       },
       "evidence": {
-        "referenceCount": 4,
+        "referenceCount": 6,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
