@@ -864,6 +864,7 @@ export default function AdminDashboard() {
   const [cieSubTab, setCieSubTab] = useState<"cockpit" | "intake" | "miasms" | "reports">("cockpit");
   const [immersiveMode, setImmersiveMode] = useState(false);
   const [academyMode, setAcademyMode] = useState("dashboard");
+  const [academyExperience, setAcademyExperience] = useState<"original-atlas" | "study-workspace">("original-atlas");
   const [isDiagnosticsDrawerOpen, setIsDiagnosticsDrawerOpen] = useState(false);
   const [authReady, setAuthReady] = useState(false);
 
@@ -14372,11 +14373,49 @@ ${err.message || err}`);
           {/* TAB: Medical Academy (3D Anatomy & Clinical Twin Lab) */}
           {activeTab === "medical-academy" && (
             <div className="w-full h-full relative overflow-hidden">
-              <MedicalAcademyWorkspace
-                initialSection={academyMode}
-                isImmersive={immersiveMode}
-                onImmersiveChange={setImmersiveMode}
-              />
+              {academyExperience === "original-atlas" ? (
+                <>
+                  <iframe
+                    key={academyMode}
+                    title="OSTM Interactive Human Anatomy Atlas"
+                    src={`https://clinical-intelligence-academy-v2.vercel.app/index.html?view=medical-academy&hide_sidebar=true&academy_mode=${encodeURIComponent(academyMode === "dashboard" ? "explore" : academyMode)}`}
+                    className="h-full w-full border-0 bg-slate-950"
+                    allow="autoplay; clipboard-write; microphone"
+                  />
+                  <div className="absolute right-4 top-4 z-20 flex rounded-xl border border-slate-200/80 bg-white/95 p-1 shadow-lg backdrop-blur dark:border-slate-700/80 dark:bg-slate-900/95">
+                    <button
+                      type="button"
+                      className="rounded-lg bg-teal-600 px-3 py-2 text-[11px] font-semibold text-white shadow-sm"
+                      aria-pressed="true"
+                    >
+                      Original 3D Atlas
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAcademyExperience("study-workspace")}
+                      className="rounded-lg px-3 py-2 text-[11px] font-semibold text-slate-600 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                      aria-pressed="false"
+                    >
+                      Study workspace
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="h-full w-full relative">
+                  <button
+                    type="button"
+                    onClick={() => setAcademyExperience("original-atlas")}
+                    className="absolute right-4 top-4 z-20 rounded-xl border border-teal-200 bg-white/95 px-3 py-2 text-[11px] font-semibold text-teal-700 shadow-lg backdrop-blur transition hover:bg-teal-50 dark:border-teal-800 dark:bg-slate-900/95 dark:text-teal-300 dark:hover:bg-slate-800"
+                  >
+                    Return to original 3D Atlas
+                  </button>
+                  <MedicalAcademyWorkspace
+                    initialSection={academyMode}
+                    isImmersive={immersiveMode}
+                    onImmersiveChange={setImmersiveMode}
+                  />
+                </div>
+              )}
             </div>
           )}
 
