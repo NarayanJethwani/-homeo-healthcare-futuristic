@@ -22,6 +22,17 @@ const CIEWorkspace = dynamic(() => import("./CIEWorkspace"), {
   ssr: false,
   loading: () => <div className="p-8 text-center text-slate-400">Loading Clinical Intelligence Engine...</div>
 });
+const MedicalAcademyWorkspace = dynamic(
+  () => import("@/features/medical-academy/components/MedicalAcademyWorkspace"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-full items-center justify-center bg-slate-100 text-sm text-slate-500 dark:bg-slate-950 dark:text-slate-400">
+        Loading Medical Intelligence Academy…
+      </div>
+    ),
+  },
+);
 import { REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, CLARKE_CHAPTERS, BOGER_CHAPTERS, KNERR_CHAPTERS, BOENNINGHAUSEN_CHAPTERS, GENTRY_CHAPTERS, SYNOPTIC_CHAPTERS, JAHR_CHAPTERS, LIPPE_CHAPTERS, HERING_SPECIALIZED_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA as JETHWANI_REPERTORY_DATA_ORIG, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices, setRepertoryData } from "@/lib/repertoryData";
 import { isRubricScoringEnabled } from "@/features/repertory/scoring/repertoryScoringPolicy";
 import { getTopWorkbenchRemedyColumns, projectWorkbenchScores } from "@/features/repertory/scoring/repertoryWorkbenchScoring";
@@ -1086,7 +1097,7 @@ export default function AdminDashboard() {
         const validTabs = [
           "dashboard", "intake", "patients", "diagnostics", "analyzer", 
           "diet-lifestyle", "treatment-planner", "nexus-atlas", "learning-hub", "communication", 
-          "ai-router", "health-intelligence", "cie"
+          "ai-router", "health-intelligence", "cie", "medical-academy"
         ];
         
         if (tabParam && validTabs.includes(tabParam)) {
@@ -1103,16 +1114,6 @@ export default function AdminDashboard() {
       window.addEventListener("hashchange", checkUrlTab);
       return () => window.removeEventListener("hashchange", checkUrlTab);
     }
-  }, []);
-
-  useEffect(() => {
-    const handleIframeMessage = (event: MessageEvent) => {
-      if (event.data?.type === "toggle-immersive-mode") {
-        setImmersiveMode(!!event.data.active);
-      }
-    };
-    window.addEventListener("message", handleIframeMessage);
-    return () => window.removeEventListener("message", handleIframeMessage);
   }, []);
 
   useEffect(() => {
@@ -1169,25 +1170,12 @@ export default function AdminDashboard() {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const academyIframeRef = useRef<HTMLIFrameElement>(null);
-
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [intakeChatMessages]);
 
-  useEffect(() => {
-    if (activeTab === "medical-academy" && academyIframeRef.current?.contentWindow) {
-      academyIframeRef.current.contentWindow.postMessage({
-        type: "cios-settings-sync",
-        theme,
-        fontSize: globalFontSize,
-        zoomLevel: globalLayoutZoom,
-        readingWidth: globalReadingWidth
-      }, "*");
-    }
-  }, [activeTab, theme, globalFontSize, globalLayoutZoom, globalReadingWidth]);
   const [intakeInterviewIndex, setIntakeInterviewIndex] = useState<number>(0);
   const [intakeChatInput, setIntakeChatInput] = useState<string>("");
   const [intakeInterviewActive, setIntakeInterviewActive] = useState<boolean>(false);
@@ -2516,7 +2504,7 @@ export default function AdminDashboard() {
       const validTabs = [
         "dashboard", "intake", "patients", "diagnostics", "analyzer", 
         "diet-lifestyle", "treatment-planner", "nexus-atlas", "learning-hub", "communication", 
-        "ai-router", "health-intelligence", "cie"
+        "ai-router", "health-intelligence", "cie", "medical-academy"
       ];
       if (tabParam && validTabs.includes(tabParam)) {
         setActiveTab(tabParam as any);
@@ -6071,12 +6059,6 @@ Homeo Healthcare`;
       const mode = modeMap[subSectionId];
       if (mode) {
         setAcademyMode(mode);
-        if (academyIframeRef.current?.contentWindow) {
-          academyIframeRef.current.contentWindow.postMessage({
-            type: "cios-academy-mode-switch",
-            mode: mode
-          }, "*");
-        }
       }
     }
     if (action) {
@@ -14390,24 +14372,11 @@ ${err.message || err}`);
           {/* TAB: Medical Academy (3D Anatomy & Clinical Twin Lab) */}
           {activeTab === "medical-academy" && (
             <div className="w-full h-full relative overflow-hidden">
-              <iframe 
-                ref={academyIframeRef}
-                src={`https://clinical-intelligence-engine.vercel.app?view=medical-academy&hide_sidebar=true&theme=${theme}&font=${globalFontSize}&zoom=${globalLayoutZoom}&width=${globalReadingWidth}&academy_mode=${academyMode}`} 
-                className="w-full h-full border-none"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; microphone"
-                allowFullScreen
+              <MedicalAcademyWorkspace
+                initialSection={academyMode}
+                isImmersive={immersiveMode}
+                onImmersiveChange={setImmersiveMode}
               />
-              {/* Floating Exit Button for Immersive Mode */}
-              {immersiveMode && (
-                <button
-                  onClick={() => setImmersiveMode(false)}
-                  className="fixed top-4 right-4 z-[9999] px-4 py-2.5 bg-white/95 hover:bg-white text-slate-750 hover:text-rose-600 border border-slate-200/80 rounded-2xl text-[10.5px] font-bold uppercase tracking-wider shadow-[0_8px_30px_rgba(15,23,42,0.12)] hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-1.5 cursor-pointer"
-                  title="Exit Full Screen"
-                >
-                  <Minimize2 className="w-3.5 h-3.5 text-rose-500 animate-pulse" />
-                  <span>Exit Immersive</span>
-                </button>
-              )}
             </div>
           )}
 
