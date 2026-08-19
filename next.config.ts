@@ -106,6 +106,14 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      {
+        source: "/index.html",
+        destination: "/admin/dashboard",
+      },
+    ];
+  },
   async headers() {
     return [
       {

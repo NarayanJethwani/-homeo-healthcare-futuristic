@@ -28,7 +28,7 @@ const MedicalAcademyWorkspace = dynamic(
     ssr: false,
     loading: () => (
       <div className="flex h-full items-center justify-center bg-slate-100 text-sm text-slate-500 dark:bg-slate-950 dark:text-slate-400">
-        Loading Medical Intelligence Academy…
+        Loading OSTM™ Interactive Human Anatomy Atlas…
       </div>
     ),
   },
@@ -1095,19 +1095,38 @@ export default function AdminDashboard() {
       const checkUrlTab = () => {
         const params = new URLSearchParams(window.location.search);
         const tabParam = params.get("tab");
+        const viewParam = params.get("view");
+        const academyModeParam = params.get("academy_mode") || params.get("academyMode");
+        const hideSidebarParam = params.get("hide_sidebar") || params.get("hideSidebar");
+        const academyExpParam = params.get("academy_experience") || params.get("academyExperience");
+
         const validTabs = [
           "dashboard", "intake", "patients", "diagnostics", "analyzer", 
           "diet-lifestyle", "treatment-planner", "nexus-atlas", "learning-hub", "communication", 
           "ai-router", "health-intelligence", "cie", "medical-academy"
         ];
         
-        if (tabParam && validTabs.includes(tabParam)) {
+        if (viewParam === "medical-academy" || tabParam === "medical-academy") {
+          setActiveTab("medical-academy");
+        } else if (tabParam && validTabs.includes(tabParam)) {
           setActiveTab(tabParam as any);
         } else {
           const hash = window.location.hash.replace("#", "");
-          if (hash && validTabs.includes(hash)) {
+          if (hash === "medical-academy" || (hash && validTabs.includes(hash))) {
             setActiveTab(hash as any);
           }
+        }
+
+        if (academyModeParam) {
+          setAcademyMode(academyModeParam);
+        }
+
+        if (hideSidebarParam === "true" || hideSidebarParam === "1") {
+          setIsSidebarCollapsed(true);
+        }
+
+        if (academyExpParam === "study-workspace" || academyExpParam === "original-atlas") {
+          setAcademyExperience(academyExpParam);
         }
       };
       
@@ -1115,7 +1134,7 @@ export default function AdminDashboard() {
       window.addEventListener("hashchange", checkUrlTab);
       return () => window.removeEventListener("hashchange", checkUrlTab);
     }
-  }, []);
+  }, [setIsSidebarCollapsed]);
 
   useEffect(() => {
     const fetchClinicians = async () => {
@@ -2502,16 +2521,33 @@ export default function AdminDashboard() {
         setSelectedPatientId(patientParam);
       }
       const tabParam = params.get("tab");
+      const viewParam = params.get("view");
+      const academyModeParam = params.get("academy_mode") || params.get("academyMode");
+      const hideSidebarParam = params.get("hide_sidebar") || params.get("hideSidebar");
+      const academyExpParam = params.get("academy_experience") || params.get("academyExperience");
+
       const validTabs = [
         "dashboard", "intake", "patients", "diagnostics", "analyzer", 
         "diet-lifestyle", "treatment-planner", "nexus-atlas", "learning-hub", "communication", 
         "ai-router", "health-intelligence", "cie", "medical-academy"
       ];
-      if (tabParam && validTabs.includes(tabParam)) {
+      if (viewParam === "medical-academy" || tabParam === "medical-academy") {
+        setActiveTab("medical-academy");
+      } else if (tabParam && validTabs.includes(tabParam)) {
         setActiveTab(tabParam as any);
       }
+
+      if (academyModeParam) {
+        setAcademyMode(academyModeParam);
+      }
+      if (hideSidebarParam === "true" || hideSidebarParam === "1") {
+        setIsSidebarCollapsed(true);
+      }
+      if (academyExpParam === "study-workspace" || academyExpParam === "original-atlas") {
+        setAcademyExperience(academyExpParam);
+      }
     }
-  }, [patients]);
+  }, [patients, setIsSidebarCollapsed]);
 
   // Dynamically synchronize and prefill the Diet & Lifestyle Restrictions field when the selected patient changes
   const lastPrefilledDietPatientIdRef = useRef<string>("");
@@ -14377,9 +14413,9 @@ ${err.message || err}`);
                 <>
                   <iframe
                     key={academyMode}
-                    title="OSTM Interactive Human Anatomy Atlas"
+                    title="OSTM™ Interactive Human Anatomy Atlas"
                     src={`https://clinical-intelligence-academy-v2.vercel.app/index.html?view=medical-academy&hide_sidebar=true&academy_mode=${encodeURIComponent(academyMode === "dashboard" ? "explore" : academyMode)}`}
-                    className="h-full w-full border-0 bg-slate-950"
+                    className="h-full w-full border-0 bg-slate-950 min-h-[calc(100vh-80px)]"
                     allow="autoplay; clipboard-write; microphone"
                   />
                   <div className="absolute right-4 top-4 z-20 flex rounded-xl border border-slate-200/80 bg-white/95 p-1 shadow-lg backdrop-blur dark:border-slate-700/80 dark:bg-slate-900/95">

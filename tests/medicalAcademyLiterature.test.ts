@@ -1,5 +1,4 @@
-process.env.NODE_ENV = "test";
-
+import "./setupEnv";
 import assert from "node:assert/strict";
 import { NextRequest } from "next/server";
 import { POST } from "../src/app/api/admin/medical-academy/literature/route";

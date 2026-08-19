@@ -569,7 +569,13 @@ function AnatomyAtlas({ selected, onSelect }: { selected: AnatomySystemId; onSel
         </div>
         <div className="inline-flex w-fit rounded-xl border border-slate-200 bg-slate-100 p-1 dark:border-slate-700 dark:bg-slate-900" aria-label="Atlas view">
           {([['3d', '3D full body'], ['2d', '2D fast mode']] as const).map(([id, label]) => (
-            <button key={id} type="button" onClick={() => setViewMode(id)} aria-pressed={viewMode === id} className={`min-h-9 rounded-lg px-3 text-[11px] font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${viewMode === id ? "bg-slate-950 text-white shadow-sm dark:bg-teal-400 dark:text-slate-950" : "text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white"}`}>
+            <button
+              key={id}
+              type="button"
+              onClick={() => setViewMode(id)}
+              aria-pressed={viewMode === id}
+              className={`min-h-9 rounded-lg px-3 text-[11px] font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${viewMode === id ? "bg-slate-950 text-white shadow-sm dark:bg-teal-400 dark:text-slate-950" : "text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white"}`}
+            >
               {label}
             </button>
           ))}
@@ -1753,13 +1759,13 @@ export default function MedicalAcademyWorkspace({
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <h1 className="truncate text-lg font-semibold tracking-tight text-slate-950 dark:text-white sm:text-xl">
-                    Medical Intelligence Academy
+                    OSTM™ Interactive Human Anatomy Atlas
                   </h1>
                   <span className="rounded-full bg-teal-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-teal-700 dark:bg-teal-950/50 dark:text-teal-300">
-                    v1.8
+                    Study Workspace
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Evidence-aware foundational medical learning</p>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Evidence-aware foundational medical learning & clinical intelligence</p>
               </div>
             </div>
 
@@ -1772,7 +1778,7 @@ export default function MedicalAcademyWorkspace({
                 className="group inline-flex min-h-11 items-center gap-2.5 rounded-2xl bg-gradient-to-r from-slate-950 to-teal-900 px-4 py-2 text-xs font-semibold text-white shadow-md shadow-slate-900/10 transition hover:from-teal-900 hover:to-cyan-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 dark:from-teal-400 dark:to-cyan-400 dark:text-slate-950"
               >
                 <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 text-teal-200 dark:bg-slate-950/10 dark:text-slate-950"><Sparkles className="h-4 w-4" /></span>
-                Open Academy Copilot
+                Open OSTM™ Academy Copilot
                 <PanelRightOpen className="h-4 w-4 opacity-70 transition group-hover:translate-x-0.5" />
               </button>
               {onImmersiveChange && (
@@ -1831,7 +1837,7 @@ export default function MedicalAcademyWorkspace({
         )}
 
         <footer className="mt-5 flex flex-col gap-2 border-t border-slate-200 px-1 py-4 text-[10px] leading-5 text-slate-500 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
-          <span>Medical Intelligence Academy · Foundation Study · Educational use only</span>
+          <span>OSTM™ Interactive Human Anatomy Atlas · Foundation Study · Educational use only</span>
           <span className="inline-flex items-center gap-1.5">
             <CircleHelp className="h-3 w-3" /> Report questionable content through the clinical knowledge review workflow.
           </span>
