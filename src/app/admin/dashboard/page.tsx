@@ -28,7 +28,7 @@ const MedicalAcademyWorkspace = dynamic(
     ssr: false,
     loading: () => (
       <div className="flex h-full items-center justify-center bg-slate-100 text-sm text-slate-500 dark:bg-slate-950 dark:text-slate-400">
-        Loading OSTM™ Interactive Human Anatomy Atlas…
+        Loading HoloHuman™ Academy…
       </div>
     ),
   },
@@ -14418,7 +14418,7 @@ ${err.message || err}`);
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-sm tracking-tight text-white">
-                        OSTM™ Interactive Human Anatomy Atlas
+                        HoloHuman™ Academy
                       </span>
                       <span className="rounded-full bg-teal-950 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-teal-300 border border-teal-800">
                         {academyExperience === "original-atlas" ? "Flagship 3D Atlas" : "Study Workspace"}
@@ -14440,7 +14440,7 @@ ${err.message || err}`);
                       }`}
                       aria-pressed={academyExperience === "original-atlas"}
                     >
-                      🗺️ Original 3D Atlas
+                      🗺️ HoloHuman™ 3D Atlas
                     </button>
                     <button
                       type="button"
@@ -14463,7 +14463,7 @@ ${err.message || err}`);
                 {academyExperience === "original-atlas" ? (
                   <iframe
                     key={academyMode}
-                    title="OSTM™ Interactive Human Anatomy Atlas"
+                    title="HoloHuman™ Academy 3D Atlas"
                     src={`https://clinical-intelligence-academy-v2.vercel.app/index.html?view=medical-academy&hide_sidebar=true&academy_mode=${encodeURIComponent(academyMode === "dashboard" ? "explore" : academyMode)}`}
                     className="h-full w-full border-0 bg-slate-950 min-h-[calc(100vh-130px)]"
                     allow="autoplay; clipboard-write; microphone"
