@@ -531,18 +531,18 @@ function BodyMap({
 
 function ThreeDAnatomyViewer({ resetToken }: { resetToken: number }) {
   return (
-    <div className="relative mt-5 overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-inner">
+    <div className="relative mt-2 overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-inner">
       <iframe
         key={resetToken}
         title="Interactive full human body anatomy model"
         src="https://sketchfab.com/models/9b0b079953b840bc9a13f524b60041e4/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_watermark=1&ui_annotations=1&ui_help=1"
-        className="h-[590px] w-full border-0"
+        className="h-[720px] lg:h-[780px] w-full border-0"
         loading="lazy"
         allow="autoplay; fullscreen; xr-spatial-tracking"
         allowFullScreen
       />
       <div className="pointer-events-none absolute left-3 top-3 rounded-full border border-white/15 bg-slate-950/85 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white backdrop-blur">
-        Drag to rotate · scroll to zoom
+        Full 3D Twin · Drag to rotate · Scroll to zoom
       </div>
     </div>
   );
@@ -649,7 +649,7 @@ function AnatomyAtlas({
           </div>
         </aside>
 
-        <div className="relative min-h-[650px] flex flex-col justify-between border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white px-5 py-5 dark:border-slate-800 dark:from-slate-950 dark:to-slate-900 lg:border-b-0 lg:border-r">
+        <div className="relative min-h-[850px] flex flex-col justify-between border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white px-5 py-5 dark:border-slate-800 dark:from-slate-950 dark:to-slate-900 lg:border-b-0 lg:border-r">
           <div>
             <div className="flex items-center justify-between mb-3">
               <div>
