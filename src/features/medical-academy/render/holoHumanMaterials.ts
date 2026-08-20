@@ -16,7 +16,7 @@ export interface SystemMaterialConfig {
   secondaryColor?: string;
   sssColor?: string;
   roughness: number;
-  metalness: number;
+  metalness?: number;
   clearcoat?: number;
   clearcoatRoughness?: number;
   transmission?: number;
@@ -184,6 +184,7 @@ export const HOLOHUMAN_SYSTEM_MATERIALS: Record<string, SystemMaterialConfig> = 
     name: "Tracheobronchial Cartilage",
     primaryColor: "#93C5FD", // Semi-translucent bluish white C-rings
     roughness: 0.2,
+    metalness: 0.02,
     transmission: 0.5,
     clearcoat: 0.6,
   },
@@ -302,6 +303,7 @@ export const HOLOHUMAN_SYSTEM_MATERIALS: Record<string, SystemMaterialConfig> = 
     name: "Pituitary Gland (Hypophysis)",
     primaryColor: "#F43F5E", // Rose pearl
     roughness: 0.3,
+    metalness: 0.02,
     transmission: 0.4,
   },
 
@@ -331,6 +333,7 @@ export const HOLOHUMAN_SYSTEM_MATERIALS: Record<string, SystemMaterialConfig> = 
     name: "Uterine Myometrium & Adnexa",
     primaryColor: "#991B1B", // Muscular crimson
     roughness: 0.35,
+    metalness: 0.02,
     clearcoat: 0.7,
   },
   reproductive_gonads: {
@@ -338,6 +341,7 @@ export const HOLOHUMAN_SYSTEM_MATERIALS: Record<string, SystemMaterialConfig> = 
     name: "Gonadal Tissue (Ovaries/Testes)",
     primaryColor: "#E2E8F0", // Pearlescent ivory-white
     roughness: 0.25,
+    metalness: 0.02,
     transmission: 0.35,
     clearcoat: 0.8,
   },
