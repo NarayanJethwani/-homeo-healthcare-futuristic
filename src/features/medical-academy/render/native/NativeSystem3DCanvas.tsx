@@ -4,7 +4,11 @@ import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { AnatomySystemId } from "../../data/medicalAcademyData";
 import { createBioDigitalShaders } from "./BioDigitalOrganShaders";
-import { buildBioDigitalOrganSystem } from "./realisticOrganModels";
+import { 
+  loadOrBuildRealisticAnatomy, 
+  AnatomyLayerVisibility, 
+  DEFAULT_ANATOMY_LAYERS 
+} from "./RealisticAnatomyEngine";
 import { SubOrganMeshMeta } from "./systemMeshBuilders";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
@@ -16,6 +20,7 @@ interface NativeSystem3DCanvasProps {
   activeRemedyTropismId: string | null;
   autoRotate?: boolean;
   xrayMode?: boolean;
+  layers?: AnatomyLayerVisibility;
 }
 
 export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
@@ -26,10 +31,12 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
   activeRemedyTropismId,
   autoRotate = false,
   xrayMode = false,
+  layers = DEFAULT_ANATOMY_LAYERS,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [hoveredOrganName, setHoveredOrganName] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // References for render loop
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -42,6 +49,9 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
 
   useEffect(() => {
     if (!containerRef.current || !canvasRef.current) return;
+
+    let isMounted = true;
+    setIsLoading(true);
 
     const width = containerRef.current.clientWidth || 800;
     const height = containerRef.current.clientHeight || 600;
@@ -68,6 +78,7 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
     renderer.toneMappingExposure = 1.2;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.localClippingEnabled = true;
     rendererRef.current = renderer;
 
     // 4. OrbitControls
@@ -107,23 +118,40 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
     gridHelper.position.y = -3.2;
     scene.add(gridHelper);
 
-    // 6. Build BioDigital-Grade Realistic 3D Organ Models
+    // Cross-section clipping plane if enabled
+    const clipPlane = layers.crossSectionSlice ? new THREE.Plane(new THREE.Vector3(0, 0, -1), 0.1) : null;
+    if (clipPlane) {
+      renderer.clippingPlanes = [clipPlane];
+    } else {
+      renderer.clippingPlanes = [];
+    }
+
+    // 6. Build or Load Realistic Anatomical 3D Models
     const materials = createBioDigitalShaders(systemId, accentColor);
-    const { group: organGroup, subOrganMetas, animatables } = buildBioDigitalOrganSystem(
+    let organGroup: THREE.Group = new THREE.Group();
+    let animatables: Array<{ mesh: THREE.Object3D; type: "pulse" | "rotate" | "wave" | "flow"; speed: number }> = [];
+
+    loadOrBuildRealisticAnatomy(
       systemId,
       materials,
       activeSubOrganId,
-      activeRemedyTropismId
-    );
-    scene.add(organGroup);
-    subOrganMetasRef.current = subOrganMetas;
+      activeRemedyTropismId,
+      layers
+    ).then((result) => {
+      if (!isMounted) return;
+      organGroup = result.group;
+      animatables = result.animatables;
+      subOrganMetasRef.current = result.subOrganMetas;
+      scene.add(organGroup);
+      setIsLoading(false);
+    });
 
     // 7. Raycasting Setup
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
     const handlePointerMove = (e: MouseEvent) => {
-      if (!canvasRef.current) return;
+      if (!canvasRef.current || !organGroup) return;
       const rect = canvasRef.current.getBoundingClientRect();
       mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -147,7 +175,7 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
     };
 
     const handlePointerClick = (e: MouseEvent) => {
-      if (!canvasRef.current) return;
+      if (!canvasRef.current || !organGroup) return;
       const rect = canvasRef.current.getBoundingClientRect();
       mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -213,13 +241,14 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
     resizeObserver.observe(containerRef.current);
 
     return () => {
+      isMounted = false;
       cancelAnimationFrame(animationFrameId);
       resizeObserver.disconnect();
       canvasDom.removeEventListener("mousemove", handlePointerMove);
       canvasDom.removeEventListener("click", handlePointerClick);
       renderer.dispose();
     };
-  }, [systemId, accentColor, activeSubOrganId, activeRemedyTropismId, autoRotate, xrayMode, onSubOrganSelect]);
+  }, [systemId, accentColor, activeSubOrganId, activeRemedyTropismId, autoRotate, xrayMode, layers, onSubOrganSelect]);
 
   // Update target camera focus when activeSubOrganId changes
   useEffect(() => {
@@ -240,8 +269,16 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
     <div ref={containerRef} className="relative h-full w-full overflow-hidden select-none">
       <canvas ref={canvasRef} className="h-full w-full outline-none" />
 
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-sm">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-teal-400 border-t-transparent" />
+          <p className="mt-2 text-xs font-semibold text-teal-300">Rendering Living 3D Anatomical Spatial Model...</p>
+        </div>
+      )}
+
       {/* Floating Hover Raycast Label */}
-      {hoveredOrganName && (
+      {hoveredOrganName && !isLoading && (
         <div className="pointer-events-none absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 rounded-full border border-teal-500/40 bg-slate-900/90 px-3.5 py-1.5 text-xs font-semibold text-teal-300 shadow-xl backdrop-blur animate-fadeIn">
           <span>🔍</span>
           <span>{hoveredOrganName}</span>
