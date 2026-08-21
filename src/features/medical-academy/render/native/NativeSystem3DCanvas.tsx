@@ -3,8 +3,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { AnatomySystemId } from "../../data/medicalAcademyData";
-import { createOrganMaterials } from "./organShaderMaterials";
-import { buildSystem3DScene, SubOrganMeshMeta } from "./systemMeshBuilders";
+import { createBioDigitalShaders } from "./BioDigitalOrganShaders";
+import { buildBioDigitalOrganSystem } from "./realisticOrganModels";
+import { SubOrganMeshMeta } from "./systemMeshBuilders";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 interface NativeSystem3DCanvasProps {
@@ -55,7 +56,7 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
     camera.position.set(0, 0.5, 4.5);
     cameraRef.current = camera;
 
-    // 3. WebGL Renderer
+    // 3. WebGL Renderer with High-Precision PBR
     const renderer = new THREE.WebGLRenderer({
       canvas: canvasRef.current,
       antialias: true,
@@ -64,43 +65,51 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
+    renderer.toneMappingExposure = 1.2;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     rendererRef.current = renderer;
 
     // 4. OrbitControls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.maxDistance = 12;
-    controls.minDistance = 1.5;
+    controls.dampingFactor = 0.06;
+    controls.maxDistance = 10;
+    controls.minDistance = 1.2;
     controls.autoRotate = autoRotate;
-    controls.autoRotateSpeed = 1.0;
+    controls.autoRotateSpeed = 1.2;
     controlsRef.current = controls;
 
-    // 5. Studio 3-Point Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    // 5. Medical Surgical Studio 4-Point Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
     scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.0);
-    keyLight.position.set(4, 6, 5);
-    scene.add(keyLight);
+    // Overhead Surgical Spot
+    const surgicalLight = new THREE.SpotLight(0xffffff, 3.5);
+    surgicalLight.position.set(2, 7, 4);
+    surgicalLight.angle = Math.PI / 4;
+    surgicalLight.penumbra = 0.6;
+    surgicalLight.castShadow = true;
+    scene.add(surgicalLight);
 
-    const fillLight = new THREE.DirectionalLight(0x38bdf8, 1.2);
-    fillLight.position.set(-4, -2, -3);
+    // Lateral Fill Light (Tissue Contour)
+    const fillLight = new THREE.DirectionalLight(0x93c5fd, 1.4);
+    fillLight.position.set(-5, -1, -3);
     scene.add(fillLight);
 
-    const rimLight = new THREE.DirectionalLight(new THREE.Color(accentColor), 2.2);
-    rimLight.position.set(0, 5, -4);
+    // Cyan/Gold Rim Accent Light (Depth Separation)
+    const rimLight = new THREE.DirectionalLight(new THREE.Color(accentColor), 2.5);
+    rimLight.position.set(0, 6, -5);
     scene.add(rimLight);
 
-    // Subtle Ground Grid
+    // Subtle Ground Shadow Grid
     const gridHelper = new THREE.GridHelper(10, 20, 0x1e293b, 0x0f172a);
     gridHelper.position.y = -3.2;
     scene.add(gridHelper);
 
-    // 6. Build 3D Organ Meshes
-    const materials = createOrganMaterials(systemId, accentColor);
-    const { group: organGroup, subOrganMetas, animatables } = buildSystem3DScene(
+    // 6. Build BioDigital-Grade Realistic 3D Organ Models
+    const materials = createBioDigitalShaders(systemId, accentColor);
+    const { group: organGroup, subOrganMetas, animatables } = buildBioDigitalOrganSystem(
       systemId,
       materials,
       activeSubOrganId,
@@ -124,7 +133,7 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
 
       if (intersects.length > 0) {
         let hitObj: THREE.Object3D | null = intersects[0].object;
-        while (hitObj && !hitObj.userData?.subOrganId && hitObj.parent !== organGroup) {
+        while (hitObj && !hitObj.userData?.subOrganId && hitObj.parent && hitObj.parent !== organGroup) {
           hitObj = hitObj.parent;
         }
         if (hitObj?.userData?.name) {
@@ -148,7 +157,7 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
 
       if (intersects.length > 0) {
         let hitObj: THREE.Object3D | null = intersects[0].object;
-        while (hitObj && !hitObj.userData?.subOrganId && hitObj.parent !== organGroup) {
+        while (hitObj && !hitObj.userData?.subOrganId && hitObj.parent && hitObj.parent !== organGroup) {
           hitObj = hitObj.parent;
         }
         if (hitObj?.userData?.subOrganId) {
@@ -177,10 +186,10 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
         controls.update();
       }
 
-      // Animate pulsing or waving tissue components
+      // Animate living tissue pulsation (e.g. heartbeat or endocrine secretion)
       animatables.forEach((item) => {
         if (item.type === "pulse") {
-          const s = 1.0 + Math.sin(elapsedTime * item.speed * Math.PI) * 0.05;
+          const s = 1.0 + Math.sin(elapsedTime * item.speed * Math.PI) * 0.04;
           item.mesh.scale.set(s, s, s);
         }
       });
