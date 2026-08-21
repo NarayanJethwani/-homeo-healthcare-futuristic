@@ -141,14 +141,14 @@ export const ACADEMY_SECTIONS: Array<{
   label: string;
   description: string;
 }> = [
-  { id: "home", label: "Home", description: "Learning overview" },
-  { id: "learn", label: "Learn", description: "Reviewed modules" },
-  { id: "explore", label: "Atlas", description: "Interactive anatomy" },
-  { id: "pathology", label: "Pathology", description: "3D disease simulations" },
-  { id: "practice", label: "Practice", description: "Educational cases" },
-  { id: "assess", label: "Assess", description: "Knowledge checks" },
-  { id: "research", label: "Sources", description: "Evidence registry" },
-  { id: "certify", label: "Progress", description: "Completion records" },
+  { id: "explore", label: "🗺️ 3D Living Atlas", description: "System-wise dedicated 3D models & sub-organ explorer" },
+  { id: "pathology", label: "🩺 3D Disease Simulator", description: "3D tissue remodeling & healthy vs diseased morphing" },
+  { id: "learn", label: "📚 System Modules", description: "Reviewed organ system modules" },
+  { id: "practice", label: "🧪 Clinical Cases", description: "Educational case studies" },
+  { id: "assess", label: "📝 Assessments", description: "Interactive knowledge checks" },
+  { id: "research", label: "🔬 Evidence Library", description: "PICO research & literature registry" },
+  { id: "certify", label: "🏆 Mastery", description: "Completion and progress records" },
+  { id: "home", label: "🏠 Overview", description: "Academy dashboard overview" },
 ];
 
 export const ANATOMY_SYSTEMS: AnatomySystem[] = [

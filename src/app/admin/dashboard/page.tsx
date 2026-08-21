@@ -14399,73 +14399,11 @@ ${err.message || err}`);
           {/* TAB: Medical Academy (3D Anatomy & Clinical Twin Lab) */}
           {activeTab === "medical-academy" && (
             <div className="w-full min-h-full flex flex-col">
-              {/* Clean, Non-Overlapping Academy Top Banner */}
-              <div className="flex-shrink-0 z-30 flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-slate-900 border-b border-slate-800 text-white shadow-md">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-teal-500/20 text-teal-400 border border-teal-500/30">
-                    <Activity className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm tracking-tight text-white">
-                        HoloHuman™ Academy
-                      </span>
-                      <span className="rounded-full bg-teal-950 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-teal-300 border border-teal-800">
-                        {academyExperience === "original-atlas" ? "Flagship 3D Atlas" : "Study Workspace"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Non-overlapping Switcher Controls */}
-                <div className="flex items-center gap-2">
-                  <div className="flex rounded-xl border border-slate-700 bg-slate-800/90 p-1 shadow-inner">
-                    <button
-                      type="button"
-                      onClick={() => setAcademyExperience("original-atlas")}
-                      className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-                        academyExperience === "original-atlas"
-                          ? "bg-teal-600 text-white shadow-sm"
-                          : "text-slate-400 hover:text-white hover:bg-slate-700/60"
-                      }`}
-                      aria-pressed={academyExperience === "original-atlas"}
-                    >
-                      🗺️ HoloHuman™ 3D Atlas
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setAcademyExperience("study-workspace")}
-                      className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-                        academyExperience === "study-workspace"
-                          ? "bg-teal-600 text-white shadow-sm"
-                          : "text-slate-400 hover:text-white hover:bg-slate-700/60"
-                      }`}
-                      aria-pressed={academyExperience === "study-workspace"}
-                    >
-                      📚 Study Workspace
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Academy Content Surface */}
-              <div className="flex-1 w-full relative min-h-[850px]">
-                {academyExperience === "original-atlas" ? (
-                  <iframe
-                    key={academyMode}
-                    title="HoloHuman™ Academy 3D Atlas"
-                    src={`https://clinical-intelligence-academy-v2.vercel.app/index.html?view=medical-academy&hide_sidebar=true&academy_mode=${encodeURIComponent(academyMode === "dashboard" ? "explore" : academyMode)}`}
-                    className="h-[calc(100vh-120px)] min-h-[850px] w-full border-0 bg-slate-950"
-                    allow="autoplay; clipboard-write; microphone"
-                  />
-                ) : (
-                  <MedicalAcademyWorkspace
-                    initialSection={academyMode}
-                    isImmersive={immersiveMode}
-                    onImmersiveChange={setImmersiveMode}
-                  />
-                )}
-              </div>
+              <MedicalAcademyWorkspace
+                initialSection={academyMode === "dashboard" ? "explore" : academyMode}
+                isImmersive={immersiveMode}
+                onImmersiveChange={setImmersiveMode}
+              />
             </div>
           )}
 

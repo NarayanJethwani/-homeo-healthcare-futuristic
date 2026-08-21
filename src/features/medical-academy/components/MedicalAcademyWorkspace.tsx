@@ -199,9 +199,12 @@ const ASSISTANT_MODES: Array<{
 ];
 
 function safeInitialSection(section?: string): AcademySection {
+  if (section === "explore" || section === "atlas" || section === "3d" || section === "dashboard") {
+    return "explore";
+  }
   return ACADEMY_SECTIONS.some((item) => item.id === section)
     ? (section as AcademySection)
-    : "home";
+    : "explore";
 }
 
 function messageId(): string {
@@ -2064,7 +2067,7 @@ export default function MedicalAcademyWorkspace({
                     HoloHuman™ Academy
                   </h1>
                   <span className="rounded-full bg-teal-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-teal-700 dark:bg-teal-950/50 dark:text-teal-300">
-                    Study Workspace
+                    Flagship 3D Atlas & Medical Twin
                   </span>
                 </div>
                 <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Evidence-aware foundational medical learning & clinical intelligence</p>
