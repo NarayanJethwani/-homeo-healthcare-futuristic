@@ -47,19 +47,16 @@ export function buildBioDigitalOrganSystem(
       // 1. Pituitary Gland & Sella Turcica with Infundibulum & Optic Chiasm
       const pituitaryGroup = new THREE.Group();
       
-      // Anterior Adenohypophysis (Lobe 1)
       const adenoGeom = new THREE.SphereGeometry(0.35, 24, 24);
       adenoGeom.scale(1.0, 0.8, 0.7);
       const adenoMesh = new THREE.Mesh(adenoGeom, getMat("pituitary", materials.primaryOrgan));
       adenoMesh.position.set(0, 0, 0.15);
 
-      // Posterior Neurohypophysis (Lobe 2)
       const neuroGeom = new THREE.SphereGeometry(0.28, 24, 24);
       neuroGeom.scale(0.9, 0.8, 0.6);
       const neuroMesh = new THREE.Mesh(neuroGeom, getMat("pituitary", materials.secondaryOrgan));
       neuroMesh.position.set(0, 0, -0.15);
 
-      // Infundibular Stalk connecting to Hypothalamus
       const stalkCurve = new THREE.CatmullRomCurve3([
         new THREE.Vector3(0, 0, 0),
         new THREE.Vector3(0, 0.6, -0.1),
@@ -68,7 +65,6 @@ export function buildBioDigitalOrganSystem(
       const stalkGeom = new THREE.TubeGeometry(stalkCurve, 24, 0.08, 12, false);
       const stalkMesh = new THREE.Mesh(stalkGeom, getMat("pituitary", materials.primaryOrgan));
 
-      // Superior Hypophyseal Arterial Ring
       const circleCurve = new THREE.EllipseCurve(0, 0, 0.25, 0.25, 0, 2 * Math.PI, false, 0);
       const circlePts = circleCurve.getPoints(32).map(p => new THREE.Vector3(p.x, 0.4, p.y));
       const ringCurve = new THREE.CatmullRomCurve3(circlePts, true);
@@ -90,7 +86,6 @@ export function buildBioDigitalOrganSystem(
       // 2. Realistic Lobulated Butterfly Thyroid & Parathyroid Glands
       const thyroidGroup = new THREE.Group();
       
-      // Tracheal Ring Context behind thyroid
       for (let i = 0; i < 7; i++) {
         const ringGeom = new THREE.TorusGeometry(0.55, 0.08, 12, 24, Math.PI * 1.5);
         const trRing = new THREE.Mesh(ringGeom, materials.connectiveTissue);
@@ -100,7 +95,6 @@ export function buildBioDigitalOrganSystem(
         thyroidGroup.add(trRing);
       }
 
-      // Left Thyroid Lobe (Conical, tapering superiorly)
       const leftLobeGeom = new THREE.CapsuleGeometry(0.38, 0.9, 16, 32);
       const leftLobe = new THREE.Mesh(leftLobeGeom, getMat("thyroid", materials.primaryOrgan));
       leftLobe.position.set(-0.62, 0.05, 0.35);
@@ -108,7 +102,6 @@ export function buildBioDigitalOrganSystem(
       leftLobe.rotation.x = 0.15;
       leftLobe.scale.set(0.9, 1.1, 0.75);
 
-      // Right Thyroid Lobe
       const rightLobeGeom = new THREE.CapsuleGeometry(0.38, 0.9, 16, 32);
       const rightLobe = new THREE.Mesh(rightLobeGeom, getMat("thyroid", materials.primaryOrgan));
       rightLobe.position.set(0.62, 0.05, 0.35);
@@ -116,12 +109,10 @@ export function buildBioDigitalOrganSystem(
       rightLobe.rotation.x = 0.15;
       rightLobe.scale.set(0.95, 1.1, 0.75);
 
-      // Thyroid Isthmus bridging lobes over 2nd-4th tracheal rings
       const isthmusGeom = new THREE.BoxGeometry(0.65, 0.35, 0.18, 16, 8, 8);
       const isthmus = new THREE.Mesh(isthmusGeom, getMat("thyroid", materials.primaryOrgan));
       isthmus.position.set(0, -0.05, 0.58);
 
-      // 4 Posterior Parathyroid Glands (Superior & Inferior)
       const paraGeom = new THREE.SphereGeometry(0.09, 12, 12);
       const lpSup = new THREE.Mesh(paraGeom, materials.secondaryOrgan);
       lpSup.position.set(-0.7, 0.35, 0.1);
@@ -133,7 +124,6 @@ export function buildBioDigitalOrganSystem(
       const rpInf = new THREE.Mesh(paraGeom, materials.secondaryOrgan);
       rpInf.position.set(0.7, -0.25, 0.1);
 
-      // Superior Thyroid Arteries (Bifurcating branches)
       const leftThyArteryCurve = new THREE.CatmullRomCurve3([
         new THREE.Vector3(-0.9, 1.2, 0.2),
         new THREE.Vector3(-0.7, 0.7, 0.4),
@@ -160,24 +150,21 @@ export function buildBioDigitalOrganSystem(
         cameraOffset: [0, 1.5, 3.2],
       });
 
-      // 3. Suprarenal Adrenal Glands (Resting on superior renal poles)
+      // 3. Suprarenal Adrenal Glands
       const adrenalGroup = new THREE.Group();
       
-      // Left Adrenal (Semilunar / Crescent shape)
       const leftAdrenalGeom = new THREE.TorusGeometry(0.35, 0.14, 16, 24, Math.PI * 0.85);
       const leftAdrenal = new THREE.Mesh(leftAdrenalGeom, getMat("adrenals", materials.secondaryOrgan));
       leftAdrenal.position.set(-1.4, -0.2, 0.2);
       leftAdrenal.rotation.z = 0.6;
       leftAdrenal.rotation.x = -0.2;
 
-      // Right Adrenal (Pyramidal shape)
       const rightAdrenalGeom = new THREE.ConeGeometry(0.38, 0.55, 4);
       const rightAdrenal = new THREE.Mesh(rightAdrenalGeom, getMat("adrenals", materials.secondaryOrgan));
       rightAdrenal.position.set(1.4, -0.15, 0.2);
       rightAdrenal.rotation.z = -0.3;
       rightAdrenal.rotation.y = Math.PI / 4;
 
-      // Adrenal Middle Suprarenal Arteries from Aorta
       const leftAdrArt = new THREE.Mesh(
         new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(0, -0.4, 0), new THREE.Vector3(-1.1, -0.25, 0.15)]), 12, 0.035, 8, false),
         materials.vascularArtery
@@ -198,17 +185,16 @@ export function buildBioDigitalOrganSystem(
         cameraOffset: [0, -0.2, 3.6],
       });
 
-      // 4. Endocrine Pancreas (Tail & Islets of Langerhans)
+      // 4. Endocrine Pancreas
       const pancGroup = new THREE.Group();
       const pancCurve = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(1.2, -1.8, 0.1),  // Head in C-loop
-        new THREE.Vector3(0.3, -1.6, 0.3),  // Neck & Body
-        new THREE.Vector3(-1.1, -1.3, 0.1), // Tail extending to spleen
+        new THREE.Vector3(1.2, -1.8, 0.1),
+        new THREE.Vector3(0.3, -1.6, 0.3),
+        new THREE.Vector3(-1.1, -1.3, 0.1),
       ]);
       const pancGeom = new THREE.TubeGeometry(pancCurve, 32, 0.22, 16, false);
       const pancMesh = new THREE.Mesh(pancGeom, getMat("pancreas_endocrine", materials.primaryOrgan));
 
-      // Micro Islet clusters (Gold glowing endocrine aggregates)
       for (let i = 0; i < 8; i++) {
         const islet = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 8), materials.secondaryOrgan);
         islet.position.set(-0.4 - i * 0.08, -1.45 + (Math.random() - 0.5) * 0.15, 0.25 + (Math.random() - 0.5) * 0.1);
@@ -226,7 +212,7 @@ export function buildBioDigitalOrganSystem(
         cameraOffset: [-0.4, -1.5, 3.2],
       });
 
-      // 5. Pineal Gland (Epithalamic Cone)
+      // 5. Pineal Gland
       const pinealGroup = new THREE.Group();
       const pinealGeom = new THREE.ConeGeometry(0.18, 0.4, 16);
       const pinealMesh = new THREE.Mesh(pinealGeom, getMat("pineal", materials.secondaryOrgan));
@@ -251,19 +237,16 @@ export function buildBioDigitalOrganSystem(
       // 1. Anatomical 4-Chambered Myocardial Heart
       const heartGroup = new THREE.Group();
       
-      // Ventricular Cone (Left & Right Ventricles with Anterior Interventricular Sulcus)
       const ventGeom = new THREE.SphereGeometry(1.1, 32, 32);
       ventGeom.scale(0.9, 1.25, 0.85);
       const ventMesh = new THREE.Mesh(ventGeom, getMat("left_ventricle", materials.primaryOrgan));
       ventMesh.rotation.z = -0.25;
       ventMesh.rotation.x = 0.2;
 
-      // Right Atrium & Left Atrial Auricle
       const atriaGeom = new THREE.SphereGeometry(0.65, 24, 24);
       const atriaMesh = new THREE.Mesh(atriaGeom, getMat("left_ventricle", materials.secondaryOrgan));
       atriaMesh.position.set(0.65, 0.85, -0.1);
 
-      // Ascending Aortic Arch with Brachiocephalic, Common Carotid & Subclavian Trunks
       const aortaCurve = new THREE.CatmullRomCurve3([
         new THREE.Vector3(0, 0.6, 0.2),
         new THREE.Vector3(0, 1.6, 0.1),
@@ -273,7 +256,6 @@ export function buildBioDigitalOrganSystem(
       ]);
       const aortaMesh = new THREE.Mesh(new THREE.TubeGeometry(aortaCurve, 64, 0.26, 16, false), materials.vascularArtery);
 
-      // Arch Branches
       const b1 = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.6), materials.vascularArtery);
       b1.position.set(-0.2, 2.1, 0.05);
       b1.rotation.z = -0.2;
@@ -283,7 +265,6 @@ export function buildBioDigitalOrganSystem(
       b3.position.set(-0.7, 2.05, -0.15);
       b3.rotation.z = 0.2;
 
-      // Pulmonary Trunk Bifurcation (Left & Right Pulmonary Arteries)
       const pulmCurve = new THREE.CatmullRomCurve3([
         new THREE.Vector3(0.2, 0.4, 0.45),
         new THREE.Vector3(-0.1, 1.2, 0.25),
@@ -291,7 +272,6 @@ export function buildBioDigitalOrganSystem(
       ]);
       const pulmMesh = new THREE.Mesh(new THREE.TubeGeometry(pulmCurve, 32, 0.22, 16, false), materials.vascularVein);
 
-      // Coronary Arteries (Left Anterior Descending & Right Coronary Artery)
       const ladCurve = new THREE.CatmullRomCurve3([
         new THREE.Vector3(-0.1, 0.8, 0.8),
         new THREE.Vector3(-0.2, 0.2, 0.9),
@@ -300,7 +280,6 @@ export function buildBioDigitalOrganSystem(
       ]);
       const ladMesh = new THREE.Mesh(new THREE.TubeGeometry(ladCurve, 32, 0.04, 8, false), materials.vascularArtery);
 
-      // Superior Vena Cava
       const svcGeom = new THREE.CylinderGeometry(0.2, 0.2, 1.2, 16);
       const svcMesh = new THREE.Mesh(svcGeom, materials.vascularVein);
       svcMesh.position.set(0.75, 1.5, -0.15);
@@ -334,31 +313,142 @@ export function buildBioDigitalOrganSystem(
       break;
     }
 
+    case "nervous": {
+      // High-Fidelity Cerebral Cortex, Cerebellum & Spinal Cord
+      const neuroGroup = new THREE.Group();
+      
+      // Left & Right Neocortical Hemispheres with longitudinal fissure
+      const leftHemiGeom = new THREE.SphereGeometry(1.3, 32, 32);
+      leftHemiGeom.scale(0.85, 0.95, 1.2);
+      const leftHemi = new THREE.Mesh(leftHemiGeom, getMat("cerebral_cortex", materials.primaryOrgan));
+      leftHemi.position.set(-0.7, 0.8, 0);
+
+      const rightHemiGeom = new THREE.SphereGeometry(1.3, 32, 32);
+      rightHemiGeom.scale(0.85, 0.95, 1.2);
+      const rightHemi = new THREE.Mesh(rightHemiGeom, getMat("cerebral_cortex", materials.primaryOrgan));
+      rightHemi.position.set(0.7, 0.8, 0);
+
+      // Cerebellum with horizontal folia
+      const cerebGeom = new THREE.SphereGeometry(0.75, 24, 24);
+      cerebGeom.scale(1.4, 0.7, 0.9);
+      const cerebMesh = new THREE.Mesh(cerebGeom, getMat("cerebellum", materials.secondaryOrgan));
+      cerebMesh.position.set(0, -0.5, -0.85);
+
+      // Brainstem (Pons & Medulla) & Cervical Spinal Cord
+      const cordCurve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(0, -0.2, -0.2),
+        new THREE.Vector3(0, -1.0, -0.3),
+        new THREE.Vector3(0, -2.6, -0.25),
+      ]);
+      const cordMesh = new THREE.Mesh(new THREE.TubeGeometry(cordCurve, 32, 0.22, 16, false), getMat("spinal_cord", materials.secondaryOrgan));
+
+      // Circle of Willis Basilar Artery
+      const basilarCurve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(0, -0.9, -0.05),
+        new THREE.Vector3(0, -0.2, 0.0),
+        new THREE.Vector3(0.2, 0.2, 0.1),
+      ]);
+      const basilarMesh = new THREE.Mesh(new THREE.TubeGeometry(basilarCurve, 16, 0.04, 8, false), materials.vascularArtery);
+
+      neuroGroup.add(leftHemi, rightHemi, cerebMesh, cordMesh, basilarMesh);
+      neuroGroup.userData = { subOrganId: "cerebral_cortex", name: "Cerebral Cortex & Nervous System" };
+      root.add(neuroGroup);
+
+      subOrganMetas.push(
+        {
+          subOrganId: "cerebral_cortex",
+          name: "Cerebral Cortex & Hemispheres",
+          focusTarget: [0, 0.8, 0],
+          cameraOffset: [0, 0.8, 4.2],
+        },
+        {
+          subOrganId: "cerebellum",
+          name: "Cerebellum & Brainstem",
+          focusTarget: [0, -0.5, -0.85],
+          cameraOffset: [0, -0.5, 3.2],
+        },
+        {
+          subOrganId: "spinal_cord",
+          name: "Spinal Cord & Nerve Tracts",
+          focusTarget: [0, -1.8, -0.25],
+          cameraOffset: [0, -1.8, 3.6],
+        }
+      );
+      break;
+    }
+
+    case "respiratory": {
+      // Trachea with C-Rings & 5 Anatomical Lung Lobes
+      const respGroup = new THREE.Group();
+      
+      const tracheaCurve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(0, 2.6, 0),
+        new THREE.Vector3(0, 0.9, 0),
+      ]);
+      const tracheaMesh = new THREE.Mesh(new THREE.TubeGeometry(tracheaCurve, 32, 0.24, 16, false), materials.connectiveTissue);
+
+      const lungLeftGeom = new THREE.CapsuleGeometry(0.85, 1.7, 16, 32);
+      lungLeftGeom.scale(0.9, 1.0, 0.8);
+      const lungLeft = new THREE.Mesh(lungLeftGeom, getMat("lung_parenchyma", materials.primaryOrgan));
+      lungLeft.position.set(-1.3, 0.2, 0);
+      lungLeft.rotation.z = -0.15;
+
+      const lungRightGeom = new THREE.CapsuleGeometry(0.85, 1.7, 16, 32);
+      lungRightGeom.scale(1.05, 1.0, 0.85);
+      const lungRight = new THREE.Mesh(lungRightGeom, getMat("lung_parenchyma", materials.primaryOrgan));
+      lungRight.position.set(1.3, 0.2, 0);
+      lungRight.rotation.z = 0.15;
+
+      const pulmArtCurve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(0, 0.9, 0.2),
+        new THREE.Vector3(-1.0, 0.5, 0.1),
+      ]);
+      const pulmArt = new THREE.Mesh(new THREE.TubeGeometry(pulmArtCurve, 16, 0.08, 8, false), materials.vascularVein);
+
+      respGroup.add(tracheaMesh, lungLeft, lungRight, pulmArt);
+      respGroup.userData = { subOrganId: "lung_parenchyma", name: "Pulmonary Respiratory System" };
+      root.add(respGroup);
+
+      subOrganMetas.push(
+        {
+          subOrganId: "lung_parenchyma",
+          name: "Lung Parenchyma & Lobes",
+          focusTarget: [0, 0.2, 0],
+          cameraOffset: [0, 0.2, 4.6],
+        },
+        {
+          subOrganId: "trachea_bronchi",
+          name: "Trachea & Primary Bronchi",
+          focusTarget: [0, 1.6, 0],
+          cameraOffset: [0, 1.6, 3.2],
+        }
+      );
+
+      animatables.push({ mesh: lungLeft, type: "pulse", speed: 1.0 });
+      animatables.push({ mesh: lungRight, type: "pulse", speed: 1.0 });
+      break;
+    }
+
     case "renal": {
-      // 1. Bilateral Reniform Kidneys with Hilum & Renal Sinus
       const renalGroup = new THREE.Group();
       
-      // Abdominal Aorta & Inferior Vena Cava
       const aorta = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 5.0, 16), materials.vascularArtery);
       aorta.position.set(-0.25, 0, 0);
       const ivc = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 5.0, 16), materials.vascularVein);
       ivc.position.set(0.25, 0, 0);
 
-      // Left Kidney (Bean shape with concave medial hilum)
       const leftKidneyGeom = new THREE.SphereGeometry(0.9, 32, 32);
       leftKidneyGeom.scale(0.65, 1.15, 0.7);
       const leftKidney = new THREE.Mesh(leftKidneyGeom, getMat("renal_cortex", materials.primaryOrgan));
       leftKidney.position.set(-1.6, 0.5, 0.1);
       leftKidney.rotation.z = 0.12;
 
-      // Right Kidney (Situated slightly lower due to liver)
       const rightKidneyGeom = new THREE.SphereGeometry(0.9, 32, 32);
       rightKidneyGeom.scale(0.65, 1.15, 0.7);
       const rightKidney = new THREE.Mesh(rightKidneyGeom, getMat("renal_cortex", materials.primaryOrgan));
       rightKidney.position.set(1.6, 0.2, 0.1);
       rightKidney.rotation.z = -0.12;
 
-      // Left & Right Renal Arteries & Veins
       const leftArt = new THREE.Mesh(
         new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(-0.25, 0.4, 0), new THREE.Vector3(-1.3, 0.45, 0.1)]), 16, 0.07, 8, false),
         materials.vascularArtery
@@ -377,7 +467,6 @@ export function buildBioDigitalOrganSystem(
         materials.vascularVein
       );
 
-      // Peristaltic Ureters cascading down to bladder
       const leftUreterCurve = new THREE.CatmullRomCurve3([
         new THREE.Vector3(-1.3, 0.3, 0.1),
         new THREE.Vector3(-0.7, -1.0, 0.15),
@@ -392,7 +481,6 @@ export function buildBioDigitalOrganSystem(
       ]);
       const rightUreter = new THREE.Mesh(new THREE.TubeGeometry(rightUreterCurve, 32, 0.05, 8, false), materials.connectiveTissue);
 
-      // Detrusor Urinary Bladder
       const bladderGeom = new THREE.SphereGeometry(0.75, 24, 24);
       bladderGeom.scale(1.0, 0.9, 0.95);
       const bladderMesh = new THREE.Mesh(bladderGeom, getMat("urinary_bladder", materials.secondaryOrgan));
@@ -425,8 +513,64 @@ export function buildBioDigitalOrganSystem(
       break;
     }
 
+    case "digestive": {
+      // Organic J-Stomach, Multi-lobed Liver, Gallbladder & Intestinal Loops
+      const giGroup = new THREE.Group();
+      
+      const liverGeom = new THREE.CylinderGeometry(1.5, 0.7, 1.3, 32);
+      liverGeom.scale(1.1, 0.9, 0.8);
+      const liverMesh = new THREE.Mesh(liverGeom, getMat("liver_hepatic", materials.primaryOrgan));
+      liverMesh.rotation.z = -0.35;
+      liverMesh.position.set(0.8, 0.9, 0);
+
+      const stomachGeom = new THREE.TorusGeometry(0.85, 0.42, 16, 32, Math.PI * 0.95);
+      const stomachMesh = new THREE.Mesh(stomachGeom, getMat("stomach", materials.secondaryOrgan));
+      stomachMesh.rotation.z = Math.PI / 1.35;
+      stomachMesh.position.set(-0.7, 0.5, 0.25);
+
+      const gbGeom = new THREE.SphereGeometry(0.28, 16, 16);
+      gbGeom.scale(0.7, 1.2, 0.7);
+      const gbMesh = new THREE.Mesh(gbGeom, materials.connectiveTissue);
+      gbMesh.position.set(0.6, 0.3, 0.65);
+
+      const intCurve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(0, -0.5, 0.25),
+        new THREE.Vector3(-0.7, -1.1, 0.3),
+        new THREE.Vector3(0.7, -1.6, 0.3),
+        new THREE.Vector3(-0.6, -2.2, 0.3),
+        new THREE.Vector3(0.5, -2.7, 0.2),
+      ]);
+      const intMesh = new THREE.Mesh(new THREE.TubeGeometry(intCurve, 64, 0.25, 16, false), getMat("intestines", materials.secondaryOrgan));
+
+      giGroup.add(liverMesh, stomachMesh, gbMesh, intMesh);
+      giGroup.userData = { subOrganId: "stomach", name: "Gastrointestinal System" };
+      root.add(giGroup);
+
+      subOrganMetas.push(
+        {
+          subOrganId: "stomach",
+          name: "Gastric Rugae & Stomach",
+          focusTarget: [-0.7, 0.5, 0.25],
+          cameraOffset: [-0.7, 0.5, 3.4],
+        },
+        {
+          subOrganId: "liver_hepatic",
+          name: "Hepatic Lobules & Liver",
+          focusTarget: [0.8, 0.9, 0],
+          cameraOffset: [0.8, 0.9, 3.6],
+        },
+        {
+          subOrganId: "intestines",
+          name: "Small & Large Intestine",
+          focusTarget: [0, -1.6, 0.3],
+          cameraOffset: [0, -1.6, 4.0],
+        }
+      );
+      break;
+    }
+
     default: {
-      // High-Fidelity Universal Anatomical Structure
+      // Universal High-Fidelity Anatomical Structure
       const defGroup = new THREE.Group();
       const defGeom = new THREE.CapsuleGeometry(0.95, 2.0, 24, 32);
       const defMesh = new THREE.Mesh(defGeom, materials.primaryOrgan);
