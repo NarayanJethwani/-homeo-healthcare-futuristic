@@ -61,9 +61,9 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
     scene.background = new THREE.Color(0x050811);
     sceneRef.current = scene;
 
-    // 2. Camera setup
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    camera.position.set(0, 0.5, 4.5);
+    // 2. Camera setup with balanced framing (prevents balloon macro zoom)
+    const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
+    camera.position.set(0, 0, 7.2);
     cameraRef.current = camera;
 
     // 3. WebGL Renderer with High-Precision PBR
@@ -75,7 +75,7 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.18;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.localClippingEnabled = true;
@@ -85,8 +85,8 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.06;
-    controls.maxDistance = 10;
-    controls.minDistance = 1.2;
+    controls.maxDistance = 15;
+    controls.minDistance = 2.5;
     controls.autoRotate = autoRotate;
     controls.autoRotateSpeed = 1.2;
     controlsRef.current = controls;
@@ -253,14 +253,14 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
   // Update target camera focus when activeSubOrganId changes
   useEffect(() => {
     if (!activeSubOrganId) {
-      targetCamPosRef.current.set(0, 0, 4.5);
+      targetCamPosRef.current.set(0, 0, 7.2);
       targetLookAtRef.current.set(0, 0, 0);
       return;
     }
 
     const meta = subOrganMetasRef.current.find((m) => m.subOrganId === activeSubOrganId);
     if (meta) {
-      targetCamPosRef.current.set(meta.cameraOffset[0], meta.cameraOffset[1], meta.cameraOffset[2]);
+      targetCamPosRef.current.set(meta.cameraOffset[0] * 0.6, meta.cameraOffset[1] * 0.6, 6.2);
       targetLookAtRef.current.set(meta.focusTarget[0], meta.focusTarget[1], meta.focusTarget[2]);
     }
   }, [activeSubOrganId]);

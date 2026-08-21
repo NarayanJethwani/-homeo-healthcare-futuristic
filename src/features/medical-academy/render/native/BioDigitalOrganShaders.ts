@@ -118,25 +118,27 @@ export function createBioDigitalShaders(
     bumpScale: 0.015,
   });
 
-  // 3. Isolated Focus Highlight Material
+  // 3. Isolated Focus Highlight Material (Preserves authentic tissue color with glowing emissive rim)
   const highlightSelected = new THREE.MeshPhysicalMaterial({
-    color: new THREE.Color(0x38bdf8),
-    emissive: new THREE.Color(0x0284c7),
-    emissiveIntensity: 0.45,
-    roughness: 0.2,
-    metalness: 0.15,
+    color: new THREE.Color(accentColor),
+    emissive: new THREE.Color(accentColor),
+    emissiveIntensity: 0.4,
+    roughness: 0.25,
+    metalness: 0.1,
     clearcoat: 1.0,
     clearcoatRoughness: 0.1,
+    bumpMap: capsularBump,
+    bumpScale: 0.03,
   });
 
-  // 4. Translucent Blue X-Ray Ghost Material
+  // 4. Ghost Material (Preserves anatomical structure without harsh blue wash)
   const ghostUnselected = new THREE.MeshPhysicalMaterial({
-    color: new THREE.Color(0x38bdf8),
+    color: new THREE.Color(0x64748b),
     transparent: true,
-    opacity: 0.16,
-    roughness: 0.15,
+    opacity: 0.35,
+    roughness: 0.3,
     metalness: 0.05,
-    transmission: 0.85,
+    transmission: 0.6,
     depthWrite: false,
   });
 
@@ -154,11 +156,10 @@ export function createBioDigitalShaders(
   switch (systemId) {
     case "endocrine":
       return {
-        // Glandular amber-rose living parenchyma with lobular bump
         primaryOrgan: new THREE.MeshPhysicalMaterial({
           color: new THREE.Color(0xd97706), // Authentic Thyroid Amber-Rose
           emissive: new THREE.Color(0x78350f),
-          emissiveIntensity: 0.18,
+          emissiveIntensity: 0.15,
           roughness: 0.32,
           metalness: 0.05,
           clearcoat: 0.92,
@@ -169,7 +170,7 @@ export function createBioDigitalShaders(
         secondaryOrgan: new THREE.MeshPhysicalMaterial({
           color: new THREE.Color(0xeab308), // Suprarenal Adrenal Ochre
           emissive: new THREE.Color(0x713f12),
-          emissiveIntensity: 0.2,
+          emissiveIntensity: 0.18,
           roughness: 0.35,
           metalness: 0.05,
           clearcoat: 0.88,
@@ -179,27 +180,34 @@ export function createBioDigitalShaders(
         vascularArtery,
         vascularVein,
         connectiveTissue,
-        highlightSelected,
+        highlightSelected: new THREE.MeshPhysicalMaterial({
+          color: new THREE.Color(0xf59e0b),
+          emissive: new THREE.Color(0xd97706),
+          emissiveIntensity: 0.35,
+          roughness: 0.28,
+          clearcoat: 0.95,
+          bumpMap: glandularBump,
+          bumpScale: 0.04,
+        }),
         ghostUnselected,
         homeopathicAura,
       };
 
     case "cardiovascular":
       return {
-        // Deep living myocardial muscle with striated fiber bump
         primaryOrgan: new THREE.MeshPhysicalMaterial({
-          color: new THREE.Color(0x991b1b), // Deep Myocardial Ruby
-          emissive: new THREE.Color(0x450a0a),
-          emissiveIntensity: 0.25,
+          color: new THREE.Color(0x881337), // Deep Myocardial Ruby
+          emissive: new THREE.Color(0x4c0519),
+          emissiveIntensity: 0.2,
           roughness: 0.28,
           metalness: 0.08,
-          clearcoat: 0.95, // Serous pericardium wet gleam
+          clearcoat: 0.95,
           clearcoatRoughness: 0.1,
           bumpMap: muscleBump,
           bumpScale: 0.045,
         }),
         secondaryOrgan: new THREE.MeshPhysicalMaterial({
-          color: new THREE.Color(0xe11d48), // Atrial Myocardium
+          color: new THREE.Color(0xbe123c), // Atrial Myocardium
           roughness: 0.3,
           clearcoat: 0.9,
           bumpMap: muscleBump,
@@ -208,21 +216,28 @@ export function createBioDigitalShaders(
         vascularArtery,
         vascularVein,
         connectiveTissue,
-        highlightSelected,
+        highlightSelected: new THREE.MeshPhysicalMaterial({
+          color: new THREE.Color(0xbe123c),
+          emissive: new THREE.Color(0xe11d48),
+          emissiveIntensity: 0.4,
+          roughness: 0.25,
+          clearcoat: 0.95,
+          bumpMap: muscleBump,
+          bumpScale: 0.045,
+        }),
         ghostUnselected,
         homeopathicAura,
       };
 
     case "nervous":
       return {
-        // Living gray/white cerebral cortex with gyral convolution bump
         primaryOrgan: new THREE.MeshPhysicalMaterial({
           color: new THREE.Color(0xd4d4d8), // Neocortical Gray-Beige
           emissive: new THREE.Color(0x52525b),
-          emissiveIntensity: 0.15,
+          emissiveIntensity: 0.12,
           roughness: 0.38,
           metalness: 0.02,
-          clearcoat: 0.85, // Arachnoid mater wet sheen
+          clearcoat: 0.85,
           clearcoatRoughness: 0.15,
           bumpMap: corticalBump,
           bumpScale: 0.06,
@@ -237,21 +252,28 @@ export function createBioDigitalShaders(
         vascularArtery,
         vascularVein,
         connectiveTissue,
-        highlightSelected,
+        highlightSelected: new THREE.MeshPhysicalMaterial({
+          color: new THREE.Color(0xa855f7),
+          emissive: new THREE.Color(0x7c3aed),
+          emissiveIntensity: 0.35,
+          roughness: 0.3,
+          clearcoat: 0.9,
+          bumpMap: corticalBump,
+          bumpScale: 0.06,
+        }),
         ghostUnselected,
         homeopathicAura,
       };
 
     case "respiratory":
       return {
-        // Spongy pulmonary parenchyma
         primaryOrgan: new THREE.MeshPhysicalMaterial({
           color: new THREE.Color(0xf472b6), // Healthy Oxygenated Alveolar Pink
           emissive: new THREE.Color(0x831843),
           emissiveIntensity: 0.12,
           roughness: 0.4,
           metalness: 0.03,
-          clearcoat: 0.9, // Visceral pleura sheen
+          clearcoat: 0.9,
           bumpMap: glandularBump,
           bumpScale: 0.05,
         }),
@@ -263,48 +285,64 @@ export function createBioDigitalShaders(
         vascularArtery,
         vascularVein,
         connectiveTissue,
-        highlightSelected,
+        highlightSelected: new THREE.MeshPhysicalMaterial({
+          color: new THREE.Color(0x38bdf8),
+          emissive: new THREE.Color(0x0284c7),
+          emissiveIntensity: 0.35,
+          roughness: 0.3,
+          clearcoat: 0.9,
+          bumpMap: glandularBump,
+          bumpScale: 0.05,
+        }),
         ghostUnselected,
         homeopathicAura,
       };
 
     case "renal":
       return {
-        // Mahogany-red renal parenchyma with smooth renal capsule
         primaryOrgan: new THREE.MeshPhysicalMaterial({
-          color: new THREE.Color(0x881337), // Mahogany Renal Cortex
-          emissive: new THREE.Color(0x4c0519),
-          emissiveIntensity: 0.2,
+          color: new THREE.Color(0x713f12), // Deep Mahogany Renal Cortex
+          emissive: new THREE.Color(0x451a03),
+          emissiveIntensity: 0.15,
           roughness: 0.28,
-          metalness: 0.08,
-          clearcoat: 0.95, // Glisson/renal fibrous capsule sheen
+          metalness: 0.06,
+          clearcoat: 0.95,
           clearcoatRoughness: 0.1,
           bumpMap: capsularBump,
-          bumpScale: 0.025,
+          bumpScale: 0.03,
         }),
         secondaryOrgan: new THREE.MeshPhysicalMaterial({
-          color: new THREE.Color(0xbe123c), // Medullary Pyramids
+          color: new THREE.Color(0xb45309), // Renal Medulla Pyramids
           roughness: 0.35,
           clearcoat: 0.85,
+          bumpMap: capsularBump,
+          bumpScale: 0.025,
         }),
         vascularArtery,
         vascularVein,
         connectiveTissue,
-        highlightSelected,
+        highlightSelected: new THREE.MeshPhysicalMaterial({
+          color: new THREE.Color(0x9a3412),
+          emissive: new THREE.Color(0xc2410c),
+          emissiveIntensity: 0.35,
+          roughness: 0.28,
+          clearcoat: 0.95,
+          bumpMap: capsularBump,
+          bumpScale: 0.03,
+        }),
         ghostUnselected,
         homeopathicAura,
       };
 
     case "digestive":
       return {
-        // Hepatic terracotta & Gastric rugae wall
         primaryOrgan: new THREE.MeshPhysicalMaterial({
           color: new THREE.Color(0x7c2d12), // Hepatic Terracotta Brown
           emissive: new THREE.Color(0x451a03),
-          emissiveIntensity: 0.18,
+          emissiveIntensity: 0.15,
           roughness: 0.28,
           metalness: 0.06,
-          clearcoat: 0.95, // Peritoneal wet gleam
+          clearcoat: 0.95,
           bumpMap: capsularBump,
           bumpScale: 0.02,
         }),
@@ -318,14 +356,21 @@ export function createBioDigitalShaders(
         vascularArtery,
         vascularVein,
         connectiveTissue,
-        highlightSelected,
+        highlightSelected: new THREE.MeshPhysicalMaterial({
+          color: new THREE.Color(0xea580c),
+          emissive: new THREE.Color(0xc2410c),
+          emissiveIntensity: 0.35,
+          roughness: 0.3,
+          clearcoat: 0.95,
+          bumpMap: glandularBump,
+          bumpScale: 0.04,
+        }),
         ghostUnselected,
         homeopathicAura,
       };
 
     case "skeletal":
       return {
-        // Cortical compact bone with osteon microscopic grain
         primaryOrgan: new THREE.MeshPhysicalMaterial({
           color: new THREE.Color(0xfef3c7), // Authentic Bone Ivory
           roughness: 0.45,
@@ -343,7 +388,13 @@ export function createBioDigitalShaders(
         vascularArtery,
         vascularVein,
         connectiveTissue,
-        highlightSelected,
+        highlightSelected: new THREE.MeshPhysicalMaterial({
+          color: new THREE.Color(0x38bdf8),
+          emissive: new THREE.Color(0x0284c7),
+          emissiveIntensity: 0.35,
+          roughness: 0.3,
+          clearcoat: 0.8,
+        }),
         ghostUnselected,
         homeopathicAura,
       };

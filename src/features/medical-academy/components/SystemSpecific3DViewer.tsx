@@ -17,6 +17,7 @@ import {
   Info, 
   Compass, 
   Maximize2,
+  Minimize2,
   ChevronRight,
   ShieldAlert,
   Play,
@@ -42,6 +43,7 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
   const [showAnatomyInfo, setShowAnatomyInfo] = useState(true);
   const [autoRotate, setAutoRotate] = useState(false);
   const [layers, setLayers] = useState<AnatomyLayerVisibility>(DEFAULT_ANATOMY_LAYERS);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const config = SYSTEM_3D_REGISTRY[systemId] || SYSTEM_3D_REGISTRY.cardiovascular;
   const detailedKnowledge = SYSTEM_DETAILED_KNOWLEDGE[systemId];
@@ -63,8 +65,16 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
     setLayers((prev) => ({ ...prev, [layerKey]: !prev[layerKey] }));
   };
 
+  const toggleFullscreen = () => {
+    setIsFullscreen(!isFullscreen);
+  };
+
   return (
-    <div className="flex flex-col h-full w-full space-y-3">
+    <div className={`flex flex-col w-full space-y-3 transition-all ${
+      isFullscreen 
+        ? "fixed inset-0 z-50 bg-slate-950 p-4 sm:p-6 overflow-hidden h-screen" 
+        : "h-full"
+    }`}>
       {/* 1. Header Bar: System identity & Quick status */}
       <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-2xl border border-slate-200 bg-white/95 px-4 py-3 shadow-xs dark:border-slate-800 dark:bg-slate-900/90 backdrop-blur">
         <div className="flex items-center gap-3 min-w-0">
@@ -98,6 +108,21 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
 
         {/* Viewport Action buttons */}
         <div className="flex flex-wrap items-center gap-1.5">
+          {/* Full Screen View Toggle */}
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition ${
+              isFullscreen
+                ? "border-teal-500 bg-teal-50 text-teal-800 dark:bg-teal-950/60 dark:text-teal-200 dark:border-teal-500"
+                : "border-slate-200 bg-white text-slate-700 shadow-xs hover:border-teal-400 hover:text-teal-700 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200"
+            }`}
+            title={isFullscreen ? "Exit Full Screen" : "Enter Full Screen View"}
+          >
+            {isFullscreen ? <Minimize2 className="h-3.5 w-3.5 text-teal-600" /> : <Maximize2 className="h-3.5 w-3.5 text-teal-600" />}
+            <span>{isFullscreen ? "Exit Fullscreen" : "Full Screen"}</span>
+          </button>
+
           {/* Layer Dissection: Cross Section */}
           <button
             type="button"
@@ -198,7 +223,9 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
       </div>
 
       {/* 3. 100% Native WebGL BioDigital 3D Spatial Canvas */}
-      <div className="relative w-full overflow-hidden rounded-3xl border border-slate-300/80 bg-slate-950 shadow-inner dark:border-slate-800 flex-1 min-h-[580px] lg:min-h-[640px]">
+      <div className={`relative w-full overflow-hidden rounded-3xl border border-slate-300/80 bg-slate-950 shadow-inner dark:border-slate-800 flex-1 ${
+        isFullscreen ? "h-[calc(100vh-140px)] min-h-[500px]" : "min-h-[580px] lg:min-h-[640px]"
+      }`}>
         <NativeSystem3DCanvas
           systemId={systemId}
           accentColor={config.accentColor}
