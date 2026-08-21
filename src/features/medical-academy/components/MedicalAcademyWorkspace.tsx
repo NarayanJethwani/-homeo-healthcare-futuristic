@@ -57,6 +57,9 @@ import HoloHumanPathologySimulator from "./HoloHumanPathologySimulator";
 import HoloHumanSearchModal, { type SearchResultItem } from "./HoloHumanSearchModal";
 import { REMEDY_TROPISM_DATA } from "../data/remedyTropismData";
 import { HOLOHUMAN_SYSTEM_MATERIALS } from "../render/holoHumanMaterials";
+import { SystemSpecific3DViewer } from "./SystemSpecific3DViewer";
+import { SYSTEM_DETAILED_KNOWLEDGE } from "../data/systemDetailedKnowledgeData";
+import { SYSTEM_3D_REGISTRY } from "../render/system3DRegistry";
 
 type AssistantMode = "teach" | "quiz" | "research" | "homeopathy";
 type AtlasLayer = "systems" | "regions";
@@ -560,11 +563,14 @@ function AnatomyAtlas({
   onRemedyTropismSelect: (remedyId: string | null) => void;
 }) {
   const system = getAnatomySystem(selected);
+  const detailedKnowledge = SYSTEM_DETAILED_KNOWLEDGE[selected];
+  const system3D = SYSTEM_3D_REGISTRY[selected] || SYSTEM_3D_REGISTRY.cardiovascular;
+
   const [viewMode, setViewMode] = useState<AtlasViewMode>("3d");
   const [layer, setLayer] = useState<AtlasLayer>("systems");
   const [selectedRegion, setSelectedRegion] = useState<AnatomyRegionId>("epigastric");
-  const [detailTab, setDetailTab] = useState<"structures" | "functions" | "clinical">("structures");
-  const [viewerResetToken, setViewerResetToken] = useState(0);
+  const [activeSubOrganId, setActiveSubOrganId] = useState<string | null>(null);
+  const [detailTab, setDetailTab] = useState<"structures" | "physiology" | "biomarkers" | "pathologies" | "homeopathy">("structures");
 
   // Dissection & Studio State
   const [peelDepth, setPeelDepth] = useState<number>(0);
@@ -575,24 +581,29 @@ function AnatomyAtlas({
   const region = ANATOMY_REGIONS.find((item) => item.id === selectedRegion) ?? ANATOMY_REGIONS[1];
   const activeRemedy = activeRemedyTropismId ? REMEDY_TROPISM_DATA[activeRemedyTropismId] : null;
 
-  const detailItems =
-    detailTab === "structures"
-      ? system.structures
-      : detailTab === "functions"
-        ? system.functions
-        : system.clinicalConnections;
-
   return (
     <div className="space-y-4">
+      {/* Top Header: System Title & View Mode Switcher */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">
-            HoloHuman™ 3D Interactive Anatomy Atlas
+          <div className="flex items-center gap-2">
+            <span
+              className="h-3 w-3 rounded-full"
+              style={{ backgroundColor: system.accent }}
+            />
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">
+              HoloHuman™ 3D Atlas · {system.name}
+            </p>
+          </div>
+          <h2 className="mt-1 text-2xl font-bold text-slate-950 dark:text-white">
+            {system3D.name}
+          </h2>
+          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+            {system3D.subtitle}
           </p>
-          <h2 className="mt-2 text-2xl font-semibold text-slate-950 dark:text-white">Living Anatomy & Spatial Twin</h2>
         </div>
         <div className="inline-flex w-fit rounded-xl border border-slate-200 bg-slate-100 p-1 dark:border-slate-700 dark:bg-slate-900" aria-label="Atlas view">
-          {([['3d', '3D Living Twin'], ['2d', '2D Regional Map']] as const).map(([id, label]) => (
+          {([['3d', '3D System Model'], ['2d', '2D Regional Map']] as const).map(([id, label]) => (
             <button
               key={id}
               type="button"
@@ -606,8 +617,10 @@ function AnatomyAtlas({
         </div>
       </div>
 
-      <div className="grid overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 lg:grid-cols-[210px_minmax(420px,1.35fr)_minmax(320px,1fr)]">
-        <aside className="border-b border-slate-200 bg-slate-50/80 p-3 dark:border-slate-800 dark:bg-slate-950/50 lg:border-b-0 lg:border-r">
+      {/* Main 3-Column Studio Grid */}
+      <div className="grid overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 lg:grid-cols-[220px_minmax(420px,1.3fr)_minmax(360px,1.1fr)]">
+        {/* Left Column: 12 Organ Systems Navigator */}
+        <aside className="border-b border-slate-200 bg-slate-50/80 p-3.5 dark:border-slate-800 dark:bg-slate-950/50 lg:border-b-0 lg:border-r">
           <p className="px-2 pb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Atlas layer</p>
           <div className="mb-4 grid grid-cols-2 gap-1 rounded-xl bg-slate-200/70 p-1 dark:bg-slate-800">
             {([['systems', 'Systems'], ['regions', 'Regions']] as const).map(([id, label]) => (
@@ -625,169 +638,104 @@ function AnatomyAtlas({
               </button>
             ))}
           </div>
-          <p className="px-2 pb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">12 Organ Systems</p>
+          <div className="flex items-center justify-between px-2 pb-2">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">12 Organ Systems</p>
+            <span className="text-[9px] font-bold text-teal-600 dark:text-teal-400">100% 3D</span>
+          </div>
           <div className="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible">
-            {ANATOMY_SYSTEMS.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => {
-                  onSelect(item.id);
-                  setLayer("systems");
-                }}
-                aria-pressed={selected === item.id}
-                className={`flex min-h-11 min-w-max items-center gap-2.5 rounded-xl px-3 py-2 text-left text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 lg:min-w-0 ${
-                  selected === item.id
-                    ? "bg-white text-slate-950 shadow-sm ring-1 ring-slate-200 dark:bg-slate-800 dark:text-white dark:ring-slate-700"
-                    : "text-slate-600 hover:bg-white hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
-                }`}
-              >
-                <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.accent }} />
-                {item.shortName}
-              </button>
-            ))}
+            {ANATOMY_SYSTEMS.map((item) => {
+              const isSelected = selected === item.id;
+              const sysConfig = SYSTEM_3D_REGISTRY[item.id];
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    onSelect(item.id);
+                    setLayer("systems");
+                    setActiveSubOrganId(null);
+                  }}
+                  aria-pressed={isSelected}
+                  className={`flex min-h-11 min-w-max items-center justify-between gap-2.5 rounded-xl px-3 py-2.5 text-left text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 lg:min-w-0 ${
+                    isSelected
+                      ? "bg-white text-slate-950 shadow-sm ring-1 ring-slate-300 dark:bg-slate-800 dark:text-white dark:ring-slate-600"
+                      : "text-slate-600 hover:bg-white hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 truncate">
+                    <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: item.accent }} />
+                    <span className="truncate">{item.shortName}</span>
+                  </div>
+                  {isSelected && (
+                    <span className="shrink-0 text-[10px] font-bold text-teal-600 dark:text-teal-400">● Live</span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </aside>
 
-        <div className="relative min-h-[850px] flex flex-col justify-between border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white px-5 py-5 dark:border-slate-800 dark:from-slate-950 dark:to-slate-900 lg:border-b-0 lg:border-r">
+        {/* Center Column: Dedicated 3D Interactive Spatial Viewport */}
+        <div className="relative min-h-[750px] flex flex-col justify-between border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white p-4 sm:p-5 dark:border-slate-800 dark:from-slate-950 dark:to-slate-900 lg:border-b-0 lg:border-r">
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
-                  {viewMode === "3d" ? "Interactive PBR 3D Organism" : `Anterior view · ${layer} layer`}
-                </p>
-                <p className="mt-0.5 text-xs text-slate-500">
-                  {viewMode === "3d"
-                    ? "Subsurface Scattering · Studio 3-Point Light · X-Ray Ghosting"
-                    : layer === "systems"
-                      ? "Select a highlighted organ system"
-                      : "Select one of the nine standard abdominal regions"}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  if (viewMode === "3d") {
-                    setViewerResetToken((value) => value + 1);
-                    setPeelDepth(0);
-                    setActiveClippingPlane("none");
-                    setXrayGhostMode(false);
-                    onRemedyTropismSelect(null);
-                  } else if (layer === "systems") onSelect("cardiovascular");
-                  else setSelectedRegion("epigastric");
-                }}
-                className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-600 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
-              >
-                <RotateCcw className="h-3.5 w-3.5" /> Reset View
-              </button>
-            </div>
-
             {viewMode === "3d" ? (
-              <div className="space-y-3">
-                <ThreeDAnatomyViewer resetToken={viewerResetToken} />
-                
-                {/* Embedded BioDigital-Grade Dissection Toolbar */}
-                <HoloHumanDissectionToolbar
-                  peelDepth={peelDepth}
-                  onPeelDepthChange={setPeelDepth}
-                  activeClippingPlane={activeClippingPlane}
-                  onClippingPlaneChange={setActiveClippingPlane}
-                  xrayGhostMode={xrayGhostMode}
-                  onXrayGhostModeToggle={() => setXrayGhostMode((v) => !v)}
-                  themeMode={themeMode}
-                  onThemeModeToggle={() => setThemeMode((m) => (m === "dark" ? "light" : "dark"))}
-                  activeRemedyTropismId={activeRemedyTropismId}
-                  onRemedyTropismSelect={onRemedyTropismSelect}
-                  onResetView={() => {
-                    setViewerResetToken((v) => v + 1);
-                    setPeelDepth(0);
-                    setActiveClippingPlane("none");
-                    setXrayGhostMode(false);
-                    onRemedyTropismSelect(null);
-                  }}
-                />
-              </div>
+              <SystemSpecific3DViewer
+                systemId={selected}
+                activeSubOrganId={activeSubOrganId}
+                onSubOrganSelect={setActiveSubOrganId}
+                activeRemedyTropismId={activeRemedyTropismId}
+                onRemedyTropismSelect={onRemedyTropismSelect}
+              />
             ) : (
-              <BodyMap layer={layer} selected={selected} selectedRegion={selectedRegion} onSelect={onSelect} onSelectRegion={setSelectedRegion} />
+              <div className="space-y-4">
+                <BodyMap layer={layer} selected={selected} selectedRegion={selectedRegion} onSelect={onSelect} onSelectRegion={setSelectedRegion} />
+              </div>
             )}
           </div>
 
-          <div className="mt-3 flex flex-col gap-2 text-[10px] leading-4 text-slate-500 sm:flex-row sm:items-center sm:justify-between border-t border-slate-200/60 dark:border-slate-800/60 pt-2">
-            <span>MeshPhysicalMaterial with calibrated SSS and tone-mapped illumination.</span>
-            <a href="https://sketchfab.com/3d-models/animated-full-human-body-anatomy-9b0b079953b840bc9a13f524b60041e4" target="_blank" rel="noreferrer" className="inline-flex shrink-0 items-center gap-1 font-semibold text-teal-700 underline underline-offset-2 dark:text-teal-300">Model details <ExternalLink className="h-3 w-3" /></a>
+          <div className="mt-4 flex flex-col gap-2 text-[10px] leading-4 text-slate-500 sm:flex-row sm:items-center sm:justify-between border-t border-slate-200/60 dark:border-slate-800/60 pt-3">
+            <span>BioDigital-grade PBR physical shaders with calibrated subsurface scattering.</span>
+            <span className="text-teal-700 dark:text-teal-300 font-semibold">Active: {system3D.name}</span>
           </div>
         </div>
 
-        <section className="min-w-0 p-5 sm:p-6 space-y-4" aria-live="polite">
-          {activeRemedy && (
-            <div className="rounded-2xl border border-amber-500/40 bg-amber-950/20 p-4 text-amber-100 shadow-sm animate-fadeIn">
-              <div className="flex items-center justify-between border-b border-amber-500/30 pb-2 mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-amber-500/20 text-amber-400 font-bold text-xs">
-                    🌿
-                  </span>
-                  <span className="font-bold text-xs text-white">{activeRemedy.remedyName}</span>
-                </div>
-                <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[9px] font-bold text-amber-300 border border-amber-500/30">
-                  {activeRemedy.overallAffinityIntensity}% Tropism
+        {/* Right Column: Deep Multi-Tier Knowledge & Clinical Intelligence Engine */}
+        <section className="min-w-0 p-4 sm:p-5 space-y-4" aria-live="polite">
+          {/* System Identity Banner */}
+          <div className="flex items-start justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-950/60">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: system.accent }} />
+                <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
+                  {detailedKnowledge?.latinName || system.name}
                 </span>
               </div>
-              <p className="text-[11px] text-amber-200/90 leading-relaxed mb-2">
-                <strong>Organ Affinity:</strong> {activeRemedy.targetOrgans.map((o) => o.structureName).join(", ")}.
-              </p>
-              <p className="text-[10px] text-amber-300/80 leading-relaxed font-mono">
-                Keynote: {activeRemedy.targetOrgans[0]?.clinicalKeynotes}
+              <h3 className="mt-1 text-base font-bold text-slate-950 dark:text-white truncate">
+                {system.name}
+              </h3>
+              <p className="mt-0.5 text-xs text-teal-700 dark:text-teal-300 font-medium">
+                {detailedKnowledge?.functionalMotto || system.overview}
               </p>
             </div>
-          )}
-
-          {viewMode === "2d" && layer === "regions" ? (
-            <>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">Selected region</p>
-              <h3 className="mt-1 text-xl font-semibold text-slate-950 dark:text-white">{region.name}</h3>
-              <p className="mt-1 text-xs font-semibold text-teal-700 dark:text-teal-300">{region.position}</p>
-              <p className="mt-4 text-sm leading-6 text-slate-600 dark:text-slate-300">{region.description}</p>
-              <p className="mt-5 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Typical contents</p>
-              <ul className="mt-3 space-y-3">
-                {region.typicalContents.map((item) => (
-                  <li key={item} className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-200">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-600 dark:text-teal-400" />{item}
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50/70 p-4 dark:border-blue-900 dark:bg-blue-950/30">
-                <p className="text-xs font-semibold text-blue-950 dark:text-blue-100">Regional anatomy reference</p>
-                <a href={REGIONAL_ANATOMY_REFERENCE.url} target="_blank" rel="noreferrer" className="mt-1 inline-flex items-start gap-1 text-xs leading-5 text-blue-700 underline underline-offset-2 dark:text-blue-300">
-                  {REGIONAL_ANATOMY_REFERENCE.title} <ExternalLink className="mt-0.5 h-3 w-3 shrink-0" />
-                </a>
-                <p className="mt-2 text-[10px] uppercase tracking-wide text-blue-700/70 dark:text-blue-300/70">Typical contents vary by body habitus and anatomy; regions are descriptive, not diagnostic.</p>
-              </div>
-            </>
-          ) : (
-          <>
-          <div className="flex items-start gap-3">
-            <span
-              className="mt-1 h-3 w-3 shrink-0 rounded-full"
-              style={{ backgroundColor: system.accent }}
-            />
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">Selected system</p>
-              <h3 className="mt-1 text-xl font-semibold text-slate-950 dark:text-white">{system.name}</h3>
-            </div>
+            <span className="shrink-0 rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide bg-slate-200/80 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              Module #{String(ANATOMY_SYSTEMS.findIndex(s => s.id === selected) + 1).padStart(2, '0')}
+            </span>
           </div>
-          <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">{system.overview}</p>
 
-          <div className="mt-4 flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1 dark:bg-slate-950">
+          {/* 5-Tier Interactive Knowledge Navigation Tabs */}
+          <div className="flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1 dark:bg-slate-950 scrollbar-thin">
             {([
-              ["structures", "Structures"],
-              ["functions", "Functions"],
-              ["clinical", "Clinical links"],
+              ["structures", "🔬 Structures"],
+              ["physiology", "⚡ Physiology"],
+              ["biomarkers", "🧪 Biomarkers"],
+              ["pathologies", "🩺 Pathologies"],
+              ["homeopathy", "🌿 Homeopathy"],
             ] as const).map(([id, label]) => (
               <button
                 key={id}
                 type="button"
                 onClick={() => setDetailTab(id)}
-                className={`min-h-10 min-w-max flex-1 rounded-lg px-3 py-2 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
+                className={`min-h-9 min-w-max flex-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
                   detailTab === id
                     ? "bg-white text-slate-950 shadow-sm dark:bg-slate-800 dark:text-white"
                     : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
@@ -798,36 +746,269 @@ function AnatomyAtlas({
             ))}
           </div>
 
-          <ul className="mt-4 space-y-2.5">
-            {detailItems.map((item) => (
-              <li key={item} className="flex items-start gap-3 text-sm leading-5 text-slate-700 dark:text-slate-200">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-600 dark:text-teal-400" />
-                {item}
-              </li>
-            ))}
-          </ul>
+          {/* TAB 1: Structures & Microscopic Sub-Units */}
+          {detailTab === "structures" && (
+            <div className="space-y-3 animate-fadeIn">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Click any constituent sub-organ to focus in the 3D viewer:
+              </p>
+              <div className="space-y-2.5">
+                {(detailedKnowledge?.structures || []).map((struct) => {
+                  const isFocused = activeSubOrganId === struct.subOrganId || activeSubOrganId === struct.id;
+                  return (
+                    <div
+                      key={struct.id}
+                      onClick={() => struct.subOrganId && setActiveSubOrganId(struct.subOrganId)}
+                      className={`cursor-pointer rounded-2xl border p-3 transition ${
+                        isFocused
+                          ? "border-teal-500 bg-teal-50/50 dark:bg-teal-950/30 dark:border-teal-400 shadow-xs"
+                          : "border-slate-200 bg-white hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <h4 className="text-xs font-bold text-slate-950 dark:text-white">
+                          {struct.name}
+                        </h4>
+                        {struct.subOrganId && (
+                          <span className="rounded bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 text-[9px] font-semibold text-slate-600 dark:text-slate-300">
+                            🔍 3D Focus
+                          </span>
+                        )}
+                      </div>
+                      <div className="mt-2 space-y-1 text-[11px] leading-relaxed text-slate-600 dark:text-slate-300">
+                        <div>
+                          <strong className="text-slate-800 dark:text-slate-200">Vascular:</strong> {struct.vascularSupply}
+                        </div>
+                        <div>
+                          <strong className="text-slate-800 dark:text-slate-200">Innervation:</strong> {struct.innervation}
+                        </div>
+                        <div className="text-slate-500 dark:text-slate-400 italic">
+                          <strong>Histology:</strong> {struct.histology}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
-          <div className="mt-4 rounded-2xl border border-blue-100 bg-blue-50/70 p-4 dark:border-blue-900 dark:bg-blue-950/30">
-            <div className="flex items-start gap-3">
+          {/* TAB 2: Physiology & Endocrine Cascades */}
+          {detailTab === "physiology" && (
+            <div className="space-y-3 animate-fadeIn">
+              {detailedKnowledge?.cascade ? (
+                <div className="space-y-3">
+                  <div className="rounded-2xl border border-teal-200 bg-teal-50/50 p-3.5 dark:border-teal-900/60 dark:bg-teal-950/30">
+                    <h4 className="text-xs font-bold text-teal-950 dark:text-teal-200">
+                      {detailedKnowledge.cascade.title}
+                    </h4>
+                    <p className="mt-1 text-xs text-teal-800 dark:text-teal-300/90 leading-relaxed">
+                      {detailedKnowledge.cascade.description}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    {detailedKnowledge.cascade.steps.map((step) => (
+                      <div
+                        key={step.step}
+                        className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-xs dark:border-slate-800 dark:bg-slate-900"
+                      >
+                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-950 text-xs font-bold text-teal-300 dark:bg-teal-400 dark:text-slate-950">
+                          {step.step}
+                        </span>
+                        <div className="min-w-0">
+                          <h5 className="text-xs font-bold text-slate-950 dark:text-white">
+                            {step.stage}
+                          </h5>
+                          <p className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                            {step.mechanism}
+                          </p>
+                          <div className="mt-1.5 rounded-lg bg-slate-50 dark:bg-slate-950 p-1.5 text-[10px] text-slate-500 dark:text-slate-400 font-mono">
+                            🔄 Feedback: {step.feedbackLoop}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <ul className="space-y-2.5">
+                  {system.functions.map((func) => (
+                    <li key={func} className="flex items-start gap-2.5 text-xs text-slate-700 dark:text-slate-200">
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-600" />
+                      <span>{func}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+
+          {/* TAB 3: Diagnostic Biomarkers & Lab Reference Ranges */}
+          {detailTab === "biomarkers" && (
+            <div className="space-y-3 animate-fadeIn">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Key laboratory indicators and diagnostic reference ranges:
+              </p>
+              <div className="space-y-2.5">
+                {(detailedKnowledge?.biomarkers || []).map((bio) => (
+                  <div
+                    key={bio.name}
+                    className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-xs dark:border-slate-800 dark:bg-slate-900"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <h4 className="text-xs font-bold text-slate-950 dark:text-white">
+                        {bio.name}
+                      </h4>
+                      <span className="rounded-lg bg-teal-50 px-2 py-0.5 text-xs font-mono font-bold text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-200/50 dark:border-teal-800/50">
+                        {bio.standardRange} {bio.unit}
+                      </span>
+                    </div>
+                    <div className="mt-2.5 grid grid-cols-2 gap-2 text-[11px]">
+                      <div className="rounded-xl bg-rose-50/60 p-2 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/40">
+                        <span className="font-bold text-rose-700 dark:text-rose-400">▲ High:</span>
+                        <p className="mt-0.5 text-rose-900 dark:text-rose-200 text-[10px] leading-tight">
+                          {bio.elevatedIndication}
+                        </p>
+                      </div>
+                      <div className="rounded-xl bg-blue-50/60 p-2 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/40">
+                        <span className="font-bold text-blue-700 dark:text-blue-400">▼ Low:</span>
+                        <p className="mt-0.5 text-blue-900 dark:text-blue-200 text-[10px] leading-tight">
+                          {bio.lowIndication}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 4: Clinical Pathologies & Miasms */}
+          {detailTab === "pathologies" && (
+            <div className="space-y-3 animate-fadeIn">
+              <div className="space-y-3">
+                {(detailedKnowledge?.pathologies || []).map((patho) => (
+                  <div
+                    key={patho.name}
+                    className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-xs dark:border-slate-800 dark:bg-slate-900"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <h4 className="text-xs font-bold text-slate-950 dark:text-white">
+                        {patho.name}
+                      </h4>
+                      <div className="flex items-center gap-1.5">
+                        <span className="rounded bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 text-[9px] font-mono text-slate-600 dark:text-slate-300">
+                          {patho.icdCode}
+                        </span>
+                        <span className={`rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
+                          patho.miasm === "Psora" ? "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300" :
+                          patho.miasm === "Sycosis" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300" :
+                          patho.miasm === "Syphilis" ? "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300" :
+                          "bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300"
+                        }`}>
+                          {patho.miasm}
+                        </span>
+                      </div>
+                    </div>
+
+                    <p className="mt-2 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                      {patho.pathophysiology}
+                    </p>
+
+                    <div className="mt-2.5 flex flex-wrap gap-1">
+                      {patho.keySigns.map((sign) => (
+                        <span
+                          key={sign}
+                          className="rounded-lg bg-slate-100 px-2 py-0.5 text-[10px] text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                        >
+                          • {sign}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="mt-2.5 border-t border-slate-100 dark:border-slate-800 pt-2 flex items-center gap-1.5 text-[11px]">
+                      <span className="font-semibold text-teal-600 dark:text-teal-400">Similimum:</span>
+                      <span className="text-slate-700 dark:text-slate-200 font-medium">
+                        {patho.homeopathicSimilimum.join(", ")}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 5: Homeopathic Materia Medica & Organ Affinity */}
+          {detailTab === "homeopathy" && (
+            <div className="space-y-3 animate-fadeIn">
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-3 dark:border-emerald-900/40 dark:bg-emerald-950/20">
+                <p className="text-xs font-bold text-emerald-950 dark:text-emerald-200">
+                  Target Organotropism & Therapeutic Affinity
+                </p>
+                <p className="mt-0.5 text-[11px] text-emerald-800 dark:text-emerald-300 leading-relaxed">
+                  Specific remedies possessing proven elective affinities for {system.name} tissues.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                {(detailedKnowledge?.homeopathicAffinities || []).map((aff) => (
+                  <div
+                    key={aff.remedyName}
+                    className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-xs dark:border-slate-800 dark:bg-slate-900"
+                  >
+                    <div className="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-2">
+                      <h4 className="text-xs font-bold text-slate-950 dark:text-white flex items-center gap-1.5">
+                        <span>🌿</span> {aff.remedyName}
+                      </h4>
+                      <span className="rounded bg-teal-50 dark:bg-teal-950 px-2 py-0.5 text-[10px] font-bold text-teal-700 dark:text-teal-300">
+                        {aff.potencyScope}
+                      </span>
+                    </div>
+
+                    <div className="mt-2 space-y-1.5 text-[11px] leading-relaxed">
+                      <div>
+                        <strong className="text-slate-700 dark:text-slate-300">Target Tissues:</strong>{" "}
+                        <span className="text-slate-600 dark:text-slate-400">{aff.targetTissues.join(", ")}</span>
+                      </div>
+                      <div className="rounded-xl bg-slate-50 dark:bg-slate-950 p-2 text-[10px] space-y-1">
+                        <div>
+                          <strong className="text-rose-600 dark:text-rose-400">Aggravation (Worse):</strong> {aff.modalities.worse}
+                        </div>
+                        <div>
+                          <strong className="text-emerald-600 dark:text-emerald-400">Amelioration (Better):</strong> {aff.modalities.better}
+                        </div>
+                      </div>
+                      <p className="text-slate-600 dark:text-slate-300 text-[11px] italic">
+                        💡 <strong>Clinical Pearl:</strong> {aff.clinicalPearls}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Primary Reference Footer */}
+          <div className="mt-4 rounded-2xl border border-blue-100 bg-blue-50/70 p-3.5 dark:border-blue-900/60 dark:bg-blue-950/30">
+            <div className="flex items-start gap-2.5">
               <BookOpen className="mt-0.5 h-4 w-4 shrink-0 text-blue-700 dark:text-blue-300" />
-              <div className="min-w-0">
-                <p className="text-xs font-semibold text-blue-950 dark:text-blue-100">Primary learning reference</p>
+              <div className="min-w-0 text-xs">
+                <p className="font-semibold text-blue-950 dark:text-blue-100">Primary learning reference</p>
                 <a
                   href={system.reference.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-1 inline-flex items-start gap-1 text-xs leading-5 text-blue-700 underline decoration-blue-300 underline-offset-2 hover:text-blue-900 dark:text-blue-300 dark:hover:text-blue-100"
+                  className="mt-0.5 inline-flex items-center gap-1 font-medium text-blue-700 underline decoration-blue-300 underline-offset-2 hover:text-blue-900 dark:text-blue-300 dark:hover:text-blue-100"
                 >
-                  {system.reference.title} <ExternalLink className="mt-0.5 h-3 w-3 shrink-0" />
+                  {system.reference.title} <ExternalLink className="h-3 w-3 shrink-0" />
                 </a>
-                <p className="mt-2 text-[10px] uppercase tracking-wide text-blue-700/70 dark:text-blue-300/70">
+                <p className="mt-1 text-[10px] uppercase tracking-wide text-blue-700/70 dark:text-blue-300/70">
                   {system.reference.publisher} · reviewed {system.reference.reviewedOn}
                 </p>
               </div>
             </div>
           </div>
-          </>
-          )}
         </section>
       </div>
     </div>
