@@ -2,9 +2,10 @@
 
 import React, { useState } from "react";
 import { AnatomySystemId } from "../data/medicalAcademyData";
-import { SYSTEM_3D_REGISTRY, SubOrganItem } from "../render/system3DRegistry";
+import { SYSTEM_3D_REGISTRY } from "../render/system3DRegistry";
 import { SYSTEM_DETAILED_KNOWLEDGE } from "../data/systemDetailedKnowledgeData";
 import { REMEDY_TROPISM_DATA } from "../data/remedyTropismData";
+import { NativeSystem3DCanvas } from "../render/native/NativeSystem3DCanvas";
 import { 
   Sparkles, 
   RotateCcw, 
@@ -16,7 +17,9 @@ import {
   Compass, 
   Maximize2,
   ChevronRight,
-  ShieldAlert
+  ShieldAlert,
+  Play,
+  Pause
 } from "lucide-react";
 
 interface SystemSpecific3DViewerProps {
@@ -34,9 +37,9 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
   activeRemedyTropismId,
   onRemedyTropismSelect,
 }) => {
-  const [resetToken, setResetToken] = useState(0);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [showAnatomyInfo, setShowAnatomyInfo] = useState(true);
+  const [autoRotate, setAutoRotate] = useState(false);
+  const [xrayGhostMode, setXrayGhostMode] = useState(false);
 
   const config = SYSTEM_3D_REGISTRY[systemId] || SYSTEM_3D_REGISTRY.cardiovascular;
   const detailedKnowledge = SYSTEM_DETAILED_KNOWLEDGE[systemId];
@@ -49,7 +52,8 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
   );
 
   const handleReset = () => {
-    setResetToken((prev) => prev + 1);
+    onSubOrganSelect(null);
+    setAutoRotate(false);
   };
 
   return (
@@ -76,7 +80,7 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
                   borderColor: `${config.accentColor}30`
                 }}
               >
-                {config.badge}
+                Native WebGL 3D
               </span>
             </div>
             <p className="truncate text-xs text-slate-500 dark:text-slate-400">
@@ -87,6 +91,20 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
 
         {/* Viewport Action buttons */}
         <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => setAutoRotate(!autoRotate)}
+            className={`inline-flex items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs font-semibold transition ${
+              autoRotate
+                ? "border-teal-500/50 bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-300 dark:border-teal-700"
+                : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300"
+            }`}
+            title="Toggle Continuous 360° Auto-Rotation"
+          >
+            {autoRotate ? <Pause className="h-3.5 w-3.5 text-teal-600" /> : <Play className="h-3.5 w-3.5" />}
+            <span className="hidden sm:inline">{autoRotate ? "Pause" : "Rotate"}</span>
+          </button>
+
           <button
             type="button"
             onClick={() => setShowAnatomyInfo(!showAnatomyInfo)}
@@ -119,12 +137,12 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
           <Compass className="h-3 w-3 text-teal-500" /> Focus:
         </span>
         {config.subOrgans.map((sub) => {
-          const isSelected = activeSubOrgan?.id === sub.id;
+          const isSelected = activeSubOrganId === sub.id;
           return (
             <button
               key={sub.id}
               type="button"
-              onClick={() => onSubOrganSelect(sub.id)}
+              onClick={() => onSubOrganSelect(isSelected ? null : sub.id)}
               className={`group flex shrink-0 items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition ${
                 isSelected
                   ? "border-teal-500 bg-slate-900 text-white shadow-sm dark:bg-teal-500 dark:text-slate-950 dark:border-teal-400"
@@ -139,27 +157,27 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
         })}
       </div>
 
-      {/* 3. 3D Spatial Interactive Canvas */}
+      {/* 3. 100% Native WebGL / Three.js 3D Spatial Canvas (Zero External Iframes) */}
       <div className="relative w-full overflow-hidden rounded-3xl border border-slate-300/80 bg-slate-950 shadow-inner dark:border-slate-800 flex-1 min-h-[580px] lg:min-h-[640px]">
-        <iframe
-          key={`${systemId}-${resetToken}`}
-          title={`${config.name} 3D Interactive Model`}
-          src={config.modelUrl}
-          className="h-[580px] lg:h-[640px] w-full border-0 bg-slate-950"
-          loading="lazy"
-          allow="autoplay; fullscreen; xr-spatial-tracking"
-          allowFullScreen
+        <NativeSystem3DCanvas
+          systemId={systemId}
+          accentColor={config.accentColor}
+          activeSubOrganId={activeSubOrganId}
+          onSubOrganSelect={(subId) => onSubOrganSelect(subId)}
+          activeRemedyTropismId={activeRemedyTropismId}
+          autoRotate={autoRotate}
+          xrayMode={xrayGhostMode}
         />
 
         {/* Top-Left Floating Badge */}
         <div className="pointer-events-none absolute left-4 top-4 flex flex-col gap-1.5 z-10">
-          <div className="flex items-center gap-2 rounded-full border border-white/20 bg-slate-950/85 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white shadow-lg backdrop-blur">
+          <div className="flex items-center gap-2 rounded-full border border-teal-500/30 bg-slate-950/90 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white shadow-lg backdrop-blur">
             <span className="h-2 w-2 rounded-full animate-ping" style={{ backgroundColor: config.accentColor }} />
-            <span>Dedicated 3D {config.name.split(" ")[0]} Model</span>
+            <span>Native WebGL · {config.name.split(" ")[0]} 3D Model</span>
           </div>
 
-          {activeSubOrgan && (
-            <div className="flex items-center gap-1.5 rounded-full border border-teal-500/30 bg-teal-950/85 px-3 py-1 text-[10px] font-semibold text-teal-300 backdrop-blur w-fit">
+          {activeSubOrgan && activeSubOrganId && (
+            <div className="flex items-center gap-1.5 rounded-full border border-teal-500/40 bg-teal-950/90 px-3 py-1 text-[10px] font-semibold text-teal-300 backdrop-blur w-fit">
               <span>{activeSubOrgan.icon}</span>
               <span>Target: {activeSubOrgan.name}</span>
             </div>
@@ -167,8 +185,8 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
         </div>
 
         {/* Top-Right Interaction Legend */}
-        <div className="pointer-events-none absolute right-4 top-4 rounded-xl border border-white/10 bg-slate-950/70 px-2.5 py-1 text-[10px] font-mono text-slate-400 backdrop-blur hidden sm:block">
-          🖱️ Drag: Rotate · Scroll: Zoom · Right-Click: Pan
+        <div className="pointer-events-none absolute right-4 top-4 rounded-xl border border-white/10 bg-slate-950/75 px-2.5 py-1 text-[10px] font-mono text-slate-300 backdrop-blur hidden sm:block">
+          🖱️ Click: Select · Drag: Rotate · Scroll: Zoom
         </div>
 
         {/* Active Organotropism Remedy Glowing Aura Banner */}
