@@ -6,6 +6,7 @@ import { SYSTEM_3D_REGISTRY } from "../render/system3DRegistry";
 import { SYSTEM_DETAILED_KNOWLEDGE } from "../data/systemDetailedKnowledgeData";
 import { REMEDY_TROPISM_DATA } from "../data/remedyTropismData";
 import { NativeSystem3DCanvas } from "../render/native/NativeSystem3DCanvas";
+import { AnatomyLayerVisibility, DEFAULT_ANATOMY_LAYERS } from "../render/native/RealisticAnatomyEngine";
 import { 
   Sparkles, 
   RotateCcw, 
@@ -19,7 +20,8 @@ import {
   ChevronRight,
   ShieldAlert,
   Play,
-  Pause
+  Pause,
+  Scissors
 } from "lucide-react";
 
 interface SystemSpecific3DViewerProps {
@@ -39,7 +41,7 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
 }) => {
   const [showAnatomyInfo, setShowAnatomyInfo] = useState(true);
   const [autoRotate, setAutoRotate] = useState(false);
-  const [xrayGhostMode, setXrayGhostMode] = useState(false);
+  const [layers, setLayers] = useState<AnatomyLayerVisibility>(DEFAULT_ANATOMY_LAYERS);
 
   const config = SYSTEM_3D_REGISTRY[systemId] || SYSTEM_3D_REGISTRY.cardiovascular;
   const detailedKnowledge = SYSTEM_DETAILED_KNOWLEDGE[systemId];
@@ -54,6 +56,11 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
   const handleReset = () => {
     onSubOrganSelect(null);
     setAutoRotate(false);
+    setLayers(DEFAULT_ANATOMY_LAYERS);
+  };
+
+  const toggleLayer = (layerKey: keyof AnatomyLayerVisibility) => {
+    setLayers((prev) => ({ ...prev, [layerKey]: !prev[layerKey] }));
   };
 
   return (
@@ -80,7 +87,7 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
                   borderColor: `${config.accentColor}30`
                 }}
               >
-                Native WebGL 3D
+                BioDigital Living Anatomy
               </span>
             </div>
             <p className="truncate text-xs text-slate-500 dark:text-slate-400">
@@ -90,7 +97,38 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
         </div>
 
         {/* Viewport Action buttons */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-1.5">
+          {/* Layer Dissection: Cross Section */}
+          <button
+            type="button"
+            onClick={() => toggleLayer("crossSectionSlice")}
+            className={`inline-flex items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs font-semibold transition ${
+              layers.crossSectionSlice
+                ? "border-amber-500/60 bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-700"
+                : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300"
+            }`}
+            title="Toggle Anatomical Cross-Section Slice"
+          >
+            <Scissors className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Slice</span>
+          </button>
+
+          {/* Layer Dissection: Vasculature */}
+          <button
+            type="button"
+            onClick={() => toggleLayer("vasculature")}
+            className={`inline-flex items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs font-semibold transition ${
+              layers.vasculature
+                ? "border-rose-500/50 bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-700"
+                : "border-slate-200 bg-white text-slate-400 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-600"
+            }`}
+            title="Toggle Arterial & Venous Vascular Network"
+          >
+            <Activity className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Vessels</span>
+          </button>
+
+          {/* Auto-Rotation */}
           <button
             type="button"
             onClick={() => setAutoRotate(!autoRotate)}
@@ -105,6 +143,7 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
             <span className="hidden sm:inline">{autoRotate ? "Pause" : "Rotate"}</span>
           </button>
 
+          {/* Informer Toggle */}
           <button
             type="button"
             onClick={() => setShowAnatomyInfo(!showAnatomyInfo)}
@@ -119,6 +158,7 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
             <span className="hidden md:inline">Informer</span>
           </button>
 
+          {/* Reset */}
           <button
             type="button"
             onClick={handleReset}
@@ -157,7 +197,7 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
         })}
       </div>
 
-      {/* 3. 100% Native WebGL / Three.js 3D Spatial Canvas (Zero External Iframes) */}
+      {/* 3. 100% Native WebGL BioDigital 3D Spatial Canvas */}
       <div className="relative w-full overflow-hidden rounded-3xl border border-slate-300/80 bg-slate-950 shadow-inner dark:border-slate-800 flex-1 min-h-[580px] lg:min-h-[640px]">
         <NativeSystem3DCanvas
           systemId={systemId}
@@ -166,14 +206,14 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
           onSubOrganSelect={(subId) => onSubOrganSelect(subId)}
           activeRemedyTropismId={activeRemedyTropismId}
           autoRotate={autoRotate}
-          xrayMode={xrayGhostMode}
+          layers={layers}
         />
 
         {/* Top-Left Floating Badge */}
         <div className="pointer-events-none absolute left-4 top-4 flex flex-col gap-1.5 z-10">
           <div className="flex items-center gap-2 rounded-full border border-teal-500/30 bg-slate-950/90 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white shadow-lg backdrop-blur">
             <span className="h-2 w-2 rounded-full animate-ping" style={{ backgroundColor: config.accentColor }} />
-            <span>Native WebGL · {config.name.split(" ")[0]} 3D Model</span>
+            <span>Living 3D Anatomy · {config.name.split(" ")[0]} Model</span>
           </div>
 
           {activeSubOrgan && activeSubOrganId && (
@@ -186,7 +226,7 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
 
         {/* Top-Right Interaction Legend */}
         <div className="pointer-events-none absolute right-4 top-4 rounded-xl border border-white/10 bg-slate-950/75 px-2.5 py-1 text-[10px] font-mono text-slate-300 backdrop-blur hidden sm:block">
-          🖱️ Click: Select · Drag: Rotate · Scroll: Zoom
+          🖱️ Click: Isolate · Drag: Rotate · Scroll: Zoom
         </div>
 
         {/* Active Organotropism Remedy Glowing Aura Banner */}
