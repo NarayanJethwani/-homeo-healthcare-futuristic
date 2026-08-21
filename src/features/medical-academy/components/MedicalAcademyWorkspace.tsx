@@ -52,12 +52,17 @@ import {
   type AcademyLiteratureCitation,
   type PicoQuestion,
 } from "../data/literatureLibrary";
+import HoloHumanDissectionToolbar from "./HoloHumanDissectionToolbar";
+import HoloHumanPathologySimulator from "./HoloHumanPathologySimulator";
+import HoloHumanSearchModal, { type SearchResultItem } from "./HoloHumanSearchModal";
+import { REMEDY_TROPISM_DATA } from "../data/remedyTropismData";
+import { HOLOHUMAN_SYSTEM_MATERIALS } from "../render/holoHumanMaterials";
 
-type CopilotMode = "teach" | "quiz" | "research" | "homeopathy";
+type AssistantMode = "teach" | "quiz" | "research" | "homeopathy";
 type AtlasLayer = "systems" | "regions";
 type AtlasViewMode = "3d" | "2d";
 
-interface CopilotMessage {
+interface AssistantMessage {
   id: string;
   role: "assistant" | "user";
   text: string;
@@ -130,6 +135,7 @@ const SECTION_ICONS: Record<AcademySection, typeof BookOpen> = {
   home: GraduationCap,
   learn: BookOpen,
   explore: Search,
+  pathology: HeartPulse,
   practice: Stethoscope,
   assess: FileCheck2,
   research: Library,
@@ -147,8 +153,8 @@ const SYSTEM_BUTTON_POSITION: Partial<Record<
   renal: { left: "50%", top: "62%", label: "Kidneys and urinary system" },
 };
 
-const COPILOT_MODES: Array<{
-  id: CopilotMode;
+const ASSISTANT_MODES: Array<{
+  id: AssistantMode;
   label: string;
   helper: string;
   icon: typeof BookOpen;
@@ -199,7 +205,7 @@ function messageId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function getModePrompt(mode: CopilotMode, systemName: string, question: string): string {
+function getModePrompt(mode: AssistantMode, systemName: string, question: string): string {
   const shared =
     `This is a foundation-study question about ${systemName}. ` +
     "Do not infer a patient, diagnose, prescribe, recommend a potency, or give treatment instructions. ";
@@ -263,10 +269,10 @@ function AcademyHome({ onNavigate }: { onNavigate: (section: AcademySection) => 
       color: "text-violet-700 bg-violet-50 border-violet-100 dark:text-violet-300 dark:bg-violet-950/40 dark:border-violet-900",
     },
     {
-      title: "Safe Copilot",
+      title: "Safe AI Assistant",
       copy: "Ask educational questions with visible evidence status and citation-aware abstention.",
       icon: MessageSquareText,
-      action: "Ask Copilot",
+      action: "Ask Assistant",
       target: "explore" as const,
       color: "text-emerald-700 bg-emerald-50 border-emerald-100 dark:text-emerald-300 dark:bg-emerald-950/40 dark:border-emerald-900",
     },
@@ -525,31 +531,49 @@ function BodyMap({
 
 function ThreeDAnatomyViewer({ resetToken }: { resetToken: number }) {
   return (
-    <div className="relative mt-5 overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-inner">
+    <div className="relative mt-2 overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-inner">
       <iframe
         key={resetToken}
         title="Interactive full human body anatomy model"
         src="https://sketchfab.com/models/9b0b079953b840bc9a13f524b60041e4/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_watermark=1&ui_annotations=1&ui_help=1"
-        className="h-[590px] w-full border-0"
+        className="h-[720px] lg:h-[780px] w-full border-0"
         loading="lazy"
         allow="autoplay; fullscreen; xr-spatial-tracking"
         allowFullScreen
       />
       <div className="pointer-events-none absolute left-3 top-3 rounded-full border border-white/15 bg-slate-950/85 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white backdrop-blur">
-        Drag to rotate · scroll to zoom
+        Full 3D Twin · Drag to rotate · Scroll to zoom
       </div>
     </div>
   );
 }
 
-function AnatomyAtlas({ selected, onSelect }: { selected: AnatomySystemId; onSelect: (id: AnatomySystemId) => void }) {
+function AnatomyAtlas({
+  selected,
+  onSelect,
+  activeRemedyTropismId,
+  onRemedyTropismSelect,
+}: {
+  selected: AnatomySystemId;
+  onSelect: (id: AnatomySystemId) => void;
+  activeRemedyTropismId: string | null;
+  onRemedyTropismSelect: (remedyId: string | null) => void;
+}) {
   const system = getAnatomySystem(selected);
   const [viewMode, setViewMode] = useState<AtlasViewMode>("3d");
   const [layer, setLayer] = useState<AtlasLayer>("systems");
   const [selectedRegion, setSelectedRegion] = useState<AnatomyRegionId>("epigastric");
   const [detailTab, setDetailTab] = useState<"structures" | "functions" | "clinical">("structures");
   const [viewerResetToken, setViewerResetToken] = useState(0);
+
+  // Dissection & Studio State
+  const [peelDepth, setPeelDepth] = useState<number>(0);
+  const [activeClippingPlane, setActiveClippingPlane] = useState<"none" | "sagittal" | "coronal" | "axial">("none");
+  const [xrayGhostMode, setXrayGhostMode] = useState<boolean>(false);
+  const [themeMode, setThemeMode] = useState<"dark" | "light">("dark");
+
   const region = ANATOMY_REGIONS.find((item) => item.id === selectedRegion) ?? ANATOMY_REGIONS[1];
+  const activeRemedy = activeRemedyTropismId ? REMEDY_TROPISM_DATA[activeRemedyTropismId] : null;
 
   const detailItems =
     detailTab === "structures"
@@ -563,12 +587,12 @@ function AnatomyAtlas({ selected, onSelect }: { selected: AnatomySystemId; onSel
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">
-            Interactive human anatomy atlas
+            HoloHuman™ 3D Interactive Anatomy Atlas
           </p>
-          <h2 className="mt-2 text-2xl font-semibold text-slate-950 dark:text-white">System explorer</h2>
+          <h2 className="mt-2 text-2xl font-semibold text-slate-950 dark:text-white">Living Anatomy & Spatial Twin</h2>
         </div>
         <div className="inline-flex w-fit rounded-xl border border-slate-200 bg-slate-100 p-1 dark:border-slate-700 dark:bg-slate-900" aria-label="Atlas view">
-          {([['3d', '3D full body'], ['2d', '2D fast mode']] as const).map(([id, label]) => (
+          {([['3d', '3D Living Twin'], ['2d', '2D Regional Map']] as const).map(([id, label]) => (
             <button
               key={id}
               type="button"
@@ -601,7 +625,7 @@ function AnatomyAtlas({ selected, onSelect }: { selected: AnatomySystemId; onSel
               </button>
             ))}
           </div>
-          <p className="px-2 pb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Body systems</p>
+          <p className="px-2 pb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">12 Organ Systems</p>
           <div className="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible">
             {ANATOMY_SYSTEMS.map((item) => (
               <button
@@ -625,38 +649,98 @@ function AnatomyAtlas({ selected, onSelect }: { selected: AnatomySystemId; onSel
           </div>
         </aside>
 
-        <div className="relative min-h-[650px] border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white px-5 py-5 dark:border-slate-800 dark:from-slate-950 dark:to-slate-900 lg:border-b-0 lg:border-r">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">{viewMode === "3d" ? "Interactive 3D full body" : `Anterior view · ${layer} layer`}</p>
-              <p className="mt-1 text-xs text-slate-500">{viewMode === "3d" ? "Rotate, zoom, animate, and select model structures" : layer === "systems" ? "Select a highlighted organ system" : "Select one of the nine standard regions"}</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                if (viewMode === "3d") setViewerResetToken((value) => value + 1);
-                else if (layer === "systems") onSelect("cardiovascular");
-                else setSelectedRegion("epigastric");
-              }}
-              className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-600 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
-            >
-              <RotateCcw className="h-3.5 w-3.5" /> Reset
-            </button>
-          </div>
-          {viewMode === "3d" ? (
-            <>
-              <ThreeDAnatomyViewer resetToken={viewerResetToken} />
-              <div className="mt-3 flex flex-col gap-2 text-[10px] leading-4 text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-                <span>Visualization includes skeleton, muscles, brain, lungs, heart, circulation, digestive and urinary structures, skin and sense organs.</span>
-                <a href="https://sketchfab.com/3d-models/animated-full-human-body-anatomy-9b0b079953b840bc9a13f524b60041e4" target="_blank" rel="noreferrer" className="inline-flex shrink-0 items-center gap-1 font-semibold text-teal-700 underline underline-offset-2 dark:text-teal-300">Model details <ExternalLink className="h-3 w-3" /></a>
+        <div className="relative min-h-[850px] flex flex-col justify-between border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white px-5 py-5 dark:border-slate-800 dark:from-slate-950 dark:to-slate-900 lg:border-b-0 lg:border-r">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                  {viewMode === "3d" ? "Interactive PBR 3D Organism" : `Anterior view · ${layer} layer`}
+                </p>
+                <p className="mt-0.5 text-xs text-slate-500">
+                  {viewMode === "3d"
+                    ? "Subsurface Scattering · Studio 3-Point Light · X-Ray Ghosting"
+                    : layer === "systems"
+                      ? "Select a highlighted organ system"
+                      : "Select one of the nine standard abdominal regions"}
+                </p>
               </div>
-            </>
-          ) : (
-            <BodyMap layer={layer} selected={selected} selectedRegion={selectedRegion} onSelect={onSelect} onSelectRegion={setSelectedRegion} />
-          )}
+              <button
+                type="button"
+                onClick={() => {
+                  if (viewMode === "3d") {
+                    setViewerResetToken((value) => value + 1);
+                    setPeelDepth(0);
+                    setActiveClippingPlane("none");
+                    setXrayGhostMode(false);
+                    onRemedyTropismSelect(null);
+                  } else if (layer === "systems") onSelect("cardiovascular");
+                  else setSelectedRegion("epigastric");
+                }}
+                className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-600 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
+              >
+                <RotateCcw className="h-3.5 w-3.5" /> Reset View
+              </button>
+            </div>
+
+            {viewMode === "3d" ? (
+              <div className="space-y-3">
+                <ThreeDAnatomyViewer resetToken={viewerResetToken} />
+                
+                {/* Embedded BioDigital-Grade Dissection Toolbar */}
+                <HoloHumanDissectionToolbar
+                  peelDepth={peelDepth}
+                  onPeelDepthChange={setPeelDepth}
+                  activeClippingPlane={activeClippingPlane}
+                  onClippingPlaneChange={setActiveClippingPlane}
+                  xrayGhostMode={xrayGhostMode}
+                  onXrayGhostModeToggle={() => setXrayGhostMode((v) => !v)}
+                  themeMode={themeMode}
+                  onThemeModeToggle={() => setThemeMode((m) => (m === "dark" ? "light" : "dark"))}
+                  activeRemedyTropismId={activeRemedyTropismId}
+                  onRemedyTropismSelect={onRemedyTropismSelect}
+                  onResetView={() => {
+                    setViewerResetToken((v) => v + 1);
+                    setPeelDepth(0);
+                    setActiveClippingPlane("none");
+                    setXrayGhostMode(false);
+                    onRemedyTropismSelect(null);
+                  }}
+                />
+              </div>
+            ) : (
+              <BodyMap layer={layer} selected={selected} selectedRegion={selectedRegion} onSelect={onSelect} onSelectRegion={setSelectedRegion} />
+            )}
+          </div>
+
+          <div className="mt-3 flex flex-col gap-2 text-[10px] leading-4 text-slate-500 sm:flex-row sm:items-center sm:justify-between border-t border-slate-200/60 dark:border-slate-800/60 pt-2">
+            <span>MeshPhysicalMaterial with calibrated SSS and tone-mapped illumination.</span>
+            <a href="https://sketchfab.com/3d-models/animated-full-human-body-anatomy-9b0b079953b840bc9a13f524b60041e4" target="_blank" rel="noreferrer" className="inline-flex shrink-0 items-center gap-1 font-semibold text-teal-700 underline underline-offset-2 dark:text-teal-300">Model details <ExternalLink className="h-3 w-3" /></a>
+          </div>
         </div>
 
-        <section className="min-w-0 p-5 sm:p-6" aria-live="polite">
+        <section className="min-w-0 p-5 sm:p-6 space-y-4" aria-live="polite">
+          {activeRemedy && (
+            <div className="rounded-2xl border border-amber-500/40 bg-amber-950/20 p-4 text-amber-100 shadow-sm animate-fadeIn">
+              <div className="flex items-center justify-between border-b border-amber-500/30 pb-2 mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-amber-500/20 text-amber-400 font-bold text-xs">
+                    🌿
+                  </span>
+                  <span className="font-bold text-xs text-white">{activeRemedy.remedyName}</span>
+                </div>
+                <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[9px] font-bold text-amber-300 border border-amber-500/30">
+                  {activeRemedy.overallAffinityIntensity}% Tropism
+                </span>
+              </div>
+              <p className="text-[11px] text-amber-200/90 leading-relaxed mb-2">
+                <strong>Organ Affinity:</strong> {activeRemedy.targetOrgans.map((o) => o.structureName).join(", ")}.
+              </p>
+              <p className="text-[10px] text-amber-300/80 leading-relaxed font-mono">
+                Keynote: {activeRemedy.targetOrgans[0]?.clinicalKeynotes}
+              </p>
+            </div>
+          )}
+
           {viewMode === "2d" && layer === "regions" ? (
             <>
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">Selected region</p>
@@ -691,9 +775,9 @@ function AnatomyAtlas({ selected, onSelect }: { selected: AnatomySystemId; onSel
               <h3 className="mt-1 text-xl font-semibold text-slate-950 dark:text-white">{system.name}</h3>
             </div>
           </div>
-          <p className="mt-4 text-sm leading-6 text-slate-600 dark:text-slate-300">{system.overview}</p>
+          <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">{system.overview}</p>
 
-          <div className="mt-5 flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1 dark:bg-slate-950">
+          <div className="mt-4 flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1 dark:bg-slate-950">
             {([
               ["structures", "Structures"],
               ["functions", "Functions"],
@@ -714,7 +798,7 @@ function AnatomyAtlas({ selected, onSelect }: { selected: AnatomySystemId; onSel
             ))}
           </div>
 
-          <ul className="mt-5 space-y-3">
+          <ul className="mt-4 space-y-2.5">
             {detailItems.map((item) => (
               <li key={item} className="flex items-start gap-3 text-sm leading-5 text-slate-700 dark:text-slate-200">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-600 dark:text-teal-400" />
@@ -723,7 +807,7 @@ function AnatomyAtlas({ selected, onSelect }: { selected: AnatomySystemId; onSel
             ))}
           </ul>
 
-          <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50/70 p-4 dark:border-blue-900 dark:bg-blue-950/30">
+          <div className="mt-4 rounded-2xl border border-blue-100 bg-blue-50/70 p-4 dark:border-blue-900 dark:bg-blue-950/30">
             <div className="flex items-start gap-3">
               <BookOpen className="mt-0.5 h-4 w-4 shrink-0 text-blue-700 dark:text-blue-300" />
               <div className="min-w-0">
@@ -1412,17 +1496,17 @@ function LiteratureSearchWorkspace({ system }: { system: AnatomySystemId }) {
   );
 }
 
-function CopilotPanel({ system, onClose }: { system: AnatomySystemId; onClose: () => void }) {
+function AssistantPanel({ system, onClose }: { system: AnatomySystemId; onClose: () => void }) {
   const selectedSystem = getAnatomySystem(system);
-  const [mode, setMode] = useState<CopilotMode>("teach");
+  const [mode, setMode] = useState<AssistantMode>("teach");
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [messages, setMessages] = useState<CopilotMessage[]>([
+  const [messages, setMessages] = useState<AssistantMessage[]>([
     {
       id: "welcome",
       role: "assistant",
       evidenceStatus: "curated",
-      text: "I’m the OSTM™ Academy Copilot. I can explain concepts and create study prompts. I do not diagnose, prescribe, or use patient data in Foundation Study mode.",
+      text: "I’m the HoloHuman™ Academy Assistant. I can explain concepts and create study prompts. I do not diagnose, prescribe, or use patient data in Foundation Study mode.",
     },
   ]);
 
@@ -1440,7 +1524,7 @@ function CopilotPanel({ system, onClose }: { system: AnatomySystemId; onClose: (
     const question = input.trim();
     if (!question || loading) return;
 
-    const userMessage: CopilotMessage = { id: messageId(), role: "user", text: question };
+    const userMessage: AssistantMessage = { id: messageId(), role: "user", text: question };
     setMessages((current) => [...current, userMessage]);
     setInput("");
     setLoading(true);
@@ -1467,7 +1551,7 @@ function CopilotPanel({ system, onClose }: { system: AnatomySystemId; onClose: (
       const hasGrounding = citations.length > 0;
 
       let assistantText = typeof payload.response === "string" ? payload.response.trim() : "";
-      let evidenceStatus: CopilotMessage["evidenceStatus"] = hasGrounding ? "grounded" : "unverified";
+      let evidenceStatus: AssistantMessage["evidenceStatus"] = hasGrounding ? "grounded" : "unverified";
 
       if (!response.ok || !payload.success || !assistantText) {
         assistantText = "The learning service could not answer that question safely. Please use the reviewed source linked in the atlas and try again later.";
@@ -1515,7 +1599,7 @@ function CopilotPanel({ system, onClose }: { system: AnatomySystemId; onClose: (
     <aside
       role="dialog"
       aria-modal="true"
-      aria-label="OSTM Academy Copilot"
+      aria-label="HoloHuman Academy Assistant"
       className="relative z-10 flex h-full w-full max-w-[480px] flex-col overflow-hidden bg-white shadow-2xl dark:bg-slate-900 sm:rounded-3xl sm:border sm:border-white/20"
     >
       <header className="border-b border-teal-400/20 bg-gradient-to-br from-slate-950 via-slate-900 to-teal-950 px-5 pb-5 pt-4 text-white">
@@ -1525,7 +1609,7 @@ function CopilotPanel({ system, onClose }: { system: AnatomySystemId; onClose: (
               <Brain className="h-6 w-6" />
             </span>
             <div>
-              <h2 className="text-base font-semibold">OSTM™ Academy Copilot</h2>
+              <h2 className="text-base font-semibold">HoloHuman™ Academy Assistant</h2>
               <p className="mt-0.5 text-[10px] uppercase tracking-[0.16em] text-teal-200">Learning workspace</p>
             </div>
           </div>
@@ -1533,7 +1617,7 @@ function CopilotPanel({ system, onClose }: { system: AnatomySystemId; onClose: (
             type="button"
             onClick={onClose}
             autoFocus
-            aria-label="Close OSTM Academy Copilot"
+            aria-label="Close HoloHuman Academy Assistant"
             className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300"
           >
             <PanelRightClose className="h-4 w-4" />
@@ -1546,10 +1630,10 @@ function CopilotPanel({ system, onClose }: { system: AnatomySystemId; onClose: (
         </div>
       </header>
 
-      <section className="border-b border-slate-200 bg-slate-50/90 p-4 dark:border-slate-800 dark:bg-slate-950/80" aria-label="Copilot modes">
+      <section className="border-b border-slate-200 bg-slate-50/90 p-4 dark:border-slate-800 dark:bg-slate-950/80" aria-label="Assistant learning modes">
         <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Choose a learning task</p>
         <div className="grid grid-cols-2 gap-2">
-          {COPILOT_MODES.map((item) => (
+          {ASSISTANT_MODES.map((item) => (
             (() => {
               const ModeIcon = item.icon;
               return (
@@ -1630,9 +1714,9 @@ function CopilotPanel({ system, onClose }: { system: AnatomySystemId; onClose: (
           <span className="font-semibold">Suggested:</span> {suggestedQuestion}
         </button>
         <form onSubmit={submitQuestion} className="flex items-end gap-2">
-          <label className="sr-only" htmlFor="academy-copilot-question">Ask an educational medical question</label>
+          <label className="sr-only" htmlFor="academy-assistant-question">Ask an educational medical question</label>
           <textarea
-            id="academy-copilot-question"
+            id="academy-assistant-question"
             value={input}
             onChange={(event) => setInput(event.target.value)}
             onKeyDown={handleInputKeyDown}
@@ -1665,7 +1749,9 @@ export default function MedicalAcademyWorkspace({
 }: MedicalAcademyWorkspaceProps) {
   const [activeSection, setActiveSection] = useState<AcademySection>(() => safeInitialSection(initialSection));
   const [selectedSystem, setSelectedSystem] = useState<AnatomySystemId>("cardiovascular");
-  const [copilotOpen, setCopilotOpen] = useState(false);
+  const [activeRemedyTropismId, setActiveRemedyTropismId] = useState<string | null>(null);
+  const [assistantOpen, setAssistantOpen] = useState(false);
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [progress, setProgress] = useState<AcademyProgress>(EMPTY_ACADEMY_PROGRESS);
   const [progressReady, setProgressReady] = useState(false);
 
@@ -1687,14 +1773,21 @@ export default function MedicalAcademyWorkspace({
     }
   }, [progress, progressReady]);
 
+  // Global ⌘K Search Hotkey & Escape Handling
   useEffect(() => {
-    if (!copilotOpen) return;
-    const closeOnEscape = (event: globalThis.KeyboardEvent) => {
-      if (event.key === "Escape") setCopilotOpen(false);
+    const handleKeyDown = (e: globalThis.KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchModalOpen((open) => !open);
+      }
+      if (e.key === "Escape") {
+        if (searchModalOpen) setSearchModalOpen(false);
+        if (assistantOpen) setAssistantOpen(false);
+      }
     };
-    window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [copilotOpen]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [searchModalOpen, assistantOpen]);
 
   const completeSystemModule = (id: AnatomySystemId) => {
     setProgress((current) => ({
@@ -1725,6 +1818,24 @@ export default function MedicalAcademyWorkspace({
     setActiveSection("explore");
   };
 
+  const handleSearchResultSelection = (item: SearchResultItem) => {
+    if (item.category === "pathology") {
+      setActiveSection("pathology");
+    } else if (item.category === "remedy") {
+      setActiveRemedyTropismId(item.id);
+      setActiveSection("explore");
+    } else {
+      // Map system name to AnatomySystemId if recognized
+      const matched = ANATOMY_SYSTEMS.find(
+        (s) =>
+          s.name.toLowerCase().includes(item.systemName.toLowerCase()) ||
+          s.shortName.toLowerCase().includes(item.systemName.toLowerCase())
+      );
+      if (matched) setSelectedSystem(matched.id);
+      setActiveSection("explore");
+    }
+  };
+
   const renderSection = () => {
     if (activeSection === "home") return <AcademyHome onNavigate={setActiveSection} />;
     if (activeSection === "learn") {
@@ -1737,7 +1848,17 @@ export default function MedicalAcademyWorkspace({
       );
     }
     if (activeSection === "explore") {
-      return <AnatomyAtlas selected={selectedSystem} onSelect={setSelectedSystem} />;
+      return (
+        <AnatomyAtlas
+          selected={selectedSystem}
+          onSelect={setSelectedSystem}
+          activeRemedyTropismId={activeRemedyTropismId}
+          onRemedyTropismSelect={setActiveRemedyTropismId}
+        />
+      );
+    }
+    if (activeSection === "pathology") {
+      return <HoloHumanPathologySimulator />;
     }
     if (activeSection === "practice") return <PracticeWorkspace onSelectSystem={navigateToSystem} />;
     if (activeSection === "assess") {
@@ -1759,7 +1880,7 @@ export default function MedicalAcademyWorkspace({
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <h1 className="truncate text-lg font-semibold tracking-tight text-slate-950 dark:text-white sm:text-xl">
-                    OSTM™ Interactive Human Anatomy Atlas
+                    HoloHuman™ Academy
                   </h1>
                   <span className="rounded-full bg-teal-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-teal-700 dark:bg-teal-950/50 dark:text-teal-300">
                     Study Workspace
@@ -1770,15 +1891,27 @@ export default function MedicalAcademyWorkspace({
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
+              {/* ⌘K Search Trigger */}
               <button
                 type="button"
-                onClick={() => setCopilotOpen(true)}
+                onClick={() => setSearchModalOpen(true)}
+                className="group inline-flex min-h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-teal-400 hover:bg-white hover:text-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:text-white"
+              >
+                <Search className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+                <span className="hidden sm:inline">Search Anatomy & Tropism</span>
+                <span className="inline sm:hidden">Search</span>
+                <kbd className="ml-1 rounded bg-slate-200 px-1.5 py-0.5 text-[10px] font-mono text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-300 dark:border-slate-700">⌘K</kbd>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setAssistantOpen(true)}
                 aria-haspopup="dialog"
-                aria-expanded={copilotOpen}
+                aria-expanded={assistantOpen}
                 className="group inline-flex min-h-11 items-center gap-2.5 rounded-2xl bg-gradient-to-r from-slate-950 to-teal-900 px-4 py-2 text-xs font-semibold text-white shadow-md shadow-slate-900/10 transition hover:from-teal-900 hover:to-cyan-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 dark:from-teal-400 dark:to-cyan-400 dark:text-slate-950"
               >
                 <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 text-teal-200 dark:bg-slate-950/10 dark:text-slate-950"><Sparkles className="h-4 w-4" /></span>
-                Open OSTM™ Academy Copilot
+                Open HoloHuman™ Academy Assistant
                 <PanelRightOpen className="h-4 w-4 opacity-70 transition group-hover:translate-x-0.5" />
               </button>
               {onImmersiveChange && (
@@ -1824,20 +1957,27 @@ export default function MedicalAcademyWorkspace({
           <main className="min-w-0">{renderSection()}</main>
         </div>
 
-        {copilotOpen && (
+        {/* ⌘K Search Modal */}
+        <HoloHumanSearchModal
+          isOpen={searchModalOpen}
+          onClose={() => setSearchModalOpen(false)}
+          onSelectResult={handleSearchResultSelection}
+        />
+
+        {assistantOpen && (
           <div className="fixed inset-0 z-[100] flex justify-end bg-slate-950/50 backdrop-blur-sm sm:p-4">
             <button
               type="button"
-              aria-label="Close OSTM Academy Copilot backdrop"
-              onClick={() => setCopilotOpen(false)}
+              aria-label="Close HoloHuman Academy Assistant backdrop"
+              onClick={() => setAssistantOpen(false)}
               className="absolute inset-0 cursor-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-teal-400"
             />
-            <CopilotPanel system={selectedSystem} onClose={() => setCopilotOpen(false)} />
+            <AssistantPanel system={selectedSystem} onClose={() => setAssistantOpen(false)} />
           </div>
         )}
 
         <footer className="mt-5 flex flex-col gap-2 border-t border-slate-200 px-1 py-4 text-[10px] leading-5 text-slate-500 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
-          <span>OSTM™ Interactive Human Anatomy Atlas · Foundation Study · Educational use only</span>
+          <span>HoloHuman™ Academy · Foundation Study · Educational use only</span>
           <span className="inline-flex items-center gap-1.5">
             <CircleHelp className="h-3 w-3" /> Report questionable content through the clinical knowledge review workflow.
           </span>

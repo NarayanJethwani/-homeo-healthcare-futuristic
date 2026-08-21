@@ -28,7 +28,7 @@ const MedicalAcademyWorkspace = dynamic(
     ssr: false,
     loading: () => (
       <div className="flex h-full items-center justify-center bg-slate-100 text-sm text-slate-500 dark:bg-slate-950 dark:text-slate-400">
-        Loading OSTM™ Interactive Human Anatomy Atlas…
+        Loading HoloHuman™ Academy…
       </div>
     ),
   },
@@ -848,7 +848,7 @@ const TABS_DEFINITION = [
   { id: "treatment-planner", label: "Treatment Planner", icon: IndianRupee, gradient: "from-emerald-600 to-teal-500", shadow: "shadow-[0_4px_12px_rgba(16,185,129,0.3)]", inactiveText: "text-slate-650 hover:text-emerald-600 hover:bg-emerald-50 bg-transparent" },
   { id: "nexus-atlas", label: "Nexus Atlas", icon: Network, gradient: "from-violet-600 to-fuchsia-600", shadow: "shadow-[0_4px_12px_rgba(139,92,246,0.3)]", inactiveText: "text-slate-650 hover:text-violet-600 hover:bg-violet-50 bg-transparent" },
   { id: "cie", label: "Clinical OS", icon: Activity, gradient: "from-emerald-500 to-teal-500", shadow: "shadow-[0_4px_12px_rgba(16,185,129,0.3)]", inactiveText: "text-slate-650 hover:text-emerald-600 hover:bg-emerald-50 bg-transparent" },
-  { id: "medical-academy", label: "Medical Academy", icon: Award, gradient: "from-blue-600 to-indigo-600", shadow: "shadow-[0_4px_12px_rgba(37,99,235,0.3)]", inactiveText: "text-slate-650 hover:text-blue-600 hover:bg-blue-50 bg-transparent" },
+  { id: "medical-academy", label: "HoloHuman™ Academy", icon: Award, gradient: "from-teal-600 to-cyan-600", shadow: "shadow-[0_4px_12px_rgba(13,148,136,0.3)]", inactiveText: "text-slate-650 hover:text-teal-600 hover:bg-teal-50 bg-transparent" },
   { id: "learning-hub", label: "Learning Hub", icon: Award, gradient: "from-fuchsia-500 to-purple-600", shadow: "shadow-[0_4px_12px_rgba(217,70,239,0.3)]", inactiveText: "text-slate-650 hover:text-fuchsia-600 hover:bg-fuchsia-50 bg-transparent" },
   { id: "communication", label: "Communications", icon: Send, gradient: "from-cyan-500 to-teal-500", shadow: "shadow-[0_4px_12px_rgba(6,182,212,0.3)]", inactiveText: "text-slate-650 hover:text-cyan-600 hover:bg-cyan-50 bg-transparent" },
   { id: "ai-router", label: "AI Router Settings", icon: Cpu, gradient: "from-slate-700 to-slate-800", shadow: "shadow-[0_4px_12px_rgba(71,85,105,0.3)]", inactiveText: "text-slate-650 hover:text-slate-800 hover:bg-slate-100 bg-transparent" },
@@ -864,7 +864,7 @@ export default function AdminDashboard() {
   const [cieSubTab, setCieSubTab] = useState<"cockpit" | "intake" | "miasms" | "reports">("cockpit");
   const [immersiveMode, setImmersiveMode] = useState(false);
   const [academyMode, setAcademyMode] = useState("dashboard");
-  const [academyExperience, setAcademyExperience] = useState<"original-atlas" | "study-workspace">("original-atlas");
+  const [academyExperience, setAcademyExperience] = useState<"original-atlas" | "study-workspace">("study-workspace");
   const [isDiagnosticsDrawerOpen, setIsDiagnosticsDrawerOpen] = useState(false);
   const [authReady, setAuthReady] = useState(false);
 
@@ -9065,13 +9065,7 @@ ${err.message || err}`);
         <div 
           className={`flex-grow w-full mx-auto flex flex-col select-text transition-all duration-300 global-font-${globalFontSize} ${
             activeTab === "medical-academy"
-              ? `gap-0 min-h-0 ${
-                  globalReadingWidth === "standard" 
-                    ? "max-w-7xl px-6 pb-6" 
-                    : globalReadingWidth === "wide" 
-                    ? "max-w-[95%] px-6 pb-4" 
-                    : "max-w-none px-0 py-0"
-                }`
+              ? "gap-0 min-h-0 max-w-none px-0 py-0 w-full"
               : `gap-6 py-6 ${
                   globalReadingWidth === "standard" 
                     ? "max-w-7xl px-6" 
@@ -14418,7 +14412,7 @@ ${err.message || err}`);
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-sm tracking-tight text-white">
-                        OSTM™ Interactive Human Anatomy Atlas
+                        HoloHuman™ Academy
                       </span>
                       <span className="rounded-full bg-teal-950 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-teal-300 border border-teal-800">
                         {academyExperience === "original-atlas" ? "Flagship 3D Atlas" : "Study Workspace"}
@@ -14440,7 +14434,7 @@ ${err.message || err}`);
                       }`}
                       aria-pressed={academyExperience === "original-atlas"}
                     >
-                      🗺️ Original 3D Atlas
+                      🗺️ HoloHuman™ 3D Atlas
                     </button>
                     <button
                       type="button"
@@ -14459,13 +14453,13 @@ ${err.message || err}`);
               </div>
 
               {/* Academy Content Surface */}
-              <div className="flex-1 w-full relative overflow-hidden bg-slate-950">
+              <div className="flex-1 w-full relative overflow-hidden bg-slate-950 min-h-[850px]">
                 {academyExperience === "original-atlas" ? (
                   <iframe
                     key={academyMode}
-                    title="OSTM™ Interactive Human Anatomy Atlas"
+                    title="HoloHuman™ Academy 3D Atlas"
                     src={`https://clinical-intelligence-academy-v2.vercel.app/index.html?view=medical-academy&hide_sidebar=true&academy_mode=${encodeURIComponent(academyMode === "dashboard" ? "explore" : academyMode)}`}
-                    className="h-full w-full border-0 bg-slate-950 min-h-[calc(100vh-130px)]"
+                    className="h-[calc(100vh-120px)] min-h-[850px] w-full border-0 bg-slate-950"
                     allow="autoplay; clipboard-write; microphone"
                   />
                 ) : (

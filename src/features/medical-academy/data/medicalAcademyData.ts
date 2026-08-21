@@ -2,6 +2,7 @@ export type AcademySection =
   | "home"
   | "learn"
   | "explore"
+  | "pathology"
   | "practice"
   | "assess"
   | "research"
@@ -143,6 +144,7 @@ export const ACADEMY_SECTIONS: Array<{
   { id: "home", label: "Home", description: "Learning overview" },
   { id: "learn", label: "Learn", description: "Reviewed modules" },
   { id: "explore", label: "Atlas", description: "Interactive anatomy" },
+  { id: "pathology", label: "Pathology", description: "3D disease simulations" },
   { id: "practice", label: "Practice", description: "Educational cases" },
   { id: "assess", label: "Assess", description: "Knowledge checks" },
   { id: "research", label: "Sources", description: "Evidence registry" },

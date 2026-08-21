@@ -435,7 +435,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
     if (!canvas) return;
     try {
       const link = document.createElement("a");
-      link.download = `OSTM-Knowledge-Graph-${activeDataKey}.png`;
+      link.download = `Nexus-Knowledge-Graph-${activeDataKey}.png`;
       link.href = canvas.toDataURL("image/png");
       document.body.appendChild(link);
       link.click();
@@ -503,11 +503,11 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
   ]);
   const [graphHeatmapView, setGraphHeatmapView] = useState<"none" | "evidence" | "risk" | "outcome" | "remedy">("none");
 
-  // Chat Copilot console state
+  // Chat assistant console state
   const [copilotActiveTab, setCopilotActiveTab] = useState<"reasoning" | "chat">("reasoning");
   const [customQuery, setCustomQuery] = useState("");
   const [chatHistory, setChatHistory] = useState<Array<{ sender: "doctor" | "ai"; text: string }>>([
-    { sender: "ai", text: "Hello Clinician. I am the OSTM™ Clinical Copilot. Ask me anything about this patient twin's remedies, miasms, or longitudinal risks." }
+    { sender: "ai", text: "Hello Clinician. I am the Nexus™ Clinical Assistant. Ask me anything about this patient twin's remedies, miasms, or longitudinal risks." }
   ]);
   const [isProcessingChat, setIsProcessingChat] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(true);
@@ -2090,7 +2090,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
     return {
       title: foundNode ? foundNode.label : (selectedNodeId.split("_")[1]?.toUpperCase() || selectedNodeId),
       type: foundNode ? (foundNode.type.toUpperCase() + " Vector") : "Anatomical Node",
-      description: foundNode ? foundNode.description : "Active node in the OSTM knowledge mapping database. Controls structural connections.",
+      description: foundNode ? foundNode.description : "Active node in the Nexus knowledge mapping database. Controls structural connections.",
       evidenceRating: "Grade B Mapping",
       historicalOutcome: "72% average index stabilization",
       confidence: 75,
@@ -2577,7 +2577,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
       let responseText = "";
       const q = text.toLowerCase();
       if (q.includes("ckd") || q.includes("kidney") || q.includes("renal")) {
-        responseText = `### OSTM™ Clinical Reasoning Trace (Kidney Focus)
+        responseText = `### Nexus™ Clinical Reasoning Trace (Kidney Focus)
 - **Patient Profile**: ${activeData.name} | eGFR: ${activeDataKey === "aarav" ? "49 mL/min (Stage 3b)" : "70 mL/min (Normal/Compensated)"}.
 - **Reasoning**: Renal glomeruli filtration stress is driven by high blood pressure spikes and glycemic fluctuations.
 - **Evidence**: Repertory rubrics match Sycotic chronic burden layer. KDIGO guidelines advocate strict BP <120.
@@ -2636,7 +2636,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         <ul style="font-size: 11px; line-height: 1.5; padding-left: 15px;">
           <li>Vitality Index: ${activeData.vitalityIndex}%</li>
           <li>Chronic Disease Burden: ${activeData.diseaseBurdenIndex}%</li>
-          <li>OSTM Systems compensation status: Under Active Regulation</li>
+          <li>Nexus Systems compensation status: Under Active Regulation</li>
         </ul>
         <h3 style="font-size: 12px; text-transform: uppercase; color: #0f172a; margin-top: 15px;">2. Active Symptom Metrics</h3>
         <table border="1" style="border-collapse: collapse; width: 100%; font-size: 10px; text-align: left; margin-top: 5px;">
@@ -2868,7 +2868,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
           <div className="absolute top-6 left-6 z-10 w-96 backdrop-blur-md bg-slate-950/75 dark:bg-slate-950/75 border border-slate-800 rounded-2xl p-4 shadow-2xl space-y-3">
             <div>
               <h3 className="font-serif text-sm font-bold flex items-center gap-2 text-white">
-                <Network className="w-4 h-4 text-purple-400 animate-pulse" /> OSTM Knowledge Graph™
+                <Network className="w-4 h-4 text-purple-400 animate-pulse" /> Nexus Knowledge Graph™
               </h3>
               <p className="text-[9px] text-slate-400 mt-0.5">Edge-to-edge Navigator. Drag nodes to move, scroll to zoom.</p>
             </div>
@@ -2876,7 +2876,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
             <div className="relative">
               <input 
                 type="text"
-                placeholder="Search OSTM Node (e.g. Creatinine, Kidney, Lycopodium)..."
+                placeholder="Search Nexus Node (e.g. Creatinine, Kidney, Lycopodium)..."
                 value={nodeSearchQuery}
                 onChange={(e) => setNodeSearchQuery(e.target.value)}
                 className="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-xs focus:ring-1 focus:ring-purple-500 focus:outline-none text-white placeholder-slate-500"
@@ -3001,7 +3001,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
           {selectedNodeInfo && (
             <div className="absolute bottom-6 right-6 z-10 w-96 backdrop-blur-md bg-slate-950/90 border border-slate-800 rounded-2xl p-4 shadow-2xl text-white space-y-3 max-h-[420px] overflow-y-auto animate-fadeIn">
               <div className="flex justify-between items-center border-b border-slate-800 pb-2 mb-2">
-                <h4 className="text-xs font-mono font-bold text-slate-200">OSTM Node Inspector™</h4>
+                <h4 className="text-xs font-mono font-bold text-slate-200">Nexus Node Inspector™</h4>
                 <button onClick={() => setSelectedNodeId(null)} className="text-slate-400 hover:text-slate-250 border-none bg-transparent cursor-pointer">
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -3037,7 +3037,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-2">
           <div>
             <h3 className="font-serif text-sm font-bold flex items-center gap-2">
-              <Network className="w-4 h-4 text-purple-500 animate-pulse" /> OSTM Knowledge Graph™
+              <Network className="w-4 h-4 text-purple-500 animate-pulse" /> Nexus Knowledge Graph™
             </h3>
             <p className="text-[10px] text-slate-400 mt-0.5">Force-directed map. Drag nodes, scroll to zoom, click to select.</p>
           </div>
@@ -3102,7 +3102,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         </div>
 
         {/* Filter tags panel (Priority 6) */}
-        <div className="flex flex-wrap gap-1 bg-slate-50 dark:bg-slate-955/50 p-2 rounded-xl border border-slate-200/50 dark:border-slate-850">
+        <div className="flex flex-wrap gap-1 bg-slate-50 dark:bg-slate-955/50 p-2 rounded-xl border border-slate-200/50 dark:border-slate-855">
           <span className="text-[8.5px] font-mono text-slate-500 uppercase tracking-widest block w-full mb-1">Graph Node Filters:</span>
           {(["system", "organ", "diagnosis", "lab", "symptom", "remedy", "miasm", "risk", "modality"] as const).map((type) => {
             const isActive = graphFilterTypes.includes(type);
@@ -3129,7 +3129,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         </div>
 
         {/* Heatmap overlay selector (Priority 8) */}
-        <div className="flex items-center justify-between text-[9px] bg-slate-50 dark:bg-slate-955/50 p-2 rounded-xl border border-slate-200/50 dark:border-slate-850 shrink-0">
+        <div className="flex items-center justify-between text-[9px] bg-slate-50 dark:bg-slate-955/50 p-2 rounded-xl border border-slate-200/50 dark:border-slate-855 shrink-0">
           <span className="font-mono text-slate-500 uppercase tracking-widest block font-bold">Heatmap Perspective:</span>
           <div className="flex gap-1">
             {(["none", "evidence", "risk", "outcome", "remedy"] as const).map((mode) => (
@@ -3152,7 +3152,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         <div className="relative">
           <input 
             type="text"
-            placeholder="Search OSTM Node (e.g. Creatinine, Kidney, Lycopodium, Edema)..."
+            placeholder="Search Nexus Node (e.g. Creatinine, Kidney, Lycopodium, Edema)..."
             value={nodeSearchQuery}
             onChange={(e) => setNodeSearchQuery(e.target.value)}
             className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-955 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-1 focus:ring-purple-500 focus:outline-none text-slate-800 dark:text-white"
@@ -3167,14 +3167,14 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
           )}
         </div>
 
-        <div className={`w-full bg-slate-50 dark:bg-slate-955/30 rounded-2xl relative border border-slate-100 dark:border-slate-850/50 cursor-grab active:cursor-grabbing transition-all ${isFullscreen ? 'flex-1 min-h-[400px]' : 'h-[520px]'}`}>
+        <div className={`w-full bg-slate-50 dark:bg-slate-955/30 rounded-2xl relative border border-slate-100 dark:border-slate-855/50 cursor-grab active:cursor-grabbing transition-all ${isFullscreen ? 'flex-1 min-h-[400px]' : 'h-[520px]'}`}>
           <canvas ref={graphCanvasRef} className="w-full h-full block" />
           
           {/* Floating inspector in fullscreen mode (Priority 2 details) */}
           {isFullscreen && selectedNodeInfo && (
             <div className="absolute bottom-6 right-6 w-80 bg-slate-950/95 backdrop-blur-md border border-slate-800 rounded-2xl p-4 shadow-2xl text-white space-y-3 z-10 max-h-[350px] overflow-y-auto animate-fadeIn">
               <div className="flex justify-between items-center border-b border-slate-800 pb-1.5 mb-2">
-                <h4 className="text-xs font-mono font-bold text-slate-200">OSTM Node Inspector™</h4>
+                <h4 className="text-xs font-mono font-bold text-slate-200">Nexus Node Inspector™</h4>
                 <button onClick={() => setSelectedNodeId(null)} className="text-slate-400 hover:text-slate-250 border-none bg-transparent cursor-pointer">
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -3208,7 +3208,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         <div>
           <h2 className="text-xl md:text-2xl font-serif font-bold text-white flex items-center gap-2">
             <Activity className="w-6 h-6 text-emerald-400 animate-pulse" />
-            OSTM™ Clinical Operating System (CIOS™)
+            Nexus™ Clinical Operating System (CIOS™)
           </h2>
           <p className="text-xs text-slate-400 font-sans max-w-2xl leading-relaxed mt-1">
             Redesigned AI reasoning cockpit. Ingesting, projecting, simulating, and ranking therapeutic outcomes.
@@ -3944,9 +3944,9 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
               <div className="lg:col-span-5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm flex flex-col justify-between gap-4">
                 <div className="border-b border-slate-100 dark:border-slate-800 pb-2">
                   <h3 className="font-serif text-sm font-bold flex items-center gap-2">
-                    <Compass className="w-4 h-4 text-emerald-500" /> OSTM Node Inspector™
+                    <Compass className="w-4 h-4 text-emerald-500" /> Nexus Node Inspector™
                   </h3>
-                  <p className="text-[10px] text-slate-400 mt-0.5">Click nodes in OSTM Graph to inspect organ mappings, rubrics, and response histories.</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">Click nodes in Nexus Graph to inspect organ mappings, rubrics, and response histories.</p>
                 </div>
 
                 {selectedNodeInfo ? (
@@ -3954,7 +3954,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
                 ) : (
                   <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-slate-400 gap-2">
                     <Network className="w-8 h-8 text-slate-300 dark:text-slate-700 animate-pulse" />
-                    <span className="text-xs">Select any node in the OSTM Graph to view anatomical details, connections, and evidence weights.</span>
+                    <span className="text-xs">Select any node in the Nexus Graph to view anatomical details, connections, and evidence weights.</span>
                   </div>
                 )}
               </div>
@@ -4874,7 +4874,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
                       }`}
                     >
                       <span className="text-[8px] font-mono text-slate-450 uppercase font-extrabold tracking-wider">
-                        {m.sender === "doctor" ? "Clinician / Doctor" : "OSTM™ Assistant"}
+                        {m.sender === "doctor" ? "Clinician / Doctor" : "Nexus™ Clinical Assistant"}
                       </span>
                       <div className="leading-relaxed whitespace-pre-wrap">
                         {m.sender === "ai" ? renderMessageText(m.text) : m.text}
@@ -4924,7 +4924,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
             <h3 className="font-serif text-base font-bold flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-amber-500" /> Case Intake Parser Workspace
             </h3>
-            <p className="text-xs text-slate-400 mt-0.5">Type clinical description notes to extract OSTM mappings instantly.</p>
+            <p className="text-xs text-slate-400 mt-0.5">Type clinical description notes to extract Nexus mappings instantly.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -5109,7 +5109,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
                 <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4">
                   <div>
                     <h3 className="font-serif text-sm font-bold flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-violet-500" /> OSTM™ Potency Advice Card
+                      <Sparkles className="w-4 h-4 text-violet-500" /> Nexus™ Potency Advice Card
                     </h3>
                     <p className="text-[10px] text-slate-400 mt-0.5">Clinical decision support system calculating recommended dilution levels based on vitality reserves.</p>
                   </div>
@@ -5530,7 +5530,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
               </button>
 
               <div className="border-b border-slate-800 pb-2">
-                <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block mb-0.5">OSTM™ Clinical Evidence Explorer</span>
+                <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block mb-0.5">Nexus™ Clinical Evidence Explorer</span>
                 <h3 className="text-sm font-bold text-sky-400">{evidenceExplorerData.actionName}</h3>
               </div>
 
