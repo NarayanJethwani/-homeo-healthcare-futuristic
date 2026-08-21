@@ -243,7 +243,7 @@ export function buildBioDigitalOrganSystem(
         cameraOffset: [0, 3.9, 2.8],
       });
 
-      animatables.push({ mesh: pituitaryMesh, type: "pulse", speed: 1.6 });
+      animatables.push({ mesh: adenoMesh, type: "pulse", speed: 1.6 });
       break;
     }
 
