@@ -184,11 +184,11 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
                     Organotropism Active: {activeRemedy.remedyName}
                   </span>
                   <span className="rounded bg-amber-500/20 px-1.5 py-0.5 text-[9px] font-bold text-amber-200">
-                    Affinity: {activeRemedy.affinityScore}/100
+                    Affinity: {activeRemedy.overallAffinityIntensity}%
                   </span>
                 </div>
                 <p className="text-[11px] text-amber-200/90 line-clamp-1">
-                  {activeRemedy.clinicalAction}
+                  {activeRemedy.targetOrgans[0]?.clinicalKeynotes || activeRemedy.targetOrgans[0]?.pathologicalEffect}
                 </p>
               </div>
             </div>
