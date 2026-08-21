@@ -536,7 +536,7 @@ function ThreeDAnatomyViewer({ resetToken }: { resetToken: number }) {
         key={resetToken}
         title="Interactive full human body anatomy model"
         src="https://sketchfab.com/models/9b0b079953b840bc9a13f524b60041e4/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_watermark=1&ui_annotations=1&ui_help=1"
-        className="h-[720px] lg:h-[780px] w-full border-0"
+        className="h-[800px] lg:h-[860px] w-full border-0"
         loading="lazy"
         allow="autoplay; fullscreen; xr-spatial-tracking"
         allowFullScreen
@@ -1869,7 +1869,7 @@ export default function MedicalAcademyWorkspace({
   };
 
   return (
-    <div className="h-full overflow-y-auto bg-slate-100/80 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+    <div className="w-full min-h-screen pb-24 bg-slate-100/80 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <div className="mx-auto min-h-full w-full max-w-[1680px] px-3 py-4 sm:px-5 lg:px-7">
         <header className="mb-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-5">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">

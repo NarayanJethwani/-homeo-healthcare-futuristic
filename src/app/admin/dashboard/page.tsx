@@ -8981,11 +8981,7 @@ ${err.message || err}`);
       )}
 
       {/* Main Content Area */}
-      <div 
-        className={`flex-grow flex flex-col min-h-screen overflow-x-hidden ${
-          activeTab === "medical-academy" ? "h-screen overflow-hidden" : ""
-        }`}
-      >
+      <div className="flex-grow flex flex-col min-h-screen overflow-x-hidden">
         {!immersiveMode && (
           <>
             <DashboardHeader
@@ -14402,7 +14398,7 @@ ${err.message || err}`);
 
           {/* TAB: Medical Academy (3D Anatomy & Clinical Twin Lab) */}
           {activeTab === "medical-academy" && (
-            <div className="w-full h-full flex flex-col overflow-hidden">
+            <div className="w-full min-h-full flex flex-col">
               {/* Clean, Non-Overlapping Academy Top Banner */}
               <div className="flex-shrink-0 z-30 flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-slate-900 border-b border-slate-800 text-white shadow-md">
                 <div className="flex items-center gap-3">
@@ -14453,7 +14449,7 @@ ${err.message || err}`);
               </div>
 
               {/* Academy Content Surface */}
-              <div className="flex-1 w-full relative overflow-hidden bg-slate-950 min-h-[850px]">
+              <div className="flex-1 w-full relative min-h-[850px]">
                 {academyExperience === "original-atlas" ? (
                   <iframe
                     key={academyMode}
