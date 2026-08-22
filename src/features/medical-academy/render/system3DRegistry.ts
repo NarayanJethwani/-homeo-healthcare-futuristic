@@ -1,10 +1,30 @@
 /**
- * HoloHuman™ 3D Organ System Registry
- * Dedicated 3D models, sub-organ highlights, camera viewpoints, and shader profiles
- * for all 12 human anatomical systems.
+ * OSTM™ Interactive Human Anatomy Atlas — 12-System Modular 3D Registry
+ * Maps System -> Asset Collections -> Structures -> Mesh Nodes -> Knowledge Graph IDs.
  */
 
 import { AnatomySystemId } from "../data/medicalAcademyData";
+
+export interface AnatomicalStructureDefinition {
+  id: string;
+  name: string;
+  aliases: string[];
+  meshNodeNames: string[];
+  icon: string;
+  description: string;
+  focusHint: string;
+  knowledgeGraphId: string;
+  confidence: "verified" | "source-defined" | "metadata-mapped" | "unknown";
+}
+
+export interface AnatomicalAssetDefinition {
+  id: string;
+  name: string;
+  filePath: string;
+  source: string;
+  sourceType: "imaging-derived" | "anatomically-modeled" | "anatomical-reference";
+  structures: AnatomicalStructureDefinition[];
+}
 
 export interface SubOrganItem {
   id: string;
@@ -20,60 +40,135 @@ export interface System3DConfig {
   subtitle: string;
   badge: string;
   accentColor: string;
-  modelUrl: string;
+  primaryAssetPath?: string;
+  assets: AnatomicalAssetDefinition[];
   subOrgans: SubOrganItem[];
   overview: string;
   clinicalFocus: string;
 }
 
 export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
-  endocrine: {
-    id: "endocrine",
-    name: "Endocrine System & Hormonal Axis",
-    subtitle: "Hypothalamic-Pituitary-Thyroid-Adrenal Network",
-    badge: "Hormonal Regulators",
-    accentColor: "#EAB308",
-    // Dedicated 3D Endocrine / Glandular System Model
-    modelUrl: "https://sketchfab.com/models/2e21b8b6e6f140689b703e2c33ebf7b4/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_watermark=1&ui_annotations=1&ui_help=0",
+  digestive: {
+    id: "digestive",
+    name: "Digestive System & Gastrointestinal Tract",
+    subtitle: "Nutrient Digestion, Hepatic Metabolism & Enteric Absorption",
+    badge: "Metabolic Engine",
+    accentColor: "#EA580C",
+    primaryAssetPath: "/models/anatomy/digestive/stomach.glb",
+    assets: [
+      {
+        id: "stomach_asset",
+        name: "Stomach (Gaster)",
+        filePath: "/models/anatomy/digestive/stomach.glb",
+        source: "NIH 3D (3DPX-016666)",
+        sourceType: "anatomically-modeled",
+        structures: [
+          {
+            id: "stomach_fundus",
+            name: "Gastric Fundus",
+            aliases: ["fundus", "gastric dome"],
+            meshNodeNames: ["Fundus"],
+            icon: "🥣",
+            description: "Superior dilated dome of the stomach trapping gas and accommodating initial food bolus expansion.",
+            focusHint: "Left hypochondrium / Superior gastric pole",
+            knowledgeGraphId: "kg_stomach_fundus",
+            confidence: "verified",
+          },
+          {
+            id: "stomach_body",
+            name: "Gastric Body & Rugae",
+            aliases: ["body", "corpus", "rugae"],
+            meshNodeNames: ["Body", "LesserCurvature", "GreaterCurvature"],
+            icon: "🫕",
+            description: "Central gastric reservoir lined with thick rugal folds containing parietal cells (HCl, IF) and chief cells (pepsinogen).",
+            focusHint: "Epigastric region / Main gastric body",
+            knowledgeGraphId: "kg_stomach_body",
+            confidence: "verified",
+          },
+          {
+            id: "stomach_pylorus",
+            name: "Pyloric Antrum & Canal",
+            aliases: ["pylorus", "antrum", "pyloric sphincter"],
+            meshNodeNames: ["Pylorus"],
+            icon: "🚪",
+            description: "Thick muscular valve gating chyme transit from stomach into the duodenal bulb.",
+            focusHint: "Transpyloric plane (L1) / Right epigastrium",
+            knowledgeGraphId: "kg_stomach_pylorus",
+            confidence: "verified",
+          },
+        ],
+      },
+      {
+        id: "liver_asset",
+        name: "Liver & Biliary System",
+        filePath: "/models/anatomy/digestive/liver_gallbladder.glb",
+        source: "Human Reference Atlas / HuBMAP",
+        sourceType: "imaging-derived",
+        structures: [
+          {
+            id: "liver_hepatic",
+            name: "Hepatic Lobes & Parenchyma",
+            aliases: ["liver", "hepatic lobe", "hepatocytes"],
+            meshNodeNames: ["RightLobe", "LeftLobe"],
+            icon: "🥩",
+            description: "Largest internal metabolic organ performing bile synthesis, glycogen storage, drug biotransformation, and albumin synthesis.",
+            focusHint: "Right hypochondrium & epigastrium",
+            knowledgeGraphId: "kg_liver",
+            confidence: "verified",
+          },
+          {
+            id: "gallbladder",
+            name: "Gallbladder & Cystic Duct",
+            aliases: ["gallbladder", "cholecyst"],
+            meshNodeNames: ["Gallbladder"],
+            icon: "🍐",
+            description: "Concentrates and stores hepatic bile, releasing it post-prandially via CCK stimulation into the duodenum.",
+            focusHint: "Inferior visceral surface of right liver lobe",
+            knowledgeGraphId: "kg_gallbladder",
+            confidence: "verified",
+          },
+        ],
+      },
+    ],
     subOrgans: [
       {
-        id: "pituitary",
-        name: "Pituitary & Hypothalamus",
-        icon: "🧠",
-        description: "Master gland regulating growth hormone, TSH, ACTH, and gonadotropins (LH/FSH).",
-        focusHint: "Sella turcica / Central cerebral base"
+        id: "stomach_fundus",
+        name: "Gastric Fundus",
+        icon: "🥣",
+        description: "Superior anatomical dome of stomach beneath the left hemidiaphragm.",
+        focusHint: "Left hypochondrium",
       },
       {
-        id: "thyroid",
-        name: "Thyroid & Parathyroids",
-        icon: "🦋",
-        description: "Regulates basal metabolic rate (T3/T4) and calcium/phosphate homeostasis (PTH & Calcitonin).",
-        focusHint: "Anterior neck, inferior to thyroid cartilage"
+        id: "stomach_body",
+        name: "Gastric Body & Rugae",
+        icon: "🫕",
+        description: "Acid and intrinsic factor secretion by parietal cells; pepsinogen digestion.",
+        focusHint: "Epigastric zone",
       },
       {
-        id: "adrenals",
-        name: "Suprarenal Adrenal Glands",
-        icon: "⚡",
-        description: "Adrenal cortex secretes cortisol, aldosterone & DHEA; medulla secretes epinephrine & norepinephrine.",
-        focusHint: "Superior poles of both kidneys"
+        id: "stomach_pylorus",
+        name: "Pyloric Sphincter",
+        icon: "🚪",
+        description: "Regulated gastroduodenal outflow valve.",
+        focusHint: "Transpyloric plane L1",
       },
       {
-        id: "pancreas_endocrine",
-        name: "Islets of Langerhans (Pancreas)",
-        icon: "🧪",
-        description: "Alpha cells produce glucagon; Beta cells synthesize and secrete insulin to control blood glucose.",
-        focusHint: "Retroperitoneal abdominal cavity, pancreatic tail/body"
+        id: "liver_hepatic",
+        name: "Hepatic Lobules & Liver",
+        icon: "🥩",
+        description: "Metabolic detoxification, phase I/II CYP pathways, and bile synthesis.",
+        focusHint: "Right upper quadrant",
       },
       {
-        id: "pineal",
-        name: "Pineal Gland",
-        icon: "✨",
-        description: "Synthesizes melatonin in response to light-dark cycles, orchestrating circadian rhythms.",
-        focusHint: "Epithalamus, posterior to third ventricle"
-      }
+        id: "gallbladder",
+        name: "Gallbladder",
+        icon: "🍐",
+        description: "Bile storage, cholesterol emulsification, and biliary drainage.",
+        focusHint: "Under right hepatic lobe",
+      },
     ],
-    overview: "Complex network of ductless glands that secrete hormones directly into the bloodstream to regulate metabolism, growth, stress response, and internal homeostasis.",
-    clinicalFocus: "HPA axis dysregulation, Hashimoto's thyroiditis, adrenal burnout, Addison's, and metabolic syndrome."
+    overview: "Continuous alimentary canal and accessory glandular organs orchestrating mechanical breakdown, enzymatic hydrolysis, hepatic assimilation, and nutrient absorption.",
+    clinicalFocus: "Peptic ulcer disease, GERD, gastroparesis, non-alcoholic fatty liver (NAFLD), cholelithiasis, and malabsorption syndromes.",
   },
 
   cardiovascular: {
@@ -82,410 +177,498 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
     subtitle: "Pulsatile 4-Chamber Heart & Coronary Network",
     badge: "Vital Pump",
     accentColor: "#E11D48",
-    // Dedicated 3D Heart with coronary vasculature & chambers
-    modelUrl: "https://sketchfab.com/models/02d53ea7f12e4f019a7102604d57c2fe/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_watermark=1&ui_annotations=1&ui_help=0",
+    primaryAssetPath: "/models/anatomy/cardiovascular/heart_great_vessels.glb",
+    assets: [
+      {
+        id: "heart_asset",
+        name: "Heart with Great Vessels",
+        filePath: "/models/anatomy/cardiovascular/heart_great_vessels.glb",
+        source: "NIH 3D / NHLBI (3DPX-023212)",
+        sourceType: "imaging-derived",
+        structures: [
+          {
+            id: "left_ventricle",
+            name: "Left Ventricle & Myocardium",
+            aliases: ["left ventricle", "apex", "myocardium"],
+            meshNodeNames: ["LeftVentricle"],
+            icon: "❤️",
+            description: "High-pressure muscular pump ejecting oxygenated blood into systemic arterial circulation.",
+            focusHint: "Anterior-inferior apex / 5th left intercostal space",
+            knowledgeGraphId: "kg_cardio_lv",
+            confidence: "verified",
+          },
+          {
+            id: "aorta_arch",
+            name: "Aortic Arch & Branches",
+            aliases: ["aorta", "aortic arch"],
+            meshNodeNames: ["AorticArch"],
+            icon: "🫀",
+            description: "Main systemic arterial conduit giving rise to brachiocephalic, left carotid, and left subclavian trunks.",
+            focusHint: "Superior mediastinum / T4 level",
+            knowledgeGraphId: "kg_cardio_aorta",
+            confidence: "verified",
+          },
+          {
+            id: "coronary_arteries",
+            name: "Coronary Arterial Tree",
+            aliases: ["coronary", "lad", "rca"],
+            meshNodeNames: ["LAD_Coronary"],
+            icon: "🩸",
+            description: "Left and right coronary arteries perfusing the beating myocardium with oxygenated blood.",
+            focusHint: "Coronary and anterior interventricular sulci",
+            knowledgeGraphId: "kg_cardio_coronary",
+            confidence: "verified",
+          },
+        ],
+      },
+    ],
     subOrgans: [
       {
         id: "left_ventricle",
         name: "Left Ventricle & Myocardium",
         icon: "❤️",
-        description: "High-pressure muscular chamber generating systemic systolic blood pressure and cardiac output.",
-        focusHint: "Anterior-inferior apex of the cardiac silhouette"
+        description: "High-pressure muscular chamber generating systemic systolic blood pressure.",
+        focusHint: "Anterior-inferior apex",
       },
       {
-        id: "aorta_valves",
-        name: "Aorta & Coronary Arteries",
+        id: "aorta_arch",
+        name: "Aorta & Great Vessels",
         icon: "🫀",
-        description: "Ascending aorta and left/right coronary arterial tree delivering oxygenated blood to the myocardium.",
-        focusHint: "Cardiac base & aortic root"
+        description: "Ascending aorta, aortic arch, and brachiocephalic/carotid trunks.",
+        focusHint: "Superior mediastinum",
       },
       {
-        id: "conduction_system",
-        name: "SA/AV Nodes & Purkinje Fibers",
-        icon: "⚡",
-        description: "Intrinsic electrical conduction system initiating sinus rhythm and synchronized ventricular contractions.",
-        focusHint: "Right atrial wall & interventricular septum"
+        id: "coronary_arteries",
+        name: "Coronary Vasculature",
+        icon: "🩸",
+        description: "Left anterior descending and right coronary arterial perfusion network.",
+        focusHint: "Interventricular sulcus",
       },
-      {
-        id: "atria_pulmonary",
-        name: "Atria & Pulmonary Artery",
-        icon: "🔄",
-        description: "Receiving chambers and pulmonary trunk routing deoxygenated blood through the pulmonary capillary bed.",
-        focusHint: "Superior cardiac base"
-      }
     ],
-    overview: "The central hemodynamic engine circulating 5 liters of blood per minute, delivering oxygen, nutrients, and immune cells to all bodily tissues.",
-    clinicalFocus: "Coronary artery disease, angina pectoris, valvular stenosis, cardiac hypertrophy, and arrhythmias."
-  },
-
-  nervous: {
-    id: "nervous",
-    name: "Nervous System & Neural Pathways",
-    subtitle: "Cerebral Cortex, Limbic System & Cranial Nerves",
-    badge: "Master Processing Unit",
-    accentColor: "#7C3AED",
-    // Dedicated 3D Human Brain & Central Nervous System Model
-    modelUrl: "https://sketchfab.com/models/38cf48c3b7a5449fb67ea9b119183427/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_watermark=1&ui_annotations=1&ui_help=0",
-    subOrgans: [
-      {
-        id: "cerebral_cortex",
-        name: "Cerebral Hemispheres & Lobes",
-        icon: "🧠",
-        description: "Frontal, parietal, temporal, and occipital cortices governing executive function, motor control, memory, and perception.",
-        focusHint: "Superior & lateral cranial vault"
-      },
-      {
-        id: "cerebellum",
-        name: "Cerebellum",
-        icon: "⚖️",
-        description: "Coordinates voluntary motor movements, posture, fine motor precision, and vestibular equilibrium.",
-        focusHint: "Posterior cranial fossa, beneath occipital lobes"
-      },
-      {
-        id: "brainstem",
-        name: "Brainstem & Cranial Nerves",
-        icon: "⚡",
-        description: "Midbrain, pons, and medulla oblongata regulating vital respiratory, vasomotor, and cranial nerve reflexes.",
-        focusHint: "Central base anterior to cerebellum"
-      },
-      {
-        id: "spinal_cord",
-        name: "Spinal Cord & Radicular Nerves",
-        icon: "🧬",
-        description: "Descending motor tracts (corticospinal) and ascending sensory tracts (spinothalamic) linking brain and body.",
-        focusHint: "Vertebral canal"
-      }
-    ],
-    overview: "High-speed electrochemical communication network consisting of 86 billion neurons orchestrating thought, reflex, autonomic regulation, and sensory perception.",
-    clinicalFocus: "Neuralgia, migraine, demyelination, autonomic dystonia, neuropathies, and stroke recovery."
-  },
-
-  respiratory: {
-    id: "respiratory",
-    name: "Respiratory System & Gas Exchange",
-    subtitle: "Tracheobronchial Tree & Alveolar-Capillary Bed",
-    badge: "Vital Ventilation",
-    accentColor: "#0284C7",
-    // Dedicated 3D Lungs & Respiratory Tree
-    modelUrl: "https://sketchfab.com/models/eb9ea2ea7e744111815fe5b2b2a60bf6/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_watermark=1&ui_annotations=1&ui_help=0",
-    subOrgans: [
-      {
-        id: "trachea_bronchi",
-        name: "Trachea & Primary Bronchi",
-        icon: "🫁",
-        description: "Cartilaginous airway conducting humidified, filtered air into right and left lung lobes.",
-        focusHint: "Mediastinum anterior to esophagus"
-      },
-      {
-        id: "lung_parenchyma",
-        name: "Right (3 Lobes) & Left (2 Lobes)",
-        icon: "💨",
-        description: "Elastic lung tissue accommodating expanding tidal volumes during diaphragmatic excursion.",
-        focusHint: "Bilateral thoracic pleural cavities"
-      },
-      {
-        id: "alveolar_bed",
-        name: "Alveolar Sacs & Surfactant",
-        icon: "🔬",
-        description: "300 million micro-sacs providing 100m² of surface area for passive O2/CO2 diffusion across the capillary membrane.",
-        focusHint: "Terminal respiratory bronchioles"
-      },
-      {
-        id: "diaphragm",
-        name: "Diaphragm & Intercostals",
-        icon: "⛰️",
-        description: "Primary respiratory muscle innervated by phrenic nerve (C3-C5), creating negative intrathoracic pressure.",
-        focusHint: "Inferior thoracic aperture"
-      }
-    ],
-    overview: "Exchanges oxygen and carbon dioxide between blood and atmospheric air, maintains acid-base pH balance, and filters inhaled particulates.",
-    clinicalFocus: "Bronchial asthma, acute bronchitis, pneumonia, COPD, pleurisy, and hyperventilation syndrome."
+    overview: "Closed high-pressure systemic and low-pressure pulmonary circuit driven by rhythmic electromechanical myocardial contractions.",
+    clinicalFocus: "Ischemic heart disease, coronary artery disease, heart failure with preserved/reduced ejection fraction, and valvular stenosis.",
   },
 
   renal: {
     id: "renal",
     name: "Renal & Urinary Excretory System",
-    subtitle: "Glomerular Filtration & Osmoregulation",
-    badge: "Fluid & Toxin Filtration",
-    accentColor: "#0D9488",
-    // Dedicated 3D Kidneys & Urinary Tract
-    modelUrl: "https://sketchfab.com/models/0b1ba5ec3c1d4cf29b68a3fbfa251509/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_watermark=1&ui_annotations=1&ui_help=0",
+    subtitle: "Glomerular Ultrafiltration, Acid-Base & Fluid Homeostasis",
+    badge: "Master Filter",
+    accentColor: "#0284C7",
+    primaryAssetPath: "/models/anatomy/renal/kidneys_urinary.glb",
+    assets: [
+      {
+        id: "renal_asset",
+        name: "Bilateral Kidneys & Bladder",
+        filePath: "/models/anatomy/renal/kidneys_urinary.glb",
+        source: "Human Reference Atlas / HuBMAP",
+        sourceType: "imaging-derived",
+        structures: [
+          {
+            id: "renal_cortex",
+            name: "Renal Cortex & Glomeruli",
+            aliases: ["kidney", "renal cortex", "glomeruli"],
+            meshNodeNames: ["Kidney_L", "Kidney_R"],
+            icon: "🫘",
+            description: "Outer renal parenchyma containing ~1 million nephrons filtering 180 L of plasma daily.",
+            focusHint: "T12-L3 vertebral levels, retroperitoneal space",
+            knowledgeGraphId: "kg_renal_cortex",
+            confidence: "verified",
+          },
+          {
+            id: "ureters",
+            name: "Peristaltic Ureters",
+            aliases: ["ureter", "renal pelvis"],
+            meshNodeNames: ["Ureters"],
+            icon: "💧",
+            description: "Muscular conduits propelling urine via smooth muscle peristalsis into the bladder.",
+            focusHint: "Descending retroperitoneal conduits",
+            knowledgeGraphId: "kg_renal_ureters",
+            confidence: "verified",
+          },
+          {
+            id: "urinary_bladder",
+            name: "Detrusor Urinary Bladder",
+            aliases: ["bladder", "detrusor"],
+            meshNodeNames: ["Bladder"],
+            icon: "🎈",
+            description: "Distensible muscular reservoir storing urine until controlled micturition.",
+            focusHint: "True pelvis / Retro-pubic space",
+            knowledgeGraphId: "kg_renal_bladder",
+            confidence: "verified",
+          },
+        ],
+      },
+    ],
     subOrgans: [
       {
         id: "renal_cortex",
         name: "Renal Cortex & Glomeruli",
         icon: "🫘",
-        description: "Site of ultrafiltration where blood is filtered at 125 mL/min across glomerular fenestrated capillaries.",
-        focusHint: "Outer parenchyma of kidneys"
+        description: "Nephron glomerular filtration and blood pressure osmoregulation.",
+        focusHint: "Retroperitoneal flanks",
       },
       {
-        id: "renal_medulla",
-        name: "Medullary Pyramids & Loops of Henle",
-        icon: "💧",
-        description: "Countercurrent multiplier system establishing hyperosmolar interstitial gradient for water reabsorption.",
-        focusHint: "Inner renal tissue"
-      },
-      {
-        id: "ureters_pelvis",
+        id: "ureters",
         name: "Renal Pelvis & Ureters",
-        icon: "🔄",
-        description: "Peristaltic muscular tubes transporting filtered urine to the storage bladder.",
-        focusHint: "Retroperitoneal lumbar region to pelvis"
+        icon: "💧",
+        description: "Peristaltic conduits draining into pelvic reservoir.",
+        focusHint: "Lumbar descending pathway",
       },
       {
         id: "urinary_bladder",
         name: "Detrusor Urinary Bladder",
         icon: "🎈",
-        description: "Elastic reservoir holding 400-600 mL urine under parasympathetic micturition control.",
-        focusHint: "Lesser pelvis behind pubic symphysis"
-      }
+        description: "Compliant reservoir and micturition sphincter mechanism.",
+        focusHint: "Pelvic cavity",
+      },
     ],
-    overview: "Filters 180 liters of plasma daily, maintains electrolyte balance (Na+, K+, HCO3-), regulates blood volume/pressure, and excretes metabolic wastes.",
-    clinicalFocus: "Nephrolithiasis (kidney stones), cystitis, glomerulonephritis, CKD, and renal colic."
+    overview: "Precision filtration and osmoregulatory system clearing nitrogenous metabolic wastes, balancing electrolytes, and secreting erythropoietin and renin.",
+    clinicalFocus: "Chronic kidney disease (CKD), glomerulonephritis, nephrolithiasis, and diabetic nephropathy.",
   },
 
-  digestive: {
-    id: "digestive",
-    name: "Digestive System & Gastrointestinal Tract",
-    subtitle: "Nutrient Digestion, Hepatic Metabolism & Absorption",
-    badge: "Metabolic Core",
-    accentColor: "#D97706",
-    // Dedicated 3D Gastrointestinal Tract & Liver
-    modelUrl: "https://sketchfab.com/models/cbbd8419616e4db99482701b22896da4/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_watermark=1&ui_annotations=1&ui_help=0",
+  nervous: {
+    id: "nervous",
+    name: "Nervous System & Neural Circuits",
+    subtitle: "Cerebral Cortex, Synaptic Signaling & Central Integration",
+    badge: "Command Matrix",
+    accentColor: "#8B5CF6",
+    primaryAssetPath: "/models/anatomy/nervous/brain_brainstem.glb",
+    assets: [
+      {
+        id: "brain_asset",
+        name: "Brain & Brainstem",
+        filePath: "/models/anatomy/nervous/brain_brainstem.glb",
+        source: "OpenAnatomy / SPL Harvard (SPL-BRAIN-001)",
+        sourceType: "imaging-derived",
+        structures: [
+          {
+            id: "cerebral_cortex",
+            name: "Cerebral Cortex & Hemispheres",
+            aliases: ["cerebrum", "cortex", "gyri"],
+            meshNodeNames: ["Cerebrum", "Cerebrum_R"],
+            icon: "🧠",
+            description: "Higher executive function, sensory integration, motor planning, and memory storage.",
+            focusHint: "Cranial vault",
+            knowledgeGraphId: "kg_nervous_cortex",
+            confidence: "verified",
+          },
+          {
+            id: "cerebellum",
+            name: "Cerebellar Folia",
+            aliases: ["cerebellum"],
+            meshNodeNames: ["Cerebellum"],
+            icon: "🌿",
+            description: "Motor coordination, balance, procedural learning, and precision timing.",
+            focusHint: "Posterior cranial fossa",
+            knowledgeGraphId: "kg_nervous_cerebellum",
+            confidence: "verified",
+          },
+          {
+            id: "brainstem",
+            name: "Brainstem (Pons & Medulla)",
+            aliases: ["brainstem", "medulla", "pons"],
+            meshNodeNames: ["Brainstem"],
+            icon: "⚡",
+            description: "Autonomic control centers for respiration, cardiac rhythm, vasomotor tone, and cranial nerve nuclei.",
+            focusHint: "Foramen magnum / Cranial base",
+            knowledgeGraphId: "kg_nervous_brainstem",
+            confidence: "verified",
+          },
+        ],
+      },
+    ],
     subOrgans: [
       {
-        id: "stomach",
-        name: "Gastric Rugae & Acid Secretion",
-        icon: "🥣",
-        description: "Parietal cells secrete HCl (pH 1.5-2.0) and intrinsic factor; chief cells secrete pepsinogen.",
-        focusHint: "Left upper quadrant / epigastrium"
+        id: "cerebral_cortex",
+        name: "Cerebral Cortex & Hemispheres",
+        icon: "🧠",
+        description: "Bilateral cerebral neocortex with frontal, parietal, temporal, and occipital lobes.",
+        focusHint: "Cranial cavity",
       },
       {
-        id: "liver_hepatic",
-        name: "Hepatic Lobules & Bile Synthesis",
-        icon: "🥩",
-        description: "Central biochemical factory for detoxification, glycogen storage, protein synthesis, and bile acid production.",
-        focusHint: "Right upper quadrant beneath diaphragm"
+        id: "cerebellum",
+        name: "Cerebellum & Motor Tuning",
+        icon: "🌿",
+        description: "Fine motor control, equilibrium, and rapid proprioceptive modulation.",
+        focusHint: "Infratentorial compartment",
       },
       {
-        id: "gallbladder_biliary",
-        name: "Gallbladder & Cystic Duct",
-        icon: "🟢",
-        description: "Concentrates and stores bile, contracting in response to CCK during fatty meal ingestion.",
-        focusHint: "Inferior visceral surface of liver"
+        id: "brainstem",
+        name: "Brainstem & Autonomics",
+        icon: "⚡",
+        description: "Vital cardiac/respiratory centers and ascending/descending tracts.",
+        focusHint: "Base of skull",
       },
-      {
-        id: "intestines",
-        name: "Small & Large Intestine (Microbiome)",
-        icon: "🌀",
-        description: "Duodenum, jejunum, ileum with villi for nutrient absorption, followed by colon for water retrieval and microbiota fermentation.",
-        focusHint: "Umbilical and lower abdominal quadrants"
-      }
     ],
-    overview: "Converts ingested food into bioavailable nutrients, neutralizes toxins via hepatic portal circulation, and sustains the enteric nervous system.",
-    clinicalFocus: "GERD, gastritis, peptic ulcer, fatty liver (NAFLD), cholecystitis, IBS, and dysbiosis."
+    overview: "Electro-chemical biological computational matrix integrating sensory inputs, voluntary motor outputs, and autonomic homeostatic reflexes.",
+    clinicalFocus: "Neurodegenerative disorders, stroke, peripheral neuropathies, migraine, and autonomic dysautonomia.",
+  },
+
+  respiratory: {
+    id: "respiratory",
+    name: "Respiratory System & Gas Exchange",
+    subtitle: "Pulmonary Ventilation, Alveolar Diffusion & Acid-Base Balance",
+    badge: "Oxygen Gateway",
+    accentColor: "#06B6D4",
+    primaryAssetPath: "/models/anatomy/respiratory/lungs_airways.glb",
+    assets: [
+      {
+        id: "lungs_asset",
+        name: "Lungs & Tracheobronchial Tree",
+        filePath: "/models/anatomy/respiratory/lungs_airways.glb",
+        source: "NIH 3D / NIAID (3DPX-017420)",
+        sourceType: "imaging-derived",
+        structures: [
+          {
+            id: "lung_parenchyma",
+            name: "Pulmonary Parenchyma & Lobes",
+            aliases: ["lungs", "alveoli"],
+            meshNodeNames: ["RightLung", "LeftLung"],
+            icon: "🫁",
+            description: "Bilateral elastic organs with 3 right lobes and 2 left lobes providing 100 m² of alveolar gas exchange surface.",
+            focusHint: "Thoracic pleural cavities",
+            knowledgeGraphId: "kg_resp_lungs",
+            confidence: "verified",
+          },
+          {
+            id: "trachea_bronchi",
+            name: "Trachea & Primary Bronchi",
+            aliases: ["trachea", "bronchi"],
+            meshNodeNames: ["Trachea"],
+            icon: "🌬️",
+            description: "Cartilaginous airway conducting humidified, filtered air into the alveolar tree.",
+            focusHint: "Anterior mediastinum",
+            knowledgeGraphId: "kg_resp_trachea",
+            confidence: "verified",
+          },
+        ],
+      },
+    ],
+    subOrgans: [
+      {
+        id: "lung_parenchyma",
+        name: "Lung Parenchyma & Lobes",
+        icon: "🫁",
+        description: "Alveolar capillary gas diffusion membrane.",
+        focusHint: "Thoracic cavity",
+      },
+      {
+        id: "trachea_bronchi",
+        name: "Trachea & Airways",
+        icon: "🌬️",
+        description: "Cartilaginous conducting airway with ciliated mucociliary escalator.",
+        focusHint: "Superior mediastinum",
+      },
+    ],
+    overview: "Conducting airways and compliant alveolar parenchyma facilitating oxygen uptake and carbon dioxide elimination.",
+    clinicalFocus: "Asthma, COPD, pneumonia, pulmonary fibrosis, and acute respiratory distress syndrome.",
   },
 
   skeletal: {
     id: "skeletal",
-    name: "Skeletal System & Osteology",
-    subtitle: "206 Articulated Bones, Trabecular Matrix & Joint Architecture",
-    badge: "Structural Framework",
+    name: "Skeletal System & Structural Framework",
+    subtitle: "Osteology, Axial-Appendicular Biomechanics & Mineral Depot",
+    badge: "Structural Matrix",
     accentColor: "#64748B",
-    // Dedicated 3D Articulated Skeleton & Osteology
-    modelUrl: "https://sketchfab.com/models/30616b7134cb48208da0d71a1795779c/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_watermark=1&ui_annotations=1&ui_help=0",
+    primaryAssetPath: "/models/anatomy/skeletal/human_skeleton.glb",
+    assets: [
+      {
+        id: "skeleton_asset",
+        name: "Human Skeleton Reference",
+        filePath: "/models/anatomy/skeletal/human_skeleton.glb",
+        source: "NIH 3D / NLM (3DPX-010214)",
+        sourceType: "imaging-derived",
+        structures: [
+          {
+            id: "cranium",
+            name: "Cranium & Facial Skeleton",
+            aliases: ["skull", "cranium"],
+            meshNodeNames: ["Skull"],
+            icon: "💀",
+            description: "Rigid bony casing protecting the cerebrum, sensory organs, and facial masticatory apparatus.",
+            focusHint: "Head & cephalic region",
+            knowledgeGraphId: "kg_skel_skull",
+            confidence: "verified",
+          },
+          {
+            id: "spine_vertebrae",
+            name: "Vertebral Column & Discs",
+            aliases: ["spine", "vertebrae"],
+            meshNodeNames: ["Spine"],
+            icon: "🦴",
+            description: "Segmented axial column providing weight-bearing structural support and spinal cord protection.",
+            focusHint: "Posterior midline dorsal axis",
+            knowledgeGraphId: "kg_skel_spine",
+            confidence: "verified",
+          },
+          {
+            id: "ribcage_thorax",
+            name: "Thoracic Ribcage & Sternum",
+            aliases: ["ribcage", "ribs", "sternum"],
+            meshNodeNames: ["Ribcage"],
+            icon: "🛡️",
+            description: "Protective osseocartilaginous cage sheltering heart and lungs while expanding during inspiration.",
+            focusHint: "Thoracic cage",
+            knowledgeGraphId: "kg_skel_ribs",
+            confidence: "verified",
+          },
+        ],
+      },
+    ],
     subOrgans: [
       {
-        id: "axial_skeleton",
-        name: "Cranium & Vertebral Column",
+        id: "cranium",
+        name: "Cranium & Skull",
+        icon: "💀",
+        description: "Neurocranium and viscerocranium protecting brain and sensory receptors.",
+        focusHint: "Cephalic axis",
+      },
+      {
+        id: "spine_vertebrae",
+        name: "Vertebral Column",
         icon: "🦴",
-        description: "Protects CNS; 24 mobile vertebrae, sacrum, and coccyx supporting upright axial load.",
-        focusHint: "Central axis from skull to pelvis"
+        description: "Cervical, thoracic, lumbar, sacral and coccygeal spine segments.",
+        focusHint: "Axial skeleton",
       },
       {
-        id: "synovial_joints",
-        name: "Synovial Joints & Cartilage",
-        icon: "🔗",
-        description: "Articular hyaline cartilage, synovial fluid, and stabilizing ligamentous capsules enabling friction-free articulation.",
-        focusHint: "Knee, hip, shoulder, and spinal facet joints"
+        id: "ribcage_thorax",
+        name: "Thoracic Ribcage",
+        icon: "🛡️",
+        description: "12 pairs of ribs, costal cartilage, and sternum.",
+        focusHint: "Chest cage",
       },
-      {
-        id: "bone_marrow",
-        name: "Trabecular Bone & Marrow",
-        icon: "🩸",
-        description: "Hematopoietic stem cells producing red blood cells, leukocytes, and platelets within cancellous bone matrix.",
-        focusHint: "Epiphyses of long bones and iliac crest"
-      }
     ],
-    overview: "Provides rigid structural support, protects internal visceral organs, acts as a mineral bank for calcium/phosphate, and facilitates locomotion.",
-    clinicalFocus: "Osteoporosis, osteoarthritis, fractures, periostitis, spondylosis, and bone spurring."
+    overview: "Rigid mineralized osseous framework supporting soft tissues, shielding vital viscera, and anchoring musculoskeletal levers.",
+    clinicalFocus: "Osteoporosis, osteoarthritis, fractures, spondylolisthesis, and scoliosis.",
   },
 
-  muscular: {
-    id: "muscular",
-    name: "Muscular System & Myofascial Chains",
-    subtitle: "600+ Muscles, Sarcomere Kinetics & Tendinous Anchors",
-    badge: "Locomotor & Force Generation",
-    accentColor: "#DC2626",
-    // Dedicated 3D Muscular Anatomy Model
-    modelUrl: "https://sketchfab.com/models/df23bc1912954a26a4225a07d35ef6b0/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_watermark=1&ui_annotations=1&ui_help=0",
+  endocrine: {
+    id: "endocrine",
+    name: "Endocrine System & Hormonal Axis",
+    subtitle: "Hypothalamic-Pituitary-Thyroid-Adrenal Axis",
+    badge: "Hormonal Regulators",
+    accentColor: "#EAB308",
+    primaryAssetPath: "/models/anatomy/endocrine/thyroid_glands.glb",
+    assets: [
+      {
+        id: "thyroid_asset",
+        name: "Thyroid & Parathyroid Glands",
+        filePath: "/models/anatomy/endocrine/thyroid_glands.glb",
+        source: "Human Reference Atlas / HuBMAP",
+        sourceType: "anatomically-modeled",
+        structures: [
+          {
+            id: "thyroid",
+            name: "Thyroid Lobes & Isthmus",
+            aliases: ["thyroid", "isthmus"],
+            meshNodeNames: ["Thyroid", "Thyroid_R"],
+            icon: "🦋",
+            description: "Bi-lobed endocrine gland synthesizing thyroxine (T4) and triiodothyronine (T3) to regulate cellular metabolic rate.",
+            focusHint: "Anterior neck / C5-T1",
+            knowledgeGraphId: "kg_endo_thyroid",
+            confidence: "verified",
+          },
+          {
+            id: "parathyroids",
+            name: "Parathyroid Glands",
+            aliases: ["parathyroid"],
+            meshNodeNames: ["Parathyroids"],
+            icon: "✨",
+            description: "Four lentiform posterior glands secreting parathyroid hormone (PTH) to govern serum calcium balance.",
+            focusHint: "Posterior thyroid capsule",
+            knowledgeGraphId: "kg_endo_parathyroid",
+            confidence: "verified",
+          },
+        ],
+      },
+    ],
     subOrgans: [
       {
-        id: "core_postural",
-        name: "Core & Paraspinal Myofascia",
-        icon: "🏋️",
-        description: "Erector spinae, multifidus, and transversus abdominis maintaining spinal stability and gravity resistance.",
-        focusHint: "Posterior dorsal and abdominal wall"
+        id: "thyroid",
+        name: "Thyroid & Parathyroids",
+        icon: "🦋",
+        description: "Basal metabolic rate regulation and calcium homeostasis.",
+        focusHint: "Anterior cervical triangle",
       },
-      {
-        id: "appendicular_muscles",
-        name: "Limb & Locomotor Muscle Groups",
-        icon: "🏃",
-        description: "Quadriceps, hamstrings, deltoids, and rotator cuff powering locomotion, grasping, and dynamic stabilization.",
-        focusHint: "Upper and lower extremities"
-      },
-      {
-        id: "sarcomere_unit",
-        name: "Sarcomere & Sarcoplasmic Reticulum",
-        icon: "🔬",
-        description: "Actin-myosin filament sliding fueled by ATP hydrolysis and regulated by calcium influx.",
-        focusHint: "Microscopic myofibrils"
-      }
     ],
-    overview: "Generates biomechanical force for movement, supports upright posture, produces body heat through thermogenesis, and propels venous blood returns.",
-    clinicalFocus: "Myalgia, muscle sprains, fibro-myositis, chronic muscle spasms, tendonitis, and physical fatigue."
+    overview: "Ductless endocrine glandular network coordinating hormonal signal cascades across systemic target receptors.",
+    clinicalFocus: "Thyroid nodules, Hashimoto's, Graves' disease, hyperparathyroidism, and adrenal insufficiency.",
+  },
+
+  // Supporting 5 systems registered in the modular architecture
+  muscular: {
+    id: "muscular",
+    name: "Muscular System & Biomechanics",
+    subtitle: "Skeletal Muscle Fascicles, Tendons & Motor Units",
+    badge: "Kinetic Drive",
+    accentColor: "#EF4444",
+    assets: [],
+    subOrgans: [
+      { id: "skeletal_muscle", name: "Skeletal Muscle Groups", icon: "💪", description: "Striated contractile motor units generating voluntary locomotion.", focusHint: "Anterior/Posterior body" },
+      { id: "tendons_fascia", name: "Tendons & Deep Fascia", icon: "🔗", description: "Dense collagenous aponeuroses transmitting mechanical muscle tension to bone.", focusHint: "Joint insertions" },
+    ],
+    overview: "Contractile muscular apparatus generating kinetic locomotion, postural stability, and heat production.",
+    clinicalFocus: "Myopathies, fibromyalgia, sarcopenia, tendinopathies, and myasthenia gravis.",
   },
 
   lymphatic: {
     id: "lymphatic",
     name: "Lymphatic & Immune Defense System",
-    subtitle: "Lymph Nodes, Thoracic Duct, Spleen & Thymus",
-    badge: "Immune Surveillance",
+    subtitle: "Lymph Nodes, Splenic White Pulp & Interstitial Drainage",
+    badge: "Immune Sentinel",
     accentColor: "#10B981",
-    // Dedicated 3D Lymphatic & Vascular Immune System Model
-    modelUrl: "https://sketchfab.com/models/9b0b079953b840bc9a13f524b60041e4/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_watermark=1&ui_annotations=1&ui_help=0",
+    assets: [],
     subOrgans: [
-      {
-        id: "lymph_nodes",
-        name: "Lymph Node Chains (Cervical/Axillary/Inguinal)",
-        icon: "🛡️",
-        description: "Biological filter stations containing B and T lymphocytes sampling lymph for pathogens and antigens.",
-        focusHint: "Neck, axillae, groin, and mesentery"
-      },
-      {
-        id: "spleen",
-        name: "Spleen (Red & White Pulp)",
-        icon: "🟣",
-        description: "Filters senescent red blood cells, stores platelets, and mounts rapid humoral immune responses to blood-borne antigens.",
-        focusHint: "Left hypochondrium beneath 9th-11th ribs"
-      },
-      {
-        id: "thoracic_duct",
-        name: "Thoracic Duct & Cisterna Chyli",
-        icon: "🌊",
-        description: "Main lymphatic vessel returning 3 liters of lymph and emulsified dietary fats (chyle) into left subclavian vein.",
-        focusHint: "Posterior mediastinum along aorta"
-      }
+      { id: "spleen_lymph", name: "Spleen & Lymphoid Pulp", icon: "🛡️", description: "Secondary lymphoid organ filtering blood-borne antigens and senescent RBCs.", focusHint: "Left hypochondrium" },
+      { id: "lymph_nodes", name: "Lymph Node Chains", icon: "🫧", description: "Encapsulated clusters presenting antigens to B/T lymphocytes.", focusHint: "Cervical, axillary, inguinal" },
     ],
-    overview: "Maintains fluid homeostasis by returning interstitial fluid to circulation, absorbs dietary lipids, and mounts cell-mediated and antibody immune defenses.",
-    clinicalFocus: "Lymphadenopathy, lymphedema, chronic tonsillitis, splenomegaly, and recurrent immune weakness."
+    overview: "Vascular interstitial drainage network and immunologic surveillance apparatus defending against pathogens and cellular atypia.",
+    clinicalFocus: "Lymphedema, lymphadenopathy, lymphoma, and autoimmune conditions.",
   },
 
   reproductive: {
     id: "reproductive",
-    name: "Reproductive System & Pelvic Anatomy",
-    subtitle: "Gonads, Gametogenesis & Reproductive Hormonal Axis",
-    badge: "Endocrine & Life Perpetuation",
+    name: "Reproductive & Gonadal System",
+    subtitle: "Gametogenesis, Gonadal Steroidogenesis & Uterine Physiology",
+    badge: "Generative Axis",
     accentColor: "#EC4899",
-    // Dedicated 3D Reproductive & Pelvic Anatomy Model
-    modelUrl: "https://sketchfab.com/models/1912954a26a4225a07d35ef6b0b23b19/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_watermark=1&ui_annotations=1&ui_help=0",
+    assets: [],
     subOrgans: [
-      {
-        id: "gonads",
-        name: "Ovaries / Testes",
-        icon: "🥚",
-        description: "Primary gametogenic and steroidogenic organs producing ova/spermatozoa, estrogens, progesterone, and testosterone.",
-        focusHint: "Lateral pelvic walls / Scrotum"
-      },
-      {
-        id: "uterine_tract",
-        name: "Uterus, Fallopian Tubes & Endometrium",
-        icon: "🌸",
-        description: "Thick-walled muscular organ undergoing monthly cyclical endometrial proliferation, secretory transformation, and shedding.",
-        focusHint: "True pelvis between bladder and rectum"
-      },
-      {
-        id: "prostate_adnexa",
-        name: "Prostate & Seminal Vesicles",
-        icon: "💧",
-        description: "Exocrine glandular organ producing alkaline seminal fluid aiding spermatozoa viability and motility.",
-        focusHint: "Inferior to bladder neck surrounding urethra"
-      }
+      { id: "gonads", name: "Gonads (Ovaries / Testes)", icon: "🌸", description: "Gametogenesis and steroidogenesis (estrogen/progesterone/testosterone).", focusHint: "Pelvic / Scrotal cavity" },
+      { id: "uterus_tract", name: "Uterine & Genital Pathway", icon: "👶", description: "Muscular reproductive organ with cyclical endometrial decidualization.", focusHint: "True pelvis" },
     ],
-    overview: "Governs gametogenesis, fertilization, hormonal maturation, and secondary sexual characteristics through coordinated hypothalamic-pituitary-gonadal signaling.",
-    clinicalFocus: "Dysmenorrhea, endometriosis, PCOS, benign prostatic hyperplasia (BPH), infertility, and climacteric flushes."
+    overview: "Hormonally regulated gonadal and reproductive tract organs supporting gametogenesis, fertility, and embryonic gestation.",
+    clinicalFocus: "PCOS, endometriosis, uterine fibroids, infertility, and gonadal hypogonadism.",
   },
 
   integumentary: {
     id: "integumentary",
     name: "Integumentary System & Skin Barrier",
-    subtitle: "Epidermis, Dermis, Appendages & Neurosensory Endings",
-    badge: "External Barrier Shield",
-    accentColor: "#F59E0B",
-    // Dedicated 3D Multi-Layer Skin & Histology Model
-    modelUrl: "https://sketchfab.com/models/0d68dbd982b647f29b68e9f2910fa4e1/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_watermark=1&ui_annotations=1&ui_help=0",
+    subtitle: "Stratified Epidermis, Dermis, Appendages & Tactile Receptors",
+    badge: "Barrier Armor",
+    accentColor: "#F97316",
+    assets: [],
     subOrgans: [
-      {
-        id: "epidermis",
-        name: "Epidermis (Stratum Corneum to Basale)",
-        icon: "🛡️",
-        description: "Keratinized stratified squamous epithelium providing water-impermeable barrier and UV protection via melanocytes.",
-        focusHint: "Most superficial body layer"
-      },
-      {
-        id: "dermis",
-        name: "Dermis (Collagen & Elastin Matrix)",
-        icon: "🕸️",
-        description: "Vascularized connective tissue layer housing hair follicles, sebaceous glands, sweat glands, and Meissner/Pacinian corpuscles.",
-        focusHint: "Mid-layer beneath basement membrane"
-      },
-      {
-        id: "hypodermis",
-        name: "Subcutaneous Adipose Tissue",
-        icon: "🧈",
-        description: "Lipid-rich fat layer providing thermal insulation, mechanical shock absorption, and systemic energy reserve.",
-        focusHint: "Deep layer anchoring skin to fascia"
-      }
+      { id: "epidermis_dermis", name: "Epidermal-Dermal Barrier", icon: "🧴", description: "Keratinized stratified squamous epithelium preventing trans-epidermal water loss.", focusHint: "Cutaneous surface" },
+      { id: "hair_sebaceous", name: "Pilosebaceous Units", icon: "💇", description: "Hair follicles with holocrine sebum secretion.", focusHint: "Dermal layer" },
     ],
-    overview: "The human body's largest organ (2m², 4kg), providing physical, microbiological, and chemical barrier defenses, thermoregulation, and tactile sensation.",
-    clinicalFocus: "Atopic dermatitis, eczema, psoriasis, acne vulgaris, urticaria, pruritus, and dry lichenified skin."
+    overview: "Primary protective cutaneous envelope regulating thermal homeostasis, sensation, and water retention.",
+    clinicalFocus: "Atopic dermatitis, psoriasis, eczema, acne vulgaris, and melanoma.",
   },
 
   sensory: {
     id: "sensory",
-    name: "Special Sensory System (Eye & Ear)",
-    subtitle: "Photoreceptor Optics & Auditory-Vestibular Apparatus",
-    badge: "Sensory Transduction",
-    accentColor: "#38BDF8",
-    // Dedicated 3D Eye & Ear Anatomy Model
-    modelUrl: "https://sketchfab.com/models/f52e55a454d642bcbf4eb6874df1ec44/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_watermark=1&ui_annotations=1&ui_help=0",
+    name: "Sensory Organs & Special Senses",
+    subtitle: "Visual Retinal Cone/Rods, Auditory Cochlea & Olfactory Bulb",
+    badge: "Perception Array",
+    accentColor: "#3B82F6",
+    assets: [],
     subOrgans: [
-      {
-        id: "ocular_globe",
-        name: "Ocular Globe, Cornea & Retina",
-        icon: "👁️",
-        description: "Light refraction through cornea/lens focused onto rod/cone photoreceptors in the macular retina (Cranial Nerve II).",
-        focusHint: "Bilateral cranial orbits"
-      },
-      {
-        id: "cochlea_vestibular",
-        name: "Cochlea & Semicircular Canals",
-        icon: "👂",
-        description: "Organ of Corti transducing fluid sound vibrations into nerve impulses (CN VIII); vestibular canals regulating spatial orientation.",
-        focusHint: "Petrous part of temporal bone"
-      }
+      { id: "eye_retina", name: "Ocular Globe & Retina", icon: "👁️", description: "Optical refracting apparatus and neural photoreceptor retina.", focusHint: "Bony orbit" },
+      { id: "ear_cochlea", name: "Auditory Cochlea & Vestibule", icon: "👂", description: "Organ of Corti transducing acoustic vibrations into tonotopic neural impulses.", focusHint: "Petrous temporal bone" },
     ],
-    overview: "Highly specialized neuro-epithelial structures converting light waves into vision and mechanical sound/gravity pressure into audition and spatial balance.",
-    clinicalFocus: "Allergic conjunctivitis, eyestrain (asthenopia), tinnitus, Meniere's disease, vertigo, and otitis media."
-  }
+    overview: "Specialized sensory organs transducing photon wavelengths, acoustic frequencies, and chemical odorants into conscious perception.",
+    clinicalFocus: "Glaucoma, macular degeneration, sensorineural hearing loss, vertigo, and tinnitus.",
+  },
 };

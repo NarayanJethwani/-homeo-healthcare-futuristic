@@ -2,24 +2,23 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { AnatomySystemId } from "../../data/medicalAcademyData";
-import { createBioDigitalShaders } from "./BioDigitalOrganShaders";
-import { 
-  loadOrBuildRealisticAnatomy, 
-  AnatomyLayerVisibility, 
-  DEFAULT_ANATOMY_LAYERS 
-} from "./RealisticAnatomyEngine";
-import { SubOrganMeshMeta } from "./systemMeshBuilders";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { AnatomySystemId } from "../../data/medicalAcademyData";
+import { SYSTEM_3D_REGISTRY } from "../system3DRegistry";
+import { GLBAnatomyModelLoader, AnatomyMeshNode } from "./GLBAnatomyModelLoader";
+import { AnatomyMaterialPipeline } from "./AnatomyMaterialPipeline";
+import { AnatomyCameraController } from "./AnatomyCameraController";
+import { AnatomyRaycaster } from "./AnatomyRaycaster";
+import { AnatomyModelErrorBoundary } from "./AnatomyModelErrorBoundary";
+import { AnatomyLayerVisibility } from "./RealisticAnatomyEngine";
 
 interface NativeSystem3DCanvasProps {
   systemId: AnatomySystemId;
   accentColor: string;
   activeSubOrganId: string | null;
-  onSubOrganSelect: (subOrganId: string) => void;
-  activeRemedyTropismId: string | null;
+  onSubOrganSelect: (subOrganId: string | null) => void;
+  activeRemedyTropismId?: string | null;
   autoRotate?: boolean;
-  xrayMode?: boolean;
   layers?: AnatomyLayerVisibility;
 }
 
@@ -28,30 +27,43 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
   accentColor,
   activeSubOrganId,
   onSubOrganSelect,
-  activeRemedyTropismId,
   autoRotate = false,
-  xrayMode = false,
-  layers = DEFAULT_ANATOMY_LAYERS,
+  layers,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [hoveredOrganName, setHoveredOrganName] = useState<string | null>(null);
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [hoveredNodeName, setHoveredNodeName] = useState<string | null>(null);
 
   // References for render loop
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
-  const subOrganMetasRef = useRef<SubOrganMeshMeta[]>([]);
-  const targetCamPosRef = useRef<THREE.Vector3>(new THREE.Vector3(0, 0, 4.5));
-  const targetLookAtRef = useRef<THREE.Vector3>(new THREE.Vector3(0, 0, 0));
+  const cameraControllerRef = useRef<AnatomyCameraController | null>(null);
+  const materialPipelineRef = useRef<AnatomyMaterialPipeline | null>(null);
+  const raycasterRef = useRef<AnatomyRaycaster | null>(null);
+  const rootGroupRef = useRef<THREE.Group | null>(null);
+  const meshNodesRef = useRef<AnatomyMeshNode[]>([]);
+
+  const config = SYSTEM_3D_REGISTRY[systemId] || SYSTEM_3D_REGISTRY.digestive;
+  const primaryAsset = config.assets[0];
 
   useEffect(() => {
     if (!containerRef.current || !canvasRef.current) return;
 
     let isMounted = true;
     setIsLoading(true);
+    setLoadError(null);
+
+    // If the system has no registered authentic assets, fail-visible immediately
+    if (!primaryAsset || !primaryAsset.filePath) {
+      setIsLoading(false);
+      setLoadError("Anatomical model dataset is currently in preparation for this system.");
+      return;
+    }
 
     const width = containerRef.current.clientWidth || 800;
     const height = containerRef.current.clientHeight || 600;
@@ -61,9 +73,9 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
     scene.background = new THREE.Color(0x050811);
     sceneRef.current = scene;
 
-    // 2. Camera setup with balanced framing (prevents balloon macro zoom)
-    const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
-    camera.position.set(0, 0, 7.2);
+    // 2. Camera setup with balanced framing (prevents balloon zoom)
+    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
+    camera.position.set(0, 0, 7.0);
     cameraRef.current = camera;
 
     // 3. WebGL Renderer with High-Precision PBR
@@ -75,7 +87,7 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.18;
+    renderer.toneMappingExposure = 1.15;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.localClippingEnabled = true;
@@ -85,203 +97,193 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.06;
-    controls.maxDistance = 15;
-    controls.minDistance = 2.5;
     controls.autoRotate = autoRotate;
     controls.autoRotateSpeed = 1.2;
     controlsRef.current = controls;
 
-    // 5. Medical Surgical Studio 4-Point Lighting
+    // 5. Adaptive Medical Lighting Suite
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
-    scene.add(ambientLight);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.4);
+    keyLight.position.set(4, 6, 5);
+    keyLight.castShadow = true;
 
-    // Overhead Surgical Spot
-    const surgicalLight = new THREE.SpotLight(0xffffff, 3.5);
-    surgicalLight.position.set(2, 7, 4);
-    surgicalLight.angle = Math.PI / 4;
-    surgicalLight.penumbra = 0.6;
-    surgicalLight.castShadow = true;
-    scene.add(surgicalLight);
+    const fillLight = new THREE.DirectionalLight(0xdbeafe, 0.7);
+    fillLight.position.set(-4, -2, 3);
 
-    // Lateral Fill Light (Tissue Contour)
-    const fillLight = new THREE.DirectionalLight(0x93c5fd, 1.4);
-    fillLight.position.set(-5, -1, -3);
-    scene.add(fillLight);
+    const rimLight = new THREE.DirectionalLight(new THREE.Color(accentColor), 0.65);
+    rimLight.position.set(0, 5, -4);
 
-    // Cyan/Gold Rim Accent Light (Depth Separation)
-    const rimLight = new THREE.DirectionalLight(new THREE.Color(accentColor), 2.5);
-    rimLight.position.set(0, 6, -5);
-    scene.add(rimLight);
+    scene.add(ambientLight, keyLight, fillLight, rimLight);
 
-    // Subtle Ground Shadow Grid
-    const gridHelper = new THREE.GridHelper(10, 20, 0x1e293b, 0x0f172a);
-    gridHelper.position.y = -3.2;
-    scene.add(gridHelper);
+    // 6. Controllers
+    const cameraController = new AnatomyCameraController(camera, controls);
+    cameraControllerRef.current = cameraController;
 
-    // Cross-section clipping plane if enabled
-    const clipPlane = layers.crossSectionSlice ? new THREE.Plane(new THREE.Vector3(0, 0, -1), 0.1) : null;
-    if (clipPlane) {
-      renderer.clippingPlanes = [clipPlane];
-    } else {
-      renderer.clippingPlanes = [];
-    }
+    const materialPipeline = new AnatomyMaterialPipeline();
+    materialPipelineRef.current = materialPipeline;
 
-    // 6. Build or Load Realistic Anatomical 3D Models
-    const materials = createBioDigitalShaders(systemId, accentColor);
-    let organGroup: THREE.Group = new THREE.Group();
-    let animatables: Array<{ mesh: THREE.Object3D; type: "pulse" | "rotate" | "wave" | "flow"; speed: number }> = [];
+    const raycaster = new AnatomyRaycaster(camera);
+    raycasterRef.current = raycaster;
 
-    loadOrBuildRealisticAnatomy(
-      systemId,
-      materials,
-      activeSubOrganId,
-      activeRemedyTropismId,
-      layers
-    ).then((result) => {
-      if (!isMounted) return;
-      organGroup = result.group;
-      animatables = result.animatables;
-      subOrganMetasRef.current = result.subOrganMetas;
-      scene.add(organGroup);
-      setIsLoading(false);
-    });
+    // 7. Load Authentic GLB Model
+    const loader = new GLBAnatomyModelLoader();
+    loader
+      .loadModel(primaryAsset.filePath, systemId, primaryAsset.id)
+      .then((result) => {
+        if (!isMounted) return;
 
-    // 7. Raycasting Setup
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
+        rootGroupRef.current = result.rootGroup;
+        meshNodesRef.current = result.nodes;
 
-    const handlePointerMove = (e: MouseEvent) => {
-      if (!canvasRef.current || !organGroup) return;
-      const rect = canvasRef.current.getBoundingClientRect();
-      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+        scene.add(result.rootGroup);
 
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(organGroup.children, true);
+        // Frame the scene cleanly with 35% margin padding
+        cameraController.frameScene(result.boundingSphere);
 
-      if (intersects.length > 0) {
-        let hitObj: THREE.Object3D | null = intersects[0].object;
-        while (hitObj && !hitObj.userData?.subOrganId && hitObj.parent && hitObj.parent !== organGroup) {
-          hitObj = hitObj.parent;
-        }
-        if (hitObj?.userData?.name) {
-          setHoveredOrganName(hitObj.userData.name);
-          if (canvasRef.current) canvasRef.current.style.cursor = "pointer";
-          return;
-        }
-      }
-      setHoveredOrganName(null);
-      if (canvasRef.current) canvasRef.current.style.cursor = "default";
-    };
+        // Apply initial material styling
+        materialPipeline.applyMedicalShading(
+          result.rootGroup,
+          accentColor,
+          activeSubOrganId,
+          layers?.crossSectionSlice || false
+        );
 
-    const handlePointerClick = (e: MouseEvent) => {
-      if (!canvasRef.current || !organGroup) return;
-      const rect = canvasRef.current.getBoundingClientRect();
-      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(organGroup.children, true);
-
-      if (intersects.length > 0) {
-        let hitObj: THREE.Object3D | null = intersects[0].object;
-        while (hitObj && !hitObj.userData?.subOrganId && hitObj.parent && hitObj.parent !== organGroup) {
-          hitObj = hitObj.parent;
-        }
-        if (hitObj?.userData?.subOrganId) {
-          onSubOrganSelect(hitObj.userData.subOrganId);
-        }
-      }
-    };
-
-    const canvasDom = canvasRef.current;
-    canvasDom.addEventListener("mousemove", handlePointerMove);
-    canvasDom.addEventListener("click", handlePointerClick);
-
-    // 8. Animation & Render Loop
-    let animationFrameId: number;
-    let clock = new THREE.Clock();
-
-    const animate = () => {
-      animationFrameId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
-      const elapsedTime = clock.getElapsedTime();
-
-      // Smooth camera interpolation towards target
-      if (cameraRef.current && controlsRef.current) {
-        camera.position.lerp(targetCamPosRef.current, 0.05);
-        controls.target.lerp(targetLookAtRef.current, 0.05);
-        controls.update();
-      }
-
-      // Animate living tissue pulsation (e.g. heartbeat or endocrine secretion)
-      animatables.forEach((item) => {
-        if (item.type === "pulse") {
-          const s = 1.0 + Math.sin(elapsedTime * item.speed * Math.PI) * 0.04;
-          item.mesh.scale.set(s, s, s);
-        }
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        if (!isMounted) return;
+        setIsLoading(false);
+        setLoadError(err.message || "Failed to load authentic anatomical model.");
       });
 
-      renderer.render(scene, camera);
+    // 8. Render Animation Loop
+    let animationFrameId: number;
+    const animate = () => {
+      animationFrameId = requestAnimationFrame(animate);
+      if (controlsRef.current) controlsRef.current.update();
+      if (cameraControllerRef.current) cameraControllerRef.current.update();
+      if (rendererRef.current && sceneRef.current && cameraRef.current) {
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+      }
     };
-
     animate();
 
-    // 9. Resize Handling
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (let entry of entries) {
-        const { width: w, height: h } = entry.contentRect;
-        if (w > 0 && h > 0) {
-          camera.aspect = w / h;
-          camera.updateProjectionMatrix();
-          renderer.setSize(w, h);
-        }
-      }
-    });
-    resizeObserver.observe(containerRef.current);
+    // 9. Resize handler
+    const handleResize = () => {
+      if (!containerRef.current || !rendererRef.current || !cameraRef.current) return;
+      const w = containerRef.current.clientWidth;
+      const h = containerRef.current.clientHeight;
+      cameraRef.current.aspect = w / h;
+      cameraRef.current.updateProjectionMatrix();
+      rendererRef.current.setSize(w, h);
+    };
+    window.addEventListener("resize", handleResize);
 
     return () => {
       isMounted = false;
       cancelAnimationFrame(animationFrameId);
-      resizeObserver.disconnect();
-      canvasDom.removeEventListener("mousemove", handlePointerMove);
-      canvasDom.removeEventListener("click", handlePointerClick);
+      window.removeEventListener("resize", handleResize);
       renderer.dispose();
+      scene.clear();
     };
-  }, [systemId, accentColor, activeSubOrganId, activeRemedyTropismId, autoRotate, xrayMode, layers, onSubOrganSelect]);
+  }, [systemId, primaryAsset?.filePath]);
 
-  // Update target camera focus when activeSubOrganId changes
+  // Update controls auto-rotate
   useEffect(() => {
-    if (!activeSubOrganId) {
-      targetCamPosRef.current.set(0, 0, 7.2);
-      targetLookAtRef.current.set(0, 0, 0);
-      return;
+    if (controlsRef.current) {
+      controlsRef.current.autoRotate = autoRotate;
     }
+  }, [autoRotate]);
 
-    const meta = subOrganMetasRef.current.find((m) => m.subOrganId === activeSubOrganId);
-    if (meta) {
-      targetCamPosRef.current.set(meta.cameraOffset[0] * 0.6, meta.cameraOffset[1] * 0.6, 6.2);
-      targetLookAtRef.current.set(meta.focusTarget[0], meta.focusTarget[1], meta.focusTarget[2]);
+  // Update materials on sub-organ selection or clipping changes
+  useEffect(() => {
+    if (rootGroupRef.current && materialPipelineRef.current) {
+      materialPipelineRef.current.applyMedicalShading(
+        rootGroupRef.current,
+        accentColor,
+        activeSubOrganId,
+        layers?.crossSectionSlice || false
+      );
+
+      // Focus camera on selected sub-mesh if active
+      if (activeSubOrganId && cameraControllerRef.current) {
+        const matchedNode = meshNodesRef.current.find(
+          (n) => n.structureId === activeSubOrganId || n.meshName.toLowerCase().includes(activeSubOrganId.toLowerCase())
+        );
+        if (matchedNode) {
+          cameraControllerRef.current.focusOnObject(matchedNode.object3D);
+        }
+      } else if (!activeSubOrganId && cameraControllerRef.current) {
+        cameraControllerRef.current.reset(7.0);
+      }
     }
-  }, [activeSubOrganId]);
+  }, [activeSubOrganId, layers?.crossSectionSlice, accentColor]);
+
+  // Pointer event handlers for recursive raycasting
+  const handlePointerMove = (e: React.MouseEvent) => {
+    if (!containerRef.current || !rootGroupRef.current || !raycasterRef.current) return;
+    const hitNode = raycasterRef.current.castRay(
+      e.nativeEvent,
+      containerRef.current,
+      rootGroupRef.current,
+      meshNodesRef.current
+    );
+    setHoveredNodeName(hitNode?.anatomicalName || null);
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (!containerRef.current || !rootGroupRef.current || !raycasterRef.current) return;
+    const hitNode = raycasterRef.current.castRay(
+      e.nativeEvent,
+      containerRef.current,
+      rootGroupRef.current,
+      meshNodesRef.current
+    );
+    if (hitNode) {
+      onSubOrganSelect(hitNode.structureId || hitNode.meshName);
+    }
+  };
+
+  if (loadError) {
+    return (
+      <AnatomyModelErrorBoundary
+        systemName={config.name}
+        errorMessage={loadError}
+        onRetry={() => {
+          setLoadError(null);
+          setIsLoading(true);
+        }}
+      />
+    );
+  }
 
   return (
-    <div ref={containerRef} className="relative h-full w-full overflow-hidden select-none">
+    <div
+      ref={containerRef}
+      onMouseMove={handlePointerMove}
+      onClick={handleClick}
+      className="relative h-full w-full overflow-hidden select-none cursor-grab active:cursor-grabbing"
+    >
       <canvas ref={canvasRef} className="h-full w-full outline-none" />
 
       {/* Loading Overlay */}
       {isLoading && (
-        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-sm">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-teal-400 border-t-transparent" />
-          <p className="mt-2 text-xs font-semibold text-teal-300">Rendering Living 3D Anatomical Spatial Model...</p>
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/85 backdrop-blur-sm">
+          <div className="h-9 w-9 animate-spin rounded-full border-2 border-teal-400 border-t-transparent shadow-lg" />
+          <p className="mt-3 text-xs font-semibold text-teal-300">
+            Streaming Authentic 3D Anatomical Reference Model...
+          </p>
+          <span className="mt-1 text-[10px] text-slate-400 font-mono">
+            {primaryAsset?.source || "OSTM™ Anatomy Engine"}
+          </span>
         </div>
       )}
 
       {/* Floating Hover Raycast Label */}
-      {hoveredOrganName && !isLoading && (
+      {hoveredNodeName && !isLoading && (
         <div className="pointer-events-none absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 rounded-full border border-teal-500/40 bg-slate-900/90 px-3.5 py-1.5 text-xs font-semibold text-teal-300 shadow-xl backdrop-blur animate-fadeIn">
           <span>🔍</span>
-          <span>{hoveredOrganName}</span>
+          <span>{hoveredNodeName}</span>
           <span className="text-[10px] text-slate-400 font-mono">(Click to isolate)</span>
         </div>
       )}

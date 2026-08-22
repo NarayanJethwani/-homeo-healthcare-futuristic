@@ -97,7 +97,7 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
                   borderColor: `${config.accentColor}30`
                 }}
               >
-                BioDigital Living Anatomy
+                OSTM™ 3D Anatomy Atlas
               </span>
             </div>
             <p className="truncate text-xs text-slate-500 dark:text-slate-400">
@@ -123,7 +123,7 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
             <span>{isFullscreen ? "Exit Fullscreen" : "Full Screen"}</span>
           </button>
 
-          {/* Layer Dissection: Cross Section */}
+          {/* Visual Clipping Plane */}
           <button
             type="button"
             onClick={() => toggleLayer("crossSectionSlice")}
@@ -132,7 +132,7 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
                 ? "border-amber-500/60 bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-700"
                 : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300"
             }`}
-            title="Toggle Anatomical Cross-Section Slice"
+            title="Toggle Visual Cross-Section Clipping Plane"
           >
             <Scissors className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">Slice</span>
