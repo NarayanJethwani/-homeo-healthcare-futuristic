@@ -59,7 +59,7 @@ import { REMEDY_TROPISM_DATA } from "../data/remedyTropismData";
 import { HOLOHUMAN_SYSTEM_MATERIALS } from "../render/holoHumanMaterials";
 import { SystemSpecific3DViewer } from "./SystemSpecific3DViewer";
 import { SYSTEM_DETAILED_KNOWLEDGE } from "../data/systemDetailedKnowledgeData";
-import { SYSTEM_3D_REGISTRY } from "../render/system3DRegistry";
+import { resolveSystem3DAsset, SYSTEM_3D_REGISTRY } from "../render/system3DRegistry";
 
 type AssistantMode = "teach" | "quiz" | "research" | "homeopathy";
 type AtlasLayer = "systems" | "regions";
@@ -573,6 +573,7 @@ function AnatomyAtlas({
   const [layer, setLayer] = useState<AtlasLayer>("systems");
   const [selectedRegion, setSelectedRegion] = useState<AnatomyRegionId>("epigastric");
   const [activeSubOrganId, setActiveSubOrganId] = useState<string | null>(null);
+  const active3DAsset = resolveSystem3DAsset(system3D, activeSubOrganId);
   const [detailTab, setDetailTab] = useState<"structures" | "physiology" | "biomarkers" | "pathologies" | "homeopathy">("structures");
 
   // Dissection & Studio State
@@ -697,7 +698,11 @@ function AnatomyAtlas({
           </div>
 
           <div className="mt-4 flex flex-col gap-2 text-[10px] leading-4 text-slate-500 sm:flex-row sm:items-center sm:justify-between border-t border-slate-200/60 dark:border-slate-800/60 pt-3">
-            <span>BioDigital-grade PBR physical shaders with calibrated subsurface scattering.</span>
+            <span>
+              {active3DAsset?.provenanceStatus === "source-verified"
+                ? "Source-verified anatomical reference · local anatomy review pending."
+                : "Procedural development model · not anatomically validated."}
+            </span>
             <span className="text-teal-700 dark:text-teal-300 font-semibold">Active: {system3D.name}</span>
           </div>
         </div>

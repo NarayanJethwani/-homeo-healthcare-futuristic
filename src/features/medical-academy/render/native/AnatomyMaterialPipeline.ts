@@ -1,7 +1,7 @@
 /**
  * OSTM™ Interactive Human Anatomy Atlas — Restrained Medical Material Pipeline
- * Preserves authentic source textures and models while providing controlled
- * anatomical separation, soft rim highlights, and visual cross-section clipping.
+ * Preserves available GLB materials while providing selection separation,
+ * soft rim highlights, and visual cross-section clipping.
  */
 
 import * as THREE from "three";
@@ -22,7 +22,8 @@ export class AnatomyMaterialPipeline {
     rootGroup: THREE.Group,
     accentColor: string,
     activeStructureId: string | null,
-    enableClipping: boolean
+    enableClipping: boolean,
+    showVasculature: boolean = true
   ) {
     this.isClippingEnabled = enableClipping;
 
@@ -31,6 +32,8 @@ export class AnatomyMaterialPipeline {
         const mesh = child as THREE.Mesh;
         const structureId = mesh.userData?.structureId || mesh.name.toLowerCase();
         const isSelected = activeStructureId && (structureId === activeStructureId || mesh.name.toLowerCase().includes(activeStructureId.toLowerCase()));
+        const isVasculature = mesh.userData?.viewerLayer === "vasculature";
+        mesh.visible = showVasculature || !isVasculature;
 
         // Preserve and upgrade material
         if (mesh.material) {

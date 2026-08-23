@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { AnatomySystemId } from "../../data/medicalAcademyData";
-import { SYSTEM_3D_REGISTRY } from "../system3DRegistry";
+import { resolveSystem3DAsset, SYSTEM_3D_REGISTRY } from "../system3DRegistry";
 import { GLBAnatomyModelLoader, AnatomyMeshNode } from "./GLBAnatomyModelLoader";
 import { AnatomyMaterialPipeline } from "./AnatomyMaterialPipeline";
 import { AnatomyCameraController } from "./AnatomyCameraController";
@@ -49,7 +49,8 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
   const meshNodesRef = useRef<AnatomyMeshNode[]>([]);
 
   const config = SYSTEM_3D_REGISTRY[systemId] || SYSTEM_3D_REGISTRY.digestive;
-  const primaryAsset = config.assets[0];
+  const activeAsset = resolveSystem3DAsset(config, activeSubOrganId);
+  const fallbackStructure = activeAsset?.structures[0];
 
   useEffect(() => {
     if (!containerRef.current || !canvasRef.current) return;
@@ -58,8 +59,8 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
     setIsLoading(true);
     setLoadError(null);
 
-    // If the system has no registered authentic assets, fail-visible immediately
-    if (!primaryAsset || !primaryAsset.filePath) {
+    // If the system has no registered development asset, fail visibly.
+    if (!activeAsset || !activeAsset.filePath) {
       setIsLoading(false);
       setLoadError("Anatomical model dataset is currently in preparation for this system.");
       return;
@@ -125,10 +126,17 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
     const raycaster = new AnatomyRaycaster(camera);
     raycasterRef.current = raycaster;
 
-    // 7. Load Authentic GLB Model
+    // 7. Load the source asset registered for the selected organ.
     const loader = new GLBAnatomyModelLoader();
     loader
-      .loadModel(primaryAsset.filePath, systemId, primaryAsset.id)
+      .loadModel(
+        activeAsset.filePath,
+        systemId,
+        activeAsset.id,
+        fallbackStructure?.id,
+        fallbackStructure?.name,
+        activeAsset.structures
+      )
       .then((result) => {
         if (!isMounted) return;
 
@@ -145,7 +153,8 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
           result.rootGroup,
           accentColor,
           activeSubOrganId,
-          layers?.crossSectionSlice || false
+          layers?.crossSectionSlice || false,
+          layers?.vasculature ?? true
         );
 
         setIsLoading(false);
@@ -153,7 +162,7 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
       .catch((err) => {
         if (!isMounted) return;
         setIsLoading(false);
-        setLoadError(err.message || "Failed to load authentic anatomical model.");
+        setLoadError(err.message || "Failed to load the 3D development model.");
       });
 
     // 8. Render Animation Loop
@@ -186,7 +195,11 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
       renderer.dispose();
       scene.clear();
     };
-  }, [systemId, primaryAsset?.filePath]);
+    // Asset identity controls scene lifecycle. Selection, rotation, clipping,
+    // and layer changes are applied by the focused effects below without
+    // destroying and reloading a multi-megabyte GLB.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [systemId, activeAsset?.filePath, activeAsset?.id]);
 
   // Update controls auto-rotate
   useEffect(() => {
@@ -202,22 +215,30 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
         rootGroupRef.current,
         accentColor,
         activeSubOrganId,
-        layers?.crossSectionSlice || false
+        layers?.crossSectionSlice || false,
+        layers?.vasculature ?? true
       );
 
-      // Focus camera on selected sub-mesh if active
+      // Each Phase 1 digestive asset represents one whole organ. Frame the
+      // complete source model instead of zooming into an arbitrary child mesh.
       if (activeSubOrganId && cameraControllerRef.current) {
-        const matchedNode = meshNodesRef.current.find(
-          (n) => n.structureId === activeSubOrganId || n.meshName.toLowerCase().includes(activeSubOrganId.toLowerCase())
-        );
-        if (matchedNode) {
-          cameraControllerRef.current.focusOnObject(matchedNode.object3D);
+        if (activeAsset?.structures.length === 1 && rootGroupRef.current) {
+          cameraControllerRef.current.focusOnObject(rootGroupRef.current);
+        } else {
+          const matchedNodes = meshNodesRef.current.filter(
+            (node) => node.structureId === activeSubOrganId && node.object3D.visible
+          );
+          if (matchedNodes.length > 0) {
+            cameraControllerRef.current.focusOnObjects(
+              matchedNodes.map((node) => node.object3D)
+            );
+          }
         }
       } else if (!activeSubOrganId && cameraControllerRef.current) {
         cameraControllerRef.current.reset(7.0);
       }
     }
-  }, [activeSubOrganId, layers?.crossSectionSlice, accentColor]);
+  }, [activeSubOrganId, activeAsset?.id, activeAsset?.structures.length, layers?.crossSectionSlice, layers?.vasculature, accentColor]);
 
   // Pointer event handlers for recursive raycasting
   const handlePointerMove = (e: React.MouseEvent) => {
@@ -271,10 +292,10 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
         <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/85 backdrop-blur-sm">
           <div className="h-9 w-9 animate-spin rounded-full border-2 border-teal-400 border-t-transparent shadow-lg" />
           <p className="mt-3 text-xs font-semibold text-teal-300">
-            Streaming Authentic 3D Anatomical Reference Model...
+            Loading {activeAsset?.provenanceStatus === "source-verified" ? "source-verified anatomy" : "3D development placeholder"}...
           </p>
           <span className="mt-1 text-[10px] text-slate-400 font-mono">
-            {primaryAsset?.source || "OSTM™ Anatomy Engine"}
+            {activeAsset?.source || "OSTM™ Anatomy Engine"}
           </span>
         </div>
       )}

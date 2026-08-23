@@ -1,12 +1,16 @@
 /**
  * OSTM™ Interactive Human Anatomy Atlas — GLB Anatomy Model Loader
- * Loads authentic GLB/GLTF models, auto-centers bounding volumes,
+ * Loads registered GLB/GLTF anatomy models, auto-centers bounding volumes,
  * normalizes scale, and indexes named mesh nodes for interactive raycasting.
  */
 
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { AnatomySystemId } from "../../data/medicalAcademyData";
+import {
+  AnatomicalStructureDefinition,
+  resolveStructureForMesh,
+} from "../system3DRegistry";
 
 export interface AnatomyMeshNode {
   nodeId: string;
@@ -37,18 +41,28 @@ export class GLBAnatomyModelLoader {
   }
 
   /**
-   * Load an authentic GLB model and index its anatomical sub-meshes
+   * Load a registered GLB model and index its sub-mesh labels.
    */
   public async loadModel(
     filePath: string,
     systemId: AnatomySystemId,
-    assetId: string
+    assetId: string,
+    fallbackStructureId?: string,
+    fallbackAnatomicalName?: string,
+    structures: AnatomicalStructureDefinition[] = []
   ): Promise<LoadedAnatomyResult> {
     return new Promise((resolve, reject) => {
       // Check cache first
       if (GLB_SCENE_CACHE.has(filePath)) {
         const cachedRoot = GLB_SCENE_CACHE.get(filePath)!.clone(true);
-        const indexed = this.processAndIndexScene(cachedRoot, systemId, assetId);
+        const indexed = this.processAndIndexScene(
+          cachedRoot,
+          systemId,
+          assetId,
+          fallbackStructureId,
+          fallbackAnatomicalName,
+          structures
+        );
         resolve(indexed);
         return;
       }
@@ -58,13 +72,20 @@ export class GLBAnatomyModelLoader {
         (gltf) => {
           const rootGroup = gltf.scene;
           GLB_SCENE_CACHE.set(filePath, rootGroup.clone(true));
-          const indexed = this.processAndIndexScene(rootGroup, systemId, assetId);
+          const indexed = this.processAndIndexScene(
+            rootGroup,
+            systemId,
+            assetId,
+            fallbackStructureId,
+            fallbackAnatomicalName,
+            structures
+          );
           resolve(indexed);
         },
         undefined,
         (error) => {
           console.error(`[OSTM Anatomy] Failed loading GLB: ${assetId} at ${filePath}`, error);
-          reject(new Error(`Failed to load authentic anatomical model: ${assetId}`));
+          reject(new Error(`Failed to load 3D anatomy model: ${assetId}`));
         }
       );
     });
@@ -76,7 +97,10 @@ export class GLBAnatomyModelLoader {
   private processAndIndexScene(
     rootGroup: THREE.Group,
     systemId: AnatomySystemId,
-    assetId: string
+    assetId: string,
+    fallbackStructureId?: string,
+    fallbackAnatomicalName?: string,
+    structures: AnatomicalStructureDefinition[] = []
   ): LoadedAnatomyResult {
     // 1. Calculate initial bounding box
     const box = new THREE.Box3().setFromObject(rootGroup);
@@ -86,9 +110,7 @@ export class GLBAnatomyModelLoader {
     box.getSize(size);
 
     // 2. Auto-center pivot
-    rootGroup.position.x += rootGroup.position.x - center.x;
-    rootGroup.position.y += rootGroup.position.y - center.y;
-    rootGroup.position.z += rootGroup.position.z - center.z;
+    rootGroup.position.sub(center);
 
     // 3. Normalize scale to standard viewport unit (~4 units maximum extent)
     const maxDim = Math.max(size.x, size.y, size.z);
@@ -105,15 +127,41 @@ export class GLBAnatomyModelLoader {
     // 5. Index named mesh nodes
     const nodes: AnatomyMeshNode[] = [];
     rootGroup.traverse((child) => {
-      if ((child as THREE.Mesh).isMesh || (child as THREE.Group).isGroup) {
+      if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
         
         // Enable shadows
         mesh.castShadow = true;
         mesh.receiveShadow = true;
 
-        const structureId = mesh.userData?.structureId || mesh.name.toLowerCase();
-        const anatomicalName = mesh.userData?.anatomicalName || mesh.name.replace(/_/g, " ");
+        const mappedStructure = resolveStructureForMesh(structures, mesh.name);
+        const singleStructureFallback = structures.length === 1 ? fallbackStructureId : undefined;
+        const structureId =
+          mesh.userData?.structureId ||
+          mappedStructure?.id ||
+          singleStructureFallback ||
+          mesh.name.toLowerCase();
+        const anatomicalName =
+          mesh.userData?.anatomicalName ||
+          mesh.userData?.label ||
+          mappedStructure?.name ||
+          (structures.length === 1 ? fallbackAnatomicalName : undefined) ||
+          mesh.name.replace(/_/g, " ");
+
+        const materialName = Array.isArray(mesh.material)
+          ? mesh.material.map((material) => material.name).join(" ")
+          : mesh.material?.name || "";
+        const sourceLayerHint = String(mesh.userData?.anatomical_structure_of || "").toLowerCase();
+        const vascularNameHint = `${mesh.name} ${materialName}`.toLowerCase();
+        const isSourceVasculature =
+          sourceLayerHint.includes("bloodvasculature") ||
+          /arter|vein|aorta|vena_cava|pulmonary_trunk|coronary_sinus/.test(vascularNameHint);
+
+        // Normalize source-specific metadata to the viewer's stable organ ID.
+        // Original userData fields remain intact for provenance and inspection.
+        mesh.userData.structureId = structureId;
+        mesh.userData.anatomicalName = anatomicalName;
+        mesh.userData.viewerLayer = mappedStructure?.layer || (isSourceVasculature ? "vasculature" : "visceral");
 
         nodes.push({
           nodeId: `${assetId}_${mesh.name}`,
@@ -123,7 +171,7 @@ export class GLBAnatomyModelLoader {
           system: systemId,
           sourceAssetId: assetId,
           object3D: mesh,
-          selectable: true,
+          selectable: Boolean(mappedStructure || structures.length === 1),
         });
       }
     });

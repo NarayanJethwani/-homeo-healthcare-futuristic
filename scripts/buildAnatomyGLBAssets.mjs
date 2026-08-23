@@ -1,7 +1,10 @@
 /**
- * OSTM™ Interactive Human Anatomy Atlas — GLB Asset Builder
- * Generates verified, anatomically structured 3D GLB models for all 12 systems
- * with clean sub-mesh node hierarchies for interactive raycasting and HRA ontology mapping.
+ * OSTM™ 3D Anatomy Preview — Development Placeholder Builder
+ * Generates the remaining procedural GLB placeholders with named sub-meshes
+ * for viewer development. Digestive assets are maintained by source-specific
+ * imports and must not be overwritten by this builder. Placeholders are not
+ * imaging-derived, externally
+ * sourced, anatomically validated, or approved for production education use.
  */
 
 import * as THREE from 'three';
@@ -35,7 +38,7 @@ function exportToGLB(object) {
   });
 }
 
-// 1. Authentic Human Stomach Model
+// 1. Procedural stomach placeholder
 function buildStomachModel() {
   const root = new THREE.Group();
   root.name = 'Stomach_Anatomical_System';
@@ -111,7 +114,7 @@ function buildStomachModel() {
   return root;
 }
 
-// 2. Authentic Liver & Gallbladder Model
+// 2. Procedural liver and gallbladder placeholder
 function buildLiverModel() {
   const root = new THREE.Group();
   root.name = 'Liver_Gallbladder_System';
@@ -159,7 +162,7 @@ function buildLiverModel() {
   return root;
 }
 
-// 3. Authentic Heart with Great Vessels Model
+// 3. Procedural heart and great-vessels placeholder
 function buildHeartModel() {
   const root = new THREE.Group();
   root.name = 'Heart_Cardiovascular_System';
@@ -235,252 +238,11 @@ function buildHeartModel() {
   return root;
 }
 
-// 4. Authentic Kidneys & Renal System Model
-function buildRenalModel() {
-  const root = new THREE.Group();
-  root.name = 'Renal_System';
-
-  const kidneyMat = new THREE.MeshStandardMaterial({
-    color: 0x713f12, // Deep mahogany renal cortex
-    roughness: 0.28,
-  });
-
-  const ureterMat = new THREE.MeshStandardMaterial({ color: 0xfef08a, roughness: 0.3 });
-
-  // Left Kidney
-  const lKidneyGeom = new THREE.SphereGeometry(0.9, 32, 32);
-  lKidneyGeom.scale(0.65, 1.15, 0.7);
-  const lKidney = new THREE.Mesh(lKidneyGeom, kidneyMat);
-  lKidney.position.set(-1.6, 0.5, 0.1);
-  lKidney.rotation.z = 0.12;
-  lKidney.name = 'Kidney_L';
-  lKidney.userData = { structureId: 'renal_cortex_left', anatomicalName: 'Left Renal Cortex & Glomerular Zone' };
-
-  // Right Kidney
-  const rKidneyGeom = new THREE.SphereGeometry(0.9, 32, 32);
-  rKidneyGeom.scale(0.65, 1.15, 0.7);
-  const rKidney = new THREE.Mesh(rKidneyGeom, kidneyMat);
-  rKidney.position.set(1.6, 0.2, 0.1);
-  rKidney.rotation.z = -0.12;
-  rKidney.name = 'Kidney_R';
-  rKidney.userData = { structureId: 'renal_cortex_right', anatomicalName: 'Right Renal Cortex' };
-
-  // Ureters
-  const leftUreterCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-1.3, 0.3, 0.1),
-    new THREE.Vector3(-0.7, -1.0, 0.15),
-    new THREE.Vector3(-0.35, -2.1, 0.25),
-  ]);
-  const lUreter = new THREE.Mesh(new THREE.TubeGeometry(leftUreterCurve, 32, 0.05, 8, false), ureterMat);
-  lUreter.name = 'Ureters';
-  lUreter.userData = { structureId: 'ureters', anatomicalName: 'Peristaltic Ureters' };
-
-  // Bladder
-  const bladderGeom = new THREE.SphereGeometry(0.75, 24, 24);
-  bladderGeom.scale(1.0, 0.9, 0.95);
-  const bladder = new THREE.Mesh(bladderGeom, kidneyMat);
-  bladder.position.set(0, -2.4, 0.3);
-  bladder.name = 'Bladder';
-  bladder.userData = { structureId: 'urinary_bladder', anatomicalName: 'Detrusor Urinary Bladder' };
-
-  root.add(lKidney, rKidney, lUreter, bladder);
-  return root;
-}
-
-// 5. Authentic Brain Model
-function buildBrainModel() {
-  const root = new THREE.Group();
-  root.name = 'Brain_Nervous_System';
-
-  const brainMat = new THREE.MeshStandardMaterial({
-    color: 0xd4d4d8, // Neocortical gray-beige
-    roughness: 0.38,
-  });
-
-  const cerebMat = new THREE.MeshStandardMaterial({
-    color: 0xa1a1aa,
-    roughness: 0.42,
-  });
-
-  // Cerebrum Hemispheres
-  const hemiGeom = new THREE.SphereGeometry(1.3, 32, 32);
-  hemiGeom.scale(0.85, 0.95, 1.2);
-  const lHemi = new THREE.Mesh(hemiGeom, brainMat);
-  lHemi.position.set(-0.7, 0.8, 0);
-  lHemi.name = 'Cerebrum';
-  lHemi.userData = { structureId: 'cerebral_cortex', anatomicalName: 'Cerebral Cortex & Hemispheres' };
-
-  const rHemi = new THREE.Mesh(hemiGeom.clone(), brainMat);
-  rHemi.position.set(0.7, 0.8, 0);
-  rHemi.name = 'Cerebrum_R';
-
-  // Cerebellum
-  const cerebGeom = new THREE.SphereGeometry(0.75, 24, 24);
-  cerebGeom.scale(1.4, 0.7, 0.9);
-  const cerebMesh = new THREE.Mesh(cerebGeom, cerebMat);
-  cerebMesh.position.set(0, -0.5, -0.85);
-  cerebMesh.name = 'Cerebellum';
-  cerebMesh.userData = { structureId: 'cerebellum', anatomicalName: 'Cerebellar Folia' };
-
-  // Brainstem
-  const stemCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(0, -0.2, -0.2),
-    new THREE.Vector3(0, -1.0, -0.3),
-    new THREE.Vector3(0, -2.2, -0.25),
-  ]);
-  const stemMesh = new THREE.Mesh(new THREE.TubeGeometry(stemCurve, 32, 0.22, 16, false), cerebMat);
-  stemMesh.name = 'Brainstem';
-  stemMesh.userData = { structureId: 'brainstem', anatomicalName: 'Brainstem (Pons & Medulla)' };
-
-  root.add(lHemi, rHemi, cerebMesh, stemMesh);
-  return root;
-}
-
-// 6. Authentic Lungs & Airways Model
-function buildLungsModel() {
-  const root = new THREE.Group();
-  root.name = 'Lungs_Respiratory_System';
-
-  const lungMat = new THREE.MeshStandardMaterial({
-    color: 0xf472b6, // Alveolar pink
-    roughness: 0.38,
-  });
-
-  const tracheaMat = new THREE.MeshStandardMaterial({
-    color: 0xe2e8f0, // Cartilage white
-    roughness: 0.25,
-  });
-
-  // Trachea
-  const tracheaCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(0, 2.6, 0),
-    new THREE.Vector3(0, 0.9, 0),
-  ]);
-  const trachea = new THREE.Mesh(new THREE.TubeGeometry(tracheaCurve, 32, 0.24, 16, false), tracheaMat);
-  trachea.name = 'Trachea';
-  trachea.userData = { structureId: 'trachea_bronchi', anatomicalName: 'Trachea & Primary Bronchi' };
-
-  // Right Lung (3 Lobes)
-  const rLungGeom = new THREE.CapsuleGeometry(0.85, 1.7, 16, 32);
-  rLungGeom.scale(1.05, 1.0, 0.85);
-  const rLung = new THREE.Mesh(rLungGeom, lungMat);
-  rLung.position.set(1.3, 0.2, 0);
-  rLung.rotation.z = 0.15;
-  rLung.name = 'RightLung';
-  rLung.userData = { structureId: 'right_lung_lobes', anatomicalName: 'Right Lung (3 Lobes)' };
-
-  // Left Lung (2 Lobes)
-  const lLungGeom = new THREE.CapsuleGeometry(0.85, 1.7, 16, 32);
-  lLungGeom.scale(0.9, 1.0, 0.8);
-  const lLung = new THREE.Mesh(lLungGeom, lungMat);
-  lLung.position.set(-1.3, 0.2, 0);
-  lLung.rotation.z = -0.15;
-  lLung.name = 'LeftLung';
-  lLung.userData = { structureId: 'left_lung_lobes', anatomicalName: 'Left Lung (2 Lobes)' };
-
-  root.add(trachea, rLung, lLung);
-  return root;
-}
-
-// 7. Authentic Skeleton Model
-function buildSkeletonModel() {
-  const root = new THREE.Group();
-  root.name = 'Human_Skeleton_System';
-
-  const boneMat = new THREE.MeshStandardMaterial({
-    color: 0xfef3c7, // Bone ivory
-    roughness: 0.45,
-  });
-
-  // Skull
-  const skullGeom = new THREE.SphereGeometry(0.75, 24, 24);
-  skullGeom.scale(0.85, 1.0, 1.1);
-  const skull = new THREE.Mesh(skullGeom, boneMat);
-  skull.position.set(0, 2.8, 0);
-  skull.name = 'Skull';
-  skull.userData = { structureId: 'cranium', anatomicalName: 'Cranium & Facial Bones' };
-
-  // Spine
-  const spineCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(0, 2.0, -0.1),
-    new THREE.Vector3(0, 0.8, -0.25),
-    new THREE.Vector3(0, -0.5, -0.15),
-    new THREE.Vector3(0, -1.8, -0.2),
-  ]);
-  const spine = new THREE.Mesh(new THREE.TubeGeometry(spineCurve, 32, 0.15, 12, false), boneMat);
-  spine.name = 'Spine';
-  spine.userData = { structureId: 'spine_vertebrae', anatomicalName: 'Vertebral Column' };
-
-  // Ribcage
-  const ribcageGeom = new THREE.CylinderGeometry(1.2, 1.0, 2.0, 16, 8, true);
-  ribcageGeom.scale(1.1, 1.0, 0.75);
-  const ribcage = new THREE.Mesh(ribcageGeom, boneMat);
-  ribcage.position.set(0, 0.7, 0);
-  ribcage.name = 'Ribcage';
-  ribcage.userData = { structureId: 'ribcage_thorax', anatomicalName: 'Thoracic Ribcage & Sternum' };
-
-  // Pelvis
-  const pelvisGeom = new THREE.TorusGeometry(1.1, 0.25, 12, 24, Math.PI);
-  const pelvis = new THREE.Mesh(pelvisGeom, boneMat);
-  pelvis.position.set(0, -1.7, 0);
-  pelvis.rotation.x = Math.PI;
-  pelvis.name = 'Pelvis';
-  pelvis.userData = { structureId: 'pelvic_girdle', anatomicalName: 'Pelvis & Ilium' };
-
-  root.add(skull, spine, ribcage, pelvis);
-  return root;
-}
-
-// 8. Authentic Thyroid & Endocrine Glands Model
-function buildThyroidModel() {
-  const root = new THREE.Group();
-  root.name = 'Thyroid_Endocrine_System';
-
-  const thyroidMat = new THREE.MeshStandardMaterial({
-    color: 0xd97706, // Amber-rose glandular
-    roughness: 0.32,
-  });
-
-  const paraMat = new THREE.MeshStandardMaterial({
-    color: 0xfef08a,
-    roughness: 0.3,
-  });
-
-  // Lobes
-  const lLobeGeom = new THREE.CapsuleGeometry(0.38, 0.9, 16, 32);
-  const lLobe = new THREE.Mesh(lLobeGeom, thyroidMat);
-  lLobe.position.set(-0.62, 0.05, 0.35);
-  lLobe.rotation.z = -0.25;
-  lLobe.name = 'Thyroid';
-  lLobe.userData = { structureId: 'thyroid_lobes', anatomicalName: 'Thyroid Lobes & Isthmus' };
-
-  const rLobe = new THREE.Mesh(lLobeGeom.clone(), thyroidMat);
-  rLobe.position.set(0.62, 0.05, 0.35);
-  rLobe.rotation.z = 0.25;
-  rLobe.name = 'Thyroid_R';
-
-  // Parathyroids
-  const p1 = new THREE.Mesh(new THREE.SphereGeometry(0.09, 12, 12), paraMat);
-  p1.position.set(-0.7, 0.35, 0.1);
-  p1.name = 'Parathyroids';
-  p1.userData = { structureId: 'parathyroid_glands', anatomicalName: 'Parathyroid Glands (4)' };
-
-  root.add(lLobe, rLobe, p1);
-  return root;
-}
-
 async function main() {
   const rootDir = process.cwd();
-  const models = [
-    { dir: 'digestive', file: 'stomach.glb', builder: buildStomachModel },
-    { dir: 'digestive', file: 'liver_gallbladder.glb', builder: buildLiverModel },
-    { dir: 'cardiovascular', file: 'heart_great_vessels.glb', builder: buildHeartModel },
-    { dir: 'renal', file: 'kidneys_urinary.glb', builder: buildRenalModel },
-    { dir: 'nervous', file: 'brain_brainstem.glb', builder: buildBrainModel },
-    { dir: 'respiratory', file: 'lungs_airways.glb', builder: buildLungsModel },
-    { dir: 'skeletal', file: 'human_skeleton.glb', builder: buildSkeletonModel },
-    { dir: 'endocrine', file: 'thyroid_glands.glb', builder: buildThyroidModel },
-  ];
+  // All procedural anatomy placeholders have been retired. Historical builder
+  // functions remain only to document the superseded development geometry.
+  const models = [];
 
   for (const m of models) {
     const targetDir = path.join(rootDir, 'public', 'models', 'anatomy', m.dir);
@@ -494,7 +256,7 @@ async function main() {
     console.log(`Generated: ${targetPath} (${buffer.length} bytes)`);
   }
 
-  console.log('All anatomical GLB models successfully generated!');
+  console.log('All remaining procedural anatomy placeholder GLBs generated.');
 }
 
 main().catch(console.error);

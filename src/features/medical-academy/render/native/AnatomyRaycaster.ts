@@ -36,24 +36,21 @@ export class AnatomyRaycaster {
     this.raycaster.setFromCamera(this.pointer, this.camera);
     const intersects = this.raycaster.intersectObjects(rootGroup.children, true);
 
-    if (intersects.length > 0) {
-      const hitObject = intersects[0].object;
-      
-      // Match with indexed node
+    for (const intersection of intersects) {
+      const hitObject = intersection.object;
+
       const matchedNode = nodes.find(
-        (n) => n.object3D === hitObject || hitObject.name === n.meshName
+        (node) => node.selectable && (node.object3D === hitObject || hitObject.name === node.meshName)
       );
+      if (matchedNode) return matchedNode;
 
-      if (matchedNode) {
-        return matchedNode;
-      }
-
-      // Fallback to closest named parent
-      let curr: THREE.Object3D | null = hitObject;
-      while (curr && curr !== rootGroup) {
-        const parentMatch = nodes.find((n) => n.object3D === curr || curr?.name === n.meshName);
+      let current: THREE.Object3D | null = hitObject.parent;
+      while (current && current !== rootGroup) {
+        const parentMatch = nodes.find(
+          (node) => node.selectable && (node.object3D === current || current?.name === node.meshName)
+        );
         if (parentMatch) return parentMatch;
-        curr = curr.parent;
+        current = current.parent;
       }
     }
 

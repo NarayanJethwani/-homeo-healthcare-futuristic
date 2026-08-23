@@ -49,6 +49,17 @@ export class AnatomyCameraController {
    */
   public focusOnObject(object: THREE.Object3D) {
     const box = new THREE.Box3().setFromObject(object);
+    this.focusOnBox(box);
+  }
+
+  public focusOnObjects(objects: THREE.Object3D[]) {
+    if (objects.length === 0) return;
+    const box = new THREE.Box3();
+    for (const object of objects) box.expandByObject(object);
+    this.focusOnBox(box);
+  }
+
+  private focusOnBox(box: THREE.Box3) {
     const sphere = new THREE.Sphere();
     box.getBoundingSphere(sphere);
 

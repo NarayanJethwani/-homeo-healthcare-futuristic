@@ -1,14 +1,13 @@
 /**
- * BioDigital-Grade PBR Photorealistic Organ Shaders
- * Simulates living human biological tissues with wet serous reflections,
- * procedural cellular micro-bump textures, subsurface scattering approximations,
- * and authentic physiological pigmentation.
+ * Experimental PBR materials for procedural anatomy placeholders.
+ * These visual approximations are not calibrated tissue simulations and do not
+ * imply photorealism, anatomical validation, or BioDigital affiliation.
  */
 
 import * as THREE from "three";
 import { AnatomySystemId } from "../../data/medicalAcademyData";
 
-// Generate procedural micro-bump texture for living biological tissue
+// Generate a procedural noise texture for development materials.
 function generateBiologicalNoiseTexture(type: "glandular" | "muscle" | "cortical" | "capsular"): THREE.CanvasTexture {
   const size = 256;
   const canvas = document.createElement("canvas");
@@ -118,7 +117,7 @@ export function createBioDigitalShaders(
     bumpScale: 0.015,
   });
 
-  // 3. Isolated Focus Highlight Material (Preserves authentic tissue color with glowing emissive rim)
+  // 3. Isolated focus highlight material with an emissive rim.
   const highlightSelected = new THREE.MeshPhysicalMaterial({
     color: new THREE.Color(accentColor),
     emissive: new THREE.Color(accentColor),
@@ -157,7 +156,7 @@ export function createBioDigitalShaders(
     case "endocrine":
       return {
         primaryOrgan: new THREE.MeshPhysicalMaterial({
-          color: new THREE.Color(0xd97706), // Authentic Thyroid Amber-Rose
+          color: new THREE.Color(0xd97706), // Placeholder thyroid color
           emissive: new THREE.Color(0x78350f),
           emissiveIntensity: 0.15,
           roughness: 0.32,
@@ -372,7 +371,7 @@ export function createBioDigitalShaders(
     case "skeletal":
       return {
         primaryOrgan: new THREE.MeshPhysicalMaterial({
-          color: new THREE.Color(0xfef3c7), // Authentic Bone Ivory
+          color: new THREE.Color(0xfef3c7), // Placeholder bone color
           roughness: 0.45,
           metalness: 0.02,
           clearcoat: 0.4,
