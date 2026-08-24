@@ -431,24 +431,41 @@ describe("lymphatic source hierarchy", () => {
   const lymphatic = SYSTEM_3D_REGISTRY.lymphatic;
   const lymphoidOrgans = resolveSystem3DAsset(lymphatic, "spleen");
 
-  it("uses the source-mapped lymphoid-organ collection for supported focus targets", () => {
-    expect(lymphoidOrgans?.id).toBe("bodyparts3d_lymphoid_organs_v4");
-    expect(lymphoidOrgans?.filePath).toBe("/models/anatomy/lymphatic/lymphoid_organs_bodyparts3d_v4.glb");
+  it("uses the expanded source-mapped lymph-node and lymphoid-organ collection", () => {
+    expect(lymphoidOrgans?.id).toBe("zanatomy_lymphatic_nodes_organs");
+    expect(lymphoidOrgans?.filePath).toBe("/models/anatomy/lymphatic/lymphatic_nodes_organs_zanatomy.glb");
     expect(lymphoidOrgans?.provenanceStatus).toBe("source-verified");
     expect(lymphoidOrgans?.productionEligible).toBe(false);
-    expect(resolveSystem3DAsset(lymphatic, "spleen")?.id).toBe(lymphoidOrgans?.id);
-    expect(resolveSystem3DAsset(lymphatic, "thymus")?.id).toBe(lymphoidOrgans?.id);
+    for (const structureId of [
+      "head_neck_nodes",
+      "thoracic_nodes",
+      "abdominal_nodes",
+      "pelvic_nodes",
+      "upper_limb_nodes",
+      "lower_limb_nodes",
+      "spleen",
+      "tonsils",
+      "thymus",
+    ]) {
+      expect(resolveSystem3DAsset(lymphatic, structureId)?.id).toBe(lymphoidOrgans?.id);
+    }
   });
 
   it.each([
-    ["BodyParts3D_spleen_FJ2561", "spleen"],
-    ["BodyParts3D_thymus_left_lobe_FJ3150", "thymus"],
-    ["BodyParts3D_thymus_right_lobe_FJ3151", "thymus"],
+    ["ZAnatomy_head_neck_nodes_Retropharyngeal_nodesr", "head_neck_nodes"],
+    ["ZAnatomy_thoracic_nodes_Node_of_ligamentum_arteriosum", "thoracic_nodes"],
+    ["ZAnatomy_abdominal_nodes_Inferior_diaphragmatic_nodes", "abdominal_nodes"],
+    ["ZAnatomy_pelvic_nodes_Intermediate_lacunar_node_l", "pelvic_nodes"],
+    ["ZAnatomy_upper_limb_nodes_Infraclavicular_nodesl", "upper_limb_nodes"],
+    ["ZAnatomy_lower_limb_nodes_Inferior_superficial_inguinal_nodesr", "lower_limb_nodes"],
+    ["ZAnatomy_spleen_Spleen", "spleen"],
+    ["ZAnatomy_tonsils_Palatine_tonsill", "tonsils"],
+    ["ZAnatomy_thymus_Right_lobe_of_thymus", "thymus"],
   ])("maps source mesh %s to %s", (meshName, structureId) => {
     expect(resolveStructureForMesh(lymphoidOrgans?.structures ?? [], meshName)?.id).toBe(structureId);
   });
 
-  it("maps all source meshes and excludes unsupported network claims", () => {
+  it("maps all 163 source meshes, preserves regional counts, and excludes unsupported vessel claims", () => {
     expect(lymphoidOrgans).toBeDefined();
     const bytes = readFileSync(path.join(process.cwd(), "public", lymphoidOrgans?.filePath ?? ""));
     const jsonChunkLength = bytes.readUInt32LE(12);
@@ -459,11 +476,30 @@ describe("lymphatic source hierarchy", () => {
       .filter((node) => node.mesh !== undefined)
       .map((node) => node.name ?? "");
 
-    expect(meshNodeNames).toHaveLength(3);
+    expect(meshNodeNames).toHaveLength(163);
     expect(
       meshNodeNames.filter((meshName) => !resolveStructureForMesh(lymphoidOrgans?.structures ?? [], meshName))
     ).toEqual([]);
-    expect(lymphatic.subOrgans.map((item) => item.id)).not.toContain("lymph_nodes");
+    expect(
+      Object.fromEntries(
+        lymphoidOrgans?.structures.map((structure) => [
+          structure.id,
+          meshNodeNames.filter((meshName) => resolveStructureForMesh([structure], meshName)).length,
+        ]) ?? [],
+      )
+    ).toEqual({
+      head_neck_nodes: 42,
+      thoracic_nodes: 16,
+      abdominal_nodes: 32,
+      pelvic_nodes: 28,
+      upper_limb_nodes: 20,
+      lower_limb_nodes: 20,
+      spleen: 1,
+      tonsils: 2,
+      thymus: 2,
+    });
+    expect(lymphatic.subOrgans).toHaveLength(9);
+    expect(lymphatic.subOrgans.map((item) => item.id)).not.toContain("lymphatic_vessels");
     expect(lymphatic.overview).toContain("not modeled");
   });
 });
@@ -613,7 +649,7 @@ describe("sensory source hierarchy", () => {
     expect(
       assets.filter((asset) => asset.provenanceStatus !== "source-verified")
     ).toEqual([]);
-    expect(assets.filter((asset) => asset.source.includes("BodyParts3D"))).toHaveLength(9);
+    expect(assets.filter((asset) => asset.source.includes("BodyParts3D"))).toHaveLength(8);
     expect(
       assets.filter((asset) => asset.source.includes("BodyParts3D") && asset.sourceUpAxis !== "z")
     ).toEqual([]);
@@ -629,7 +665,7 @@ describe("sensory source hierarchy", () => {
     expect(workspace).not.toContain("100% 3D");
     expect(Object.values(SYSTEM_3D_REGISTRY).every((system) => system.coverageLabel.length > 0)).toBe(true);
     expect(SYSTEM_3D_REGISTRY.digestive.coverageLabel).toBe("Expanded alimentary reference");
-    expect(SYSTEM_3D_REGISTRY.lymphatic.coverageLabel).toContain("Partial");
+    expect(SYSTEM_3D_REGISTRY.lymphatic.coverageLabel).toContain("no vessels");
     expect(SYSTEM_3D_REGISTRY.endocrine.coverageLabel).toContain("Partial");
   });
 });

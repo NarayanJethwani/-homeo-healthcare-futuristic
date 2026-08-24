@@ -24,7 +24,7 @@ function readGlbJson(bytes, modelId) {
 }
 
 requireCondition(manifest.status === "development-only", "Manifest must remain development-only.");
-requireCondition(manifest.version === "5.6.0", "Expanded alimentary manifest must use version 5.6.0.");
+requireCondition(manifest.version === "5.7.0", "Expanded lymphatic manifest must use version 5.7.0.");
 
 const modelIds = new Set();
 for (const model of manifest.models ?? []) {
