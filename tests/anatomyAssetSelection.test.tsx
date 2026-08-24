@@ -662,6 +662,7 @@ describe("sensory source hierarchy", () => {
     );
 
     expect(workspace).toContain("system3D.coverageLabel");
+    expect(workspace).toContain("lg:overflow-y-auto");
     expect(workspace).not.toContain("100% 3D");
     expect(Object.values(SYSTEM_3D_REGISTRY).every((system) => system.coverageLabel.length > 0)).toBe(true);
     expect(SYSTEM_3D_REGISTRY.digestive.coverageLabel).toBe("Expanded alimentary reference");

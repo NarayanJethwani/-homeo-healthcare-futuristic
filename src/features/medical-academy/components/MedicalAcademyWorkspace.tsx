@@ -646,7 +646,7 @@ function AnatomyAtlas({
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">12 Organ Systems</p>
             <span className="text-[9px] font-bold text-teal-600 dark:text-teal-400">{system3D.coverageLabel}</span>
           </div>
-          <div className="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible">
+          <div className="flex gap-2 overflow-x-auto pb-1 lg:max-h-[560px] lg:flex-col lg:overflow-x-hidden lg:overflow-y-auto lg:pr-1">
             {ANATOMY_SYSTEMS.map((item) => {
               const isSelected = selected === item.id;
               return (
