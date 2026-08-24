@@ -30,6 +30,34 @@ export interface LoadedAnatomyResult {
   boundingSphere: THREE.Sphere;
 }
 
+export function normalizeAnatomyScene(rootGroup: THREE.Group): {
+  boundingBox: THREE.Box3;
+  boundingSphere: THREE.Sphere;
+} {
+  const initialBox = new THREE.Box3().setFromObject(rootGroup);
+  const size = new THREE.Vector3();
+  initialBox.getSize(size);
+
+  const maxDim = Math.max(size.x, size.y, size.z);
+  if (maxDim > 0.001) {
+    rootGroup.scale.multiplyScalar(3.6 / maxDim);
+  }
+
+  // Recenter after scaling. Object3D translation is applied after scale, so
+  // centering first leaves real-world-coordinate source meshes far off-screen.
+  const scaledBox = new THREE.Box3().setFromObject(rootGroup);
+  const scaledCenter = new THREE.Vector3();
+  scaledBox.getCenter(scaledCenter);
+  rootGroup.position.sub(scaledCenter);
+  rootGroup.updateMatrixWorld(true);
+
+  const boundingBox = new THREE.Box3().setFromObject(rootGroup);
+  const boundingSphere = new THREE.Sphere();
+  boundingBox.getBoundingSphere(boundingSphere);
+
+  return { boundingBox, boundingSphere };
+}
+
 // In-memory cache for loaded anatomical scenes to provide instant switching
 const GLB_SCENE_CACHE = new Map<string, THREE.Group>();
 
@@ -102,27 +130,8 @@ export class GLBAnatomyModelLoader {
     fallbackAnatomicalName?: string,
     structures: AnatomicalStructureDefinition[] = []
   ): LoadedAnatomyResult {
-    // 1. Calculate initial bounding box
-    const box = new THREE.Box3().setFromObject(rootGroup);
-    const center = new THREE.Vector3();
-    const size = new THREE.Vector3();
-    box.getCenter(center);
-    box.getSize(size);
-
-    // 2. Auto-center pivot
-    rootGroup.position.sub(center);
-
-    // 3. Normalize scale to standard viewport unit (~4 units maximum extent)
-    const maxDim = Math.max(size.x, size.y, size.z);
-    if (maxDim > 0.001) {
-      const targetScale = 3.6 / maxDim;
-      rootGroup.scale.multiplyScalar(targetScale);
-    }
-
-    // 4. Recalculate normalized bounds
-    const normalizedBox = new THREE.Box3().setFromObject(rootGroup);
-    const sphere = new THREE.Sphere();
-    normalizedBox.getBoundingSphere(sphere);
+    // Normalize source assets into a shared, camera-centered viewport space.
+    const { boundingBox, boundingSphere } = normalizeAnatomyScene(rootGroup);
 
     // 5. Index named mesh nodes
     const nodes: AnatomyMeshNode[] = [];
@@ -179,8 +188,8 @@ export class GLBAnatomyModelLoader {
     return {
       rootGroup,
       nodes,
-      boundingBox: normalizedBox,
-      boundingSphere: sphere,
+      boundingBox,
+      boundingSphere,
     };
   }
 

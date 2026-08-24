@@ -7,7 +7,24 @@ import {
   SYSTEM_3D_REGISTRY,
 } from "../src/features/medical-academy/render/system3DRegistry";
 import { AnatomyMaterialPipeline } from "../src/features/medical-academy/render/native/AnatomyMaterialPipeline";
+import { normalizeAnatomyScene } from "../src/features/medical-academy/render/native/GLBAnatomyModelLoader";
 import * as THREE from "three";
+
+describe("GLB anatomy scene normalization", () => {
+  it("scales and recenters source meshes that use offset world coordinates", () => {
+    const root = new THREE.Group();
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(20, 40, 10));
+    mesh.position.set(120, -85, 340);
+    root.add(mesh);
+
+    const { boundingBox, boundingSphere } = normalizeAnatomyScene(root);
+    const normalizedSize = new THREE.Vector3();
+    boundingBox.getSize(normalizedSize);
+
+    expect(Math.max(normalizedSize.x, normalizedSize.y, normalizedSize.z)).toBeCloseTo(3.6, 5);
+    expect(boundingSphere.center.length()).toBeLessThan(0.00001);
+  });
+});
 
 describe("digestive anatomy asset selection", () => {
   const digestive = SYSTEM_3D_REGISTRY.digestive;
