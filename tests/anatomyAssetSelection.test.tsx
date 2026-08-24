@@ -64,9 +64,15 @@ describe("GLB anatomy scene normalization", () => {
 
 describe("digestive anatomy asset selection", () => {
   const digestive = SYSTEM_3D_REGISTRY.digestive;
+  const alimentary = resolveSystem3DAsset(digestive, null);
 
   it.each([
-    ["stomach", "bodyparts3d_stomach_v4", "/models/anatomy/digestive/stomach_bodyparts3d_v4.glb"],
+    ["mouth", "bodyparts3d_alimentary_system_v4", "/models/anatomy/digestive/alimentary_system_bodyparts3d_v4.glb"],
+    ["esophagus", "bodyparts3d_alimentary_system_v4", "/models/anatomy/digestive/alimentary_system_bodyparts3d_v4.glb"],
+    ["stomach", "bodyparts3d_alimentary_system_v4", "/models/anatomy/digestive/alimentary_system_bodyparts3d_v4.glb"],
+    ["small_intestine", "bodyparts3d_alimentary_system_v4", "/models/anatomy/digestive/alimentary_system_bodyparts3d_v4.glb"],
+    ["large_intestine", "bodyparts3d_alimentary_system_v4", "/models/anatomy/digestive/alimentary_system_bodyparts3d_v4.glb"],
+    ["gallbladder", "bodyparts3d_alimentary_system_v4", "/models/anatomy/digestive/alimentary_system_bodyparts3d_v4.glb"],
     ["liver", "hra_liver_male_v1", "/models/anatomy/digestive/liver_hra_male_v1.glb"],
     ["pancreas", "hra_pancreas_male_v1", "/models/anatomy/digestive/pancreas_hra_male_v1.glb"],
   ])("maps %s to its source asset", (structureId, assetId, filePath) => {
@@ -79,8 +85,40 @@ describe("digestive anatomy asset selection", () => {
   });
 
   it("falls back safely for reset or unknown structures", () => {
-    expect(resolveSystem3DAsset(digestive, null)?.id).toBe("bodyparts3d_stomach_v4");
-    expect(resolveSystem3DAsset(digestive, "unknown")?.id).toBe("bodyparts3d_stomach_v4");
+    expect(resolveSystem3DAsset(digestive, null)?.id).toBe("bodyparts3d_alimentary_system_v4");
+    expect(resolveSystem3DAsset(digestive, "unknown")?.id).toBe("bodyparts3d_alimentary_system_v4");
+  });
+
+  it.each([
+    ["BodyParts3D_mouth_FJ1252", "mouth"],
+    ["BodyParts3D_esophagus_FJ2563", "esophagus"],
+    ["BodyParts3D_stomach_FJ2564", "stomach"],
+    ["BodyParts3D_small_intestine_FJ2573", "small_intestine"],
+    ["BodyParts3D_large_intestine_FJ2565", "large_intestine"],
+    ["BodyParts3D_liver_FJ1883", "liver"],
+    ["BodyParts3D_gallbladder_FJ2817", "gallbladder"],
+    ["BodyParts3D_pancreas_FJ1895", "pancreas"],
+  ])("maps alimentary source mesh %s to %s", (meshName, structureId) => {
+    expect(resolveStructureForMesh(alimentary?.structures ?? [], meshName)?.id).toBe(structureId);
+  });
+
+  it("maps all 147 alimentary source surfaces and prefers detailed HRA organ assets", () => {
+    expect(alimentary).toBeDefined();
+    const bytes = readFileSync(path.join(process.cwd(), "public", alimentary?.filePath ?? ""));
+    const jsonChunkLength = bytes.readUInt32LE(12);
+    const glb = JSON.parse(bytes.subarray(20, 20 + jsonChunkLength).toString("utf8").trim()) as {
+      nodes?: Array<{ name?: string; mesh?: number }>;
+    };
+    const meshNodeNames = (glb.nodes ?? [])
+      .filter((node) => node.mesh !== undefined)
+      .map((node) => node.name ?? "");
+
+    expect(meshNodeNames).toHaveLength(147);
+    expect(
+      meshNodeNames.filter((meshName) => !resolveStructureForMesh(alimentary?.structures ?? [], meshName))
+    ).toEqual([]);
+    expect(resolveSystem3DAsset(digestive, "liver")?.id).toBe("hra_liver_male_v1");
+    expect(resolveSystem3DAsset(digestive, "pancreas")?.id).toBe("hra_pancreas_male_v1");
   });
 });
 
@@ -587,7 +625,11 @@ describe("sensory source hierarchy", () => {
       "utf8"
     );
 
-    expect(workspace).toContain("Source-mapped 3D");
+    expect(workspace).toContain("system3D.coverageLabel");
     expect(workspace).not.toContain("100% 3D");
+    expect(Object.values(SYSTEM_3D_REGISTRY).every((system) => system.coverageLabel.length > 0)).toBe(true);
+    expect(SYSTEM_3D_REGISTRY.digestive.coverageLabel).toBe("Expanded alimentary reference");
+    expect(SYSTEM_3D_REGISTRY.lymphatic.coverageLabel).toContain("Partial");
+    expect(SYSTEM_3D_REGISTRY.endocrine.coverageLabel).toContain("Partial");
   });
 });

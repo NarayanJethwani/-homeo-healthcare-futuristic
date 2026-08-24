@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "OSTM™ 3D Anatomy Asset Manifest",
-  "version": "5.5.0",
+  "version": "5.6.0",
   "status": "development-only",
   "description": "Provenance register for source-verified assets across all twelve anatomy-system viewers. All procedural placeholders have been retired. No asset is approved for production medical education until local anatomy review is complete.",
   "requiredBeforePromotion": [
@@ -14,25 +14,33 @@
   ],
   "models": [
     {
-      "id": "bodyparts3d_stomach_v4",
-      "system": "digestive", "structure": "stomach",
-      "file": "/models/anatomy/digestive/stomach_bodyparts3d_v4.glb",
-      "sha256": "de3517c742190661820f883d34267181e2a711fd9e89a93ac41bbe59a8518edc", "sizeBytes": 131752,
+      "id": "bodyparts3d_alimentary_system_v4",
+      "system": "digestive", "structure": "alimentary_system",
+      "file": "/models/anatomy/digestive/alimentary_system_bodyparts3d_v4.glb",
+      "sha256": "39fc6d94fefc59600ac9080f421c354b1d76d502009efcd0eae41302d25f664d", "sizeBytes": 28637200,
       "assetClass": "anatomical-reference", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "not-reviewed", "derivedFromImaging": false,
       "provenance": {
         "status": "source-verified",
         "sourcePage": "https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html",
-        "sourceVersion": "BodyParts3D 4.0 part-of tree, 99% polygon reduction",
+        "sourceVersion": "BodyParts3D 4.0 PART-OF tree, 99% polygon reduction",
         "sourceArchive": "partof_BP3D_4.0_obj_99.zip",
         "sourceArchiveSha256": "9fbc713fffeee924a5a657d9813d84d7eb957bded63adb854931dd5e3eb61c97",
-        "originalFile": "FJ2564.obj", "originalFileSha256": "cb78c3f2214fd21a16fa6c9f2389b9aa874e9d3ce624c42b34d4563c31554c67",
+        "terminologyTable": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/partof_parts_list_e.txt",
+        "elementTable": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/partof_element_parts.txt",
         "creator": "The Database Center for Life Science",
         "license": "CC BY-SA 2.1 Japan", "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en",
-        "rightsNote": "Conservative classification follows the license notice embedded in FJ2564.obj. The current database webpage separately states CC BY 4.0.",
-        "derivation": "scripts/importBodyParts3DStomach.mjs preserves source geometry, assigns FMA/BodyParts3D identifiers, normals where absent, and a neutral PBR display material."
+        "rightsNote": "Conservative classification follows the license notices embedded in the 147 source OBJ files. The current database webpage separately states CC BY 4.0.",
+        "derivation": "scripts/importBodyParts3DAlimentary.mjs combines all 147 OBJ surfaces mapped to FMA7152, partitions them with official PART-OF memberships, preserves shared coordinates and geometry, computes missing normals, and adds neutral PBR display materials."
       },
       "structures": [
-        { "id": "stomach", "meshName": "BodyParts3D_Stomach", "terminologyId": "FMA:7148", "representationId": "BP9480", "confidence": "source-defined" }
+        { "id": "mouth", "meshName": "BodyParts3D_mouth_FJ1252", "terminologyId": "FMA:49184", "representationId": "BP9620", "confidence": "source-defined" },
+        { "id": "esophagus", "meshName": "BodyParts3D_esophagus_FJ2563", "terminologyId": "FMA:7131", "representationId": "BP10206", "confidence": "source-defined" },
+        { "id": "stomach", "meshName": "BodyParts3D_stomach_FJ2564", "terminologyId": "FMA:7148", "representationId": "BP9480", "confidence": "source-defined" },
+        { "id": "small_intestine", "meshName": "BodyParts3D_small_intestine_FJ2573", "terminologyId": "FMA:7200", "representationId": "BP9352", "confidence": "source-defined" },
+        { "id": "large_intestine", "meshName": "BodyParts3D_large_intestine_FJ2565", "terminologyId": "FMA:7201", "representationId": "BP9747", "confidence": "metadata-mapped" },
+        { "id": "liver", "meshName": "BodyParts3D_liver_FJ1883", "terminologyId": "FMA:7197", "representationId": "BP9334", "confidence": "source-defined" },
+        { "id": "gallbladder", "meshName": "BodyParts3D_gallbladder_FJ2817", "terminologyId": "FMA:7202", "representationId": "BP10105", "confidence": "metadata-mapped" },
+        { "id": "pancreas", "meshName": "BodyParts3D_pancreas_FJ1895", "terminologyId": "FMA:7198", "representationId": "BP9653", "confidence": "source-defined" }
       ]
     },
     {

@@ -54,6 +54,7 @@ export interface System3DConfig {
   name: string;
   subtitle: string;
   badge: string;
+  coverageLabel: string;
   accentColor: string;
   primaryAssetPath?: string;
   assets: AnatomicalAssetDefinition[];
@@ -67,13 +68,15 @@ export function resolveSystem3DAsset(
   config: System3DConfig,
   structureId: string | null
 ): AnatomicalAssetDefinition | undefined {
-  if (!structureId) return config.assets[0];
+  const primaryAsset =
+    config.assets.find((asset) => asset.filePath === config.primaryAssetPath) || config.assets[0];
+  if (!structureId) return primaryAsset;
 
-  return (
-    config.assets.find((asset) =>
-      asset.structures.some((structure) => structure.id === structureId)
-    ) || config.assets[0]
-  );
+  const matchingAssets = config.assets
+    .filter((asset) => asset.structures.some((structure) => structure.id === structureId))
+    .sort((left, right) => left.structures.length - right.structures.length);
+
+  return matchingAssets[0] || primaryAsset;
 }
 
 export function matchesMeshNodePattern(meshName: string, pattern: string): boolean {
@@ -99,35 +102,113 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
     name: "Digestive System & Gastrointestinal Tract",
     subtitle: "Nutrient Digestion, Hepatic Metabolism & Enteric Absorption",
     badge: "Metabolic Engine",
+    coverageLabel: "Expanded alimentary reference",
     accentColor: "#EA580C",
-    primaryAssetPath: "/models/anatomy/digestive/stomach_bodyparts3d_v4.glb",
+    primaryAssetPath: "/models/anatomy/digestive/alimentary_system_bodyparts3d_v4.glb",
     assets: [
       {
-        id: "bodyparts3d_stomach_v4",
-        name: "Stomach",
-        filePath: "/models/anatomy/digestive/stomach_bodyparts3d_v4.glb",
+        id: "bodyparts3d_alimentary_system_v4",
+        name: "Alimentary System",
+        filePath: "/models/anatomy/digestive/alimentary_system_bodyparts3d_v4.glb",
         source: "BodyParts3D v4.0 / Database Center for Life Science",
         sourceUpAxis: "z",
         sourceType: "anatomical-reference",
         productionEligible: false,
         provenanceStatus: "source-verified",
         sourceUrl: "https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html",
-        sourceVersion: "BodyParts3D 4.0 part-of tree, 99% polygon reduction",
-        sourceChecksum: "cb78c3f2214fd21a16fa6c9f2389b9aa874e9d3ce624c42b34d4563c31554c67",
+        sourceVersion: "BodyParts3D 4.0 PART-OF tree, 99% polygon reduction",
+        sourceChecksum: "9fbc713fffeee924a5a657d9813d84d7eb957bded63adb854931dd5e3eb61c97",
         license: "CC BY-SA 2.1 Japan (conservative classification from embedded OBJ notice)",
         licenseUrl: "https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en",
         attribution: "BodyParts3D, © The Database Center for Life Science",
         reviewStatus: "not-reviewed",
         structures: [
           {
+            id: "mouth",
+            name: "Mouth and Oral Structures",
+            aliases: ["mouth", "oral cavity", "tongue"],
+            meshNodeNames: ["BodyParts3D_mouth_*"],
+            icon: "👄",
+            description: "Eleven source surfaces representing the mouth and its modeled oral subdivisions.",
+            focusHint: "Oral cavity",
+            knowledgeGraphId: "FMA:49184",
+            confidence: "source-defined",
+          },
+          {
+            id: "esophagus",
+            name: "Esophagus",
+            aliases: ["esophagus", "oesophagus", "food pipe"],
+            meshNodeNames: ["BodyParts3D_esophagus_*"],
+            icon: "🟤",
+            description: "Source-defined whole esophageal surface connecting pharyngeal and gastric regions.",
+            focusHint: "Cervical and thoracic alimentary conduit",
+            knowledgeGraphId: "FMA:7131",
+            confidence: "source-defined",
+          },
+          {
             id: "stomach",
             name: "Stomach",
             aliases: ["stomach", "gaster", "gastric organ"],
-            meshNodeNames: ["BodyParts3D_Stomach"],
+            meshNodeNames: ["BodyParts3D_stomach_*"],
             icon: "🫕",
             description: "Source-preserving whole-organ surface model used for gross anatomical orientation.",
             focusHint: "Epigastrium and left hypochondrium",
             knowledgeGraphId: "FMA:7148",
+            confidence: "source-defined",
+          },
+          {
+            id: "small_intestine",
+            name: "Small Intestine and Mesentery",
+            aliases: ["small intestine", "duodenum", "jejunum", "ileum", "mesentery"],
+            meshNodeNames: ["BodyParts3D_small_intestine_*"],
+            icon: "🟠",
+            description: "Fifty-six source surfaces covering small-intestinal regions and their modeled mesentery.",
+            focusHint: "Central and lower abdomen",
+            knowledgeGraphId: "FMA:7200",
+            confidence: "source-defined",
+          },
+          {
+            id: "large_intestine",
+            name: "Large Intestine and Mesocolon",
+            aliases: ["large intestine", "colon", "cecum", "appendix", "rectum"],
+            meshNodeNames: ["BodyParts3D_large_intestine_*"],
+            icon: "🟫",
+            description: "Eleven source surfaces covering the colon, appendix, ileocecal junction, mesoappendix, and transverse mesocolon.",
+            focusHint: "Peripheral abdominal and pelvic bowel",
+            knowledgeGraphId: "FMA:7201",
+            confidence: "metadata-mapped",
+          },
+          {
+            id: "gallbladder",
+            name: "Gallbladder and Extrahepatic Ducts",
+            aliases: ["gallbladder", "cystic duct", "common hepatic duct"],
+            meshNodeNames: ["BodyParts3D_gallbladder_*"],
+            icon: "🫒",
+            description: "Source surfaces for the gallbladder, cystic duct, and common hepatic duct.",
+            focusHint: "Right upper quadrant biliary apparatus",
+            knowledgeGraphId: "FMA:7202",
+            confidence: "metadata-mapped",
+          },
+          {
+            id: "liver",
+            name: "Liver",
+            aliases: ["liver", "hepatic lobes", "hepatic segments"],
+            meshNodeNames: ["BodyParts3D_liver_*"],
+            icon: "🥩",
+            description: "Sixty source surfaces representing the liver and its modeled lobar, sectoral, and biliary subdivisions.",
+            focusHint: "Right hypochondrium and epigastrium",
+            knowledgeGraphId: "FMA:7197",
+            confidence: "source-defined",
+          },
+          {
+            id: "pancreas",
+            name: "Pancreas",
+            aliases: ["pancreas", "pancreatic parenchyma"],
+            meshNodeNames: ["BodyParts3D_pancreas_*"],
+            icon: "🟡",
+            description: "Four source surfaces representing pancreatic gross anatomy and modeled parenchyma.",
+            focusHint: "Retroperitoneal upper abdomen",
+            knowledgeGraphId: "FMA:7198",
             confidence: "source-defined",
           },
         ],
@@ -193,11 +274,46 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
     ],
     subOrgans: [
       {
+        id: "mouth",
+        name: "Mouth & Oral Structures",
+        icon: "👄",
+        description: "Source-mapped mouth and modeled oral subdivisions.",
+        focusHint: "Oral cavity",
+      },
+      {
+        id: "esophagus",
+        name: "Esophagus",
+        icon: "🟤",
+        description: "Whole esophageal surface in shared alimentary coordinates.",
+        focusHint: "Cervical and thoracic alimentary conduit",
+      },
+      {
         id: "stomach",
         name: "Stomach",
         icon: "🫕",
         description: "Whole-organ BodyParts3D surface reference; local anatomical review pending.",
         focusHint: "Epigastrium and left hypochondrium",
+      },
+      {
+        id: "small_intestine",
+        name: "Small Intestine",
+        icon: "🟠",
+        description: "Duodenal, jejunal, ileal, and modeled mesenteric source surfaces.",
+        focusHint: "Central and lower abdomen",
+      },
+      {
+        id: "large_intestine",
+        name: "Large Intestine",
+        icon: "🟫",
+        description: "Colon, appendix, ileocecal junction, and modeled mesocolon surfaces.",
+        focusHint: "Peripheral abdomen and pelvis",
+      },
+      {
+        id: "gallbladder",
+        name: "Gallbladder & Ducts",
+        icon: "🫒",
+        description: "Gallbladder, cystic duct, and common hepatic duct surfaces.",
+        focusHint: "Right upper quadrant",
       },
       {
         id: "liver",
@@ -223,6 +339,7 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
     name: "Cardiovascular System & Hemodynamics",
     subtitle: "Pulsatile 4-Chamber Heart & Coronary Network",
     badge: "Vital Pump",
+    coverageLabel: "Regional reference: heart",
     accentColor: "#E11D48",
     primaryAssetPath: "/models/anatomy/cardiovascular/heart_hra_female_v1_1.glb",
     assets: [
@@ -355,6 +472,7 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
     name: "Renal & Urinary Excretory System",
     subtitle: "Glomerular Ultrafiltration, Acid-Base & Fluid Homeostasis",
     badge: "Master Filter",
+    coverageLabel: "Multi-organ urinary reference",
     accentColor: "#0284C7",
     primaryAssetPath: "/models/anatomy/renal/kidney_hra_male_left_v1_2.glb",
     assets: [
@@ -581,6 +699,7 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
     name: "Nervous System & Neural Circuits",
     subtitle: "Cerebral Cortex, Synaptic Signaling & Central Integration",
     badge: "Command Matrix",
+    coverageLabel: "Regional reference: brain",
     accentColor: "#8B5CF6",
     primaryAssetPath: "/models/anatomy/nervous/brain_bodyparts3d_v4.glb",
     assets: [
@@ -705,6 +824,7 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
     name: "Respiratory System & Gas Exchange",
     subtitle: "Pulmonary Ventilation, Alveolar Diffusion & Acid-Base Balance",
     badge: "Oxygen Gateway",
+    coverageLabel: "Multi-organ airway reference",
     accentColor: "#06B6D4",
     primaryAssetPath: "/models/anatomy/respiratory/lung_hra_male_v1_4.glb",
     assets: [
@@ -904,6 +1024,7 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
     name: "Skeletal System & Structural Framework",
     subtitle: "Axial & Appendicular Osteology, Protection & Locomotion",
     badge: "Structural Matrix",
+    coverageLabel: "Whole skeleton reference",
     accentColor: "#64748B",
     primaryAssetPath: "/models/anatomy/skeletal/whole_skeleton_bodyparts3d_v4.glb",
     assets: [
@@ -1064,6 +1185,7 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
     name: "Endocrine System & Hormonal Axis",
     subtitle: "Pituitary-Pineal-Adrenal-Pancreatic Axis",
     badge: "Hormonal Regulators",
+    coverageLabel: "Partial gland collection",
     accentColor: "#EAB308",
     primaryAssetPath: "/models/anatomy/endocrine/endocrine_glands_bodyparts3d_v4.glb",
     assets: [
@@ -1189,6 +1311,7 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
     name: "Muscular System & Biomechanics",
     subtitle: "Skeletal Muscle Fascicles, Tendons & Motor Units",
     badge: "Kinetic Drive",
+    coverageLabel: "Whole-body muscle reference",
     accentColor: "#EF4444",
     primaryAssetPath: "/models/anatomy/muscular/muscular_system_bodyparts3d_v4.glb",
     assets: [
@@ -1271,6 +1394,7 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
     name: "Lymphatic & Immune Defense System",
     subtitle: "Lymph Nodes, Splenic White Pulp & Interstitial Drainage",
     badge: "Immune Sentinel",
+    coverageLabel: "Partial: spleen and thymus",
     accentColor: "#10B981",
     primaryAssetPath: "/models/anatomy/lymphatic/lymphoid_organs_bodyparts3d_v4.glb",
     assets: [
@@ -1329,6 +1453,7 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
     name: "Reproductive & Gonadal System",
     subtitle: "Gametogenesis, Gonadal Steroidogenesis & Uterine Physiology",
     badge: "Generative Axis",
+    coverageLabel: "Multi-organ reproductive set",
     accentColor: "#EC4899",
     primaryAssetPath: "/models/anatomy/reproductive/uterus_hra_female_v1_2.glb",
     assets: [
@@ -1525,6 +1650,7 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
     name: "Integumentary System & Skin Barrier",
     subtitle: "Gross Skin Envelope & Modeled Hair Appendages",
     badge: "Barrier Armor",
+    coverageLabel: "Whole-body surface envelope",
     accentColor: "#F97316",
     primaryAssetPath: "/models/anatomy/integumentary/skin_hair_bodyparts3d_v4.glb",
     assets: [
@@ -1583,6 +1709,7 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
     name: "Sensory Organs & Special Senses",
     subtitle: "Bilateral Ocular Anatomy & External Ear Surfaces",
     badge: "Perception Array",
+    coverageLabel: "Partial: eyes and external ears",
     accentColor: "#3B82F6",
     primaryAssetPath: "/models/anatomy/sensory/ocular_external_ear_bodyparts3d_v4.glb",
     assets: [

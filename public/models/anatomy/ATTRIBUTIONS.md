@@ -11,19 +11,19 @@ Every asset remains blocked from production medical-education use until a named 
 
 ## Source-verified reference assets
 
-### Stomach — BodyParts3D v4.0
+### Alimentary system — BodyParts3D v4.0
 
-- Viewer file: `digestive/stomach_bodyparts3d_v4.glb`
-- BodyParts3D identifiers: FJ2564 / BP9480 / FMA7148
-- Source: BodyParts3D 4.0 part-of tree, 99% polygon-reduction archive
+- Viewer file: `digestive/alimentary_system_bodyparts3d_v4.glb`
+- BodyParts3D umbrella identifier: FMA7152 / BP9331
+- Source: BodyParts3D 4.0 PART-OF tree, 99% polygon-reduction archive
 - Creator: The Database Center for Life Science
 - Source page: <https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html>
-- Derived GLB SHA-256: `de3517c742190661820f883d34267181e2a711fd9e89a93ac41bbe59a8518edc`
-- Original OBJ SHA-256: `cb78c3f2214fd21a16fa6c9f2389b9aa874e9d3ce624c42b34d4563c31554c67`
+- Derived GLB SHA-256: `39fc6d94fefc59600ac9080f421c354b1d76d502009efcd0eae41302d25f664d`
 - Source archive SHA-256: `9fbc713fffeee924a5a657d9813d84d7eb957bded63adb854931dd5e3eb61c97`
-- Conversion: `scripts/importBodyParts3DStomach.mjs`; source geometry is retained, with stable identifiers, missing normals, and a neutral display material added for GLB rendering.
+- Contents: all 147 alimentary-system surfaces—11 oral, 1 esophageal, 1 gastric, 56 small-intestinal/mesenteric, 11 large-intestinal/mesocolic, 60 hepatic, 3 gallbladder/extrahepatic-duct, and 4 pancreatic surfaces.
+- Conversion: `scripts/importBodyParts3DAlimentary.mjs`; official PART-OF memberships, shared coordinates, and source geometry are retained, with stable identifiers, missing normals, and neutral display materials added.
 
-License note: the current BodyParts3D database page states CC BY 4.0, while the downloaded FJ2564 OBJ embeds a CC BY-SA 2.1 Japan notice. This project conservatively applies [CC BY-SA 2.1 Japan](https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en) to the derived stomach GLB and preserves attribution/share-alike requirements.
+License note: the current BodyParts3D database page states CC BY 4.0, while the downloaded OBJ files embed a CC BY-SA 2.1 Japan notice. This project conservatively applies [CC BY-SA 2.1 Japan](https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en) to the derived alimentary GLB and preserves attribution/share-alike requirements.
 
 ### Liver — Human Reference Atlas male v1.0
 
