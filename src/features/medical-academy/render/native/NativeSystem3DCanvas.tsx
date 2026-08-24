@@ -135,7 +135,8 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
         activeAsset.id,
         fallbackStructure?.id,
         fallbackStructure?.name,
-        activeAsset.structures
+        activeAsset.structures,
+        activeAsset.sourceUpAxis
       )
       .then((result) => {
         if (!isMounted) return;
@@ -199,7 +200,7 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
     // and layer changes are applied by the focused effects below without
     // destroying and reloading a multi-megabyte GLB.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [systemId, activeAsset?.filePath, activeAsset?.id]);
+  }, [systemId, activeAsset?.filePath, activeAsset?.id, activeAsset?.sourceUpAxis]);
 
   // Update controls auto-rotate
   useEffect(() => {

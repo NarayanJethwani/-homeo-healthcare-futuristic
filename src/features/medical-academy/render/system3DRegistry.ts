@@ -24,6 +24,7 @@ export interface AnatomicalAssetDefinition {
   name: string;
   filePath: string;
   source: string;
+  sourceUpAxis?: "y" | "z";
   sourceType: "procedural-placeholder" | "imaging-derived" | "anatomically-modeled" | "anatomical-reference";
   productionEligible: boolean;
   provenanceStatus?: "repository-generated" | "source-verified";
@@ -106,6 +107,7 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
         name: "Stomach",
         filePath: "/models/anatomy/digestive/stomach_bodyparts3d_v4.glb",
         source: "BodyParts3D v4.0 / Database Center for Life Science",
+        sourceUpAxis: "z",
         sourceType: "anatomical-reference",
         productionEligible: false,
         provenanceStatus: "source-verified",
@@ -587,6 +589,7 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
         name: "Brain, Cerebellum & Brainstem",
         filePath: "/models/anatomy/nervous/brain_bodyparts3d_v4.glb",
         source: "BodyParts3D v4.0 / Database Center for Life Science",
+        sourceUpAxis: "z",
         sourceType: "anatomical-reference",
         productionEligible: false,
         provenanceStatus: "source-verified",
@@ -909,6 +912,7 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
         name: "Axial Skeleton & Girdles",
         filePath: "/models/anatomy/skeletal/axial_skeleton_bodyparts3d_v4.glb",
         source: "BodyParts3D v4.0 / Database Center for Life Science",
+        sourceUpAxis: "z",
         sourceType: "anatomical-reference",
         productionEligible: false,
         provenanceStatus: "source-verified",
@@ -1032,6 +1036,7 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
         name: "Endocrine Gland Collection",
         filePath: "/models/anatomy/endocrine/endocrine_glands_bodyparts3d_v4.glb",
         source: "BodyParts3D v4.0 / Database Center for Life Science",
+        sourceUpAxis: "z",
         sourceType: "anatomical-reference",
         productionEligible: false,
         provenanceStatus: "source-verified",
@@ -1156,6 +1161,7 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
         name: "Whole-body Skeletal Musculature",
         filePath: "/models/anatomy/muscular/muscular_system_bodyparts3d_v4.glb",
         source: "BodyParts3D v4.0 / Database Center for Life Science",
+        sourceUpAxis: "z",
         sourceType: "anatomical-reference",
         productionEligible: false,
         provenanceStatus: "source-verified",
@@ -1237,6 +1243,7 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
         name: "Spleen and Thymus",
         filePath: "/models/anatomy/lymphatic/lymphoid_organs_bodyparts3d_v4.glb",
         source: "BodyParts3D v4.0 / Database Center for Life Science",
+        sourceUpAxis: "z",
         sourceType: "anatomical-reference",
         productionEligible: false,
         provenanceStatus: "source-verified",
@@ -1439,6 +1446,7 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
         name: "Male Reproductive Structures",
         filePath: "/models/anatomy/reproductive/male_reproductive_bodyparts3d_v4.glb",
         source: "BodyParts3D v4.0 / Database Center for Life Science",
+        sourceUpAxis: "z",
         sourceType: "anatomical-reference",
         productionEligible: false,
         provenanceStatus: "source-verified",
@@ -1489,6 +1497,7 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
         name: "Skin and Modeled Hair Appendages",
         filePath: "/models/anatomy/integumentary/skin_hair_bodyparts3d_v4.glb",
         source: "BodyParts3D v4.0 / Database Center for Life Science",
+        sourceUpAxis: "z",
         sourceType: "anatomical-reference",
         productionEligible: false,
         provenanceStatus: "source-verified",
@@ -1546,6 +1555,7 @@ export const SYSTEM_3D_REGISTRY: Record<AnatomySystemId, System3DConfig> = {
         name: "Ocular Structures and External Ears",
         filePath: "/models/anatomy/sensory/ocular_external_ear_bodyparts3d_v4.glb",
         source: "BodyParts3D v4.0 / Database Center for Life Science",
+        sourceUpAxis: "z",
         sourceType: "anatomical-reference",
         productionEligible: false,
         provenanceStatus: "source-verified",
