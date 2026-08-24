@@ -105,19 +105,19 @@ The eight deep-brain and ventricular surfaces are presented as an explicitly app
 - Contents: the lung model contains bilateral bronchopulmonary segments and intrapulmonary bronchi; HRA publishes the trachea and main bronchi as separate reference organs. The viewer preserves that separation rather than presenting a fabricated assembled airway model.
 - Derivation: source GLBs retained without geometry conversion or mesh renaming.
 
-### Axial skeleton and girdles — BodyParts3D v4.0
+### Whole skeleton — BodyParts3D v4.0
 
-- Viewer file: `skeletal/axial_skeleton_bodyparts3d_v4.glb`
-- BodyParts3D umbrella identifier: FMA23881 / BP9343
+- Viewer file: `skeletal/whole_skeleton_bodyparts3d_v4.glb`
+- BodyParts3D identifiers: skeletal system FMA23881 / BP9343; paired free upper limbs FMA24880 / BP9410 and FMA24881 / BP9440; paired free lower limbs FMA24882 / BP9466 and FMA24883 / BP9295
 - Source: BodyParts3D 4.0 PART-OF tree, 99% polygon-reduction archive
 - Creator: The Database Center for Life Science
 - Source page: <https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html>
-- Derived GLB SHA-256: `6a494af70cfe12fe103e9fda900cc2e28a9e86c7bce53bf287c615c41424705e`
+- Derived GLB SHA-256: `f4a975188000d04ca8cfcf63fe318151eef157d5f299d2b57b456b630e6c631a`
 - Source archive SHA-256: `9fbc713fffeee924a5a657d9813d84d7eb957bded63adb854931dd5e3eb61c97`
-- Contents: 138 source surfaces—43 skull, 48 vertebral-column, 41 rib-cage, 2 pelvic, and 4 pectoral-girdle surfaces—classified using the official PART-OF element table.
+- Contents: 275 source surfaces—138 axial/girdle surfaces (43 skull, 48 vertebral-column, 41 rib-cage, 2 pelvic, and 4 pectoral-girdle), 77 paired upper-limb surfaces, and 60 paired lower-limb surfaces—classified using the official PART-OF element table.
 - Conversion: `scripts/importBodyParts3DSkeleton.mjs`; shared source coordinates and geometry are retained, with source identifiers, missing normals, and neutral display materials added for GLB rendering.
 
-This asset is intentionally described as “axial skeleton and girdles”; it does not claim complete upper- and lower-limb coverage. The conservative [CC BY-SA 2.1 Japan](https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en) classification and attribution/share-alike requirements used for the other BodyParts3D derivatives also apply here.
+This asset provides the source release's axial and free appendicular bone surfaces. The conservative [CC BY-SA 2.1 Japan](https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en) classification and attribution/share-alike requirements used for the other BodyParts3D derivatives also apply here.
 
 ### Endocrine gland collection — BodyParts3D v4.0
 

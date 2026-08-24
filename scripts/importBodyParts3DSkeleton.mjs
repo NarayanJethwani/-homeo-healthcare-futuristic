@@ -1,6 +1,7 @@
 /**
- * Combines the 138 BodyParts3D v4.0 elementary OBJ surfaces mapped to the
- * skeletal system (FMA23881) into a source-preserving axial-skeleton GLB.
+ * Combines 275 BodyParts3D v4.0 elementary OBJ surfaces into a
+ * source-preserving whole-skeleton GLB: 138 axial/girdle surfaces plus 77
+ * upper-limb and 60 lower-limb bone surfaces.
  * Region membership follows the official PART-OF element table; shared source
  * coordinates and geometry are not altered.
  */
@@ -25,7 +26,7 @@ if (typeof globalThis.FileReader === "undefined") {
 
 const sourceDir = process.argv[2];
 const elementTablePath = process.argv[3];
-const outputPath = process.argv[4] ?? "public/models/anatomy/skeletal/axial_skeleton_bodyparts3d_v4.glb";
+const outputPath = process.argv[4] ?? "public/models/anatomy/skeletal/whole_skeleton_bodyparts3d_v4.glb";
 
 if (!sourceDir || !elementTablePath) {
   throw new Error("Usage: node scripts/importBodyParts3DSkeleton.mjs <OBJ directory> <partof_element_parts.txt> [output.glb]");
@@ -41,7 +42,16 @@ function filesForConcept(conceptId) {
   return new Set(rows.filter(([id]) => id === conceptId).map(([, , fileId]) => fileId));
 }
 
-const skeletalFiles = filesForConcept("FMA23881");
+const axialFiles = filesForConcept("FMA23881");
+const upperLimbFiles = new Set([
+  ...filesForConcept("FMA24880"),
+  ...filesForConcept("FMA24881"),
+]);
+const lowerLimbFiles = new Set([
+  ...filesForConcept("FMA24882"),
+  ...filesForConcept("FMA24883"),
+]);
+const skeletalFiles = new Set([...axialFiles, ...upperLimbFiles, ...lowerLimbFiles]);
 const sourceGroups = [
   {
     id: "skull",
@@ -88,6 +98,24 @@ const sourceGroups = [
     expectedCount: 4,
     color: 0xd4cab5,
   },
+  {
+    id: "upper_limbs",
+    name: "Upper Limb Skeleton",
+    ontologyId: "FMA:24880/FMA:24881",
+    representationId: "BP9410/BP9440",
+    conceptIds: ["FMA24880", "FMA24881"],
+    expectedCount: 77,
+    color: 0xd8cfbb,
+  },
+  {
+    id: "lower_limbs",
+    name: "Lower Limb Skeleton",
+    ontologyId: "FMA:24882/FMA:24883",
+    representationId: "BP9466/BP9295",
+    conceptIds: ["FMA24882", "FMA24883"],
+    expectedCount: 60,
+    color: 0xcfc4ae,
+  },
 ];
 
 const assignedFiles = new Set();
@@ -103,16 +131,22 @@ const groups = sourceGroups.map((definition) => {
   return { ...definition, files };
 });
 
-if (skeletalFiles.size !== 138 || assignedFiles.size !== skeletalFiles.size) {
-  throw new Error(`Expected complete coverage of 138 skeletal source files; mapped ${assignedFiles.size} of ${skeletalFiles.size}.`);
+if (
+  axialFiles.size !== 138 ||
+  upperLimbFiles.size !== 77 ||
+  lowerLimbFiles.size !== 60 ||
+  skeletalFiles.size !== 275 ||
+  assignedFiles.size !== skeletalFiles.size
+) {
+  throw new Error(`Expected complete coverage of 275 skeletal source files; mapped ${assignedFiles.size} of ${skeletalFiles.size}.`);
 }
 
 const root = new THREE.Group();
-root.name = "BodyParts3D_Axial_Skeleton_FMA23881";
+root.name = "BodyParts3D_Whole_Skeleton_Axial_Appendicular";
 root.userData = {
-  anatomicalName: "Axial Skeleton and Girdles",
-  ontologyId: "FMA:23881",
-  representationId: "BP9343",
+  anatomicalName: "Whole Skeleton — Axial and Appendicular",
+  ontologyId: "FMA:23881/FMA:24880/FMA:24881/FMA:24882/FMA:24883",
+  representationId: "BP9343/BP9410/BP9440/BP9466/BP9295",
   sourceVersion: "BodyParts3D 4.0 PART-OF tree, 99% polygon reduction",
 };
 
@@ -147,7 +181,7 @@ for (const groupDefinition of groups) {
   }
 }
 
-if (meshCount !== 138) throw new Error(`Expected 138 source meshes but imported ${meshCount}.`);
+if (meshCount !== 275) throw new Error(`Expected 275 source meshes but imported ${meshCount}.`);
 
 const exporter = new GLTFExporter();
 const buffer = await new Promise((resolve, reject) => {
@@ -156,4 +190,4 @@ const buffer = await new Promise((resolve, reject) => {
 
 fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 fs.writeFileSync(outputPath, Buffer.from(buffer));
-console.log(`Imported BodyParts3D axial skeleton: ${outputPath} (${meshCount} meshes, ${Buffer.byteLength(buffer)} bytes)`);
+console.log(`Imported BodyParts3D whole skeleton: ${outputPath} (${meshCount} meshes, ${Buffer.byteLength(buffer)} bytes)`);
