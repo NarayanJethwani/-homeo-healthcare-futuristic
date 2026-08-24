@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "OSTM™ 3D Anatomy Asset Manifest",
-  "version": "5.6.0",
+  "version": "5.7.0",
   "status": "development-only",
   "description": "Provenance register for source-verified assets across all twelve anatomy-system viewers. All procedural placeholders have been retired. No asset is approved for production medical education until local anatomy review is complete.",
   "requiredBeforePromotion": [
@@ -333,25 +333,30 @@
       ]
     },
     {
-      "id": "bodyparts3d_lymphoid_organs_v4", "system": "lymphatic", "structure": "spleen_and_thymus",
-      "file": "/models/anatomy/lymphatic/lymphoid_organs_bodyparts3d_v4.glb", "sha256": "dc8f5fece4469056783f0242634d49d88d906279259d0a9fcdaf16e89982a9a9", "sizeBytes": 65636,
+      "id": "zanatomy_lymphatic_nodes_organs", "system": "lymphatic", "structure": "lymph_nodes_and_lymphoid_organs",
+      "file": "/models/anatomy/lymphatic/lymphatic_nodes_organs_zanatomy.glb", "sha256": "7654362cf7eefcc2661d35fb20245a40fbce23088c39a13a4a27cabf5ebeed49", "sizeBytes": 9419456,
       "assetClass": "anatomical-reference", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "not-reviewed", "derivedFromImaging": false,
       "provenance": {
         "status": "source-verified",
-        "sourcePage": "https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html",
-        "sourceVersion": "BodyParts3D 4.0 IS-A tree, 99% polygon reduction",
-        "sourceArchive": "isa_BP3D_4.0_obj_99.zip",
-        "sourceArchiveSha256": "40665852c49f218326590e204db91064a1ecfc3c6f8cbd7bbbcaac62c7cd409e",
-        "terminologyTable": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/isa_parts_list_e.txt",
-        "elementTable": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/isa_element_parts.txt",
-        "creator": "The Database Center for Life Science",
-        "license": "CC BY-SA 2.1 Japan", "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en",
-        "rightsNote": "Conservative classification follows the license notices embedded in the source OBJ files. This slice covers the spleen and bilateral thymic lobes only; it does not claim lymph-node chains, tonsils, marrow, or lymphatic vessels.",
-        "derivation": "scripts/importBodyParts3DLymphoid.mjs combines three official IS-A-mapped OBJ surfaces in shared coordinates. All 3,410 triangles are retained; repeated face vertices are welded into 1,713 indexed vertices, normals are recomputed, and source identifiers plus neutral PBR materials are added."
+        "sourcePage": "https://github.com/LluisV/Z-Anatomy/tree/PC-Version/Resources/Models/FBX",
+        "sourceAsset": "https://raw.githubusercontent.com/LluisV/Z-Anatomy/PC-Version/Resources/Models/FBX/LymphoidOrgans100.fbx",
+        "sourceVersion": "PC-Version @ 6c7f9016bd5899ac8edafd31b9900c151df42ed6",
+        "sourceAssetSha256": "310ff82f502f4f3a79e85f99ddc2009bba9514338119af9edff87b20cf1b3609",
+        "creator": "Z-Anatomy contributors; derived from BodyParts3D by The Database Center for Life Science",
+        "license": "CC BY-SA 4.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "rightsNote": "The adapted GLB remains CC BY-SA 4.0. The source lymphoid FBX contains lymph-node chains, spleen, bilateral palatine tonsils, and bilateral thymic lobes; it does not contain lymphatic vessels, trunks, ducts, or marrow geometry.",
+        "derivation": "scripts/importZAnatomyLymphatic.mjs converts the official FBX, preserves the 163 named anatomical meshes and all 127,682 triangles, retains source transforms, partitions meshes using the source hierarchy, adds stable viewer identifiers and neutral PBR materials, and excludes only empty hierarchy/cross-section helpers plus one unplaced demonstration lymph-node object."
       },
       "structures": [
-        { "id": "spleen", "meshName": "BodyParts3D_spleen_FJ2561", "terminologyId": "FMA:7196", "representationId": "BP8804", "confidence": "source-defined" },
-        { "id": "thymus", "meshName": "BodyParts3D_thymus_left_lobe_FJ3150", "terminologyId": "FMA:9607", "representationId": "BP9902", "confidence": "metadata-mapped" }
+        { "id": "head_neck_nodes", "meshName": "ZAnatomy_head_neck_nodes_Retropharyngeal_nodesr", "terminologyId": "FMA:5034", "confidence": "metadata-mapped" },
+        { "id": "thoracic_nodes", "meshName": "ZAnatomy_thoracic_nodes_Node_of_ligamentum_arteriosum", "terminologyId": "FMA:5034", "confidence": "metadata-mapped" },
+        { "id": "abdominal_nodes", "meshName": "ZAnatomy_abdominal_nodes_Inferior_diaphragmatic_nodes", "terminologyId": "FMA:5034", "confidence": "metadata-mapped" },
+        { "id": "pelvic_nodes", "meshName": "ZAnatomy_pelvic_nodes_Intermediate_lacunar_node_l", "terminologyId": "FMA:5034", "confidence": "metadata-mapped" },
+        { "id": "upper_limb_nodes", "meshName": "ZAnatomy_upper_limb_nodes_Infraclavicular_nodesl", "terminologyId": "FMA:5034", "confidence": "metadata-mapped" },
+        { "id": "lower_limb_nodes", "meshName": "ZAnatomy_lower_limb_nodes_Inferior_superficial_inguinal_nodesr", "terminologyId": "FMA:5034", "confidence": "metadata-mapped" },
+        { "id": "spleen", "meshName": "ZAnatomy_spleen_Spleen", "terminologyId": "FMA:7196", "confidence": "source-defined" },
+        { "id": "tonsils", "meshName": "ZAnatomy_tonsils_Palatine_tonsill", "terminologyId": "FMA:54974/FMA:54973", "confidence": "source-defined" },
+        { "id": "thymus", "meshName": "ZAnatomy_thymus_Right_lobe_of_thymus", "terminologyId": "FMA:9607", "confidence": "source-defined" }
       ]
     },
     {

@@ -147,19 +147,18 @@ This is an application collection of individually source-mapped structures. Thyr
 
 The axial/trunk and head/neck viewer groupings combine multiple official source branches and are marked as metadata-mapped. This asset covers muscle organs only; it makes no tendon or fascia coverage claim. The conservative [CC BY-SA 2.1 Japan](https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en) classification and attribution/share-alike requirements apply.
 
-### Spleen and thymus — BodyParts3D v4.0
+### Lymph nodes and lymphoid organs — Z-Anatomy
 
-- Viewer file: `lymphatic/lymphoid_organs_bodyparts3d_v4.glb`
-- BodyParts3D identifiers: spleen FMA7196 / BP8804; left thymic lobe FMA71195 / BP8666; right thymic lobe FMA71194 / BP9220
-- Source: BodyParts3D 4.0 IS-A tree, 99% polygon-reduction archive
-- Creator: The Database Center for Life Science
-- Source page: <https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html>
-- Derived GLB SHA-256: `dc8f5fece4469056783f0242634d49d88d906279259d0a9fcdaf16e89982a9a9`
-- Source archive SHA-256: `40665852c49f218326590e204db91064a1ecfc3c6f8cbd7bbbcaac62c7cd409e`
-- Contents: one whole-spleen surface and two source-defined thymic-lobe surfaces in shared coordinates.
-- Conversion: `scripts/importBodyParts3DLymphoid.mjs`; all 3,410 source triangles are retained, repeated face vertices are welded into indexed geometry, normals are recomputed, and source identifiers plus neutral display materials are added.
+- Viewer file: `lymphatic/lymphatic_nodes_organs_zanatomy.glb`
+- Source file: `LymphoidOrgans100.fbx`, Z-Anatomy `PC-Version` commit `6c7f9016bd5899ac8edafd31b9900c151df42ed6`
+- Creator: Z-Anatomy contributors; source lineage includes BodyParts3D by The Database Center for Life Science
+- Source page: <https://github.com/LluisV/Z-Anatomy/tree/PC-Version/Resources/Models/FBX>
+- Derived GLB SHA-256: `7654362cf7eefcc2661d35fb20245a40fbce23088c39a13a4a27cabf5ebeed49`
+- Source FBX SHA-256: `310ff82f502f4f3a79e85f99ddc2009bba9514338119af9edff87b20cf1b3609`
+- Contents: 163 named anatomical meshes—42 head/neck nodes, 16 thoracic nodes, 32 abdominal nodes, 28 pelvic nodes, 20 upper-limb nodes, 20 lower-limb nodes, one spleen, two palatine tonsils, and two thymic lobes.
+- Conversion: `scripts/importZAnatomyLymphatic.mjs`; all 127,682 source triangles and source transforms are retained. Source hierarchy determines the nine viewer groups; stable identifiers and neutral display materials are added. Empty hierarchy/cross-section helpers and one unplaced demonstration lymph-node object are excluded.
 
-This is deliberately a lymphoid-organ collection rather than a complete lymphatic-network model. The selected release does not provide verified lymph-node chains, lymphatic vessels, tonsils, or marrow surfaces, so those structures are not represented or advertised. The bilateral lobes are combined only at the viewer-focus level under “Thymus.” The conservative [CC BY-SA 2.1 Japan](https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en) classification applies.
+This adapted model is distributed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) with attribution and ShareAlike preserved. It is not a complete lymphatic-network model: the source contains no lymphatic vessels, trunks, ducts, or marrow geometry, and the interface states that limitation explicitly.
 
 ### Female reproductive reference organs — Human Reference Atlas
 
