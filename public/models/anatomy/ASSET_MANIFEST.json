@@ -249,8 +249,8 @@
       ]
     },
     {
-      "id": "bodyparts3d_axial_skeleton_v4", "system": "skeletal", "structure": "axial_skeleton_and_girdles",
-      "file": "/models/anatomy/skeletal/axial_skeleton_bodyparts3d_v4.glb", "sha256": "6a494af70cfe12fe103e9fda900cc2e28a9e86c7bce53bf287c615c41424705e", "sizeBytes": 51272024,
+      "id": "bodyparts3d_whole_skeleton_v4", "system": "skeletal", "structure": "axial_and_appendicular_skeleton",
+      "file": "/models/anatomy/skeletal/whole_skeleton_bodyparts3d_v4.glb", "sha256": "f4a975188000d04ca8cfcf63fe318151eef157d5f299d2b57b456b630e6c631a", "sizeBytes": 64400996,
       "assetClass": "anatomical-reference", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "not-reviewed", "derivedFromImaging": false,
       "provenance": {
         "status": "source-verified",
@@ -262,15 +262,17 @@
         "elementTable": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/partof_element_parts.txt",
         "creator": "The Database Center for Life Science",
         "license": "CC BY-SA 2.1 Japan", "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en",
-        "rightsNote": "Conservative classification follows the license notices embedded in the source OBJ files. The current database webpage separately states CC BY 4.0. This viewer asset does not claim appendicular limb coverage.",
-        "derivation": "scripts/importBodyParts3DSkeleton.mjs combines the 138 OBJ surfaces mapped to FMA23881, groups them from source PART-OF memberships, preserves coordinates and geometry, computes missing normals, and adds neutral PBR display materials."
+        "rightsNote": "Conservative classification follows the license notices embedded in the source OBJ files. The current database webpage separately states CC BY 4.0.",
+        "derivation": "scripts/importBodyParts3DSkeleton.mjs combines 275 OBJ surfaces: 138 axial/girdle surfaces plus 77 paired upper-limb and 60 paired lower-limb surfaces. Source PART-OF memberships, coordinates, and geometry are preserved; missing normals and neutral PBR display materials are added."
       },
       "structures": [
         { "id": "skull", "meshName": "BodyParts3D_skull_FJ1282", "terminologyId": "FMA:46565", "representationId": "BP9486", "confidence": "source-defined" },
         { "id": "vertebral_column", "meshName": "BodyParts3D_vertebral_column_FJ3154", "terminologyId": "FMA:13478", "representationId": "BP9340", "confidence": "source-defined" },
         { "id": "rib_cage", "meshName": "BodyParts3D_rib_cage_FJ3153", "terminologyId": "FMA:7480", "representationId": "BP9393", "confidence": "source-defined" },
         { "id": "pelvic_skeleton", "meshName": "BodyParts3D_pelvic_skeleton_FJ3152", "terminologyId": "FMA:72062", "representationId": "BP9952", "confidence": "source-defined" },
-        { "id": "pectoral_girdles", "meshName": "BodyParts3D_pectoral_girdles_FJ3237", "terminologyId": "FMA:24163", "representationId": "BP10147", "confidence": "metadata-mapped" }
+        { "id": "pectoral_girdles", "meshName": "BodyParts3D_pectoral_girdles_FJ3237", "terminologyId": "FMA:24163", "representationId": "BP10147", "confidence": "metadata-mapped" },
+        { "id": "upper_limbs", "meshName": "BodyParts3D_upper_limbs_FJ1471", "terminologyId": "FMA:24880/FMA:24881", "representationId": "BP9410/BP9440", "confidence": "metadata-mapped" },
+        { "id": "lower_limbs", "meshName": "BodyParts3D_lower_limbs_FJ3179", "terminologyId": "FMA:24882/FMA:24883", "representationId": "BP9466/BP9295", "confidence": "metadata-mapped" }
       ]
     },
     {

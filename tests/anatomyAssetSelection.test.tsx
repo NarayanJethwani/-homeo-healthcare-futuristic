@@ -34,19 +34,30 @@ describe("GLB anatomy scene normalization", () => {
     const inferiorMarker = new THREE.Object3D();
     inferiorMarker.position.z = -5;
     root.add(inferiorMarker);
+    const anteriorMarker = new THREE.Object3D();
+    anteriorMarker.position.y = -2;
+    root.add(anteriorMarker);
+    const posteriorMarker = new THREE.Object3D();
+    posteriorMarker.position.y = 2;
+    root.add(posteriorMarker);
 
     const { boundingBox, boundingSphere } = normalizeAnatomyScene(root, "z");
     const normalizedSize = new THREE.Vector3();
     const superiorWorldPosition = new THREE.Vector3();
     const inferiorWorldPosition = new THREE.Vector3();
+    const anteriorWorldPosition = new THREE.Vector3();
+    const posteriorWorldPosition = new THREE.Vector3();
     boundingBox.getSize(normalizedSize);
     superiorMarker.getWorldPosition(superiorWorldPosition);
     inferiorMarker.getWorldPosition(inferiorWorldPosition);
+    anteriorMarker.getWorldPosition(anteriorWorldPosition);
+    posteriorMarker.getWorldPosition(posteriorWorldPosition);
 
     expect(normalizedSize.y).toBeCloseTo(3.6, 5);
     expect(normalizedSize.y).toBeGreaterThan(normalizedSize.x);
     expect(normalizedSize.y).toBeGreaterThan(normalizedSize.z);
     expect(superiorWorldPosition.y).toBeGreaterThan(inferiorWorldPosition.y);
+    expect(anteriorWorldPosition.z).toBeGreaterThan(posteriorWorldPosition.z);
     expect(boundingSphere.center.length()).toBeLessThan(0.00001);
   });
 });
@@ -230,9 +241,9 @@ describe("skeletal source hierarchy", () => {
   const skeletal = SYSTEM_3D_REGISTRY.skeletal;
   const skeleton = resolveSystem3DAsset(skeletal, "vertebral_column");
 
-  it("uses the source-preserving axial skeleton for every supported focus", () => {
-    expect(skeleton?.id).toBe("bodyparts3d_axial_skeleton_v4");
-    expect(skeleton?.filePath).toBe("/models/anatomy/skeletal/axial_skeleton_bodyparts3d_v4.glb");
+  it("uses the source-preserving whole skeleton for every supported focus", () => {
+    expect(skeleton?.id).toBe("bodyparts3d_whole_skeleton_v4");
+    expect(skeleton?.filePath).toBe("/models/anatomy/skeletal/whole_skeleton_bodyparts3d_v4.glb");
     expect(skeleton?.provenanceStatus).toBe("source-verified");
     expect(skeleton?.productionEligible).toBe(false);
 
@@ -242,6 +253,8 @@ describe("skeletal source hierarchy", () => {
       "rib_cage",
       "pelvic_skeleton",
       "pectoral_girdles",
+      "upper_limbs",
+      "lower_limbs",
     ]) {
       expect(resolveSystem3DAsset(skeletal, structureId)?.id).toBe(skeleton?.id);
     }
@@ -253,11 +266,13 @@ describe("skeletal source hierarchy", () => {
     ["BodyParts3D_rib_cage_FJ3153", "rib_cage"],
     ["BodyParts3D_pelvic_skeleton_FJ3152", "pelvic_skeleton"],
     ["BodyParts3D_pectoral_girdles_FJ3237", "pectoral_girdles"],
+    ["BodyParts3D_upper_limbs_FJ1471", "upper_limbs"],
+    ["BodyParts3D_lower_limbs_FJ3179", "lower_limbs"],
   ])("maps source mesh %s to %s", (meshName, structureId) => {
     expect(resolveStructureForMesh(skeleton?.structures ?? [], meshName)?.id).toBe(structureId);
   });
 
-  it("maps all 138 source meshes to a declared skeletal focus", () => {
+  it("maps all 275 axial and appendicular source meshes to a declared skeletal focus", () => {
     expect(skeleton).toBeDefined();
     const bytes = readFileSync(path.join(process.cwd(), "public", skeleton?.filePath ?? ""));
     const jsonChunkLength = bytes.readUInt32LE(12);
@@ -268,7 +283,7 @@ describe("skeletal source hierarchy", () => {
       .filter((node) => node.mesh !== undefined)
       .map((node) => node.name ?? "");
 
-    expect(meshNodeNames).toHaveLength(138);
+    expect(meshNodeNames).toHaveLength(275);
     expect(
       meshNodeNames.filter((meshName) => !resolveStructureForMesh(skeleton?.structures ?? [], meshName))
     ).toEqual([]);
@@ -564,5 +579,15 @@ describe("sensory source hierarchy", () => {
     expect(
       assets.filter((asset) => asset.source.includes("BodyParts3D") && asset.sourceUpAxis !== "z")
     ).toEqual([]);
+  });
+
+  it("describes atlas coverage without claiming complete system anatomy", () => {
+    const workspace = readFileSync(
+      path.join(process.cwd(), "src/features/medical-academy/components/MedicalAcademyWorkspace.tsx"),
+      "utf8"
+    );
+
+    expect(workspace).toContain("Source-mapped 3D");
+    expect(workspace).not.toContain("100% 3D");
   });
 });

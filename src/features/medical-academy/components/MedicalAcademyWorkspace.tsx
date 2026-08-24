@@ -644,12 +644,11 @@ function AnatomyAtlas({
           </div>
           <div className="flex items-center justify-between px-2 pb-2">
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">12 Organ Systems</p>
-            <span className="text-[9px] font-bold text-teal-600 dark:text-teal-400">100% 3D</span>
+            <span className="text-[9px] font-bold text-teal-600 dark:text-teal-400">Source-mapped 3D</span>
           </div>
           <div className="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible">
             {ANATOMY_SYSTEMS.map((item) => {
               const isSelected = selected === item.id;
-              const sysConfig = SYSTEM_3D_REGISTRY[item.id];
               return (
                 <button
                   key={item.id}
