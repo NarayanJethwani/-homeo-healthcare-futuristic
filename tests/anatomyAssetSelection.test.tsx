@@ -24,6 +24,20 @@ describe("GLB anatomy scene normalization", () => {
     expect(Math.max(normalizedSize.x, normalizedSize.y, normalizedSize.z)).toBeCloseTo(3.6, 5);
     expect(boundingSphere.center.length()).toBeLessThan(0.00001);
   });
+
+  it("converts Z-up anatomical sources to an upright Y-up viewport", () => {
+    const root = new THREE.Group();
+    root.add(new THREE.Mesh(new THREE.BoxGeometry(2, 4, 10)));
+
+    const { boundingBox, boundingSphere } = normalizeAnatomyScene(root, "z");
+    const normalizedSize = new THREE.Vector3();
+    boundingBox.getSize(normalizedSize);
+
+    expect(normalizedSize.y).toBeCloseTo(3.6, 5);
+    expect(normalizedSize.y).toBeGreaterThan(normalizedSize.x);
+    expect(normalizedSize.y).toBeGreaterThan(normalizedSize.z);
+    expect(boundingSphere.center.length()).toBeLessThan(0.00001);
+  });
 });
 
 describe("digestive anatomy asset selection", () => {
@@ -528,11 +542,16 @@ describe("sensory source hierarchy", () => {
 
   it("completes source-backed coverage for all twelve system viewers", () => {
     const systems = Object.values(SYSTEM_3D_REGISTRY);
+    const assets = systems.flatMap((system) => system.assets);
     expect(systems).toHaveLength(12);
     expect(systems.filter((system) => system.assets.length === 0)).toEqual([]);
-    expect(systems.flatMap((system) => system.assets)).toHaveLength(25);
+    expect(assets).toHaveLength(25);
     expect(
-      systems.flatMap((system) => system.assets).filter((asset) => asset.provenanceStatus !== "source-verified")
+      assets.filter((asset) => asset.provenanceStatus !== "source-verified")
+    ).toEqual([]);
+    expect(assets.filter((asset) => asset.source.includes("BodyParts3D"))).toHaveLength(9);
+    expect(
+      assets.filter((asset) => asset.source.includes("BodyParts3D") && asset.sourceUpAxis !== "z")
     ).toEqual([]);
   });
 });

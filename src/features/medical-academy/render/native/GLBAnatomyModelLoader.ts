@@ -30,10 +30,20 @@ export interface LoadedAnatomyResult {
   boundingSphere: THREE.Sphere;
 }
 
-export function normalizeAnatomyScene(rootGroup: THREE.Group): {
+export function normalizeAnatomyScene(
+  rootGroup: THREE.Group,
+  sourceUpAxis: "y" | "z" = "y"
+): {
   boundingBox: THREE.Box3;
   boundingSphere: THREE.Sphere;
 } {
+  if (sourceUpAxis === "z") {
+    // BodyParts3D uses X-right, Y-anterior, Z-superior coordinates.
+    // Convert to Three.js Y-up while keeping the anterior surface camera-facing.
+    rootGroup.rotation.set(-Math.PI / 2, Math.PI, 0, "XYZ");
+    rootGroup.updateMatrixWorld(true);
+  }
+
   const initialBox = new THREE.Box3().setFromObject(rootGroup);
   const size = new THREE.Vector3();
   initialBox.getSize(size);
@@ -77,7 +87,8 @@ export class GLBAnatomyModelLoader {
     assetId: string,
     fallbackStructureId?: string,
     fallbackAnatomicalName?: string,
-    structures: AnatomicalStructureDefinition[] = []
+    structures: AnatomicalStructureDefinition[] = [],
+    sourceUpAxis: "y" | "z" = "y"
   ): Promise<LoadedAnatomyResult> {
     return new Promise((resolve, reject) => {
       // Check cache first
@@ -89,7 +100,8 @@ export class GLBAnatomyModelLoader {
           assetId,
           fallbackStructureId,
           fallbackAnatomicalName,
-          structures
+          structures,
+          sourceUpAxis
         );
         resolve(indexed);
         return;
@@ -106,7 +118,8 @@ export class GLBAnatomyModelLoader {
             assetId,
             fallbackStructureId,
             fallbackAnatomicalName,
-            structures
+            structures,
+            sourceUpAxis
           );
           resolve(indexed);
         },
@@ -128,10 +141,11 @@ export class GLBAnatomyModelLoader {
     assetId: string,
     fallbackStructureId?: string,
     fallbackAnatomicalName?: string,
-    structures: AnatomicalStructureDefinition[] = []
+    structures: AnatomicalStructureDefinition[] = [],
+    sourceUpAxis: "y" | "z" = "y"
   ): LoadedAnatomyResult {
     // Normalize source assets into a shared, camera-centered viewport space.
-    const { boundingBox, boundingSphere } = normalizeAnatomyScene(rootGroup);
+    const { boundingBox, boundingSphere } = normalizeAnatomyScene(rootGroup, sourceUpAxis);
 
     // 5. Index named mesh nodes
     const nodes: AnatomyMeshNode[] = [];
