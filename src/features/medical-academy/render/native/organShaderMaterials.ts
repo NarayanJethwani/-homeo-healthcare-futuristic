@@ -1,7 +1,7 @@
 /**
  * HoloHuman™ Native 3D Physical Shaders & Material Presets
- * Calibrated PBR MeshPhysicalMaterials with subsurface scattering approximations,
- * translucent cartilage/cornea optical physics, and emissive organotropism glows.
+ * Experimental PBR materials for procedural development placeholders,
+ * including translucency and emissive focus effects.
  */
 
 import * as THREE from "three";

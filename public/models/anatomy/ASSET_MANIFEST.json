@@ -1,196 +1,492 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "name": "OSTM™ Interactive Human Anatomy Atlas Asset Manifest",
-  "version": "2.0.0",
-  "description": "Provenance, licensing, and structure registry for authentic 3D human anatomical models.",
+  "name": "OSTM™ 3D Anatomy Asset Manifest",
+  "version": "5.5.0",
+  "status": "development-only",
+  "description": "Provenance register for source-verified assets across all twelve anatomy-system viewers. All procedural placeholders have been retired. No asset is approved for production medical education until local anatomy review is complete.",
+  "requiredBeforePromotion": [
+    "Exact source asset URL and version",
+    "Original creator and license verification",
+    "Original and derived file checksums",
+    "Documented derivative-processing steps",
+    "Mesh-to-terminology mapping review",
+    "Named anatomical reviewer approval with date and scope"
+  ],
   "models": [
     {
-      "id": "digestive_stomach_001",
-      "system": "digestive",
-      "structure": "stomach",
-      "file": "/models/anatomy/digestive/stomach.glb",
-      "source": "NIH 3D / Visible Human Project Reference",
-      "sourceUrl": "https://3d.nih.gov",
-      "sourceId": "3DPX-016666",
-      "creator": "National Institutes of Health (NIH) / NLM",
-      "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
-      "provenance": "Derived from human anatomical cross-sectional reference datasets and clinical modeling.",
-      "sourceType": "anatomically-modeled",
-      "derivedFromImaging": false,
-      "modifications": ["GLTF/GLB optimization", "Bounding volume normalization", "Node hierarchy labeling"],
-      "attribution": "Stomach Anatomy Model via NIH 3D / CC BY 4.0",
-      "verified": true,
+      "id": "bodyparts3d_stomach_v4",
+      "system": "digestive", "structure": "stomach",
+      "file": "/models/anatomy/digestive/stomach_bodyparts3d_v4.glb",
+      "sha256": "de3517c742190661820f883d34267181e2a711fd9e89a93ac41bbe59a8518edc", "sizeBytes": 131752,
+      "assetClass": "anatomical-reference", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "not-reviewed", "derivedFromImaging": false,
+      "provenance": {
+        "status": "source-verified",
+        "sourcePage": "https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html",
+        "sourceVersion": "BodyParts3D 4.0 part-of tree, 99% polygon reduction",
+        "sourceArchive": "partof_BP3D_4.0_obj_99.zip",
+        "sourceArchiveSha256": "9fbc713fffeee924a5a657d9813d84d7eb957bded63adb854931dd5e3eb61c97",
+        "originalFile": "FJ2564.obj", "originalFileSha256": "cb78c3f2214fd21a16fa6c9f2389b9aa874e9d3ce624c42b34d4563c31554c67",
+        "creator": "The Database Center for Life Science",
+        "license": "CC BY-SA 2.1 Japan", "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en",
+        "rightsNote": "Conservative classification follows the license notice embedded in FJ2564.obj. The current database webpage separately states CC BY 4.0.",
+        "derivation": "scripts/importBodyParts3DStomach.mjs preserves source geometry, assigns FMA/BodyParts3D identifiers, normals where absent, and a neutral PBR display material."
+      },
       "structures": [
-        { "id": "stomach_fundus", "name": "Gastric Fundus", "meshName": "Fundus", "confidence": "verified" },
-        { "id": "stomach_body", "name": "Gastric Body & Rugae", "meshName": "Body", "confidence": "verified" },
-        { "id": "stomach_pylorus", "name": "Pyloric Antrum & Sphincter", "meshName": "Pylorus", "confidence": "verified" },
-        { "id": "lesser_curvature", "name": "Lesser Curvature", "meshName": "LesserCurvature", "confidence": "source-defined" },
-        { "id": "greater_curvature", "name": "Greater Curvature", "meshName": "GreaterCurvature", "confidence": "source-defined" }
+        { "id": "stomach", "meshName": "BodyParts3D_Stomach", "terminologyId": "FMA:7148", "representationId": "BP9480", "confidence": "source-defined" }
       ]
     },
     {
-      "id": "digestive_liver_001",
-      "system": "digestive",
-      "structure": "liver_gallbladder",
-      "file": "/models/anatomy/digestive/liver_gallbladder.glb",
-      "source": "Human Reference Atlas (HRA) / HuBMAP Ecosystem",
-      "sourceUrl": "https://humanatlas.io/3d-reference-library",
-      "sourceId": "HRA-LIVER-VH-M-001",
-      "creator": "HuBMAP Consortium / Indiana University",
-      "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
-      "provenance": "Visible Human Male dataset registered to the CCF 3D spatial reference library.",
-      "sourceType": "imaging-derived",
-      "derivedFromImaging": true,
-      "modifications": ["DRACO geometry compression", "Pivot centering"],
-      "attribution": "HuBMAP Consortium CCF 3D Reference Object Library (CC BY 4.0)",
-      "verified": true,
+      "id": "hra_liver_male_v1",
+      "system": "digestive", "structure": "liver",
+      "file": "/models/anatomy/digestive/liver_hra_male_v1.glb",
+      "sha256": "e94f18646d1b8f72cc45b92bdd67bbb4eb71d5bf954888bc8b8f8b52b3940b6a", "sizeBytes": 1135892,
+      "assetClass": "imaging-derived", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "source-reviewed-local-review-pending", "derivedFromImaging": true,
+      "provenance": {
+        "status": "source-verified",
+        "sourcePage": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/liver-male/v1.0/",
+        "sourceAsset": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/liver-male/v1.0/assets/VH_M_Liver.glb",
+        "sourceVersion": "v1.0", "sourceIdentifier": "doi:10.48539/HBM793.BQGC.274",
+        "creator": "Kristen Browne", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "rightsNote": "Visible Human Male-derived HRA reference organ. Local application-specific anatomy review remains pending.",
+        "derivation": "Source GLB copied without geometry conversion or mesh renaming."
+      },
       "structures": [
-        { "id": "liver_right_lobe", "name": "Right Hepatic Lobe", "meshName": "RightLobe", "confidence": "verified" },
-        { "id": "liver_left_lobe", "name": "Left Hepatic Lobe", "meshName": "LeftLobe", "confidence": "verified" },
-        { "id": "gallbladder", "name": "Gallbladder & Cystic Duct", "meshName": "Gallbladder", "confidence": "verified" }
+        { "id": "liver", "meshName": "VH_M_liver", "terminologyId": "UBERON:0002107", "confidence": "source-defined" }
       ]
     },
     {
-      "id": "cardiovascular_heart_001",
-      "system": "cardiovascular",
-      "structure": "heart_great_vessels",
-      "file": "/models/anatomy/cardiovascular/heart_great_vessels.glb",
-      "source": "NIH 3D Model Repository",
-      "sourceUrl": "https://3d.nih.gov/entries/3DPX-023212",
-      "sourceId": "3DPX-023212",
-      "creator": "NIH 3D / National Heart, Lung, and Blood Institute (NHLBI)",
-      "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
-      "provenance": "Visible Human cardiopulmonary anatomical reconstruction.",
-      "sourceType": "imaging-derived",
-      "derivedFromImaging": true,
-      "modifications": ["Format conversion to binary GLB", "Scale normalization"],
-      "attribution": "Heart with Great Vessels via NIH 3D / NHLBI (CC BY 4.0)",
-      "verified": true,
+      "id": "hra_pancreas_male_v1",
+      "system": "digestive", "structure": "pancreas",
+      "file": "/models/anatomy/digestive/pancreas_hra_male_v1.glb",
+      "sha256": "3486e3a4d6f2093460396fb65a907499f1457680156fe80be220a148677138e4", "sizeBytes": 265268,
+      "assetClass": "imaging-derived", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "source-reviewed-local-review-pending", "derivedFromImaging": true,
+      "provenance": {
+        "status": "source-verified",
+        "sourcePage": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/pancreas-male/v1.0/",
+        "sourceAsset": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/pancreas-male/v1.0/assets/VH_M_Pancreas.glb",
+        "sourceVersion": "v1.0", "sourceIdentifier": "doi:10.48539/HBM249.BLBM.234",
+        "creator": "Kristen Browne", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "rightsNote": "Visible Human Male-derived HRA reference organ. Local application-specific anatomy review remains pending.",
+        "derivation": "Source GLB copied without geometry conversion or mesh renaming."
+      },
       "structures": [
-        { "id": "left_ventricle", "name": "Left Ventricle & Myocardium", "meshName": "LeftVentricle", "confidence": "verified" },
-        { "id": "right_ventricle", "name": "Right Ventricle", "meshName": "RightVentricle", "confidence": "verified" },
-        { "id": "aorta_arch", "name": "Ascending Aorta & Arch", "meshName": "AorticArch", "confidence": "verified" },
-        { "id": "pulmonary_trunk", "name": "Pulmonary Trunk", "meshName": "PulmonaryArtery", "confidence": "verified" },
-        { "id": "coronary_arteries", "name": "Coronary Arterial Vasculature", "meshName": "LAD_Coronary", "confidence": "verified" }
+        { "id": "pancreas", "meshName": "VH_M_pancreas", "terminologyId": "UBERON:0001264", "confidence": "source-defined" }
       ]
     },
     {
-      "id": "renal_kidneys_001",
-      "system": "renal",
-      "structure": "kidneys_urinary",
-      "file": "/models/anatomy/renal/kidneys_urinary.glb",
-      "source": "NIH 3D / Human Reference Atlas",
-      "sourceUrl": "https://humanatlas.io/3d-reference-library",
-      "sourceId": "HRA-KIDNEY-VH-M-001",
-      "creator": "HuBMAP Consortium / NIH NIDDK",
-      "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
-      "provenance": "Visible Human anatomical reference reconstructed with bilateral renal hilum and vasculature.",
-      "sourceType": "imaging-derived",
-      "derivedFromImaging": true,
-      "modifications": ["GLB consolidation of left/right kidneys and ureter pathways", "Material preservation"],
-      "attribution": "Renal Reference Anatomy via HuBMAP & NIH 3D (CC BY 4.0)",
-      "verified": true,
+      "id": "hra_heart_female_v1_1", "system": "cardiovascular", "structure": "heart_chambers_valves_vessels",
+      "file": "/models/anatomy/cardiovascular/heart_hra_female_v1_1.glb", "sha256": "a7f85f36cd693eca742c8ed9c7bace42305521d4246db985c2c38e3bd22f3055", "sizeBytes": 4259804,
+      "assetClass": "imaging-derived", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "source-reviewed-local-review-pending", "derivedFromImaging": true,
+      "provenance": {
+        "status": "source-verified",
+        "sourcePage": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/heart-female/v1.1/",
+        "sourceAsset": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/heart-female/v1.1/assets/VH_F_Heart.glb",
+        "sourceVersion": "v1.1", "sourceIdentifier": "doi:10.48539/HBM459.GVPS.249",
+        "creator": "Kristen Browne", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "rightsNote": "Visible Human Female-derived HRA reference organ. Local application-specific anatomy review remains pending.",
+        "derivation": "Source GLB copied without geometry conversion or mesh renaming. Viewer mappings use source mesh names and embedded ontology identifiers."
+      },
       "structures": [
-        { "id": "renal_cortex_left", "name": "Left Renal Cortex & Glomerular Zone", "meshName": "Kidney_L", "confidence": "verified" },
-        { "id": "renal_cortex_right", "name": "Right Renal Cortex", "meshName": "Kidney_R", "confidence": "verified" },
-        { "id": "ureters", "name": "Peristaltic Ureters", "meshName": "Ureters", "confidence": "verified" },
-        { "id": "urinary_bladder", "name": "Detrusor Urinary Bladder", "meshName": "Bladder", "confidence": "verified" }
+        { "id": "left_ventricle", "meshName": "VH_F_left_ventricle", "terminologyId": "UBERON:0002084", "confidence": "source-defined" },
+        { "id": "aorta_arch", "meshName": "VH_F_aortic_arch", "terminologyId": "UBERON:0001508", "confidence": "source-defined" },
+        { "id": "coronary_arteries", "meshName": "VH_F_left_coronary_artery", "terminologyId": "UBERON:0001626", "confidence": "source-defined" },
+        { "id": "cardiac_valves", "meshName": "VH_F_aortic_valve", "terminologyId": "UBERON:0002137", "confidence": "source-defined" }
       ]
     },
     {
-      "id": "nervous_brain_001",
-      "system": "nervous",
-      "structure": "brain_brainstem",
-      "file": "/models/anatomy/nervous/brain_brainstem.glb",
-      "source": "OpenAnatomy / NIH 3D",
-      "sourceUrl": "https://www.openanatomy.org",
-      "sourceId": "SPL-BRAIN-ATLAS-001",
-      "creator": "Surgical Planning Laboratory, Brigham and Women's Hospital / Harvard Medical School",
-      "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
-      "provenance": "High-resolution 3D MRI brain atlas segmentation.",
-      "sourceType": "imaging-derived",
-      "derivedFromImaging": true,
-      "modifications": ["Mesh simplification for 60fps WebGL rendering", "Binary GLB export"],
-      "attribution": "SPL Brain Atlas via OpenAnatomy (CC BY 4.0)",
-      "verified": true,
+      "id": "hra_kidney_male_left_v1_2", "system": "renal", "structure": "kidney_left",
+      "file": "/models/anatomy/renal/kidney_hra_male_left_v1_2.glb", "sha256": "733eef9ec169796196470e538dc248c4397bce0ff7ed679f7b7eb0bb9f185612", "sizeBytes": 1536532,
+      "assetClass": "imaging-derived", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "source-reviewed-local-review-pending", "derivedFromImaging": true,
+      "provenance": {
+        "status": "source-verified", "sourcePage": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/kidney-male-left/v1.2/",
+        "sourceAsset": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/kidney-male-left/v1.2/assets/VH_M_Kidney_L.glb",
+        "sourceVersion": "v1.2", "sourceIdentifier": "doi:10.48539/HBM562.JGPS.244",
+        "creator": "Kristen Browne and Heidi Schlehlein", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "rightsNote": "Visible Human Male-derived HRA reference organ. Local application-specific anatomy review remains pending.",
+        "derivation": "Source GLB copied without geometry conversion or mesh renaming."
+      },
       "structures": [
-        { "id": "cerebral_cortex", "name": "Cerebral Cortex & Hemispheres", "meshName": "Cerebrum", "confidence": "verified" },
-        { "id": "cerebellum", "name": "Cerebellar Folia", "meshName": "Cerebellum", "confidence": "verified" },
-        { "id": "brainstem", "name": "Brainstem (Pons & Medulla)", "meshName": "Brainstem", "confidence": "verified" }
+        { "id": "kidney_left", "meshName": "VH_M_kidney_capsule_L", "terminologyId": "UBERON:0002015", "confidence": "source-defined" }
       ]
     },
     {
-      "id": "respiratory_lungs_001",
-      "system": "respiratory",
-      "structure": "lungs_airways",
-      "file": "/models/anatomy/respiratory/lungs_airways.glb",
-      "source": "NIH 3D Model Repository",
-      "sourceUrl": "https://3d.nih.gov",
-      "sourceId": "3DPX-017420",
-      "creator": "NIH 3D / National Institute of Allergy and Infectious Diseases (NIAID)",
-      "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
-      "provenance": "Visible Human pulmonary anatomical reconstruction.",
-      "sourceType": "imaging-derived",
-      "derivedFromImaging": true,
-      "modifications": ["GLTF/GLB packaging", "Scale normalization"],
-      "attribution": "Pulmonary Airways and Lungs via NIH 3D (CC BY 4.0)",
-      "verified": true,
+      "id": "hra_kidney_male_right_v1_2", "system": "renal", "structure": "kidney_right",
+      "file": "/models/anatomy/renal/kidney_hra_male_right_v1_2.glb", "sha256": "ff9821e0b8fb7fa6174a07b9cafb9f98bb25feca34ddc0e802beeefb24cd3779", "sizeBytes": 1546868,
+      "assetClass": "imaging-derived", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "source-reviewed-local-review-pending", "derivedFromImaging": true,
+      "provenance": {
+        "status": "source-verified", "sourcePage": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/kidney-male-right/v1.2/",
+        "sourceAsset": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/kidney-male-right/v1.2/assets/VH_M_Kidney_R.glb",
+        "sourceVersion": "v1.2", "sourceIdentifier": "doi:10.48539/HBM272.ZVPQ.979",
+        "creator": "Kristen Browne and Heidi Schlehlein", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "rightsNote": "Visible Human Male-derived HRA reference organ. Local application-specific anatomy review remains pending.",
+        "derivation": "Source GLB copied without geometry conversion or mesh renaming."
+      },
       "structures": [
-        { "id": "trachea_bronchi", "name": "Trachea & Primary Bronchi", "meshName": "Trachea", "confidence": "verified" },
-        { "id": "right_lung_lobes", "name": "Right Lung (3 Lobes)", "meshName": "RightLung", "confidence": "verified" },
-        { "id": "left_lung_lobes", "name": "Left Lung (2 Lobes)", "meshName": "LeftLung", "confidence": "verified" }
+        { "id": "kidney_right", "meshName": "VH_M_kidney_capsule_R", "terminologyId": "UBERON:0002015", "confidence": "source-defined" }
       ]
     },
     {
-      "id": "skeletal_system_001",
-      "system": "skeletal",
-      "structure": "human_skeleton",
-      "file": "/models/anatomy/skeletal/human_skeleton.glb",
-      "source": "OpenAnatomy / NIH 3D",
-      "sourceUrl": "https://3d.nih.gov",
-      "sourceId": "3DPX-010214",
-      "creator": "NIH 3D / National Library of Medicine",
-      "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
-      "provenance": "Visible Human anatomical skeleton reconstruction.",
-      "sourceType": "imaging-derived",
-      "derivedFromImaging": true,
-      "modifications": ["Mesh decimation for smooth web performance"],
-      "attribution": "Human Skeleton Reference Model via NIH 3D (CC BY 4.0)",
-      "verified": true,
+      "id": "hra_ureter_male_left_v1_2", "system": "renal", "structure": "ureter_left",
+      "file": "/models/anatomy/renal/ureter_hra_male_left_v1_2.glb", "sha256": "ebdd493c2e8095ccb6e795f49bf26c94e8d205c94097a7e1f9a9d7b168a1173c", "sizeBytes": 682892,
+      "assetClass": "imaging-derived", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "source-reviewed-local-review-pending", "derivedFromImaging": true,
+      "provenance": {
+        "status": "source-verified", "sourcePage": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/ureter-male-left/v1.2/",
+        "sourceAsset": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/ureter-male-left/v1.2/assets/3d-vh-m-ureter-l.glb",
+        "sourceVersion": "v1.2", "sourceIdentifier": "doi:10.48539/HBM434.VLQJ.299",
+        "creator": "Kristen Browne and Heidi Schlehlein", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "rightsNote": "Visible Human Male-derived HRA reference organ including renal pelvis and calyces. Local application-specific anatomy review remains pending.",
+        "derivation": "Source GLB copied without geometry conversion or mesh renaming."
+      },
       "structures": [
-        { "id": "cranium", "name": "Cranium & Facial Bones", "meshName": "Skull", "confidence": "verified" },
-        { "id": "spine_vertebrae", "name": "Vertebral Column", "meshName": "Spine", "confidence": "verified" },
-        { "id": "ribcage_thorax", "name": "Thoracic Ribcage & Sternum", "meshName": "Ribcage", "confidence": "verified" },
-        { "id": "pelvic_girdle", "name": "Pelvis & Ilium", "meshName": "Pelvis", "confidence": "verified" }
+        { "id": "ureter_left", "meshName": "VH_M_ureter_L", "terminologyId": "UBERON:0001223", "confidence": "source-defined" }
       ]
     },
     {
-      "id": "endocrine_thyroid_001",
-      "system": "endocrine",
-      "structure": "thyroid_glands",
-      "file": "/models/anatomy/endocrine/thyroid_glands.glb",
-      "source": "NIH 3D / HRA Reference Library",
-      "sourceUrl": "https://humanatlas.io/3d-reference-library",
-      "sourceId": "HRA-THYROID-001",
-      "creator": "HuBMAP Consortium / NIH NIDDK",
-      "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
-      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
-      "provenance": "Anatomically modeled reference based on Visible Human thyroid dimensions.",
-      "sourceType": "anatomically-modeled",
-      "derivedFromImaging": false,
-      "modifications": ["Bilateral lobe and isthmus tagging"],
-      "attribution": "Thyroid Gland Reference via HuBMAP & NIH 3D (CC BY 4.0)",
-      "verified": true,
+      "id": "hra_ureter_male_right_v1_2", "system": "renal", "structure": "ureter_right",
+      "file": "/models/anatomy/renal/ureter_hra_male_right_v1_2.glb", "sha256": "215978b67cf4d3876249a8dafb8c83a13471b5e1eb601559dca25a61a7c9d091", "sizeBytes": 540788,
+      "assetClass": "imaging-derived", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "source-reviewed-local-review-pending", "derivedFromImaging": true,
+      "provenance": {
+        "status": "source-verified", "sourcePage": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/ureter-male-right/v1.2/",
+        "sourceAsset": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/ureter-male-right/v1.2/assets/3d-vh-m-ureter-r.glb",
+        "sourceVersion": "v1.2", "sourceIdentifier": "doi:10.48539/HBM852.SVFJ.388",
+        "creator": "Kristen Browne and Heidi Schlehlein", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "rightsNote": "Visible Human Male-derived HRA reference organ including renal pelvis and calyces. Local application-specific anatomy review remains pending.",
+        "derivation": "Source GLB copied without geometry conversion or mesh renaming."
+      },
       "structures": [
-        { "id": "thyroid_lobes", "name": "Thyroid Lobes & Isthmus", "meshName": "Thyroid", "confidence": "verified" },
-        { "id": "parathyroid_glands", "name": "Parathyroid Glands (4)", "meshName": "Parathyroids", "confidence": "verified" }
+        { "id": "ureter_right", "meshName": "VH_M_ureter_R", "terminologyId": "UBERON:0001222", "confidence": "source-defined" }
+      ]
+    },
+    {
+      "id": "hra_urinary_bladder_male_v1_2", "system": "renal", "structure": "urinary_bladder",
+      "file": "/models/anatomy/renal/urinary_bladder_hra_male_v1_2.glb", "sha256": "070893aea9139d9a2c4f8da3aa66ca309a3c683a599d93a37dd7031c7d71021d", "sizeBytes": 199044,
+      "assetClass": "imaging-derived", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "source-reviewed-local-review-pending", "derivedFromImaging": true,
+      "provenance": {
+        "status": "source-verified", "sourcePage": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/urinary-bladder-male/v1.2/",
+        "sourceAsset": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/urinary-bladder-male/v1.2/assets/3d-vh-m-urinary-bladder.glb",
+        "sourceVersion": "v1.2", "sourceIdentifier": "doi:10.48539/HBM722.RMHQ.397",
+        "creator": "Kristen Browne and Heidi Schlehlein", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "rightsNote": "Visible Human Male-derived HRA reference organ. Local application-specific anatomy review remains pending.",
+        "derivation": "Source GLB copied without geometry conversion or mesh renaming."
+      },
+      "structures": [
+        { "id": "urinary_bladder", "meshName": "VH_M_trigone_of_urinary_bladder", "terminologyId": "UBERON:0001257", "confidence": "source-defined" }
+      ]
+    },
+    {
+      "id": "bodyparts3d_brain_v4", "system": "nervous", "structure": "brain",
+      "file": "/models/anatomy/nervous/brain_bodyparts3d_v4.glb", "sha256": "aa408fd4c99f7e38f6815f7f1367ab5948ae64ceef370eee1a746b15283d0365", "sizeBytes": 23255784,
+      "assetClass": "anatomical-reference", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "not-reviewed", "derivedFromImaging": false,
+      "provenance": {
+        "status": "source-verified",
+        "sourcePage": "https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html",
+        "sourceVersion": "BodyParts3D 4.0 PART-OF tree, 99% polygon reduction",
+        "sourceArchive": "partof_BP3D_4.0_obj_99.zip",
+        "sourceArchiveSha256": "9fbc713fffeee924a5a657d9813d84d7eb957bded63adb854931dd5e3eb61c97",
+        "terminologyTable": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/partof_parts_list_e.txt",
+        "elementTable": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/partof_element_parts.txt",
+        "creator": "The Database Center for Life Science",
+        "license": "CC BY-SA 2.1 Japan", "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en",
+        "rightsNote": "Conservative classification follows the license notices embedded in the source OBJ files. The current database webpage separately states CC BY 4.0.",
+        "derivation": "scripts/importBodyParts3DBrain.mjs combines the 59 elementary OBJ surfaces mapped to FMA50801, preserves coordinates and geometry, assigns source mapping metadata, computes missing normals, and adds neutral PBR display materials."
+      },
+      "structures": [
+        { "id": "cerebral_hemisphere_left", "meshName": "BodyParts3D_cerebral_hemisphere_left_FJ1833", "terminologyId": "FMA:61819", "representationId": "BP10491", "confidence": "source-defined" },
+        { "id": "cerebral_hemisphere_right", "meshName": "BodyParts3D_cerebral_hemisphere_right_FJ1834", "terminologyId": "FMA:67292", "representationId": "BP10498", "confidence": "source-defined" },
+        { "id": "cerebellum", "meshName": "BodyParts3D_cerebellum_FJ1781", "terminologyId": "FMA:67944", "representationId": "BP6702", "confidence": "source-defined" },
+        { "id": "brainstem", "meshName": "BodyParts3D_brainstem_FJ1769", "terminologyId": "FMA:79876", "representationId": "BP7432", "confidence": "source-defined" },
+        { "id": "deep_brain_ventricles", "meshName": "BodyParts3D_deep_brain_ventricles_FJ1730", "terminologyId": "FMA:50801", "representationId": "BP6687", "confidence": "metadata-mapped" }
+      ]
+    },
+    {
+      "id": "hra_lung_male_v1_4", "system": "respiratory", "structure": "lungs_and_intrapulmonary_bronchi",
+      "file": "/models/anatomy/respiratory/lung_hra_male_v1_4.glb", "sha256": "bba95516fa993ac45c3b1c53f32b58d97232ffd78ae56397e5a2589c6ce4903d", "sizeBytes": 10942332,
+      "assetClass": "imaging-derived", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "source-reviewed-local-review-pending", "derivedFromImaging": true,
+      "provenance": {
+        "status": "source-verified", "sourcePage": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/lung-male/v1.4/",
+        "sourceAsset": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/lung-male/v1.4/assets/3d-vh-m-lung.glb",
+        "sourceVersion": "v1.4", "sourceIdentifier": "doi:10.48539/HBM532.KLZD.394",
+        "creator": "Kristen Browne and Heidi Schlehlein", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "rightsNote": "Visible Human Male-derived HRA reference organ. Version 1.4 excludes trachea and main bronchi while retaining lung segments and intrapulmonary bronchi. Local application-specific anatomy review remains pending.",
+        "derivation": "Source GLB copied without geometry conversion or mesh renaming."
+      },
+      "structures": [
+        { "id": "left_lung_segments", "meshName": "VH_M_left_lingula_superior_bronchopulmonary_segment", "terminologyId": "FMA:7374", "confidence": "source-defined" },
+        { "id": "right_lung_segments", "meshName": "VH_M_right_lateral_bronchopulmonary_segment", "terminologyId": "FMA:7361", "confidence": "source-defined" },
+        { "id": "intrapulmonary_bronchi", "meshName": "VH_M_bronchus", "terminologyId": "UBERON:0002185", "confidence": "source-defined" }
+      ]
+    },
+    {
+      "id": "hra_main_bronchus_male_v1_1", "system": "respiratory", "structure": "main_bronchi",
+      "file": "/models/anatomy/respiratory/main_bronchus_hra_male_v1_1.glb", "sha256": "1f1f50659daba678a5738af67d4fc8add5a113a744c93427280a19ce9e0c5755", "sizeBytes": 422324,
+      "assetClass": "imaging-derived", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "source-reviewed-local-review-pending", "derivedFromImaging": true,
+      "provenance": {
+        "status": "source-verified", "sourcePage": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/main-bronchus-male/v1.1/",
+        "sourceAsset": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/main-bronchus-male/v1.1/assets/3d-vh-m-main-bronchus.glb",
+        "sourceVersion": "v1.1", "sourceIdentifier": "doi:10.48539/HBM373.XHXV.928",
+        "creator": "Kristen Browne and Heidi Schlehlein", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "rightsNote": "Visible Human Male-derived HRA reference organ separated from the lung model. Local application-specific anatomy review remains pending.",
+        "derivation": "Source GLB copied without geometry conversion or mesh renaming."
+      },
+      "structures": [
+        { "id": "main_bronchi", "meshName": "VH_M_left_main_bronchus", "terminologyId": "UBERON:0002178", "confidence": "source-defined" }
+      ]
+    },
+    {
+      "id": "hra_trachea_male_v1_1", "system": "respiratory", "structure": "trachea",
+      "file": "/models/anatomy/respiratory/trachea_hra_male_v1_1.glb", "sha256": "bca5616e505baff61dce1bbc31d6602eb72c112bcbe4531931e37e0c254ddd8d", "sizeBytes": 1184848,
+      "assetClass": "imaging-derived", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "source-reviewed-local-review-pending", "derivedFromImaging": true,
+      "provenance": {
+        "status": "source-verified", "sourcePage": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/trachea-male/v1.1/",
+        "sourceAsset": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/trachea-male/v1.1/assets/3d-vh-m-trachea.glb",
+        "sourceVersion": "v1.1", "sourceIdentifier": "doi:10.48539/HBM357.VGJC.676",
+        "creator": "Kristen Browne and Heidi Schlehlein", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "rightsNote": "Visible Human Male-derived HRA reference organ separated from the lung model. Local application-specific anatomy review remains pending.",
+        "derivation": "Source GLB copied without geometry conversion or mesh renaming."
+      },
+      "structures": [
+        { "id": "trachea", "meshName": "VH_M_trachea", "terminologyId": "UBERON:0003126", "confidence": "source-defined" }
+      ]
+    },
+    {
+      "id": "bodyparts3d_axial_skeleton_v4", "system": "skeletal", "structure": "axial_skeleton_and_girdles",
+      "file": "/models/anatomy/skeletal/axial_skeleton_bodyparts3d_v4.glb", "sha256": "6a494af70cfe12fe103e9fda900cc2e28a9e86c7bce53bf287c615c41424705e", "sizeBytes": 51272024,
+      "assetClass": "anatomical-reference", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "not-reviewed", "derivedFromImaging": false,
+      "provenance": {
+        "status": "source-verified",
+        "sourcePage": "https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html",
+        "sourceVersion": "BodyParts3D 4.0 PART-OF tree, 99% polygon reduction",
+        "sourceArchive": "partof_BP3D_4.0_obj_99.zip",
+        "sourceArchiveSha256": "9fbc713fffeee924a5a657d9813d84d7eb957bded63adb854931dd5e3eb61c97",
+        "terminologyTable": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/partof_parts_list_e.txt",
+        "elementTable": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/partof_element_parts.txt",
+        "creator": "The Database Center for Life Science",
+        "license": "CC BY-SA 2.1 Japan", "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en",
+        "rightsNote": "Conservative classification follows the license notices embedded in the source OBJ files. The current database webpage separately states CC BY 4.0. This viewer asset does not claim appendicular limb coverage.",
+        "derivation": "scripts/importBodyParts3DSkeleton.mjs combines the 138 OBJ surfaces mapped to FMA23881, groups them from source PART-OF memberships, preserves coordinates and geometry, computes missing normals, and adds neutral PBR display materials."
+      },
+      "structures": [
+        { "id": "skull", "meshName": "BodyParts3D_skull_FJ1282", "terminologyId": "FMA:46565", "representationId": "BP9486", "confidence": "source-defined" },
+        { "id": "vertebral_column", "meshName": "BodyParts3D_vertebral_column_FJ3154", "terminologyId": "FMA:13478", "representationId": "BP9340", "confidence": "source-defined" },
+        { "id": "rib_cage", "meshName": "BodyParts3D_rib_cage_FJ3153", "terminologyId": "FMA:7480", "representationId": "BP9393", "confidence": "source-defined" },
+        { "id": "pelvic_skeleton", "meshName": "BodyParts3D_pelvic_skeleton_FJ3152", "terminologyId": "FMA:72062", "representationId": "BP9952", "confidence": "source-defined" },
+        { "id": "pectoral_girdles", "meshName": "BodyParts3D_pectoral_girdles_FJ3237", "terminologyId": "FMA:24163", "representationId": "BP10147", "confidence": "metadata-mapped" }
+      ]
+    },
+    {
+      "id": "bodyparts3d_endocrine_collection_v4", "system": "endocrine", "structure": "pituitary_pineal_adrenal_pancreatic_collection",
+      "file": "/models/anatomy/endocrine/endocrine_glands_bodyparts3d_v4.glb", "sha256": "dc28c455eba7a48690bde7375f20c1d5d3c0f264614dfc46234616da5bf758aa", "sizeBytes": 1808024,
+      "assetClass": "anatomical-reference", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "not-reviewed", "derivedFromImaging": false,
+      "provenance": {
+        "status": "source-verified",
+        "sourcePage": "https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html",
+        "sourceVersion": "BodyParts3D 4.0 PART-OF tree, 99% polygon reduction",
+        "sourceArchive": "partof_BP3D_4.0_obj_99.zip",
+        "sourceArchiveSha256": "9fbc713fffeee924a5a657d9813d84d7eb957bded63adb854931dd5e3eb61c97",
+        "terminologyTable": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/partof_parts_list_e.txt",
+        "elementTable": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/partof_element_parts.txt",
+        "creator": "The Database Center for Life Science",
+        "license": "CC BY-SA 2.1 Japan", "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en",
+        "rightsNote": "Conservative classification follows embedded source OBJ notices. This is an application collection of verified source structures; thyroid and parathyroid meshes are intentionally excluded because the selected release does not provide them.",
+        "derivation": "scripts/importBodyParts3DEndocrine.mjs combines eight source OBJ surfaces in shared coordinates, preserves geometry, assigns source identifiers, computes missing normals, and adds neutral PBR display materials."
+      },
+      "structures": [
+        { "id": "pituitary_gland", "meshName": "BodyParts3D_pituitary_gland_FJ1796", "terminologyId": "FMA:13889", "representationId": "BP6711", "confidence": "source-defined" },
+        { "id": "pineal_body", "meshName": "BodyParts3D_pineal_body_FJ1795", "terminologyId": "FMA:62033", "representationId": "BP6698", "confidence": "source-defined" },
+        { "id": "adrenal_gland_left", "meshName": "BodyParts3D_adrenal_gland_left_FJ3129", "terminologyId": "FMA:15630", "representationId": "BP10100", "confidence": "source-defined" },
+        { "id": "adrenal_gland_right", "meshName": "BodyParts3D_adrenal_gland_right_FJ3130", "terminologyId": "FMA:15629", "representationId": "BP10161", "confidence": "source-defined" },
+        { "id": "pancreas_endocrine", "meshName": "BodyParts3D_pancreas_endocrine_FJ1895", "terminologyId": "FMA:7198", "representationId": "BP9653", "confidence": "source-defined" }
+      ]
+    },
+    {
+      "id": "bodyparts3d_muscular_system_v4", "system": "muscular", "structure": "whole_body_skeletal_musculature",
+      "file": "/models/anatomy/muscular/muscular_system_bodyparts3d_v4.glb", "sha256": "36135ea4cdce95aa7bc870e9f47becb0def5fcb16e8e5c7a79d532b559fd665a", "sizeBytes": 37941956,
+      "assetClass": "anatomical-reference", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "not-reviewed", "derivedFromImaging": false,
+      "provenance": {
+        "status": "source-verified",
+        "sourcePage": "https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html",
+        "sourceVersion": "BodyParts3D 4.0 IS-A tree, 99% polygon reduction",
+        "sourceArchive": "isa_BP3D_4.0_obj_99.zip",
+        "sourceArchiveSha256": "40665852c49f218326590e204db91064a1ecfc3c6f8cbd7bbbcaac62c7cd409e",
+        "terminologyTable": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/isa_parts_list_e.txt",
+        "elementTable": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/isa_element_parts.txt",
+        "creator": "The Database Center for Life Science",
+        "license": "CC BY-SA 2.1 Japan", "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en",
+        "rightsNote": "Conservative classification follows the license notices embedded in the source OBJ files. The current database webpage separately states CC BY 4.0. Tendons and fascia are not claimed as part of this muscle-organ asset.",
+        "derivation": "scripts/importBodyParts3DMuscular.mjs combines all 323 elementary OBJ surfaces classified under FMA5022 using official IS-A memberships. Shared source coordinates and all triangles are retained; repeated face vertices are welded into indexed geometry, normals are recomputed, source mapping metadata and neutral PBR materials are added. Output contains 1,045,335 indexed vertices and 2,086,974 triangles."
+      },
+      "structures": [
+        { "id": "head_neck_muscles", "meshName": "BodyParts3D_head_neck_muscles_FJ1294", "terminologyId": "FMA:9616", "representationId": "BP8080", "confidence": "metadata-mapped" },
+        { "id": "axial_trunk_muscles", "meshName": "BodyParts3D_axial_trunk_muscles_FJ1431", "terminologyId": "FMA:58274", "representationId": "BP8021", "confidence": "metadata-mapped" },
+        { "id": "upper_limb_muscles", "meshName": "BodyParts3D_upper_limb_muscles_FJ1456", "terminologyId": "FMA:9621", "representationId": "BP7787", "confidence": "source-defined" },
+        { "id": "lower_limb_muscles", "meshName": "BodyParts3D_lower_limb_muscles_FJ1383", "terminologyId": "FMA:9622", "representationId": "BP7834", "confidence": "source-defined" }
+      ]
+    },
+    {
+      "id": "bodyparts3d_lymphoid_organs_v4", "system": "lymphatic", "structure": "spleen_and_thymus",
+      "file": "/models/anatomy/lymphatic/lymphoid_organs_bodyparts3d_v4.glb", "sha256": "dc8f5fece4469056783f0242634d49d88d906279259d0a9fcdaf16e89982a9a9", "sizeBytes": 65636,
+      "assetClass": "anatomical-reference", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "not-reviewed", "derivedFromImaging": false,
+      "provenance": {
+        "status": "source-verified",
+        "sourcePage": "https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html",
+        "sourceVersion": "BodyParts3D 4.0 IS-A tree, 99% polygon reduction",
+        "sourceArchive": "isa_BP3D_4.0_obj_99.zip",
+        "sourceArchiveSha256": "40665852c49f218326590e204db91064a1ecfc3c6f8cbd7bbbcaac62c7cd409e",
+        "terminologyTable": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/isa_parts_list_e.txt",
+        "elementTable": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/isa_element_parts.txt",
+        "creator": "The Database Center for Life Science",
+        "license": "CC BY-SA 2.1 Japan", "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en",
+        "rightsNote": "Conservative classification follows the license notices embedded in the source OBJ files. This slice covers the spleen and bilateral thymic lobes only; it does not claim lymph-node chains, tonsils, marrow, or lymphatic vessels.",
+        "derivation": "scripts/importBodyParts3DLymphoid.mjs combines three official IS-A-mapped OBJ surfaces in shared coordinates. All 3,410 triangles are retained; repeated face vertices are welded into 1,713 indexed vertices, normals are recomputed, and source identifiers plus neutral PBR materials are added."
+      },
+      "structures": [
+        { "id": "spleen", "meshName": "BodyParts3D_spleen_FJ2561", "terminologyId": "FMA:7196", "representationId": "BP8804", "confidence": "source-defined" },
+        { "id": "thymus", "meshName": "BodyParts3D_thymus_left_lobe_FJ3150", "terminologyId": "FMA:9607", "representationId": "BP9902", "confidence": "metadata-mapped" }
+      ]
+    },
+    {
+      "id": "hra_uterus_female_v1_2", "system": "reproductive", "structure": "uterus",
+      "file": "/models/anatomy/reproductive/uterus_hra_female_v1_2.glb", "sha256": "41014d2b222c2dbbe8d1cc38206b0099ce76d79659a9fdea9f28b8c7d669b864", "sizeBytes": 980408,
+      "assetClass": "imaging-derived", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "source-reviewed-local-review-pending", "derivedFromImaging": true,
+      "provenance": {
+        "status": "source-verified", "sourcePage": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/uterus-female/v1.2/",
+        "sourceAsset": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/uterus-female/v1.2/assets/3d-vh-f-uterus.glb",
+        "sourceVersion": "v1.2", "sourceIdentifier": "doi:10.48539/HBM627.VTKD.892",
+        "creator": "Kristen Browne and Heidi Schlehlein", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "rightsNote": "Visible Human Female-derived HRA reference organ. Local application-specific anatomy review remains pending.",
+        "derivation": "Source GLB copied without geometry conversion or mesh renaming."
+      },
+      "structures": [
+        { "id": "uterus", "meshName": "VH_F_body_of_uterus", "terminologyId": "UBERON:0000995", "confidence": "source-defined" }
+      ]
+    },
+    {
+      "id": "hra_ovary_female_left_v1_1", "system": "reproductive", "structure": "ovary_left",
+      "file": "/models/anatomy/reproductive/ovary_hra_female_left_v1_1.glb", "sha256": "ed91414a667dec5e4e14aeaa2f8641731f06725dbc914bc0da3dd8b5d77f5062", "sizeBytes": 8984,
+      "assetClass": "imaging-derived", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "source-reviewed-local-review-pending", "derivedFromImaging": true,
+      "provenance": {
+        "status": "source-verified", "sourcePage": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/ovary-female-left/v1.1/",
+        "sourceAsset": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/ovary-female-left/v1.1/assets/VH_F_Ovary_L.glb",
+        "sourceVersion": "v1.1", "sourceIdentifier": "doi:10.48539/HBM499.JLMB.357",
+        "creator": "Kristen Browne and Heidi Schlehlein", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "rightsNote": "Visible Human Female-derived left ovarian reference organ. Local application-specific anatomy review remains pending.",
+        "derivation": "Source GLB copied without geometry conversion or mesh renaming."
+      },
+      "structures": [
+        { "id": "ovary_left", "meshName": "VH_F_left_ovary", "terminologyId": "FMA:7214", "confidence": "source-defined" }
+      ]
+    },
+    {
+      "id": "hra_ovary_female_right_v1_1", "system": "reproductive", "structure": "ovary_right",
+      "file": "/models/anatomy/reproductive/ovary_hra_female_right_v1_1.glb", "sha256": "99cc2b91602feacaee08ec1771b993fc0f8b0e32a08bdd7fd6b990a6736aa53b", "sizeBytes": 8744,
+      "assetClass": "imaging-derived", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "source-reviewed-local-review-pending", "derivedFromImaging": true,
+      "provenance": {
+        "status": "source-verified", "sourcePage": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/ovary-female-right/v1.1/",
+        "sourceAsset": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/ovary-female-right/v1.1/assets/VH_F_Ovary_R.glb",
+        "sourceVersion": "v1.1", "sourceIdentifier": "doi:10.48539/HBM453.QTZX.449",
+        "creator": "Kristen Browne and Heidi Schlehlein", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "rightsNote": "Visible Human Female-derived right ovarian reference organ. Local application-specific anatomy review remains pending.",
+        "derivation": "Source GLB copied without geometry conversion or mesh renaming."
+      },
+      "structures": [
+        { "id": "ovary_right", "meshName": "VH_F_right_ovary", "terminologyId": "FMA:7213", "confidence": "source-defined" }
+      ]
+    },
+    {
+      "id": "hra_fallopian_tube_female_left_v1_1", "system": "reproductive", "structure": "fallopian_tube_left",
+      "file": "/models/anatomy/reproductive/fallopian_tube_hra_female_left_v1_1.glb", "sha256": "5025453048a83c26393b866bc69859a255b4c38816f34ed3a196bfe7d4f33dd1", "sizeBytes": 336676,
+      "assetClass": "imaging-derived", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "source-reviewed-local-review-pending", "derivedFromImaging": true,
+      "provenance": {
+        "status": "source-verified", "sourcePage": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/fallopian-tube-female-left/v1.1/",
+        "sourceAsset": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/fallopian-tube-female-left/v1.1/assets/VH_F_Fallopian_Tube_L.glb",
+        "sourceVersion": "v1.1", "sourceIdentifier": "doi:10.48539/HBM887.HZKB.637",
+        "creator": "Kristen Browne and Heidi Schlehlein", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "rightsNote": "Visible Human Female-derived left fallopian-tube reference organ. Local application-specific anatomy review remains pending.",
+        "derivation": "Source GLB copied without geometry conversion or mesh renaming."
+      },
+      "structures": [
+        { "id": "fallopian_tube_left", "meshName": "VH_F_ampulla_of_uterine_tube_L", "terminologyId": "UBERON:0001303", "confidence": "source-defined" }
+      ]
+    },
+    {
+      "id": "hra_fallopian_tube_female_right_v1_1", "system": "reproductive", "structure": "fallopian_tube_right",
+      "file": "/models/anatomy/reproductive/fallopian_tube_hra_female_right_v1_1.glb", "sha256": "17aef41a430e068705dc21ac8ccf746a74f14f47ffc1a31908198b0b026849df", "sizeBytes": 327448,
+      "assetClass": "imaging-derived", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "source-reviewed-local-review-pending", "derivedFromImaging": true,
+      "provenance": {
+        "status": "source-verified", "sourcePage": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/fallopian-tube-female-right/v1.1/",
+        "sourceAsset": "https://cdn.humanatlas.io/hra-kg--staging/ref-organ/fallopian-tube-female-right/v1.1/assets/VH_F_Fallopian_Tube_R.glb",
+        "sourceVersion": "v1.1", "sourceIdentifier": "doi:10.48539/HBM875.FCDP.878",
+        "creator": "Kristen Browne and Heidi Schlehlein", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "rightsNote": "Visible Human Female-derived right fallopian-tube reference organ. Local application-specific anatomy review remains pending.",
+        "derivation": "Source GLB copied without geometry conversion or mesh renaming."
+      },
+      "structures": [
+        { "id": "fallopian_tube_right", "meshName": "VH_F_ampulla_of_uterine_tube_R", "terminologyId": "UBERON:0001302", "confidence": "source-defined" }
+      ]
+    },
+    {
+      "id": "bodyparts3d_male_reproductive_v4", "system": "reproductive", "structure": "male_reproductive_organs",
+      "file": "/models/anatomy/reproductive/male_reproductive_bodyparts3d_v4.glb", "sha256": "bf64b05ed8cb1591997a2ca1ced3094ca8d19e31891870e3f2bb0ef57fd2f38f", "sizeBytes": 145248,
+      "assetClass": "anatomical-reference", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "not-reviewed", "derivedFromImaging": false,
+      "provenance": {
+        "status": "source-verified",
+        "sourcePage": "https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html",
+        "sourceVersion": "BodyParts3D 4.0 IS-A tree, 99% polygon reduction",
+        "sourceArchive": "isa_BP3D_4.0_obj_99.zip",
+        "sourceArchiveSha256": "40665852c49f218326590e204db91064a1ecfc3c6f8cbd7bbbcaac62c7cd409e",
+        "terminologyTable": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/isa_parts_list_e.txt",
+        "elementTable": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/isa_element_parts.txt",
+        "creator": "The Database Center for Life Science",
+        "license": "CC BY-SA 2.1 Japan", "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en",
+        "rightsNote": "Conservative classification follows embedded source OBJ notices. This sex-specific collection remains separate from the HRA female organ assets and does not claim complete male pelvic anatomy.",
+        "derivation": "scripts/importBodyParts3DMaleReproductive.mjs combines twelve official IS-A-mapped OBJ surfaces in shared coordinates. All 7,184 triangles are retained; repeated face vertices are welded into 3,624 indexed vertices, normals are recomputed, and source identifiers plus neutral PBR materials are added."
+      },
+      "structures": [
+        { "id": "male_reproductive_organs", "meshName": "BodyParts3D_testis_left_FJ3138", "terminologyId": "FMA:45664", "confidence": "metadata-mapped" }
+      ]
+    },
+    {
+      "id": "bodyparts3d_integumentary_v4", "system": "integumentary", "structure": "skin_and_modeled_hair_appendages",
+      "file": "/models/anatomy/integumentary/skin_hair_bodyparts3d_v4.glb", "sha256": "4a75577e511c97cd55adcd22f277ab76dabfc89cdfd9cb28fa4693ebc45ad6df", "sizeBytes": 5421388,
+      "assetClass": "anatomical-reference", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "not-reviewed", "derivedFromImaging": false,
+      "provenance": {
+        "status": "source-verified",
+        "sourcePage": "https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html",
+        "sourceVersion": "BodyParts3D 4.0 IS-A tree, 99% polygon reduction",
+        "sourceArchive": "isa_BP3D_4.0_obj_99.zip",
+        "sourceArchiveSha256": "40665852c49f218326590e204db91064a1ecfc3c6f8cbd7bbbcaac62c7cd409e",
+        "terminologyTable": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/isa_parts_list_e.txt",
+        "elementTable": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/isa_element_parts.txt",
+        "creator": "The Database Center for Life Science",
+        "license": "CC BY-SA 2.1 Japan", "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en",
+        "rightsNote": "Conservative classification follows embedded source OBJ notices. The asset contains a gross skin envelope, eyebrows, head hair, and pubic hair. It does not claim separate epidermis, dermis, glands, follicles, nails, or sensory receptors.",
+        "derivation": "scripts/importBodyParts3DIntegumentary.mjs combines four official IS-A-mapped OBJ surfaces in shared coordinates. All 232,260 triangles are retained; repeated face vertices are welded into 116,751 indexed vertices, normals are recomputed, and source identifiers plus neutral PBR materials are added."
+      },
+      "structures": [
+        { "id": "skin_surface", "meshName": "BodyParts3D_skin_surface_skin_FJ2810", "terminologyId": "FMA:7163", "representationId": "BP9115", "confidence": "source-defined" },
+        { "id": "hair_appendages", "meshName": "BodyParts3D_hair_appendages_hair_of_head_FJ2813", "terminologyId": "FMA:53667", "confidence": "metadata-mapped" }
+      ]
+    },
+    {
+      "id": "bodyparts3d_sensory_collection_v4", "system": "sensory", "structure": "ocular_structures_and_external_ears",
+      "file": "/models/anatomy/sensory/ocular_external_ear_bodyparts3d_v4.glb", "sha256": "e44c4a281085b3d4947ea5a49aecf4372901dafd899fd86657f1021c07066816", "sizeBytes": 4958272,
+      "assetClass": "anatomical-reference", "productionEligible": false, "medicalEducationUseApproved": false, "anatomyReviewStatus": "not-reviewed", "derivedFromImaging": false,
+      "provenance": {
+        "status": "source-verified",
+        "sourcePage": "https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html",
+        "sourceVersion": "BodyParts3D 4.0 IS-A tree, 99% polygon reduction",
+        "sourceArchive": "isa_BP3D_4.0_obj_99.zip",
+        "sourceArchiveSha256": "40665852c49f218326590e204db91064a1ecfc3c6f8cbd7bbbcaac62c7cd409e",
+        "terminologyTable": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/isa_parts_list_e.txt",
+        "elementTable": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/isa_element_parts.txt",
+        "creator": "The Database Center for Life Science",
+        "license": "CC BY-SA 2.1 Japan", "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en",
+        "rightsNote": "Conservative classification follows embedded source OBJ notices. This asset contains 22 bilateral ocular surfaces and one bilateral external-ear surface. It does not claim auditory canal, middle ear, inner ear, organ of Corti, vestibular labyrinth, or olfactory structures.",
+        "derivation": "scripts/importBodyParts3DSensory.mjs combines twenty-three official IS-A-mapped OBJ surfaces in shared coordinates. All 273,996 triangles are retained; repeated face vertices are welded into 136,845 indexed vertices, normals are recomputed, and source identifiers plus neutral PBR materials are added."
+      },
+      "structures": [
+        { "id": "ocular_structures", "meshName": "BodyParts3D_ocular_structures_retina_right_FJ1367", "terminologyId": "FMA:12514/FMA:12515", "confidence": "metadata-mapped" },
+        { "id": "external_ears", "meshName": "BodyParts3D_external_ears_external_ears_FJ2811", "terminologyId": "FMA:52781", "representationId": "BP9255", "confidence": "source-defined" }
       ]
     }
   ]

@@ -82,25 +82,34 @@ export const SYSTEM_DETAILED_KNOWLEDGE: Record<AnatomySystemId, SystemDetailedKn
       {
         id: "pituitary_gland",
         name: "Hypophysis Cerebri (Pituitary)",
-        subOrganId: "pituitary",
+        subOrganId: "pituitary_gland",
         vascularSupply: "Superior & inferior hypophyseal arteries from internal carotid",
         innervation: "Hypothalamo-hypophyseal tract & autonomic carotid plexus",
         histology: "Adenohypophysis (cords of chromophils/chromophobes) + Neurohypophysis (unmyelinated axons & pituicytes)",
         clinicalSignificance: "Master gland commanding adrenal, thyroid, gonadal, and somatic growth axes."
       },
       {
-        id: "thyroid_gland",
-        name: "Glandula Thyroidea (Thyroid)",
-        subOrganId: "thyroid",
-        vascularSupply: "Superior thyroid (ECA) & Inferior thyroid (thyrocervical trunk)",
-        innervation: "Recurrent laryngeal & superior laryngeal nerves",
-        histology: "Spherical follicles lined with simple cuboidal follicular cells enclosing colloidal thyroglobulin",
-        clinicalSignificance: "Sets basal metabolic rate, oxygen consumption, and body thermogenesis."
+        id: "pineal_body",
+        name: "Corpus Pineale (Pineal Body)",
+        subOrganId: "pineal_body",
+        vascularSupply: "Posterior choroidal arterial branches",
+        innervation: "Postganglionic sympathetic fibers relayed through the superior cervical ganglion",
+        histology: "Pinealocytes supported by interstitial glial cells",
+        clinicalSignificance: "Coordinates melatonin secretion with the environmental light-dark cycle."
       },
       {
-        id: "adrenal_cortex_medulla",
-        name: "Glandula Suprarenalis (Adrenal)",
-        subOrganId: "adrenals",
+        id: "adrenal_gland_left",
+        name: "Left Glandula Suprarenalis",
+        subOrganId: "adrenal_gland_left",
+        vascularSupply: "Superior, middle, and inferior suprarenal arteries",
+        innervation: "Preganglionic sympathetic fibers from greater splanchnic nerve (T5-T9)",
+        histology: "Zona glomerulosa (aldosterone), fasciculata (cortisol), reticularis (DHEA) + Chromaffin medulla (adrenaline)",
+        clinicalSignificance: "Mediates acute flight-or-fight response and chronic HPA stress adaptation."
+      },
+      {
+        id: "adrenal_gland_right",
+        name: "Right Glandula Suprarenalis",
+        subOrganId: "adrenal_gland_right",
         vascularSupply: "Superior, middle, and inferior suprarenal arteries",
         innervation: "Preganglionic sympathetic fibers from greater splanchnic nerve (T5-T9)",
         histology: "Zona glomerulosa (aldosterone), fasciculata (cortisol), reticularis (DHEA) + Chromaffin medulla (adrenaline)",
@@ -362,13 +371,22 @@ export const SYSTEM_DETAILED_KNOWLEDGE: Record<AnatomySystemId, SystemDetailedKn
     functionalMotto: "Electrochemical Intelligence, Reflexes & Consciousness",
     structures: [
       {
-        id: "cerebral_cortex",
-        name: "Cerebral Cortex & Gray Matter",
-        subOrganId: "cerebral_cortex",
+        id: "cerebral_hemisphere_left",
+        name: "Left Cerebral Hemisphere",
+        subOrganId: "cerebral_hemisphere_left",
         vascularSupply: "Circle of Willis (Anterior, Middle, and Posterior Cerebral Arteries)",
         innervation: "Intrinsic neuronal circuits & meningeal trigeminal/vagal sensory supply",
-        histology: "6-layered neocortex containing pyramidal cells, stellate interneurons, and glial support network",
-        clinicalSignificance: "Executes higher cognition, language, volitional movement, and conscious awareness."
+        histology: "Cortical gray matter, subcortical white matter, and deep telencephalic structures",
+        clinicalSignificance: "Supports lateralized language, cognition, sensory integration, and contralateral motor control."
+      },
+      {
+        id: "cerebral_hemisphere_right",
+        name: "Right Cerebral Hemisphere",
+        subOrganId: "cerebral_hemisphere_right",
+        vascularSupply: "Circle of Willis (Anterior, Middle, and Posterior Cerebral Arteries)",
+        innervation: "Intrinsic neuronal circuits & meningeal trigeminal/vagal sensory supply",
+        histology: "Cortical gray matter, subcortical white matter, and deep telencephalic structures",
+        clinicalSignificance: "Supports lateralized visuospatial processing, sensory integration, and contralateral motor control."
       },
       {
         id: "cerebellum_vermis",
@@ -463,18 +481,18 @@ export const SYSTEM_DETAILED_KNOWLEDGE: Record<AnatomySystemId, SystemDetailedKn
     functionalMotto: "Pulmonary Ventilation, Alveolar Diffusion & Vital Breath",
     structures: [
       {
-        id: "tracheobronchial_tree",
-        name: "Tracheobronchial Tree",
-        subOrganId: "trachea_bronchi",
+        id: "trachea",
+        name: "Trachea & Carina",
+        subOrganId: "trachea",
         vascularSupply: "Bronchial arteries originating directly from descending thoracic aorta",
         innervation: "Pulmonary plexus (Vagus parasympathetics bronchoconstrict; sympathetics bronchodilate)",
         histology: "Pseudostratified ciliated columnar epithelium with goblet cells and hyaline cartilage rings",
         clinicalSignificance: "Mucociliary escalator filtering 10,000 liters of inhaled air daily."
       },
       {
-        id: "alveolar_membrane",
-        name: "Alveolar-Capillary Diffusion Membrane",
-        subOrganId: "alveolar_bed",
+        id: "left_lung_segments",
+        name: "Left Bronchopulmonary Segments",
+        subOrganId: "left_lung_segments",
         vascularSupply: "Pulmonary arterial circulation receiving 100% of right ventricular cardiac output",
         innervation: "Juxtacapillary (J) receptors sensing alveolar wall interstitial congestion",
         histology: "Type I pneumocytes (95% surface), Type II pneumocytes (surfactant synthesis), and alveolar macrophages",
@@ -748,9 +766,9 @@ export const SYSTEM_DETAILED_KNOWLEDGE: Record<AnatomySystemId, SystemDetailedKn
     functionalMotto: "Mineralized Scaffold, Joint Articulation & Hematopoiesis",
     structures: [
       {
-        id: "cortical_trabecular_bone",
-        name: "Bone Matrix & Osteons",
-        subOrganId: "axial_skeleton",
+        id: "vertebral_column",
+        name: "Vertebral Column Bone Matrix",
+        subOrganId: "vertebral_column",
         vascularSupply: "Nutrient arteries entering via nutrient foramina and Haversian canals",
         innervation: "Sensory nociceptive fibers densely innervating the vascularized periosteum",
         histology: "Concentric lamellae surrounding central Haversian canals; osteocytes inside lacunae",
@@ -829,7 +847,7 @@ export const SYSTEM_DETAILED_KNOWLEDGE: Record<AnatomySystemId, SystemDetailedKn
       {
         id: "skeletal_myofiber",
         name: "Skeletal Muscle Fibers & Sarcolemma",
-        subOrganId: "appendicular_muscles",
+        subOrganId: "upper_limb_muscles",
         vascularSupply: "Extensive capillary networks aligned parallel to muscle fibers",
         innervation: "Alpha motor neurons via motor endplates (Acetylcholine)",
         histology: "Multinucleated cylindrical fibers filled with repeating myofibril sarcomeres (actin and myosin)",
@@ -906,13 +924,13 @@ export const SYSTEM_DETAILED_KNOWLEDGE: Record<AnatomySystemId, SystemDetailedKn
     functionalMotto: "Interstitial Clearance, Immune Surveillance & Pathogen Defense",
     structures: [
       {
-        id: "lymph_nodes_cortex",
-        name: "Lymph Node Architecture",
-        subOrganId: "lymph_nodes",
-        vascularSupply: "High endothelial venules (HEVs) allowing lymphocyte extravasation",
-        innervation: "Autonomic sympathetic nerve fibers modulating lymphocyte egress",
-        histology: "Outer cortex (B-cell germinal centers), Paracortex (T-cells), and Medullary cords (plasma cells)",
-        clinicalSignificance: "Primary antigen-presentation and clonal expansion hub for adaptive immunity."
+        id: "splenic_red_white_pulp",
+        name: "Splenic Red and White Pulp",
+        subOrganId: "spleen",
+        vascularSupply: "Splenic artery branches into trabecular and central arterioles with open and closed microcirculatory pathways",
+        innervation: "Sympathetic fibers accompanying the splenic arterial tree",
+        histology: "White pulp lymphoid sheaths and follicles surrounding central arterioles, interspersed with red-pulp cords and venous sinusoids",
+        clinicalSignificance: "Filters circulating antigens and aged erythrocytes while supporting adaptive immune responses."
       }
     ],
     cascade: {
@@ -987,7 +1005,7 @@ export const SYSTEM_DETAILED_KNOWLEDGE: Record<AnatomySystemId, SystemDetailedKn
       {
         id: "uterine_myometrium_endometrium",
         name: "Uterine Wall & Endometrial Layers",
-        subOrganId: "uterine_tract",
+        subOrganId: "uterus",
         vascularSupply: "Uterine arteries from internal iliac; spiral arteries supplying functionalis layer",
         innervation: "Uterovaginal plexus from inferior hypogastric plexus",
         histology: "Stratum functionalis (cyclically shed) and stratum basalis, surrounded by interlacing smooth myometrium",
@@ -1073,7 +1091,7 @@ export const SYSTEM_DETAILED_KNOWLEDGE: Record<AnatomySystemId, SystemDetailedKn
       {
         id: "epidermal_strata",
         name: "Epidermal Strata (Corneum to Basale)",
-        subOrganId: "epidermis",
+        subOrganId: "skin_surface",
         vascularSupply: "Avascular; nourished via passive diffusion from dermal capillary loops",
         innervation: "Free nerve endings (pain/temperature) and Merkel discs (fine touch)",
         histology: "Stratum corneum, lucidum, granulosum, spinosum, and basale renewing every 28 days",
@@ -1152,20 +1170,20 @@ export const SYSTEM_DETAILED_KNOWLEDGE: Record<AnatomySystemId, SystemDetailedKn
       {
         id: "retinal_photoreceptors",
         name: "Retina & Macular Fovea",
-        subOrganId: "ocular_globe",
+        subOrganId: "ocular_structures",
         vascularSupply: "Central retinal artery (branch of ophthalmic artery from internal carotid)",
         innervation: "Optic Nerve (Cranial Nerve II) transmitting visual signals to lateral geniculate nucleus",
         histology: "10 retinal layers; Rods (120 million, low light) & Cones (6 million, color and high-acuity fovea)",
         clinicalSignificance: "Transduces photon wavelengths (400-700 nm) into visual neural representations."
       },
       {
-        id: "organ_of_corti",
-        name: "Cochlear Organ of Corti",
-        subOrganId: "cochlea_vestibular",
-        vascularSupply: "Labyrinthine artery from anterior inferior cerebellar artery (AICA)",
-        innervation: "Vestibulocochlear Nerve (Cranial Nerve VIII)",
-        histology: "Inner and outer hair cells resting on basilar membrane with stereocilia embedded in tectorial membrane",
-        clinicalSignificance: "Decomposes acoustic sound waves across frequency spectrum (20 Hz to 20,000 Hz)."
+        id: "external_ear_auricle",
+        name: "External Ear and Auricular Cartilage",
+        subOrganId: "external_ears",
+        vascularSupply: "Posterior auricular and superficial temporal arterial branches",
+        innervation: "Auriculotemporal, great auricular, lesser occipital, and auricular vagal branches",
+        histology: "Elastic cartilage covered by thin skin, with the lobule composed primarily of fibrofatty tissue",
+        clinicalSignificance: "Collects and directionally filters sound toward the external acoustic meatus."
       }
     ],
     cascade: {

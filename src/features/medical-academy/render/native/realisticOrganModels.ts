@@ -1,7 +1,6 @@
 /**
- * BioDigital-Grade Realistic Anatomical 3D Models
- * Handcrafted organic topography, vascular branching trees, lobar segmentation,
- * and cellular sub-units for all 12 human anatomical systems.
+ * Procedural 3D anatomy development placeholders.
+ * Handcrafted geometry used only for software and interaction prototyping.
  */
 
 import * as THREE from "three";

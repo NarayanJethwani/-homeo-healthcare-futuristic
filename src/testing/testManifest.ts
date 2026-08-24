@@ -24,6 +24,18 @@ export interface TestSuiteManifestEntry {
 
 export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
   {
+    "path": "tests/anatomyAssetSelection.test.tsx",
+    "status": "quarantined",
+    "ownerArea": "medical-academy",
+    "testLayer": "integration",
+    "reason": "Anatomy registry and GLB asset selection coverage requires the dedicated Vitest jsdom runner",
+    "risk": "low",
+    "trackingIssue": "QUARANTINE-TESTS-ANATOMYASSETSELECTION-TEST-TSX",
+    "owner": "medical-academy",
+    "lastExecutionResult": "89 tests passing via npm run test:anatomy",
+    "plannedResolution": "Execute via npm run test:anatomy (Vitest/jsdom)"
+  },
+  {
     "path": "tests/medicalAcademyLiterature.test.ts",
     "status": "active",
     "ownerArea": "medical-academy",

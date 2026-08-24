@@ -11,7 +11,7 @@ interface AnatomyModelErrorBoundaryProps {
 
 export const AnatomyModelErrorBoundary: React.FC<AnatomyModelErrorBoundaryProps> = ({
   systemName,
-  errorMessage = "Authentic anatomical 3D reference model is currently in preparation.",
+  errorMessage = "A 3D development model is not available for this system.",
   onRetry,
 }) => {
   return (
@@ -25,7 +25,7 @@ export const AnatomyModelErrorBoundary: React.FC<AnatomyModelErrorBoundaryProps>
       </h3>
 
       <p className="mt-2 max-w-md text-xs text-slate-400 leading-relaxed">
-        The authentic 3D anatomical dataset for <span className="font-semibold text-slate-200">{systemName}</span> is being processed in compliance with the OSTM™ verified licensing and provenance pipeline.
+        A reviewed production anatomy asset for <span className="font-semibold text-slate-200">{systemName}</span> has not yet completed source, license, and anatomical-review gates.
       </p>
 
       {errorMessage && (

@@ -1,7 +1,7 @@
 /**
- * HoloHuman™ Realistic Anatomy Asset Engine
- * Hybrid High-Fidelity 3D Loader with DRACO-compressed GLTF/GLB support,
- * medical dissection clipping planes, and seamless fallback to procedural BioDigital anatomy.
+ * HoloHuman™ Experimental Anatomy Asset Engine
+ * Development GLB loader with DRACO support, clipping planes, and procedural
+ * fallbacks. This legacy path does not imply anatomical validation.
  */
 
 import * as THREE from "three";
@@ -21,13 +21,13 @@ export interface AnatomyLayerVisibility {
 
 export const DEFAULT_ANATOMY_LAYERS: AnatomyLayerVisibility = {
   visceralOrgans: true,
-  vasculature: true,
+  vasculature: false,
   nervousPathways: true,
   skeletalContext: false,
   crossSectionSlice: false,
 };
 
-// Optional Medical GLB Asset Registry (Open Source NIH 3D / Z-Anatomy / LUMC)
+// Optional legacy GLB development registry. No external provenance is asserted.
 export const MEDICAL_GLB_ASSET_MAP: Partial<Record<AnatomySystemId, string>> = {
   cardiovascular: "/models/anatomy/heart.glb",
   nervous: "/models/anatomy/brain.glb",
@@ -69,7 +69,7 @@ export async function loadOrBuildRealisticAnatomy(
 
       if (gltf && gltf.scene) {
         const group = gltf.scene;
-        // Apply biological PBR shader enhancements
+        // Apply generic PBR material adjustments.
         group.traverse((child: any) => {
           if (child.isMesh) {
             child.castShadow = true;
@@ -90,7 +90,7 @@ export async function loadOrBuildRealisticAnatomy(
           subOrganMetas: [
             {
               subOrganId: "primary_organ",
-              name: "High-Poly Anatomical Scan",
+              name: "Imported GLB Development Model",
               focusTarget: [0, 0, 0],
               cameraOffset: [0, 0, 3.8],
             },
@@ -99,11 +99,11 @@ export async function loadOrBuildRealisticAnatomy(
         };
       }
     } catch {
-      // Graceful fallback to handcrafted BioDigital procedural anatomy
+      // Graceful fallback to procedural development geometry.
     }
   }
 
-  // Generate the handcrafted BioDigital organic model
+  // Generate procedural development geometry.
   const result = buildBioDigitalOrganSystem(
     systemId,
     materials,

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { AnatomySystemId } from "../data/medicalAcademyData";
-import { SYSTEM_3D_REGISTRY } from "../render/system3DRegistry";
+import { resolveSystem3DAsset, SYSTEM_3D_REGISTRY } from "../render/system3DRegistry";
 import { SYSTEM_DETAILED_KNOWLEDGE } from "../data/systemDetailedKnowledgeData";
 import { REMEDY_TROPISM_DATA } from "../data/remedyTropismData";
 import { NativeSystem3DCanvas } from "../render/native/NativeSystem3DCanvas";
@@ -10,16 +10,12 @@ import { AnatomyLayerVisibility, DEFAULT_ANATOMY_LAYERS } from "../render/native
 import { 
   Sparkles, 
   RotateCcw, 
-  Eye, 
-  Layers, 
   Activity, 
   Check, 
   Info, 
   Compass, 
   Maximize2,
   Minimize2,
-  ChevronRight,
-  ShieldAlert,
   Play,
   Pause,
   Scissors
@@ -51,6 +47,9 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
 
   // Selected sub organ
   const activeSubOrgan = config.subOrgans.find((s) => s.id === activeSubOrganId) || config.subOrgans[0];
+  const activeAsset = resolveSystem3DAsset(config, activeSubOrganId);
+  const isSourceVerified = activeAsset?.provenanceStatus === "source-verified";
+  const hasVerifiedVasculature = activeAsset?.capabilities?.vasculature === true;
   const activeStructureDetail = detailedKnowledge?.structures.find(
     (s) => s.subOrganId === activeSubOrgan?.id || s.id === activeSubOrgan?.id
   );
@@ -59,6 +58,14 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
     onSubOrganSelect(null);
     setAutoRotate(false);
     setLayers(DEFAULT_ANATOMY_LAYERS);
+  };
+
+  const handleSubOrganSelect = (subOrganId: string | null) => {
+    const structure = activeAsset?.structures.find((item) => item.id === subOrganId);
+    if (structure?.layer === "vasculature") {
+      setLayers((previous) => ({ ...previous, vasculature: true }));
+    }
+    onSubOrganSelect(subOrganId);
   };
 
   const toggleLayer = (layerKey: keyof AnatomyLayerVisibility) => {
@@ -97,7 +104,7 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
                   borderColor: `${config.accentColor}30`
                 }}
               >
-                OSTM™ 3D Anatomy Atlas
+                {isSourceVerified ? "Source-verified 3D reference" : "OSTM™ 3D Anatomy Preview"}
               </span>
             </div>
             <p className="truncate text-xs text-slate-500 dark:text-slate-400">
@@ -141,13 +148,16 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
           {/* Layer Dissection: Vasculature */}
           <button
             type="button"
-            onClick={() => toggleLayer("vasculature")}
+            disabled={!hasVerifiedVasculature}
+            onClick={() => hasVerifiedVasculature && toggleLayer("vasculature")}
             className={`inline-flex items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs font-semibold transition ${
-              layers.vasculature
-                ? "border-rose-500/50 bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-700"
-                : "border-slate-200 bg-white text-slate-400 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-600"
+              !hasVerifiedVasculature
+                ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400 opacity-70 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-600"
+                : layers.vasculature
+                  ? "border-rose-500/60 bg-rose-50 text-rose-800 dark:border-rose-700 dark:bg-rose-950/40 dark:text-rose-300"
+                  : "border-slate-200 bg-white text-slate-600 hover:border-rose-400 hover:text-rose-700 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300"
             }`}
-            title="Toggle Arterial & Venous Vascular Network"
+            title={hasVerifiedVasculature ? "Show or hide source-defined cardiovascular vessels" : "A separately verified vascular layer is not available for this asset"}
           >
             <Activity className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">Vessels</span>
@@ -207,7 +217,7 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
             <button
               key={sub.id}
               type="button"
-              onClick={() => onSubOrganSelect(isSelected ? null : sub.id)}
+              onClick={() => handleSubOrganSelect(isSelected ? null : sub.id)}
               className={`group flex shrink-0 items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition ${
                 isSelected
                   ? "border-teal-500 bg-slate-900 text-white shadow-sm dark:bg-teal-500 dark:text-slate-950 dark:border-teal-400"
@@ -222,7 +232,7 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
         })}
       </div>
 
-      {/* 3. 100% Native WebGL BioDigital 3D Spatial Canvas */}
+      {/* 3. Native WebGL development preview canvas */}
       <div className={`relative w-full overflow-hidden rounded-3xl border border-slate-300/80 bg-slate-950 shadow-inner dark:border-slate-800 flex-1 ${
         isFullscreen ? "h-[calc(100vh-140px)] min-h-[500px]" : "min-h-[580px] lg:min-h-[640px]"
       }`}>
@@ -230,7 +240,7 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
           systemId={systemId}
           accentColor={config.accentColor}
           activeSubOrganId={activeSubOrganId}
-          onSubOrganSelect={(subId) => onSubOrganSelect(subId)}
+          onSubOrganSelect={handleSubOrganSelect}
           activeRemedyTropismId={activeRemedyTropismId}
           autoRotate={autoRotate}
           layers={layers}
@@ -240,7 +250,11 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
         <div className="pointer-events-none absolute left-4 top-4 flex flex-col gap-1.5 z-10">
           <div className="flex items-center gap-2 rounded-full border border-teal-500/30 bg-slate-950/90 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white shadow-lg backdrop-blur">
             <span className="h-2 w-2 rounded-full animate-ping" style={{ backgroundColor: config.accentColor }} />
-            <span>Living 3D Anatomy · {config.name.split(" ")[0]} Model</span>
+            <span>
+              {isSourceVerified
+                ? `Source-verified 3D reference · ${activeAsset?.name}`
+                : `Development 3D preview · ${config.name.split(" ")[0]} placeholder`}
+            </span>
           </div>
 
           {activeSubOrgan && activeSubOrganId && (
