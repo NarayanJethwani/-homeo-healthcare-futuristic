@@ -28,14 +28,25 @@ describe("GLB anatomy scene normalization", () => {
   it("converts Z-up anatomical sources to an upright Y-up viewport", () => {
     const root = new THREE.Group();
     root.add(new THREE.Mesh(new THREE.BoxGeometry(2, 4, 10)));
+    const superiorMarker = new THREE.Object3D();
+    superiorMarker.position.z = 5;
+    root.add(superiorMarker);
+    const inferiorMarker = new THREE.Object3D();
+    inferiorMarker.position.z = -5;
+    root.add(inferiorMarker);
 
     const { boundingBox, boundingSphere } = normalizeAnatomyScene(root, "z");
     const normalizedSize = new THREE.Vector3();
+    const superiorWorldPosition = new THREE.Vector3();
+    const inferiorWorldPosition = new THREE.Vector3();
     boundingBox.getSize(normalizedSize);
+    superiorMarker.getWorldPosition(superiorWorldPosition);
+    inferiorMarker.getWorldPosition(inferiorWorldPosition);
 
     expect(normalizedSize.y).toBeCloseTo(3.6, 5);
     expect(normalizedSize.y).toBeGreaterThan(normalizedSize.x);
     expect(normalizedSize.y).toBeGreaterThan(normalizedSize.z);
+    expect(superiorWorldPosition.y).toBeGreaterThan(inferiorWorldPosition.y);
     expect(boundingSphere.center.length()).toBeLessThan(0.00001);
   });
 });

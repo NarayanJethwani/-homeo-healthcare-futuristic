@@ -39,8 +39,18 @@ export function normalizeAnatomyScene(
 } {
   if (sourceUpAxis === "z") {
     // BodyParts3D uses X-right, Y-anterior, Z-superior coordinates.
-    // Convert to Three.js Y-up while keeping the anterior surface camera-facing.
-    rootGroup.rotation.set(-Math.PI / 2, Math.PI, 0, "XYZ");
+    // Apply the X-axis conversion first, followed by the world Y-axis turn.
+    // A single XYZ Euler applies these rotations in the opposite composition
+    // order and puts the anatomical superior direction below the viewport.
+    const sourceToYUp = new THREE.Quaternion().setFromAxisAngle(
+      new THREE.Vector3(1, 0, 0),
+      -Math.PI / 2
+    );
+    const faceAnteriorTowardCamera = new THREE.Quaternion().setFromAxisAngle(
+      new THREE.Vector3(0, 1, 0),
+      Math.PI
+    );
+    rootGroup.quaternion.copy(faceAnteriorTowardCamera.multiply(sourceToYUp));
     rootGroup.updateMatrixWorld(true);
   }
 
