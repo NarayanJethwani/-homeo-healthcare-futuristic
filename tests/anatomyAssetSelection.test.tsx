@@ -326,6 +326,29 @@ describe("skeletal source hierarchy", () => {
       meshNodeNames.filter((meshName) => !resolveStructureForMesh(skeleton?.structures ?? [], meshName))
     ).toEqual([]);
   });
+
+  it("keeps the arm and leg skeleton directly reachable from the focus toolbar", () => {
+    expect(skeletal.subOrgans.map((item) => item.id)).toEqual([
+      "skull",
+      "vertebral_column",
+      "rib_cage",
+      "pelvic_skeleton",
+      "pectoral_girdles",
+      "upper_limbs",
+      "lower_limbs",
+    ]);
+
+    const viewer = readFileSync(
+      path.join(
+        process.cwd(),
+        "src/features/medical-academy/components/SystemSpecific3DViewer.tsx",
+      ),
+      "utf8",
+    );
+
+    expect(viewer).toContain("flex flex-wrap items-center gap-2");
+    expect(viewer).not.toContain("overflow-x-auto pb-1 px-1 scrollbar-thin");
+  });
 });
 
 describe("endocrine source hierarchy", () => {
