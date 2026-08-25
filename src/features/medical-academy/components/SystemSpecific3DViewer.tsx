@@ -207,7 +207,10 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
       </div>
 
       {/* 2. Sub-Organ Quick Focus Bar */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 px-1 scrollbar-thin">
+      <div
+        className="flex flex-wrap items-center gap-2 px-1 pb-1"
+        aria-label={`${config.name} focus controls`}
+      >
         <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400 dark:text-slate-500 shrink-0">
           <Compass className="h-3 w-3 text-teal-500" /> Focus:
         </span>
@@ -218,6 +221,7 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
               key={sub.id}
               type="button"
               onClick={() => handleSubOrganSelect(isSelected ? null : sub.id)}
+              title={`${sub.name}: ${sub.description}`}
               className={`group flex shrink-0 items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition ${
                 isSelected
                   ? "border-teal-500 bg-slate-900 text-white shadow-sm dark:bg-teal-500 dark:text-slate-950 dark:border-teal-400"
