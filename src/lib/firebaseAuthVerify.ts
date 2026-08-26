@@ -13,7 +13,15 @@ function base64UrlDecode(str: string): string {
   while (base64.length % 4) {
     base64 += "=";
   }
-  return atob(base64);
+  if (typeof Buffer !== "undefined") {
+    return Buffer.from(base64, "base64").toString("utf8");
+  }
+  return decodeURIComponent(
+    atob(base64)
+      .split("")
+      .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+      .join("")
+  );
 }
 
 function base64UrlDecodeToBytes(str: string): Uint8Array {
@@ -54,6 +62,21 @@ async function getJwks() {
 }
 
 export async function verifyFirebaseIdToken(idToken: string): Promise<DecodedIdToken> {
+  try {
+    const { getAdminAuth } = await import("./firebaseAdmin");
+    const adminAuth = getAdminAuth();
+    if (adminAuth && typeof adminAuth.verifyIdToken === "function") {
+      const decoded = await adminAuth.verifyIdToken(idToken);
+      return {
+        uid: decoded.uid,
+        email: decoded.email,
+        name: decoded.name,
+        ...decoded,
+      };
+    }
+  } catch (adminErr: any) {
+    console.warn("Firebase Admin Auth verifyIdToken unavailable, using WebCrypto fallback:", adminErr?.message || adminErr);
+  }
   const parts = idToken.split(".");
   if (parts.length !== 3) {
     throw new Error("Invalid JWT token format.");
