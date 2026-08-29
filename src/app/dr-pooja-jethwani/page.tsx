@@ -82,7 +82,7 @@ export default function DrPoojaJethwaniPage() {
   ];
 
   const handleWhatsAppChat = () => {
-    window.open(`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918446056789"}?text=Hello%20Dr.%20Pooja%20Jethwani,%20I%20would%20like%20to%20inquire%20about%20a%20homeopathic%20consultation`, "_blank");
+    window.open(`https://wa.me/${process.env.NEXT_PUBLIC_DR_POOJA_WHATSAPP_NUMBER || "918956595021"}?text=Hello%20Dr.%20Pooja%20Jethwani,%20I%20would%20like%20to%20inquire%20about%20a%20homeopathic%20consultation`, "_blank");
   };
 
   const handleBookConsultation = () => {
