@@ -3,12 +3,10 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ArrowUpRight, Sun, Moon, Stethoscope, ClipboardList, User, ShoppingBag, BookOpen, Mail, ChevronRight, Download } from "lucide-react";
+import { Menu, X, ArrowUpRight, Sun, Moon, Stethoscope, ClipboardList, User, ShoppingBag, BookOpen, Mail, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import Magnetic from "./Magnetic";
-import { usePWAInstall } from "@/lib/pwaStore";
-import PWAInstallModal from "@/components/PWAInstallModal";
 
 
 export default function Navbar() {
@@ -17,8 +15,6 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [isPortalHost, setIsPortalHost] = useState(false);
-  const { isInstallable, isInstalled, isIOS, install } = usePWAInstall();
-  const [showInstallModal, setShowInstallModal] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   const [portalUrl, setPortalUrl] = useState("https://portal.homeo.healthcare/login");
@@ -146,24 +142,6 @@ export default function Navbar() {
                 </button>
               </Magnetic>
 
-              {mounted && !isInstalled && (
-                <Magnetic>
-                  <button
-                    onClick={() => {
-                      if (isInstallable) {
-                        install();
-                      } else {
-                        setShowInstallModal(true);
-                      }
-                    }}
-                    className="glass-panel border-mint/20 hover:border-mint/60 bg-mint/5 hover:bg-mint/10 text-slate-700 dark:text-zinc-200 hover:text-mint dark:hover:text-mint px-4 py-2 rounded-full text-[11px] font-bold tracking-wider uppercase transition-all duration-500 flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    Install App
-                  </button>
-                </Magnetic>
-              )}
-
               <Magnetic>
                 <a
                   href={portalUrl}
@@ -246,23 +224,6 @@ export default function Navbar() {
                 
                 <div className="h-px bg-slate-100 dark:bg-slate-800/60 my-2" />
                 
-                {mounted && !isInstalled && (
-                  <button
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      if (isInstallable) {
-                        install();
-                      } else {
-                        setShowInstallModal(true);
-                      }
-                    }}
-                    className="w-full text-center border border-mint/20 text-mint bg-mint/5 hover:bg-mint/10 py-3 rounded-2xl text-xs font-bold tracking-wider uppercase transition-colors duration-300 flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <Download className="w-4 h-4" />
-                    Install Web App
-                  </button>
-                )}
-                
                 <a
                   href={portalUrl}
                   onClick={() => setMobileMenuOpen(false)}
@@ -300,12 +261,6 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <PWAInstallModal
-        isOpen={showInstallModal}
-        onClose={() => setShowInstallModal(false)}
-        isIOS={isIOS}
-      />
     </>
   );
 }
