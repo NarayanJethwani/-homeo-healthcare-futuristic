@@ -129,20 +129,25 @@ export default function DrPoojaJethwaniPage() {
             >
               <div className="absolute w-[250px] h-[250px] rounded-full bg-gradient-to-tr from-mint/10 to-transparent blur-[40px] -top-10 -left-10 pointer-events-none" />
               
-              {/* Doctor Visual Panel */}
-              <div className="w-full aspect-[4/5] rounded-2xl border border-slate-200/60 overflow-hidden relative shadow-md group mb-8 bg-gradient-to-br from-teal-50 via-emerald-50/40 to-slate-100 flex flex-col justify-end p-8">
-                <div className="absolute top-6 left-6 w-14 h-14 rounded-2xl bg-white/80 backdrop-blur-md border border-white/40 shadow-sm flex items-center justify-center text-teal-600">
-                  <Stethoscope className="w-7 h-7" />
-                </div>
-
-                <div className="z-10 text-slate-800">
-                  <span className="inline-block px-3 py-1 rounded-full bg-teal-600 text-white text-[10px] font-bold uppercase tracking-wider mb-2">
-                    Homeopathic Physician
-                  </span>
-                  <h4 className="text-2xl font-serif font-bold text-slate-900">Dr. Pooja Jethwani</h4>
-                  <p className="text-xs font-bold text-teal-700 uppercase tracking-wider mt-0.5">BHMS · PGDEMS</p>
-                  <p className="text-xs text-slate-600 font-medium mt-3 italic leading-relaxed">
-                    "Healing that is personal, methodical, and deeply listened to — treating the whole individual, not merely the disease."
+              {/* Doctor Profile Image Container */}
+              <div className="w-full aspect-[4/5] rounded-2xl border border-slate-200/60 overflow-hidden relative shadow-md group mb-8">
+                <Image
+                  src="/images/dr_pooja_jethwani_profile.jpg"
+                  alt="Dr. Pooja Jethwani"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 500px"
+                  className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                  priority
+                />
+                {/* Subtle dark gradient overlay at the bottom for caption overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-transparent" />
+                
+                {/* Content Overlay */}
+                <div className="absolute bottom-6 left-6 right-6 text-white z-10">
+                  <h4 className="text-xl font-serif font-bold text-white">Dr. Pooja Jethwani</h4>
+                  <p className="text-xs font-bold text-mint uppercase tracking-wider mt-0.5">BHMS · PGDEMS</p>
+                  <p className="text-[10px] text-white/85 font-medium mt-2.5 italic max-w-xs leading-relaxed">
+                    &quot;Healing that is personal, methodical, and deeply listened to — treating the whole individual, not merely the disease.&quot;
                   </p>
                 </div>
               </div>
@@ -302,14 +307,25 @@ export default function DrPoojaJethwaniPage() {
 
         {/* Cross-Link Banner: Meet Dr. Narayan Jethwani */}
         <div className="glass-panel border-teal-500/20 bg-gradient-to-r from-teal-50/80 via-white/80 to-emerald-50/80 rounded-[32px] p-8 md:p-12 mt-24 flex flex-col md:flex-row gap-8 items-center justify-between shadow-sm">
-          <div className="space-y-3 max-w-xl">
-            <span className="text-[9px] text-teal-800 font-bold uppercase tracking-wider border border-teal-500/30 bg-white/80 px-2.5 py-1 rounded-full inline-block">
-              Clinical Team & Co-Consultant
-            </span>
-            <h3 className="text-2xl font-bold text-[#1A2421]">Dr. Narayan B. Jethwani MD (Hom.)</h3>
-            <p className="text-xs text-slate-700 font-semibold leading-relaxed">
-              Founder of Homeo Healthcare with 20+ years of expertise in chronic constitutional care, Kent&apos;s repertorisation, and multi-system chronic disorders.
-            </p>
+          <div className="flex items-center gap-6">
+            <div className="relative w-20 h-20 rounded-2xl overflow-hidden border-2 border-teal-500/30 flex-shrink-0 shadow-sm">
+              <Image
+                src="/images/dr_jethwani_profile.png"
+                alt="Dr. Narayan B. Jethwani"
+                fill
+                sizes="80px"
+                className="object-cover object-center"
+              />
+            </div>
+            <div className="space-y-1.5 max-w-xl">
+              <span className="text-[9px] text-teal-800 font-bold uppercase tracking-wider border border-teal-500/30 bg-white/80 px-2.5 py-0.5 rounded-full inline-block">
+                Clinical Team & Co-Consultant
+              </span>
+              <h3 className="text-2xl font-bold text-[#1A2421]">Dr. Narayan B. Jethwani MD (Hom.)</h3>
+              <p className="text-xs text-slate-700 font-semibold leading-relaxed">
+                Founder of Homeo Healthcare with 20+ years of expertise in chronic constitutional care, Kent&apos;s repertorisation, and multi-system chronic disorders.
+              </p>
+            </div>
           </div>
           <div className="flex gap-4 flex-shrink-0">
             <Magnetic>

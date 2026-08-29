@@ -262,14 +262,25 @@ export default function DoctorProfilePage() {
 
         {/* Cross-Link Banner: Meet Dr. Pooja Jethwani */}
         <div className="glass-panel border-teal-500/20 bg-gradient-to-r from-teal-50/80 via-white/80 to-emerald-50/80 rounded-[32px] p-8 md:p-12 mt-24 flex flex-col md:flex-row gap-8 items-center justify-between shadow-sm">
-          <div className="space-y-3 max-w-xl">
-            <span className="text-[9px] text-teal-800 font-bold uppercase tracking-wider border border-teal-500/30 bg-white/80 px-2.5 py-1 rounded-full inline-block">
-              Clinical Team & Co-Consultant
-            </span>
-            <h3 className="text-2xl font-bold text-[#1A2421]">Dr. Pooja Jethwani BHMS, PGDEMS</h3>
-            <p className="text-xs text-slate-700 font-semibold leading-relaxed">
-              Consulting homeopathic physician specializing in hormonal imbalances, women&apos;s health, pediatric homeopathy, and chronic conditions at Ramkrishna Homeopathic Consultancy.
-            </p>
+          <div className="flex items-center gap-6">
+            <div className="relative w-20 h-20 rounded-2xl overflow-hidden border-2 border-teal-500/30 flex-shrink-0 shadow-sm">
+              <Image
+                src="/images/dr_pooja_jethwani_profile.jpg"
+                alt="Dr. Pooja Jethwani"
+                fill
+                sizes="80px"
+                className="object-cover object-top"
+              />
+            </div>
+            <div className="space-y-1.5 max-w-xl">
+              <span className="text-[9px] text-teal-800 font-bold uppercase tracking-wider border border-teal-500/30 bg-white/80 px-2.5 py-0.5 rounded-full inline-block">
+                Clinical Team & Co-Consultant
+              </span>
+              <h3 className="text-2xl font-bold text-[#1A2421]">Dr. Pooja Jethwani BHMS, PGDEMS</h3>
+              <p className="text-xs text-slate-700 font-semibold leading-relaxed">
+                Consulting homeopathic physician specializing in hormonal imbalances, women&apos;s health, pediatric homeopathy, and chronic conditions at Ramkrishna Homeopathic Consultancy.
+              </p>
+            </div>
           </div>
           <div className="flex gap-4 flex-shrink-0">
             <Magnetic>
