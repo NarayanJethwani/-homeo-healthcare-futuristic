@@ -73,23 +73,33 @@ export default function DoctorProfilePage() {
     <div className="pt-32 pb-24 px-6 relative">
       <div className="max-w-7xl mx-auto z-10 relative">
         
-        {/* Back to Homepage Button */}
-        <motion.div
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          className="mb-8"
-        >
+        {/* Navigation Top Line */}
+        <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <Magnetic>
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-mint/20 hover:border-mint/60 bg-mint/5 hover:bg-mint/10 text-mint-dark hover:text-[#0c6b5e] text-xs font-bold uppercase tracking-wider transition-all duration-300 backdrop-blur-md cursor-pointer"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                Back to Home
+              </Link>
+            </Magnetic>
+          </motion.div>
+
           <Magnetic>
             <Link
-              href="/"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-mint/20 hover:border-mint/60 bg-mint/5 hover:bg-mint/10 text-mint-dark hover:text-[#0c6b5e] text-xs font-bold uppercase tracking-wider transition-all duration-300 backdrop-blur-md cursor-pointer"
+              href="/dr-pooja-jethwani"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-teal-500/20 hover:border-teal-500/60 bg-teal-500/5 hover:bg-teal-500/10 text-teal-700 dark:text-teal-400 text-xs font-bold uppercase tracking-wider transition-all duration-300 backdrop-blur-md cursor-pointer"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              Back to Home
+              View Dr. Pooja Jethwani Profile <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </Magnetic>
-        </motion.div>
+        </div>
 
         {/* Profile Overview Section */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 mb-24 items-start">
@@ -250,8 +260,31 @@ export default function DoctorProfilePage() {
           </div>
         </div>
 
+        {/* Cross-Link Banner: Meet Dr. Pooja Jethwani */}
+        <div className="glass-panel border-teal-500/20 bg-gradient-to-r from-teal-50/80 via-white/80 to-emerald-50/80 rounded-[32px] p-8 md:p-12 mt-24 flex flex-col md:flex-row gap-8 items-center justify-between shadow-sm">
+          <div className="space-y-3 max-w-xl">
+            <span className="text-[9px] text-teal-800 font-bold uppercase tracking-wider border border-teal-500/30 bg-white/80 px-2.5 py-1 rounded-full inline-block">
+              Clinical Team & Co-Consultant
+            </span>
+            <h3 className="text-2xl font-bold text-[#1A2421]">Dr. Pooja Jethwani BHMS, PGDEMS</h3>
+            <p className="text-xs text-slate-700 font-semibold leading-relaxed">
+              Consulting homeopathic physician specializing in hormonal imbalances, women&apos;s health, pediatric homeopathy, and chronic conditions at Ramkrishna Homeopathic Consultancy.
+            </p>
+          </div>
+          <div className="flex gap-4 flex-shrink-0">
+            <Magnetic>
+              <Link
+                href="/dr-pooja-jethwani"
+                className="glass-panel border-teal-600/30 hover:border-teal-600 bg-teal-600 hover:bg-teal-700 text-white px-6 py-3.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 cursor-pointer shadow-md shadow-teal-600/10"
+              >
+                View Dr. Pooja Profile <ArrowRight className="w-4 h-4" />
+              </Link>
+            </Magnetic>
+          </div>
+        </div>
+
         {/* Practice Locations Summary Card */}
-        <div className="glass-panel border-white/60 bg-white/30 rounded-[32px] p-8 md:p-12 mt-24 flex flex-col md:flex-row gap-8 items-center justify-between">
+        <div className="glass-panel border-white/60 bg-white/30 rounded-[32px] p-8 md:p-12 mt-12 flex flex-col md:flex-row gap-8 items-center justify-between">
           <div className="space-y-3 max-w-xl">
             <span className="text-[9px] text-mint font-bold uppercase tracking-wider border border-mint/20 bg-white px-2 py-0.5 rounded-full">OPD Clinics</span>
             <h3 className="text-2xl font-bold text-[#1A2421]">Ramkrishna Homeopathic Consultancy</h3>

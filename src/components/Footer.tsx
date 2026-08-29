@@ -30,6 +30,7 @@ export default function Footer() {
       { name: "Conditions We Treat", href: "/services" },
       { name: "Clinical Protocol", href: "/evidence-based-homeopathy" },
       { name: "Dr. Narayan Jethwani", href: "/dr-narayan-jethwani" },
+      { name: "Dr. Pooja Jethwani", href: "/dr-pooja-jethwani" },
       { name: "Care Plans & Fees", href: "/store" },
     ],
     resources: [
