@@ -61,17 +61,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
 
   // New Case Registration fields
   const [newCaseName, setNewCaseName] = useState('');
-  const [newCaseAge, setNewCaseAge] = useState('');
-  const [newCaseGender, setNewCaseGender] = useState('Male');
   const [newCasePhone, setNewCasePhone] = useState('');
-  const [newCaseEmail, setNewCaseEmail] = useState('');
-  const [newCaseComplaint, setNewCaseComplaint] = useState('');
-  const [newCaseCareLevel, setNewCaseCareLevel] = useState('🌱 Focused Clinical Care');
-  const [newCaseBillingCycle, setNewCaseBillingCycle] = useState('Weekly');
-  const [newCasePrice, setNewCasePrice] = useState('');
-  const [newCaseDuration, setNewCaseDuration] = useState('2');
-  const [newCaseConditions, setNewCaseConditions] = useState('1');
-  const [newCaseConcession, setNewCaseConcession] = useState('None');
   const [isCreatingCase, setIsCreatingCase] = useState(false);
 
   // 1. Fetch live patients list from Firestore on mount
@@ -605,8 +595,8 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   // Submit case registration to intake endpoint
   const handleCreateNewCase = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newCaseName.trim() || !newCaseAge.trim() || !newCasePhone.trim() || !newCaseComplaint.trim()) {
-      alert("Please fill in Name, Age, Phone, and Chief Complaint.");
+    if (!newCaseName.trim()) {
+      alert("Please enter the patient's name.");
       return;
     }
     
@@ -617,23 +607,8 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: newCaseName.trim(),
-          age: Number(newCaseAge),
-          gender: newCaseGender,
           phone: newCasePhone.trim(),
-          email: newCaseEmail.trim() || "N/A",
-          city: "Pune",
-          state: "Maharashtra",
-          country: "India",
-          complaint: newCaseComplaint.trim(),
-          careLevel: newCaseCareLevel,
-          conditionsCount: Number(newCaseConditions) || 1,
-          durationText: `${newCaseDuration} Weeks`,
-          finalPrice: newCasePrice ? Number(newCasePrice) : (newCaseCareLevel.includes("Focused") ? 3000 : (newCaseCareLevel.includes("Complex") ? 36000 : (newCaseCareLevel.includes("Advanced Physician") ? 48000 : 24000))),
-          receivedAmount: newCasePrice ? Number(newCasePrice) : (newCaseCareLevel.includes("Focused") ? 3000 : (newCaseCareLevel.includes("Complex") ? 36000 : (newCaseCareLevel.includes("Advanced Physician") ? 48000 : 24000))),
-          remainingBalance: 0,
-          billingCycle: newCaseBillingCycle,
-          durationValue: Number(newCaseDuration) || 2,
-          concessionApplied: newCaseConcession
+          status: "pending_plan"
         })
       });
 
@@ -642,7 +617,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
         throw new Error(data.message || "Failed to register case");
       }
 
-      alert(`Case registered successfully with ID: ${data.patientId}.\nReal Google Sheet will be provisioned in the background.`);
+      alert(`Patient added successfully with ID: ${data.patientId}.\nCase details can be completed after the discussion.`);
       
       // Notify parent & switch selected patient
       if (onPatientChange) {
@@ -651,14 +626,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
       
       // Clear fields and collapse panel
       setNewCaseName('');
-      setNewCaseAge('');
       setNewCasePhone('');
-      setNewCaseEmail('');
-      setNewCaseComplaint('');
-      setNewCasePrice('');
-      setNewCaseDuration('2');
-      setNewCaseConditions('1');
-      setNewCaseConcession('None');
       setIsNewCaseOpen(false);
     } catch (err: any) {
       console.error("Case registration failed:", err);
@@ -1128,17 +1096,21 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
       {/* New Case Creation Form Panel (Collapsible) */}
       {isNewCaseOpen && (
         <form onSubmit={handleCreateNewCase} className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4 text-left animate-fadeIn">
-          <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+          <div className="border-b border-slate-100 pb-3 flex items-center justify-between gap-4">
             <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
               <Plus className="w-4 h-4 text-emerald-500" />
-              New Clinical Case Entry
+              Add New Patient
             </h3>
             <span className="text-[9px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
-              Workspace will be provisioned automatically
+              Details can be added later
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <p className="text-xs text-slate-500 font-medium">
+            Start with the patient&apos;s name. Mobile number is optional.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Full Name</label>
               <input
@@ -1152,144 +1124,16 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
             </div>
             
             <div className="space-y-1">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Age</label>
-              <input
-                type="number"
-                required
-                value={newCaseAge}
-                onChange={(e) => setNewCaseAge(e.target.value)}
-                placeholder="e.g. 45"
-                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold"
-              />
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Gender</label>
-              <select
-                value={newCaseGender}
-                onChange={(e) => setNewCaseGender(e.target.value)}
-                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold cursor-pointer"
-              >
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Phone Number</label>
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Mobile Number (Optional)</label>
               <input
                 type="tel"
-                required
                 value={newCasePhone}
                 onChange={(e) => setNewCasePhone(e.target.value)}
                 placeholder="e.g. 9876543210"
+                autoComplete="tel"
                 className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold"
               />
             </div>
-
-            <div className="space-y-1">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Email (Optional)</label>
-              <input
-                type="email"
-                value={newCaseEmail}
-                onChange={(e) => setNewCaseEmail(e.target.value)}
-                placeholder="e.g. john@example.com"
-                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold"
-              />
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Billing Cycle</label>
-              <select
-                value={newCaseBillingCycle}
-                onChange={(e) => setNewCaseBillingCycle(e.target.value)}
-                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold cursor-pointer"
-              >
-                <option value="Weekly">Weekly Settle</option>
-                <option value="Monthly">Monthly Settle</option>
-              </select>
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Care Level</label>
-              <select
-                value={newCaseCareLevel}
-                onChange={(e) => {
-                  setNewCaseCareLevel(e.target.value);
-                  setNewCaseDuration(e.target.value.includes("Acute") ? "2" : "6");
-                }}
-                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold cursor-pointer"
-              >
-                <option value="🌱 Focused Clinical Care">🌱 Focused Clinical Care — 1 week (₹3,000)</option>
-                <option value="⚡ Integrated Clinical Care">⚡ Integrated Clinical Care — 4 weeks (₹24,000)</option>
-                <option value="🎯 Complex Clinical Care">🎯 Complex Clinical Care — 4 weeks (₹36,000)</option>
-                <option value="🔮 Advanced Physician Care">🔮 Advanced Physician Care — 4 weeks (₹48,000)</option>
-                <option value="🚨 Priority Acute Support">🚨 Priority Acute Support add-on (+₹2,000/week)</option>
-                <option value="🫁 Case-Specific Clinical Support">🫁 Case-Specific Clinical Support (fee confirmed after assessment)</option>
-              </select>
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Custom Price Override (Optional)</label>
-              <input
-                type="number"
-                value={newCasePrice}
-                onChange={(e) => setNewCasePrice(e.target.value)}
-                placeholder="e.g. 5000"
-                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold"
-              />
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Duration (Weeks)</label>
-              <input
-                type="number"
-                required
-                value={newCaseDuration}
-                onChange={(e) => setNewCaseDuration(e.target.value)}
-                placeholder="e.g. 2 or 6"
-                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold"
-              />
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">No. of Conditions</label>
-              <input
-                type="number"
-                required
-                value={newCaseConditions}
-                onChange={(e) => setNewCaseConditions(e.target.value)}
-                placeholder="e.g. 1"
-                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold"
-              />
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Concession / Discount</label>
-              <select
-                value={newCaseConcession}
-                onChange={(e) => setNewCaseConcession(e.target.value)}
-                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold cursor-pointer"
-              >
-                <option value="None">No Concession</option>
-                <option value="Senior Citizen Concession (15%)">Senior Citizen Concession (15%)</option>
-                <option value="Socio-Economic Concession (30%)">Socio-Economic Concession (30%)</option>
-                <option value="Special Clinical Concession">Special Clinical Concession</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Chief Complaint Notes</label>
-            <textarea
-              required
-              rows={3}
-              value={newCaseComplaint}
-              onChange={(e) => setNewCaseComplaint(e.target.value)}
-              placeholder="Describe the main clinical complaints, remedy modalities, and pathology index..."
-              className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold resize-y"
-            />
           </div>
 
           <div className="flex justify-end gap-3 border-t border-slate-100 pt-3">
@@ -1306,7 +1150,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
               className="bg-slate-900 hover:bg-slate-800 text-white disabled:opacity-50 px-6 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5"
             >
               {isCreatingCase ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
-              Save & Register Case
+              Add Patient
             </button>
           </div>
         </form>
