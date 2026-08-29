@@ -4,10 +4,8 @@ import { headers } from "next/headers";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollProvider from "@/components/ScrollProvider";
-import CursorOrb from "@/components/CursorOrb";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import LucyButton from "@/components/LucyButton";
-import ClientCanvasWrapper from "@/components/ClientCanvasWrapper";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -135,12 +133,6 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col font-sans bg-pearl text-[#1A2421]">
         <ScrollProvider>
           <div className="relative min-h-screen w-full overflow-x-hidden flex flex-col justify-between">
-            {/* Dynamic Interactive WebGL Background */}
-            <ClientCanvasWrapper />
-
-            {/* Custom Physics Cursor & Ambient Glowing Orb */}
-            {!isPortal && <CursorOrb />}
-
             {/* Navigation Bar */}
             {!isPortal && <Navbar />}
 

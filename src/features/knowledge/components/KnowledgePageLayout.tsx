@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, Type, Eye } from "lucide-react";
-import AntigravityBackground from "@/components/AntigravityBackground";
 import ScrollSpyTOC from "./ScrollSpyTOC";
 import { PatientModeProvider } from "../context/PatientModeContext";
 import PatientModeToggle from "./PatientModeToggle";
@@ -117,11 +116,7 @@ export default function KnowledgePageLayout({
           }
         `}} />
 
-        {/* Background Layer */}
-        <div className="absolute inset-0 z-0 pointer-events-none opacity-40 print:hidden">
-          <AntigravityBackground />
-        </div>
-
+        {/* Page Container */}
         <div className="max-w-6xl mx-auto relative z-10">
           
           {/* Navigation & Actions Top Line */}

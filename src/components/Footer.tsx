@@ -236,14 +236,32 @@ export default function Footer() {
         </div>
 
         {/* Bottom copyright segment */}
-        <div className="border-t border-slate-900/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-[10px] text-slate-700 font-bold uppercase tracking-wider">
+        <div className="border-t border-slate-900/10 dark:border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-[10px] text-slate-700 dark:text-zinc-400 font-bold uppercase tracking-wider">
             &copy; {currentYear} Homeo Healthcare. All Rights Reserved.
           </p>
           
-          <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-700 uppercase tracking-widest bg-slate-900/5 px-3 py-1.5 rounded-full border border-slate-900/10">
-            <Sparkles className="w-3.5 h-3.5 text-mint animate-pulse" />
-            <span>Redesigned for Premium Clinical Precision</span>
+          <div className="flex items-center gap-3 flex-wrap">
+            {mounted && !isInstalled && (
+              <button
+                onClick={() => {
+                  if (isInstallable) {
+                    install();
+                  } else {
+                    setShowInstallModal(true);
+                  }
+                }}
+                className="inline-flex items-center gap-1.5 text-[10px] font-bold text-mint bg-mint/10 hover:bg-mint/20 border border-mint/30 px-3.5 py-1.5 rounded-full uppercase tracking-wider transition-all duration-300 cursor-pointer shadow-sm"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Install Web App</span>
+              </button>
+            )}
+
+            <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-700 dark:text-zinc-400 uppercase tracking-widest bg-slate-900/5 dark:bg-white/5 px-3 py-1.5 rounded-full border border-slate-900/10 dark:border-white/10">
+              <Sparkles className="w-3.5 h-3.5 text-mint animate-pulse" />
+              <span>Redesigned for Premium Clinical Precision</span>
+            </div>
           </div>
         </div>
 

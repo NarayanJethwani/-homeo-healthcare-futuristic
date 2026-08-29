@@ -297,20 +297,3 @@ describe("React Hydration & Timezone-Invariance Verification", () => {
   });
 });
 
-describe("Three.js Timer Static Assertions", () => {
-  it("should not use THREE.Clock and must use THREE.Timer in AntigravityBackground.tsx", async () => {
-    const fs = await import("fs");
-    const path = await import("path");
-    const filePath = path.join(__dirname, "../src/components/AntigravityBackground.tsx");
-    const content = fs.readFileSync(filePath, "utf8");
-
-    // Assert absence of new THREE.Clock() or THREE.Clock usage in background
-    expect(content).not.toContain("new THREE.Clock()");
-    expect(content).not.toContain("THREE.Clock");
-
-    // Assert presence of new THREE.Timer()
-    expect(content).toContain("new THREE.Timer()");
-    expect(content).toContain("timer.connect(");
-    expect(content).toContain("timer.dispose()");
-  });
-});
