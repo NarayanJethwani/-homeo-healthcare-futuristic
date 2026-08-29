@@ -941,6 +941,8 @@ export default function AdminDashboard() {
   const handleTriggerQuickAction = (actionKey: string) => {
     switch (actionKey) {
       case "new-patient":
+        setIsPlanningRegisteredPatient(false);
+        setPlanningPatientId("");
         setIsNewCaseModalOpen(true);
         break;
       case "ai-intake":
@@ -964,6 +966,8 @@ export default function AdminDashboard() {
         }
         break;
       case "emergency-case":
+        setIsPlanningRegisteredPatient(false);
+        setPlanningPatientId("");
         setIsNewCaseModalOpen(true);
         alert("Emergency Case registration initialized.");
         break;
@@ -5355,6 +5359,8 @@ export default function AdminDashboard() {
     }));
     setCaseCreationSuccess(false);
     setCaseCreationError("");
+    setIsPlanningRegisteredPatient(false);
+    setPlanningPatientId("");
     setNewCaseReturnPath(params.get("returnTo") === "patient-links" ? "/admin/patient-links" : "");
     setIsNewCaseModalOpen(true);
 
@@ -6334,6 +6340,11 @@ Homeo Healthcare`;
 
   const handleCreateCase = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!newCaseForm.name.trim()) {
+      setCaseCreationError("Please enter the patient's name.");
+      return;
+    }
+
     setIsCreatingCase(true);
     setCaseCreationError("");
     setCaseCreationSuccess(false);
@@ -6379,39 +6390,47 @@ Homeo Healthcare`;
             ? "Override"
             : (parseInt(newCaseForm.age) >= 60 ? "Senior 15%" : "None");
 
+      const quickRegistration = !isPlanningRegisteredPatient;
       const response = await fetch("/api/intake", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: isPlanningRegisteredPatient ? planningPatientId : undefined,
-          name: newCaseForm.name,
-          age: newCaseForm.age,
-          gender: newCaseForm.gender,
-          phone: newCaseForm.phone,
-          email: newCaseForm.email,
-          city: newCaseForm.city,
-          state: newCaseForm.state,
-          country: newCaseForm.country,
-          complaint: newCaseForm.complaint,
-          carePlanId: newCaseForm.carePlanId,
-          carePlanCatalogVersion: CARE_PLAN_CATALOG_VERSION,
-          careLevel: newCaseForm.careLevel,
-          conditionsCount: newCaseForm.conditionsCount,
-          durationText: newCaseForm.durationText,
-          finalPrice: newCaseForm.finalPrice,
-          receivedAmount: newCaseForm.receivedAmount,
-          remainingBalance: newCaseForm.remainingBalance,
-          assignedDoctor: session?.uid || "unassigned",
-          billingCycle: newCaseForm.billingCycle,
-          durationValue: CARE_PLAN_CATALOG[newCaseForm.carePlanId].family === "acute"
-            ? CARE_PLAN_CATALOG[newCaseForm.carePlanId].durationValue
-            : getDurationValue(newCaseForm.durationText),
-          durationUnit: CARE_PLAN_CATALOG[newCaseForm.carePlanId].durationUnit,
-          concessionApplied: concessionVal,
-          overridePrice: newCaseForm.finalPrice,
-          medicineAddons: 0,
-          status: "active"
-        }),
+        body: JSON.stringify(quickRegistration
+          ? {
+              name: newCaseForm.name.trim(),
+              phone: newCaseForm.phone.trim(),
+              assignedDoctor: session?.uid || "unassigned",
+              status: "pending_plan"
+            }
+          : {
+              id: planningPatientId,
+              name: newCaseForm.name.trim(),
+              age: newCaseForm.age,
+              gender: newCaseForm.gender,
+              phone: newCaseForm.phone.trim(),
+              email: newCaseForm.email,
+              city: newCaseForm.city,
+              state: newCaseForm.state,
+              country: newCaseForm.country,
+              complaint: newCaseForm.complaint,
+              carePlanId: newCaseForm.carePlanId,
+              carePlanCatalogVersion: CARE_PLAN_CATALOG_VERSION,
+              careLevel: newCaseForm.careLevel,
+              conditionsCount: newCaseForm.conditionsCount,
+              durationText: newCaseForm.durationText,
+              finalPrice: newCaseForm.finalPrice,
+              receivedAmount: newCaseForm.receivedAmount,
+              remainingBalance: newCaseForm.remainingBalance,
+              assignedDoctor: session?.uid || "unassigned",
+              billingCycle: newCaseForm.billingCycle,
+              durationValue: CARE_PLAN_CATALOG[newCaseForm.carePlanId].family === "acute"
+                ? CARE_PLAN_CATALOG[newCaseForm.carePlanId].durationValue
+                : getDurationValue(newCaseForm.durationText),
+              durationUnit: CARE_PLAN_CATALOG[newCaseForm.carePlanId].durationUnit,
+              concessionApplied: concessionVal,
+              overridePrice: newCaseForm.finalPrice,
+              medicineAddons: 0,
+              status: "active"
+            }),
         signal: controller.signal
       });
       clearTimeout(timeoutId);
@@ -6448,7 +6467,7 @@ Homeo Healthcare`;
             folderUrl: data.folderUrl,
             sheetUrl: data.sheetUrl || mockSheetUrl,
             assignedDoctor: session?.uid || "unassigned",
-            status: "active",
+            status: quickRegistration ? "pending_plan" : "active",
             createdAt: new Date().toISOString(),
             billingCycle: newCaseForm.billingCycle,
             concessionApplied: concessionVal,
@@ -6529,7 +6548,7 @@ Homeo Healthcare`;
         folderUrl,
         sheetUrl,
         assignedDoctor: session?.uid || "unassigned",
-        status: "active",
+        status: isPlanningRegisteredPatient ? "active" : "pending_plan",
         createdAt: new Date().toISOString(),
         billingCycle: newCaseForm.billingCycle,
         concessionApplied: concessionVal,
@@ -9347,7 +9366,7 @@ ${err.message || err}`);
                                 Pending
                               </span>
                             </div>
-                            
+
                             <div className="flex gap-2">
                               <button
                                 onClick={() => {
@@ -14467,6 +14486,8 @@ ${err.message || err}`);
                     onClick={() => {
                       setCaseCreationSuccess(false);
                       setCaseCreationError("");
+                      setIsPlanningRegisteredPatient(false);
+                      setPlanningPatientId("");
                       setNewCaseForm({
                         name: "",
                         age: "",
@@ -14588,13 +14609,21 @@ ${err.message || err}`);
                           )}
                         </div>
                         
-                        <p className="text-xs font-semibold text-slate-700">
-                          <strong>Profile:</strong> {patient.age} Y/O · {patient.gender} · {patient.location}
-                        </p>
-                        
-                        <p className="text-xs font-semibold text-slate-800 bg-[#FAF9F6] dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-900/5 dark:border-slate-800/40 leading-relaxed">
-                          <strong>Chief Complaint:</strong> {patient.complaint}
-                        </p>
+                        {patient.status === "pending_plan" ? (
+                          <p className="text-xs font-semibold text-amber-800 bg-amber-50 p-3.5 rounded-2xl border border-amber-100 leading-relaxed">
+                            Patient added. Demographics, consultation notes, and care plan will be completed after the discussion.
+                          </p>
+                        ) : (
+                          <>
+                            <p className="text-xs font-semibold text-slate-700">
+                              <strong>Profile:</strong> {patient.age} Y/O · {patient.gender} · {patient.location}
+                            </p>
+
+                            <p className="text-xs font-semibold text-slate-800 bg-[#FAF9F6] dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-900/5 dark:border-slate-800/40 leading-relaxed">
+                              <strong>Chief Complaint:</strong> {patient.complaint}
+                            </p>
+                          </>
+                        )}
                       </div>
 
                       {/* Staff & Assignment */}
@@ -28189,8 +28218,12 @@ Exported on: ${new Date().toLocaleDateString()}
                   <div className="flex items-center gap-2">
                     <Activity className="w-5 h-5 text-mint animate-pulse" />
                     <div>
-                      <h3 className="text-lg font-bold text-[#1A2421]">New Clinical Case Entry</h3>
-                      <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Demographics & Consultation Details</span>
+                      <h3 className="text-lg font-bold text-[#1A2421]">
+                        {isPlanningRegisteredPatient ? "Complete Case Details" : "Add New Patient"}
+                      </h3>
+                      <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">
+                        {isPlanningRegisteredPatient ? "Demographics & Consultation Details" : "Name required · mobile optional"}
+                      </span>
                     </div>
                   </div>
                   <button
@@ -28214,13 +28247,18 @@ Exported on: ${new Date().toLocaleDateString()}
                     </div>
                     
                     <div className="space-y-2">
-                      <h4 className="font-serif text-2xl font-bold text-[#1A2421]">Case Sync Complete</h4>
+                      <h4 className="font-serif text-2xl font-bold text-[#1A2421]">
+                        {isPlanningRegisteredPatient ? "Case Sync Complete" : "Patient Added"}
+                      </h4>
                       <p className="text-xs text-slate-700 font-semibold max-w-md mx-auto leading-relaxed">
-                        Google Workspace automation completed successfully. Patient files are generated and linked.
+                        {isPlanningRegisteredPatient
+                          ? "Google Workspace automation completed successfully. Patient files are generated and linked."
+                          : "The patient record is ready. Complete the remaining details after your discussion with the patient."}
                       </p>
                     </div>
 
                     {/* Google Service Links */}
+                    {isPlanningRegisteredPatient && (
                     <div className="glass-panel border-white/50 p-6 rounded-2xl max-w-md w-full mx-auto text-left space-y-3 shadow-sm bg-white/40">
                       <div className="flex items-center gap-1.5 text-xs text-[#0F766E] font-extrabold uppercase tracking-wider">
                         <Sparkles className="w-3.5 h-3.5" />
@@ -28249,6 +28287,7 @@ Exported on: ${new Date().toLocaleDateString()}
                         </a>
                       </div>
                     </div>
+                    )}
 
                     <div className="pt-4 flex justify-center gap-3">
                       {newCaseReturnPath ? (
@@ -28268,7 +28307,7 @@ Exported on: ${new Date().toLocaleDateString()}
                           }}
                           className="px-6 py-2.5 rounded-full bg-mint text-white text-xs font-bold uppercase tracking-wider hover:bg-mint-dark cursor-pointer transition-colors shadow-sm"
                         >
-                          Close & View Patient
+                          {isPlanningRegisteredPatient ? "Close & View Patient" : "Close"}
                         </button>
                       )}
                     </div>
@@ -28319,7 +28358,40 @@ Exported on: ${new Date().toLocaleDateString()}
 
                     {/* Scrollable Form Body */}
                     <div className="space-y-5 overflow-y-auto flex-grow min-h-0 pr-1 pb-2" data-lenis-prevent="true">
-
+                    {!isPlanningRegisteredPatient ? (
+                      <div className="space-y-5">
+                        <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                          Start the case with the patient&apos;s name. You can add the mobile number now or leave it blank and complete all other details after the consultation.
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-2">Patient Full Name</label>
+                            <input
+                              type="text"
+                              value={newCaseForm.name}
+                              onChange={(e) => setNewCaseForm({ ...newCaseForm, name: e.target.value })}
+                              placeholder="Patient's Full Name"
+                              autoComplete="name"
+                              className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-medium text-[#1A2421]"
+                              required
+                              autoFocus
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-2">Mobile Number (Optional)</label>
+                            <input
+                              type="tel"
+                              value={newCaseForm.phone}
+                              onChange={(e) => setNewCaseForm({ ...newCaseForm, phone: e.target.value })}
+                              placeholder="Mobile number"
+                              autoComplete="tel"
+                              className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-medium text-[#1A2421]"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                    <>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Name */}
                       <div>
@@ -28670,13 +28742,19 @@ Exported on: ${new Date().toLocaleDateString()}
                         required
                       />
                     </div>
+                    </>
+                    )}
                     </div>
 
                     {/* Bottom Actions */}
                     <div className="pt-4 border-t border-slate-900/5 flex justify-end gap-3 flex-shrink-0 mt-4">
                       <button
                         type="button"
-                        onClick={() => setIsNewCaseModalOpen(false)}
+                        onClick={() => {
+                          setIsNewCaseModalOpen(false);
+                          setIsPlanningRegisteredPatient(false);
+                          setPlanningPatientId("");
+                        }}
                         disabled={isCreatingCase}
                         className="px-6 py-2.5 rounded-full border border-slate-200 text-slate-700 text-xs font-bold uppercase tracking-wider hover:bg-slate-50 transition-colors disabled:opacity-50 cursor-pointer"
                       >
@@ -28691,12 +28769,12 @@ Exported on: ${new Date().toLocaleDateString()}
                         {isCreatingCase ? (
                           <>
                             <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                            <span>Creating Workspace...</span>
+                            <span>{isPlanningRegisteredPatient ? "Creating Workspace..." : "Adding Patient..."}</span>
                           </>
                         ) : (
                           <>
                             <Plus className="w-3.5 h-3.5" />
-                            <span>Create Patient Record</span>
+                            <span>{isPlanningRegisteredPatient ? "Complete Patient Record" : "Add Patient"}</span>
                           </>
                         )}
                       </button>

@@ -35,10 +35,10 @@ function isRateLimited(ip: string): boolean {
 // Zod validation schema for patient intake request body
 const intakeSchema = z.object({
   id: z.string().optional(),
-  name: z.string().min(1, "Name is required"),
-  age: z.union([z.string(), z.number()]).transform(val => String(val)),
-  gender: z.string().min(1, "Gender is required"),
-  phone: z.string().min(1, "Phone number is required"),
+  name: z.string().trim().min(1, "Name is required"),
+  age: z.union([z.string(), z.number()]).optional().default("").transform(val => String(val)),
+  gender: z.string().optional().default(""),
+  phone: z.string().trim().optional().default(""),
   email: z.string().email("Invalid email format").optional().or(z.literal("")),
   city: z.string().optional().default("N/A"),
   state: z.string().optional().default("N/A"),
@@ -64,6 +64,20 @@ const intakeSchema = z.object({
   slot: z.string().optional(),
   assignedDoctor: z.string().optional(),
   status: z.string().optional()
+}).superRefine((data, ctx) => {
+  if (data.status === "pending_plan") return;
+
+  const requiredForActiveCase = [
+    ["age", data.age, "Age is required"],
+    ["gender", data.gender, "Gender is required"],
+    ["phone", data.phone, "Phone number is required"]
+  ] as const;
+
+  for (const [field, value, message] of requiredForActiveCase) {
+    if (!String(value).trim()) {
+      ctx.addIssue({ code: "custom", path: [field], message });
+    }
+  }
 });
 
 export async function POST(request: Request) {
