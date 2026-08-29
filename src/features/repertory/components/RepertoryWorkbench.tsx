@@ -608,6 +608,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
         body: JSON.stringify({
           name: newCaseName.trim(),
           phone: newCasePhone.trim(),
+          provisionWorkspace: true,
           status: "pending_plan"
         })
       });
@@ -617,7 +618,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
         throw new Error(data.message || "Failed to register case");
       }
 
-      alert(`Patient added successfully with ID: ${data.patientId}.\nCase details can be completed after the discussion.`);
+      alert(`Patient added successfully with ID: ${data.patientId}.\nThe clinical sheet is ready, and case details can be completed after the discussion.`);
       
       // Notify parent & switch selected patient
       if (onPatientChange) {

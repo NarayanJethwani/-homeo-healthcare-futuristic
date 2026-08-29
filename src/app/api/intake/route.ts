@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb } from "@/lib/firebaseAdmin";
 import { 
   createPatientFolder, 
@@ -10,6 +10,7 @@ import {
 import { z } from "zod";
 import { mockPatientCache } from "@/lib/mockStore";
 import { CARE_PLAN_CATALOG_VERSION, calculateCarePlanTotal, formatCarePlanDuration, getCarePlan } from "@/lib/pricingConfig";
+import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
 
 // In-memory rate limiter: Map of IP -> timestamps of requests
 const ipLimiter = new Map<string, number[]>();
@@ -63,6 +64,7 @@ const intakeSchema = z.object({
   date: z.string().optional(),
   slot: z.string().optional(),
   assignedDoctor: z.string().optional(),
+  provisionWorkspace: z.boolean().optional().default(false),
   status: z.string().optional()
 }).superRefine((data, ctx) => {
   if (data.status === "pending_plan") return;
@@ -80,7 +82,7 @@ const intakeSchema = z.object({
   }
 });
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     // 1. Rate limiting
     const rawIp = request.headers.get("x-real-ip") || request.headers.get("x-forwarded-for");
@@ -172,6 +174,14 @@ export async function POST(request: Request) {
     }
 
     const validatedData = validationResult.data;
+    const workspaceSession = validatedData.provisionWorkspace
+      ? await requireAdminApiSession(request, ["admin", "doctor"])
+      : null;
+
+    if (validatedData.provisionWorkspace && !workspaceSession) {
+      return unauthorizedApiResponse("Doctor authentication is required to create a clinical workspace.");
+    }
+
     const selectedPlan = validatedData.carePlanId ? getCarePlan(validatedData.carePlanId) : undefined;
     const selectedDurationValue = selectedPlan?.family === "acute"
       ? selectedPlan.durationValue
@@ -243,9 +253,10 @@ export async function POST(request: Request) {
 
     let isMock = false;
 
-    // Only provision Google Workspace if the status is active (or anything other than pending_plan)
-    // AND if the patient doesn't already have a provisioned folder/sheet.
-    if (status !== "pending_plan" && (!folderUrl || !sheetUrl)) {
+    // Doctor-created quick registrations can provision the clinical workspace
+    // immediately while leaving demographics and care planning pending.
+    const shouldProvisionWorkspace = status !== "pending_plan" || validatedData.provisionWorkspace;
+    if (shouldProvisionWorkspace && (!folderUrl || !sheetUrl)) {
       const hasGoogleCredentials = !!process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
       
       if (hasGoogleCredentials) {
@@ -267,11 +278,13 @@ export async function POST(request: Request) {
             console.warn("Could not sync dynamically provisioned patient to Master Record Sheet:", mErr);
           }
 
-          // 4. Create Google Calendar event
-          try {
-            await addCalendarEvent(patientData);
-          } catch (calErr) {
-            console.warn("Could not create Google Calendar event:", calErr);
+          // 4. Create the calendar event only after the case details are completed.
+          if (status !== "pending_plan") {
+            try {
+              await addCalendarEvent(patientData);
+            } catch (calErr) {
+              console.warn("Could not create Google Calendar event:", calErr);
+            }
           }
         } catch (gpErr) {
           console.error("Failed to provision Google Drive files:", gpErr);
@@ -322,7 +335,7 @@ export async function POST(request: Request) {
       folderUrl,
       sheetId,
       sheetUrl,
-      assignedDoctor: body.assignedDoctor || "unassigned",
+      assignedDoctor: workspaceSession?.uid || validatedData.assignedDoctor || "unassigned",
       isMock,
       status,
       createdAt,
@@ -348,8 +361,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: status === "pending_plan" 
-        ? "Patient case registered successfully in Firestore. Clinical Sheet and Folder will be dynamically provisioned on first doctor access."
+      message: status === "pending_plan"
+        ? patientDoc.sheetUrl
+          ? "Patient case registered and clinical workspace provisioned successfully. Case planning remains pending."
+          : "Patient case registered successfully in Firestore. Clinical Sheet and Folder will be dynamically provisioned on first doctor access."
         : "Patient case registered and workspace provisioned successfully.",
       patientId: patientDoc.id,
       folderUrl: patientDoc.folderUrl,
