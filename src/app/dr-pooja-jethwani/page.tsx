@@ -17,8 +17,8 @@ export default function DrPoojaJethwaniPage() {
   const credentials = [
     { title: "BHMS (Homoeopathic Medicine & Surgery)", desc: "Comprehensive 5.5-year clinical degree with intensive hospital training." },
     { title: "PGDEMS (Emergency Medical Services)", desc: "Postgraduate clinical training in acute assessment and emergency triage." },
-    { title: "8+ Years Clinical Practice", desc: "Consulting physician at Ramkrishna Homeopathic Consultancy & Homeo Healthcare." },
-    { title: "2,000+ Patients Treated", desc: "Focused case management across hormonal, pediatric, and chronic conditions." },
+    { title: "15+ Years Clinical Practice", desc: "Consulting physician at Ramkrishna Homeopathic Consultancy & Homeo Healthcare." },
+    { title: "5,000+ Patients Treated", desc: "Focused case management across hormonal, pediatric, and chronic conditions." },
     { title: "Specialist in Women's Health & PCOS", desc: "Constitutional homeopathic protocols for hormonal, menstrual, and thyroid health." },
     { title: "Pediatric & Family Care", desc: "Gentle, non-invasive therapeutic approaches tailored for infants and children." }
   ];
@@ -75,8 +75,8 @@ export default function DrPoojaJethwaniPage() {
   ];
 
   const stats = [
-    { value: "8+", label: "Years Experience" },
-    { value: "2k+", label: "Patients Treated" },
+    { value: "15+", label: "Years Experience" },
+    { value: "5k+", label: "Patients Treated" },
     { value: "95%", label: "Satisfaction Rate" },
     { value: "100%", label: "Individualized Care" }
   ];
@@ -174,7 +174,7 @@ export default function DrPoojaJethwaniPage() {
                 className="text-xs font-bold text-mint uppercase tracking-widest mb-4 inline-flex items-center gap-1.5"
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-mint breathe" />
-                8+ Years Dedicated Clinical Practice
+                15+ Years Dedicated Clinical Practice
               </motion.div>
               
               <motion.h1
