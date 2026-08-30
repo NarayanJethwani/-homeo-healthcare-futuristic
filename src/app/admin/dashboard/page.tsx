@@ -1812,7 +1812,7 @@ export default function AdminDashboard() {
         const patientRef = doc(db, "patients", selectedPatientId);
         await updateDoc(patientRef, updatedFields);
       }
-      
+
       // Update local state in all cases
       const updatedPatient = {
         ...targetPatient,
@@ -3739,6 +3739,47 @@ export default function AdminDashboard() {
         const patientRef = doc(db, "patients", selectedPatientId);
         await updateDoc(patientRef, updatedFields);
       }
+
+      let sheetSyncWarning = "";
+      if (!isMockProject && targetPatient.sheetUrl) {
+        try {
+          const sheetResponse = await fetch(
+            `/api/admin/patients/${encodeURIComponent(selectedPatientId)}/treatment-plan-sheet`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                careLevel: recommendation.title,
+                billingCycle: "weekly",
+                durationValue: plannerSimulatorDecision.durationValue,
+                conditionsCount: plannerConditionsCount,
+                concessionApplied: updatedFields.concessionApplied,
+                overridePrice: plannerOverridePrice,
+                medicineAddons: calculatedPrices.addonsSum,
+                receivedAmount: plannerReceived,
+                finalPrice: calculatedPrices.finalPrice,
+                confirmedDate: new Date(plannerSimulatorDecision.confirmedAt).toLocaleDateString("en-IN"),
+                breakdown: {
+                  weeklyCareFee: calculatedPrices.basePrice,
+                  listCareTotal: calculatedPrices.listTotal,
+                  continuityDiscountTotal: calculatedPrices.discountAmount,
+                  caseSpecificSupportTotal: calculatedPrices.caseSpecificSupportTotal,
+                  assessmentAddonsTotal: 0,
+                  concessionTotal: calculatedPrices.concessionAmount,
+                  pharmacyTotal: calculatedPrices.addonsSum,
+                },
+              }),
+            },
+          );
+          const sheetResult = await sheetResponse.json();
+          if (!sheetResponse.ok || !sheetResult.success) {
+            sheetSyncWarning = sheetResult.message || "Clinical sheet synchronization is pending.";
+          }
+        } catch (sheetError) {
+          console.warn("Treatment plan saved, but sheet sync failed:", sheetError);
+          sheetSyncWarning = "Clinical sheet synchronization is pending.";
+        }
+      }
       
       setPatients(prev => prev.map(p => {
         if (p.id === selectedPatientId) {
@@ -3749,7 +3790,9 @@ export default function AdminDashboard() {
         }
         return p;
       }));
-      alert("Plan saved successfully to patient file!");
+      alert(sheetSyncWarning
+        ? `Plan saved to the patient file. ${sheetSyncWarning}`
+        : "Plan saved and synchronized with the patient’s Treatment Planner and Finance sheet.");
     } catch (err) {
       console.error("Failed to update patient billing plan in Firestore:", err);
       // Fallback local update

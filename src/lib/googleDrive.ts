@@ -1,11 +1,10 @@
 import { google } from "googleapis";
-import {
-  buildGoogleSheetsCarePeriodWeeksFormula,
-  buildGoogleSheetsCareRateFormula,
-  buildGoogleSheetsContinuityBenefitFormula,
-  getCareLevelDisplayNameWithIcon,
-} from "./pricingConfig";
 import { CLINIC_BRAND_NAME, CLINIC_LOGO_PUBLIC_URL } from "./clinicBranding";
+import {
+  buildClinicalSheetTreatmentPlanValues,
+  type ClinicalSheetPlanBreakdown,
+  type ClinicalSheetTreatmentPlanData,
+} from "./clinicalSheetTreatmentPlan";
 
 
 function getDoctorEmails(): string[] {
@@ -258,8 +257,52 @@ export interface PatientIntakeData {
   concessionApplied?: string;
   overridePrice?: number;
   medicineAddons?: number;
+  planConfirmed?: boolean;
+  planBreakdown?: ClinicalSheetPlanBreakdown;
   date?: string;
   slot?: string;
+}
+
+function toClinicalSheetTreatmentPlanData(data: PatientIntakeData): ClinicalSheetTreatmentPlanData {
+  return {
+    patientId: data.id,
+    patientName: data.name,
+    careLevel: data.careLevel,
+    billingCycle: data.billingCycle,
+    durationValue: data.durationValue,
+    conditionsCount: data.conditionsCount,
+    concessionApplied: data.concessionApplied,
+    overridePrice: data.overridePrice,
+    medicineAddons: data.medicineAddons,
+    receivedAmount: data.receivedAmount,
+    finalPrice: data.finalPrice,
+    planConfirmed: data.planConfirmed !== false,
+    confirmedDate: data.date,
+    breakdown: data.planBreakdown,
+  };
+}
+
+export async function syncTreatmentPlanToClinicalSheet(spreadsheetId: string, data: ClinicalSheetTreatmentPlanData): Promise<void> {
+  const auth = getGoogleAuth();
+  if (!auth || !spreadsheetId || spreadsheetId === "mock-sheet-id") return;
+
+  const sheets = google.sheets({ version: "v4", auth });
+  const values = buildClinicalSheetTreatmentPlanValues(data);
+  await sheets.spreadsheets.values.batchUpdate({
+    spreadsheetId,
+    requestBody: {
+      valueInputOption: "USER_ENTERED",
+      data: [
+        { range: "'Treatment Planner'!A4:G4", values: [values.plannerRow] },
+        { range: "'Treatment Planner'!A8:C15", values: values.breakdownRows },
+        { range: "'Treatment Planner'!B16", values: [[values.amountReceived]] },
+        { range: "'Treatment Planner'!A17:C17", values: [values.balanceRow] },
+        { range: "'Treatment Planner'!A19:B19", values: [values.summaryRow] },
+        { range: "'Finance'!A4:E4", values: [[values.financeSummary.billed, "", values.financeSummary.received, "", values.financeSummary.balance]] },
+        { range: "'Finance'!A9:H9", values: [values.financeRow] },
+      ],
+    },
+  });
 }
 
 /**
@@ -523,21 +566,7 @@ export async function createPatientClinicalSheet(
         try {
           const today = new Date().toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
 
-          // Normalize and map inputs to align with mock and premium options
-          const resolvedCareLevel = getCareLevelDisplayNameWithIcon(data.careLevel || "focused");
-
-          const rawCycle = data.billingCycle ? data.billingCycle.toLowerCase().trim() : "";
-          const resolvedBillingCycle = rawCycle === "weekly" ? "Weekly" : "Monthly";
-
-          const rawConcession = data.concessionApplied ? data.concessionApplied.toLowerCase().trim() : "";
-          let resolvedConcession = "None";
-          if (rawConcession.includes("senior")) {
-            resolvedConcession = "Senior 15%";
-          } else if (rawConcession.includes("socio") || rawConcession.includes("compassionate")) {
-            resolvedConcession = "Socio-Economic 30%";
-          } else if (rawConcession.includes("override") || rawConcession.includes("special")) {
-            resolvedConcession = "Special Clinical Concession";
-          }
+          const planSheetValues = buildClinicalSheetTreatmentPlanValues(toClinicalSheetTreatmentPlanData(data));
 
           await sheets.spreadsheets.values.batchUpdate({
             spreadsheetId: newSheetId,
@@ -555,7 +584,7 @@ export async function createPatientClinicalSheet(
                 {
                   range: "'Dashboard'!B9",
                   values: [
-                    [data.careLevel.toLowerCase().includes("acute") ? "Acute" : "Chronic"]
+                    [planSheetValues.hasPlan ? (data.careLevel.toLowerCase().includes("acute") ? "Acute" : "Chronic") : ""]
                   ]
                 },
                 {
@@ -579,46 +608,31 @@ export async function createPatientClinicalSheet(
                 },
                 {
                   range: "'Treatment Planner'!A4:G4",
-                  values: [
-                    [resolvedCareLevel, resolvedBillingCycle, data.durationValue || 1, data.conditionsCount || 1, resolvedConcession, data.overridePrice || 0, data.medicineAddons || 0]
-                  ]
+                  values: [planSheetValues.plannerRow]
                 },
                 {
                   range: "'Treatment Planner'!A8:C15",
-                  values: [
-                    ["Weekly Care Rate", buildGoogleSheetsCareRateFormula(), "Weekly rate from the synchronized care pathway"],
-                    ["Continuity Care Benefit", buildGoogleSheetsContinuityBenefitFormula(), "0% / 5% / 10% / 15% / 20% benefit for 1 / 2 / 4 / 8 / 12 weeks"],
-                    ["List Care Period Total", `=B8*${buildGoogleSheetsCarePeriodWeeksFormula()}`, "Weekly rate multiplied by the confirmed care period"],
-                    ["Physician Scope Review", 0, "Any physician-recommended scope change requires patient approval"],
-                    ["Assessment Add-ons", 0, "Records review or acute support is added only when selected"],
-                    ["Clinical Concession Amount", `=IF(ISNUMBER(SEARCH("Senior", E4)), (B10-B9)*0.15, IF(ISNUMBER(SEARCH("Socio", E4)), (B10-B9)*0.30, IF(OR(ISNUMBER(SEARCH("Override", E4)), ISNUMBER(SEARCH("Special", E4))), MAX(0, (B10-B9)-F4), 0)))`, "Additional approved concession after the continuity benefit"],
-                    ["Medicine Add-ons", "=G4", "Medicine charges and dynamic add-on scripts"],
-                    ["Total Program Cost", "=B10-B9+B11+B12-B13+B14", "Care-period total after continuity benefit, plus approved support and add-ons"]
-                  ]
+                  values: planSheetValues.breakdownRows
                 },
                 {
                   range: "'Treatment Planner'!B16",
-                  values: [
-                    [data.receivedAmount !== undefined ? data.receivedAmount : data.finalPrice]
-                  ]
+                  values: [[planSheetValues.amountReceived]]
                 },
                 {
                   range: "'Treatment Planner'!A17:C17",
-                  values: [
-                    ["Balance Due", "=B15-B16", "Outstanding dues for this treatment plan"]
-                  ]
+                  values: [planSheetValues.balanceRow]
                 },
                 {
                   range: "'Treatment Planner'!A19:B19",
-                  values: [
-                    ["WhatsApp Care Summary", `="Dear " & 'Case Taking'!B4 & ", thank you for consulting Homeo Healthcare. Your physician-confirmed care pathway is: " & A4 & " for " & C4 & " " & IF(B4="Weekly", IF(C4=1, "week", "weeks"), IF(C4=1, "month", "months")) & ". Continuity care benefit: ₹" & TEXT(B9, "#,##0") & IF(E4="None", "", " [" & E4 & "]") & ". Agreed Total: ₹" & TEXT(B15, "#,##0") & ". Balance Due: ₹" & TEXT(B17, "#,##0") & ". Clinic Branch: Homeo Healthcare."`]
-                  ]
+                  values: [planSheetValues.summaryRow]
+                },
+                {
+                  range: "'Finance'!A4:E4",
+                  values: [[planSheetValues.financeSummary.billed, "", planSheetValues.financeSummary.received, "", planSheetValues.financeSummary.balance]]
                 },
                 {
                   range: "'Finance'!A9:H9",
-                  values: [
-                    [today, `${resolvedCareLevel} - Initial Package Setup`, `Tx-Plan-${data.id}`, "='Treatment Planner'!B15", "='Treatment Planner'!B16", "=D9-E9", "UPI", `=IF(F9<=0, "PAID", IF(E9>0, "PARTIALLY PAID", "UNPAID"))`]
-                  ]
+                  values: [planSheetValues.financeRow]
                 },
                 {
                   range: "'Reports & Attachments'!D4:D5",
@@ -828,7 +842,7 @@ export async function createPatientClinicalSheet(
           ["Age / Gender", `${data.age} / ${data.gender}`, "", "Last Visit Date", "=IFERROR(MAX('Follow-Up Tracker'!A4:A), \"N/A\")", "", "Top Totality Remedy", "=INDEX('Repertorization'!B:B, MATCH(\"Rank 1\", 'Repertorization'!A:A, 0)) & \" (\" & INDEX('Repertorization'!D:D, MATCH(\"Rank 1\", 'Repertorization'!A:A, 0)) & \" pts)\""],
           ["Blood Group", "O+ Pos", "", "Next Review", "=IFERROR(INDEX('Follow-Up Tracker'!G:G, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"Not Scheduled\")", "", "Miasmatic Summary", "=IFERROR('AI Repertory Lab'!B4, \"Psora\")"],
           ["Clinic Branch", "Baner Clinic", "", "Consulting Doctor", "Dr. Narayan Jethwani", "", "Primary Doctor", "Dr. Narayan Jethwani"],
-          ["Patient Status", data.careLevel.toLowerCase().includes("acute") ? "Acute" : "Chronic", "", "Clinic Branch", "Baner Clinic, Pune", "", "Account Status", "=IF('Finance'!E4<=0, \"Paid\", \"Balance Pending\")"]
+          ["Patient Status", data.planConfirmed === false ? "" : (data.careLevel.toLowerCase().includes("acute") ? "Acute" : "Chronic"), "", "Clinic Branch", "Baner Clinic, Pune", "", "Account Status", "=IF('Finance'!E4=\"\", \"Plan Pending\", IF('Finance'!E4<=0, \"Paid\", \"Balance Pending\"))"]
         ];
 
         // values for Case Taking
@@ -975,43 +989,22 @@ export async function createPatientClinicalSheet(
           ["Rank 3", `=IF(D23>0, INDEX($E$3:$O$3, MATCH(D23, E18:O18, 0)), "N/A")`, "Score", "=IFERROR(LARGE(E18:O18, 3), 0)", "", "", "", "", "", "", "", "", "", "", "", ""]
         ];
 
-        // Normalize and map inputs to align with mock and premium options
-        const resolvedCareLevel = getCareLevelDisplayNameWithIcon(data.careLevel || "focused");
-
-        const rawCycle = data.billingCycle ? data.billingCycle.toLowerCase().trim() : "";
-        const resolvedBillingCycle = rawCycle === "weekly" ? "Weekly" : "Monthly";
-
-        const rawConcession = data.concessionApplied ? data.concessionApplied.toLowerCase().trim() : "";
-        let resolvedConcession = "None";
-        if (rawConcession.includes("senior")) {
-          resolvedConcession = "Senior 15%";
-        } else if (rawConcession.includes("socio") || rawConcession.includes("compassionate")) {
-          resolvedConcession = "Socio-Economic 30%";
-        } else if (rawConcession.includes("override") || rawConcession.includes("special")) {
-          resolvedConcession = "Special Clinical Concession";
-        }
+        const planSheetValues = buildClinicalSheetTreatmentPlanValues(toClinicalSheetTreatmentPlanData(data));
 
         // values for Treatment Planner (adjusted for exact row indices to prevent circular references)
         const plannerValues = [
           ["", "", "", "", "", "", ""],
           ["TREATMENT COMPLEXITY & FINANCIAL PLANNER", "", "", "", "", "", ""],
           ["Care Level", "Billing Cycle", "Duration Value", "Conditions Count", "Concession Applied", "Override Price (₹)", "Medicine Add-ons (₹)"],
-          [resolvedCareLevel, resolvedBillingCycle, data.durationValue || 1, data.conditionsCount || 1, resolvedConcession, data.overridePrice || 0, data.medicineAddons || 0],
+          planSheetValues.plannerRow,
           ["", "", "", "", "", "", ""],
           ["PRICING BREAKDOWN", "", "", "", "", "", ""],
           ["Component", "Rate / Amount (₹)", "Calculation Description", "", "", "", ""],
-          ["Weekly Care Rate", buildGoogleSheetsCareRateFormula(), "Weekly rate from the synchronized care pathway", "", "", "", ""],
-          ["Continuity Care Benefit", buildGoogleSheetsContinuityBenefitFormula(), "0% / 5% / 10% / 15% / 20% benefit for 1 / 2 / 4 / 8 / 12 weeks", "", "", "", ""],
-          ["List Care Period Total", `=B8*${buildGoogleSheetsCarePeriodWeeksFormula()}`, "Weekly rate multiplied by the confirmed care period", "", "", "", ""],
-          ["Physician Scope Review", 0, "Any physician-recommended scope change requires patient approval", "", "", "", ""],
-          ["Assessment Add-ons", 0, "Records review or acute support is added only when selected", "", "", "", ""],
-          ["Clinical Concession Amount", `=IF(ISNUMBER(SEARCH("Senior", E4)), (B10-B9)*0.15, IF(ISNUMBER(SEARCH("Socio", E4)), (B10-B9)*0.30, IF(OR(ISNUMBER(SEARCH("Override", E4)), ISNUMBER(SEARCH("Special", E4))), MAX(0, (B10-B9)-F4), 0)))`, "Additional approved concession after the continuity benefit", "", "", "", ""],
-          ["Medicine Add-ons", "=G4", "Medicine charges and dynamic add-on scripts", "", "", "", ""],
-          ["Total Program Cost", "=B10-B9+B11+B12-B13+B14", "Care-period total after continuity benefit, plus approved support and add-ons", "", "", "", ""],
-          ["Amount Received", data.receivedAmount !== undefined ? data.receivedAmount : data.finalPrice, "Amount collected from patient for this plan", "", "", "", ""],
-          ["Balance Due", "=B15-B16", "Outstanding dues for this treatment plan", "", "", "", ""],
+          ...planSheetValues.breakdownRows.map((row) => [...row, "", "", "", ""]),
+          ["Amount Received", planSheetValues.amountReceived, "Amount collected from patient for this plan", "", "", "", ""],
+          [...planSheetValues.balanceRow, "", "", "", ""],
           ["", "", "", "", "", "", ""],
-          ["WhatsApp Care Summary", `="Dear " & 'Case Taking'!B4 & ", thank you for consulting Homeo Healthcare. Your physician-confirmed care pathway is: " & A4 & " for " & C4 & " " & IF(B4="Weekly", IF(C4=1, "week", "weeks"), IF(C4=1, "month", "months")) & ". Continuity care benefit: ₹" & TEXT(B9, "#,##0") & IF(E4="None", "", " [" & E4 & "]") & ". Agreed Total: ₹" & TEXT(B15, "#,##0") & ". Balance Due: ₹" & TEXT(B17, "#,##0") & ". Clinic Branch: Homeo Healthcare."`, "", "", "", "", ""]
+          [...planSheetValues.summaryRow, "", "", "", "", ""]
         ];
 
         // values for Finance
@@ -1019,13 +1012,13 @@ export async function createPatientClinicalSheet(
           ["", "", "", "", "", "", "", ""],
           ["PATIENT FINANCIAL LEDGER & REVENUE HISTORY", "", "", "", "", "", "", ""],
           ["TOTAL AMOUNT BILLED", "", "TOTAL REVENUE COLLECTED", "", "OUTSTANDING BALANCE", "", "", ""],
-          ["=SUM(D9:D100)", "", "=SUM(E9:E100)", "", "=A4-C4", "", "", ""],
+          [planSheetValues.financeSummary.billed, "", planSheetValues.financeSummary.received, "", planSheetValues.financeSummary.balance, "", "", ""],
           ["INITIAL PLAN + SURCHARGES + ADD-ONS", "", "DIRECT PAYMENTS RECEIVED TILL DATE", "", "REMAINING RECEIVABLE AMOUNTS", "", "", ""],
           ["", "", "", "", "", "", "", ""],
           ["TRANSACTION HISTORY RECORD", "", "", "", "", "", "", ""],
           ["DATE", "DESCRIPTION / EVENT", "REFERENCE ID", "AMOUNT CHARGED", "AMOUNT RECEIVED", "OUTSTANDING BALANCE", "PAYMENT MODE", "STATUS"],
-          [today, `${data.careLevel} - Initial Package Setup`, "Tx-Plan-" + data.id, "='Treatment Planner'!B15", "='Treatment Planner'!B16", "=D9-E9", "UPI", `=IF(F9<=0, "PAID", IF(E9>0, "PARTIALLY PAID", "UNPAID"))`],
-          ["05-06-2026", "First Consultation Check-in", "FU-01", 0, 0, "=D10-E10", "N/A", "PAID"],
+          planSheetValues.financeRow,
+          ["", "", "", "", "", "", "", ""],
           ["", "", "", "", "", "", "", ""]
         ];
 
