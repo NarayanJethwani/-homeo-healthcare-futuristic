@@ -1720,6 +1720,7 @@ export default function AdminDashboard() {
   const [isEduLoading, setIsEduLoading] = useState(false);
 
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [deletingPatientId, setDeletingPatientId] = useState("");
   const [sheetOpeningMode, setSheetOpeningMode] = useState<"real" | "mock">("real");
 
   // Load sheet opening mode on mount
@@ -1811,7 +1812,7 @@ export default function AdminDashboard() {
         const patientRef = doc(db, "patients", selectedPatientId);
         await updateDoc(patientRef, updatedFields);
       }
-      
+
       // Update local state in all cases
       const updatedPatient = {
         ...targetPatient,
@@ -3738,6 +3739,47 @@ export default function AdminDashboard() {
         const patientRef = doc(db, "patients", selectedPatientId);
         await updateDoc(patientRef, updatedFields);
       }
+
+      let sheetSyncWarning = "";
+      if (!isMockProject && targetPatient.sheetUrl) {
+        try {
+          const sheetResponse = await fetch(
+            `/api/admin/patients/${encodeURIComponent(selectedPatientId)}/treatment-plan-sheet`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                careLevel: recommendation.title,
+                billingCycle: "weekly",
+                durationValue: plannerSimulatorDecision.durationValue,
+                conditionsCount: plannerConditionsCount,
+                concessionApplied: updatedFields.concessionApplied,
+                overridePrice: plannerOverridePrice,
+                medicineAddons: calculatedPrices.addonsSum,
+                receivedAmount: plannerReceived,
+                finalPrice: calculatedPrices.finalPrice,
+                confirmedDate: new Date(plannerSimulatorDecision.confirmedAt).toLocaleDateString("en-IN"),
+                breakdown: {
+                  weeklyCareFee: calculatedPrices.basePrice,
+                  listCareTotal: calculatedPrices.listTotal,
+                  continuityDiscountTotal: calculatedPrices.discountAmount,
+                  caseSpecificSupportTotal: calculatedPrices.caseSpecificSupportTotal,
+                  assessmentAddonsTotal: 0,
+                  concessionTotal: calculatedPrices.concessionAmount,
+                  pharmacyTotal: calculatedPrices.addonsSum,
+                },
+              }),
+            },
+          );
+          const sheetResult = await sheetResponse.json();
+          if (!sheetResponse.ok || !sheetResult.success) {
+            sheetSyncWarning = sheetResult.message || "Clinical sheet synchronization is pending.";
+          }
+        } catch (sheetError) {
+          console.warn("Treatment plan saved, but sheet sync failed:", sheetError);
+          sheetSyncWarning = "Clinical sheet synchronization is pending.";
+        }
+      }
       
       setPatients(prev => prev.map(p => {
         if (p.id === selectedPatientId) {
@@ -3748,7 +3790,9 @@ export default function AdminDashboard() {
         }
         return p;
       }));
-      alert("Plan saved successfully to patient file!");
+      alert(sheetSyncWarning
+        ? `Plan saved to the patient file. ${sheetSyncWarning}`
+        : "Plan saved and synchronized with the patient’s Treatment Planner and Finance sheet.");
     } catch (err) {
       console.error("Failed to update patient billing plan in Firestore:", err);
       // Fallback local update
@@ -6399,6 +6443,7 @@ Homeo Healthcare`;
               name: newCaseForm.name.trim(),
               phone: newCaseForm.phone.trim(),
               assignedDoctor: session?.uid || "unassigned",
+              provisionWorkspace: true,
               status: "pending_plan"
             }
           : {
@@ -6641,6 +6686,39 @@ Homeo Healthcare`;
     });
     
     setIsNewCaseModalOpen(true);
+  };
+
+  const handleDeletePendingPatient = async (patient: Patient) => {
+    const confirmation = window.prompt(
+      `Type "${patient.name}" to delete this pending patient from the portal. The Google clinical folder and sheet will be retained for recovery.`
+    );
+
+    if (confirmation === null) return;
+    if (confirmation.trim() !== patient.name.trim()) {
+      alert("Patient name did not match. Nothing was deleted.");
+      return;
+    }
+
+    setDeletingPatientId(patient.id);
+    try {
+      const response = await fetch(`/api/admin/patients/${encodeURIComponent(patient.id)}`, {
+        method: "DELETE"
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || data.error?.message || "Failed to delete patient record.");
+      }
+
+      setPatients((current) => current.filter((item) => item.id !== patient.id));
+      if (selectedPatientId === patient.id) setSelectedPatientId("");
+      if (timelinePatient?.id === patient.id) setTimelinePatient(null);
+      alert("Pending patient deleted. The Google clinical sheet and folder were retained for recovery.");
+    } catch (error: any) {
+      alert(error.message || "Failed to delete patient record.");
+    } finally {
+      setDeletingPatientId("");
+    }
   };
 
   const handleCSVImport = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -14687,7 +14765,7 @@ ${err.message || err}`);
                           <span>Timeline & Files</span>
                         </button>
 
-                        {patient.status === "pending_plan" ? (
+                        {patient.status === "pending_plan" && (
                           /* Plan Case Button for Registered Patients */
                           <button
                             onClick={() => handleStartPlanning(patient)}
@@ -14696,12 +14774,13 @@ ${err.message || err}`);
                             <Sparkles className="w-4 h-4" />
                             <span>Plan Case</span>
                           </button>
-                        ) : (
-                          <>
-                            {/* Google Folder Link */}
-                            <a
-                              href={patient.folderUrl}
-                              onClick={(e) => handleWorkspaceLinkClick(e, patient, "folder")}
+                        )}
+
+                        {/* Google Folder Link */}
+                        {(patient.status !== "pending_plan" || patient.folderUrl) && (
+                          <a
+                            href={patient.folderUrl}
+                            onClick={(e) => handleWorkspaceLinkClick(e, patient, "folder")}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-3 rounded-full border border-slate-200 hover:border-slate-800 text-slate-800 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm cursor-pointer"
@@ -14709,30 +14788,33 @@ ${err.message || err}`);
                           <Folder className="w-4 h-4 text-amber-500" />
                           <span>Patient Folder</span>
                           <ExternalLink className="w-3.5 h-3.5 opacity-60" />
-                        </a>
+                          </a>
+                        )}
 
                         {/* Google Clinical Sheet Link */}
-                        <a
-                          href={patient.sheetUrl}
-                          onClick={(e) => handleWorkspaceLinkClick(e, patient, "sheet")}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-3 rounded-full border border-slate-200 hover:border-slate-800 text-slate-800 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm cursor-pointer"
-                        >
-                          <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-                          <span>Clinical Sheet</span>
-                          <ExternalLink className="w-3.5 h-3.5 opacity-60" />
-                        </a>
+                        {(patient.status !== "pending_plan" || patient.sheetUrl) && (
+                          <a
+                            href={patient.sheetUrl}
+                            onClick={(e) => handleWorkspaceLinkClick(e, patient, "sheet")}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-3 rounded-full border border-slate-200 hover:border-slate-800 text-slate-800 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm cursor-pointer"
+                          >
+                            <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+                            <span>Clinical Sheet</span>
+                            <ExternalLink className="w-3.5 h-3.5 opacity-60" />
+                          </a>
+                        )}
 
                         {/* Invoicing & Billing Action */}
-                        <button
-                          onClick={() => openInvoiceModal(patient)}
-                          className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-3 rounded-full border border-slate-200 hover:border-[#0f766e] text-[#0f766e] hover:bg-[#0f766e]/5 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm cursor-pointer"
-                        >
-                          <Receipt className="w-4 h-4" />
-                          <span>Billing</span>
-                        </button>
-                          </>
+                        {patient.status !== "pending_plan" && (
+                          <button
+                            onClick={() => openInvoiceModal(patient)}
+                            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-3 rounded-full border border-slate-200 hover:border-[#0f766e] text-[#0f766e] hover:bg-[#0f766e]/5 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm cursor-pointer"
+                          >
+                            <Receipt className="w-4 h-4" />
+                            <span>Billing</span>
+                          </button>
                         )}
 
                         {/* Patient Portal Access Settings Button */}
@@ -14744,6 +14826,24 @@ ${err.message || err}`);
                           <Settings className="w-4 h-4 text-purple-550" />
                           <span>Portal</span>
                         </button>
+
+                        {patient.status === "pending_plan" &&
+                          (isSuperAdmin || patient.assignedDoctor === session?.uid) && (
+                          <button
+                            type="button"
+                            onClick={() => handleDeletePendingPatient(patient)}
+                            disabled={deletingPatientId === patient.id}
+                            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-3 rounded-full border border-rose-200 text-rose-700 hover:border-rose-500 hover:bg-rose-50 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Delete this pending patient record; Google clinical files will be retained"
+                          >
+                            {deletingPatientId === patient.id ? (
+                              <RefreshCw className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="w-4 h-4" />
+                            )}
+                            <span>{deletingPatientId === patient.id ? "Deleting..." : "Delete"}</span>
+                          </button>
+                        )}
 
                       </div>
                     </motion.div>
@@ -28253,12 +28353,12 @@ Exported on: ${new Date().toLocaleDateString()}
                       <p className="text-xs text-slate-700 font-semibold max-w-md mx-auto leading-relaxed">
                         {isPlanningRegisteredPatient
                           ? "Google Workspace automation completed successfully. Patient files are generated and linked."
-                          : "The patient record is ready. Complete the remaining details after your discussion with the patient."}
+                          : "The patient record and clinical sheet are ready. You can write in the sheet now and complete the remaining details after the discussion."}
                       </p>
                     </div>
 
                     {/* Google Service Links */}
-                    {isPlanningRegisteredPatient && (
+                    {(createdFolderUrl || createdSheetUrl) && (
                     <div className="glass-panel border-white/50 p-6 rounded-2xl max-w-md w-full mx-auto text-left space-y-3 shadow-sm bg-white/40">
                       <div className="flex items-center gap-1.5 text-xs text-[#0F766E] font-extrabold uppercase tracking-wider">
                         <Sparkles className="w-3.5 h-3.5" />
