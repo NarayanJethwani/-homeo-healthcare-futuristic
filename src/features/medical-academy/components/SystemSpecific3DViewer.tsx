@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnatomySystemId } from "../data/medicalAcademyData";
 import { resolveSystem3DAsset, SYSTEM_3D_REGISTRY } from "../render/system3DRegistry";
 import { SYSTEM_DETAILED_KNOWLEDGE } from "../data/systemDetailedKnowledgeData";
@@ -76,15 +77,26 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
     setIsFullscreen(!isFullscreen);
   };
 
-  return (
+  useEffect(() => {
+    if (!isFullscreen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isFullscreen]);
+
+  const viewer = (
     <div className={`flex flex-col w-full space-y-3 transition-all ${
       isFullscreen 
-        ? "fixed inset-0 z-50 bg-slate-950 p-4 sm:p-6 overflow-hidden h-screen" 
+        ? "fixed inset-0 z-50 h-dvh overflow-hidden bg-slate-950 p-4 sm:p-6"
         : "h-full"
     }`}>
       {/* 1. Header Bar: System identity & Quick status */}
-      <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-2xl border border-slate-200 bg-white/95 px-4 py-3 shadow-xs dark:border-slate-800 dark:bg-slate-900/90 backdrop-blur">
-        <div className="flex items-center gap-3 min-w-0">
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2.5 rounded-2xl border border-slate-200 bg-white/95 px-4 py-3 shadow-xs backdrop-blur dark:border-slate-800 dark:bg-slate-900/90">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
           <span 
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-base shadow-xs"
             style={{ backgroundColor: `${config.accentColor}20`, color: config.accentColor }}
@@ -92,12 +104,12 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
             {activeSubOrgan?.icon || "🔬"}
           </span>
           <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <h3 className="truncate text-sm font-bold tracking-tight text-slate-950 dark:text-white sm:text-base">
+            <div className={`flex min-w-0 ${isFullscreen ? "flex-wrap items-center gap-2" : "flex-col items-start gap-1"}`}>
+              <h3 className="text-sm font-bold leading-tight tracking-tight text-slate-950 dark:text-white sm:text-base">
                 {config.name}
               </h3>
               <span 
-                className="hidden sm:inline-block rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider border"
+                className="inline-block rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider"
                 style={{ 
                   backgroundColor: `${config.accentColor}15`, 
                   color: config.accentColor,
@@ -208,7 +220,7 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
 
       {/* 2. Sub-Organ Quick Focus Bar */}
       <div
-        className="flex flex-wrap items-center gap-2 px-1 pb-1"
+        className="flex shrink-0 flex-wrap items-center gap-2 px-1 pb-1"
         aria-label={`${config.name} focus controls`}
       >
         <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400 dark:text-slate-500 shrink-0">
@@ -237,8 +249,8 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
       </div>
 
       {/* 3. Native WebGL development preview canvas */}
-      <div className={`relative w-full overflow-hidden rounded-3xl border border-slate-300/80 bg-slate-950 shadow-inner dark:border-slate-800 flex-1 ${
-        isFullscreen ? "h-[calc(100vh-140px)] min-h-[500px]" : "min-h-[580px] lg:min-h-[640px]"
+      <div className={`relative w-full overflow-hidden rounded-3xl border border-slate-300/80 bg-slate-950 shadow-inner dark:border-slate-800 ${
+        isFullscreen ? "min-h-0 flex-1" : "min-h-[520px] lg:min-h-[600px]"
       }`}>
         <NativeSystem3DCanvas
           systemId={systemId}
@@ -305,41 +317,51 @@ export const SystemSpecific3DViewer: React.FC<SystemSpecific3DViewerProps> = ({
           </div>
         )}
 
-        {/* Bottom Sub-Organ Micro-Informer Card */}
-        {showAnatomyInfo && activeSubOrgan && (
-          <div className="absolute bottom-4 left-4 right-4 z-20 rounded-2xl border border-slate-700/80 bg-slate-900/95 p-3.5 shadow-2xl backdrop-blur text-white transition-all">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-              <div className="flex items-start gap-3">
-                <span className="text-2xl mt-0.5">{activeSubOrgan.icon}</span>
-                <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h4 className="text-sm font-bold text-white">
-                      {activeSubOrgan.name}
-                    </h4>
-                    <span className="text-[10px] text-slate-400 font-mono">
-                      📍 {activeSubOrgan.focusHint}
-                    </span>
-                  </div>
-                  <p className="mt-1 text-xs text-slate-300 leading-relaxed max-w-2xl">
-                    {activeSubOrgan.description}
-                  </p>
+      </div>
+
+      {/* Selected anatomy details stay outside the render surface so they never obscure anatomy. */}
+      {showAnatomyInfo && activeSubOrgan && activeSubOrganId && (
+        <section
+          aria-label={`${activeSubOrgan.name} anatomy information`}
+          className={`shrink-0 rounded-2xl border border-slate-700/80 bg-slate-900 p-3.5 text-white shadow-xl ${
+            isFullscreen ? "max-h-[24dvh] overflow-y-auto" : ""
+          }`}
+        >
+          <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(260px,0.9fr)] lg:items-center">
+            <div className="flex min-w-0 items-start gap-3">
+              <span className="mt-0.5 text-2xl">{activeSubOrgan.icon}</span>
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h4 className="text-sm font-bold text-white">{activeSubOrgan.name}</h4>
+                  <span className="text-[10px] font-mono text-slate-400">
+                    📍 {activeSubOrgan.focusHint}
+                  </span>
+                </div>
+                <p className="mt-1 max-w-2xl text-xs leading-relaxed text-slate-300">
+                  {activeSubOrgan.description}
+                </p>
+              </div>
+            </div>
+
+            {activeStructureDetail && (
+              <div className="grid min-w-0 gap-1 border-t border-slate-800 pt-3 text-[11px] lg:border-l lg:border-t-0 lg:pl-4 lg:pt-0">
+                <div className="text-slate-400">
+                  <span className="font-semibold text-teal-400">Vascular:</span>{" "}
+                  {activeStructureDetail.vascularSupply.split(";")[0]}
+                </div>
+                <div className="text-slate-400">
+                  <span className="font-semibold text-teal-400">Innervation:</span>{" "}
+                  {activeStructureDetail.innervation.split(";")[0]}
                 </div>
               </div>
-
-              {activeStructureDetail && (
-                <div className="flex shrink-0 flex-col gap-1 border-t border-slate-800 pt-2 md:border-t-0 md:border-l md:pl-4 md:pt-0 text-[11px]">
-                  <div className="text-slate-400">
-                    <span className="font-semibold text-teal-400">Vascular:</span> {activeStructureDetail.vascularSupply.split(";")[0]}
-                  </div>
-                  <div className="text-slate-400">
-                    <span className="font-semibold text-teal-400">Innervation:</span> {activeStructureDetail.innervation.split(";")[0]}
-                  </div>
-                </div>
-              )}
-            </div>
+            )}
           </div>
-        )}
-      </div>
+        </section>
+      )}
     </div>
   );
+
+  // The portal escapes dashboard effects such as filter/transform that would
+  // otherwise turn a fixed viewer into a scrolled, column-sized overlay.
+  return isFullscreen ? createPortal(viewer, document.body) : viewer;
 };

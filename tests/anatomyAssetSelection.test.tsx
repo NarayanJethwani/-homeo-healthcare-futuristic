@@ -7,6 +7,7 @@ import {
   SYSTEM_3D_REGISTRY,
 } from "../src/features/medical-academy/render/system3DRegistry";
 import { AnatomyMaterialPipeline } from "../src/features/medical-academy/render/native/AnatomyMaterialPipeline";
+import { AnatomyCameraController } from "../src/features/medical-academy/render/native/AnatomyCameraController";
 import { normalizeAnatomyScene } from "../src/features/medical-academy/render/native/GLBAnatomyModelLoader";
 import * as THREE from "three";
 
@@ -59,6 +60,110 @@ describe("GLB anatomy scene normalization", () => {
     expect(superiorWorldPosition.y).toBeGreaterThan(inferiorWorldPosition.y);
     expect(anteriorWorldPosition.z).toBeGreaterThan(posteriorWorldPosition.z);
     expect(boundingSphere.center.length()).toBeLessThan(0.00001);
+  });
+});
+
+describe("responsive anatomy camera framing", () => {
+  const createControls = () => ({
+    target: new THREE.Vector3(),
+    minDistance: 0,
+    maxDistance: 0,
+    update: () => undefined,
+  }) as unknown as ConstructorParameters<typeof AnatomyCameraController>[1];
+
+  it("recalculates scene distance when fullscreen changes the viewport aspect", () => {
+    const camera = new THREE.PerspectiveCamera(40, 0.5, 0.1, 100);
+    const controls = createControls();
+    const controller = new AnatomyCameraController(camera, controls);
+    const bounds = new THREE.Sphere(new THREE.Vector3(0.4, 0.8, 0), 1.5);
+
+    controller.frameScene(bounds);
+    const narrowDistance = camera.position.z;
+
+    camera.aspect = 2;
+    camera.updateProjectionMatrix();
+    controller.reframeCurrent(true);
+
+    expect(camera.position.z).toBeLessThan(narrowDistance);
+    expect(camera.position.x).toBeCloseTo(bounds.center.x);
+    expect(camera.position.y).toBeCloseTo(bounds.center.y);
+    expect(controls.target.distanceTo(bounds.center)).toBeLessThan(0.00001);
+  });
+
+  it("centers a selected small organ using its own world bounds", () => {
+    const camera = new THREE.PerspectiveCamera(40, 1.6, 0.1, 100);
+    const controls = createControls();
+    const controller = new AnatomyCameraController(camera, controls);
+    const organ = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.2, 0.3));
+    organ.position.set(-1.2, 0.7, 0.1);
+    organ.updateMatrixWorld(true);
+
+    controller.focusOnObject(organ);
+    controller.reframeCurrent(true);
+
+    expect(controls.target.x).toBeCloseTo(-1.2);
+    expect(controls.target.y).toBeCloseTo(0.7);
+    expect(camera.position.x).toBeCloseTo(-1.2);
+    expect(camera.position.y).toBeCloseTo(0.7);
+    expect(camera.position.z).toBeGreaterThan(0.1);
+    expect(camera.position.z).toBeLessThan(2);
+  });
+});
+
+describe("anatomy viewer presentation", () => {
+  const viewer = readFileSync(
+    path.join(process.cwd(), "src/features/medical-academy/components/SystemSpecific3DViewer.tsx"),
+    "utf8",
+  );
+  const canvas = readFileSync(
+    path.join(process.cwd(), "src/features/medical-academy/render/native/NativeSystem3DCanvas.tsx"),
+    "utf8",
+  );
+
+  it("keeps information outside the organ render surface", () => {
+    expect(viewer).toContain("Selected anatomy details stay outside the render surface");
+    expect(viewer).not.toContain("absolute bottom-4 left-4 right-4");
+    expect(viewer).toContain("min-h-0 flex-1");
+    expect(viewer).toContain("createPortal(viewer, document.body)");
+    expect(viewer).toContain('document.body.style.overflow = "hidden"');
+  });
+
+  it("observes container resizing, reapplies selected bounds, and reports loading progress", () => {
+    expect(canvas).toContain("new ResizeObserver(handleResize)");
+    expect(canvas).toContain("rendererRef.current.setSize(w, h)");
+    expect(canvas).not.toContain("rendererRef.current.setSize(w, h, false)");
+    expect(canvas).toContain("cameraControllerRef.current?.reframeCurrent(true)");
+    expect(canvas).toContain("frameAnatomySelection(");
+    expect(canvas).toContain("cameraController.reframeCurrent(true)");
+    expect(canvas).toContain("setLoadProgress(progress)");
+    expect(canvas).toContain("Loading source geometry");
+  });
+});
+
+describe("anatomy focus isolation", () => {
+  it("keeps the selected organ visible and removes obstructing context", () => {
+    const root = new THREE.Group();
+    const selected = new THREE.Mesh(
+      new THREE.BoxGeometry(1, 1, 1),
+      new THREE.MeshStandardMaterial(),
+    );
+    selected.userData.structureId = "adrenal_gland_left";
+    const context = new THREE.Mesh(
+      new THREE.BoxGeometry(1, 1, 1),
+      new THREE.MeshStandardMaterial(),
+    );
+    context.userData.structureId = "pancreas_endocrine";
+    root.add(selected, context);
+
+    const pipeline = new AnatomyMaterialPipeline();
+    pipeline.applyMedicalShading(root, "#EAB308", "adrenal_gland_left", false, true);
+
+    expect(selected.visible).toBe(true);
+    expect(context.visible).toBe(false);
+
+    pipeline.applyMedicalShading(root, "#EAB308", null, false, true);
+    expect(selected.visible).toBe(true);
+    expect(context.visible).toBe(true);
   });
 });
 

@@ -12,6 +12,9 @@ export class AnatomyCameraController {
   private controls: OrbitControls;
   private targetPosition: THREE.Vector3;
   private targetLookAt: THREE.Vector3;
+  private framedSphere: THREE.Sphere | null = null;
+  private framePadding = 1.35;
+  private frameMinimumDistance = 1.1;
 
   constructor(camera: THREE.PerspectiveCamera, controls: OrbitControls) {
     this.camera = camera;
@@ -24,24 +27,8 @@ export class AnatomyCameraController {
    * Frame the entire anatomical scene with balanced padding
    */
   public frameScene(boundingSphere: THREE.Sphere) {
-    const radius = boundingSphere.radius || 2.0;
-    const fov = (this.camera.fov * Math.PI) / 180;
-    
-    // Compute distance to fit sphere with 35% margin
-    const distance = (radius / Math.sin(fov / 2)) * 1.35;
-
-    this.targetPosition.set(
-      boundingSphere.center.x,
-      boundingSphere.center.y,
-      boundingSphere.center.z + distance
-    );
-    this.targetLookAt.copy(boundingSphere.center);
-
-    this.camera.position.copy(this.targetPosition);
-    this.controls.target.copy(this.targetLookAt);
-    this.controls.minDistance = radius * 0.8;
-    this.controls.maxDistance = distance * 2.5;
-    this.controls.update();
+    this.rememberFrame(boundingSphere, 1.35, Math.max(boundingSphere.radius * 0.8, 1.1));
+    this.applyRememberedFrame(true);
   }
 
   /**
@@ -62,24 +49,60 @@ export class AnatomyCameraController {
   private focusOnBox(box: THREE.Box3) {
     const sphere = new THREE.Sphere();
     box.getBoundingSphere(sphere);
+    if (sphere.isEmpty()) return;
 
-    const fov = (this.camera.fov * Math.PI) / 180;
-    const distance = Math.max(sphere.radius / Math.sin(fov / 2) * 1.4, 3.5);
+    // A selected gland or vessel should fill the viewport without the former
+    // 3.5-unit floor making small structures appear lost in empty space.
+    this.rememberFrame(sphere, 1.25, 1.1);
+    this.applyRememberedFrame(false);
+  }
 
-    this.targetPosition.set(
-      sphere.center.x,
-      sphere.center.y,
-      sphere.center.z + distance
-    );
-    this.targetLookAt.copy(sphere.center);
+  /** Recalculate the current frame after its container changes shape. */
+  public reframeCurrent(immediate = true) {
+    this.applyRememberedFrame(immediate);
   }
 
   /**
    * Reset to default scene framing
    */
   public reset(defaultDistance: number = 7.0) {
+    this.framedSphere = null;
     this.targetPosition.set(0, 0, defaultDistance);
     this.targetLookAt.set(0, 0, 0);
+  }
+
+  private rememberFrame(sphere: THREE.Sphere, padding: number, minimumDistance: number) {
+    this.framedSphere = sphere.clone();
+    this.framePadding = padding;
+    this.frameMinimumDistance = minimumDistance;
+  }
+
+  private applyRememberedFrame(immediate: boolean) {
+    if (!this.framedSphere) return;
+
+    const radius = Math.max(this.framedSphere.radius, 0.01);
+    const verticalFov = THREE.MathUtils.degToRad(this.camera.fov);
+    const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * Math.max(this.camera.aspect, 0.01));
+    const limitingFov = Math.min(verticalFov, horizontalFov);
+    const distance = Math.max(
+      (radius / Math.sin(limitingFov / 2)) * this.framePadding,
+      this.frameMinimumDistance
+    );
+
+    this.targetPosition.set(
+      this.framedSphere.center.x,
+      this.framedSphere.center.y,
+      this.framedSphere.center.z + distance
+    );
+    this.targetLookAt.copy(this.framedSphere.center);
+    this.controls.minDistance = Math.max(radius * 0.45, 0.25);
+    this.controls.maxDistance = Math.max(distance * 4, 4);
+
+    if (immediate) {
+      this.camera.position.copy(this.targetPosition);
+      this.controls.target.copy(this.targetLookAt);
+      this.controls.update();
+    }
   }
 
   /**
