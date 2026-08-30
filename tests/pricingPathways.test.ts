@@ -14,6 +14,7 @@ import {
   buildGoogleSheetsContinuityBenefitFormula,
   toPublicCarePathway,
 } from "../src/lib/pricingConfig";
+import { buildClinicalSheetTreatmentPlanValues } from "../src/lib/clinicalSheetTreatmentPlan";
 
 function runPricingPathwayTests() {
   assert.deepStrictEqual(PUBLIC_CARE_LEVEL_KEYS, ["mild", "chronic_focused", "moderate", "focused"]);
@@ -125,6 +126,43 @@ function runPricingPathwayTests() {
   assert.match(sheetsBenefitFormula, /=4, 10%/);
   assert.match(sheetsBenefitFormula, /=8, 15%/);
   assert.match(sheetsBenefitFormula, /=12, 20%/);
+
+  const pendingSheet = buildClinicalSheetTreatmentPlanValues({
+    patientId: "P-PENDING",
+    patientName: "Pending Patient",
+    planConfirmed: false,
+  });
+  assert.deepStrictEqual(pendingSheet.plannerRow, ["", "", "", "", "", "", ""]);
+  assert.deepStrictEqual(pendingSheet.financeRow, ["", "", "", "", "", "", "", ""]);
+  assert.strictEqual(pendingSheet.amountReceived, "");
+  assert.match(String(pendingSheet.breakdownRows[0][1]), /IF\(A4="",""/);
+
+  const confirmedSheet = buildClinicalSheetTreatmentPlanValues({
+    patientId: "P-CONFIRMED",
+    patientName: "Confirmed Patient",
+    careLevel: "Integrated Clinical Care",
+    billingCycle: "weekly",
+    durationValue: 4,
+    conditionsCount: 2,
+    concessionApplied: "None",
+    medicineAddons: 500,
+    receivedAmount: 5_000,
+    finalPrice: 22_100,
+    planConfirmed: true,
+    breakdown: {
+      weeklyCareFee: 6_000,
+      listCareTotal: 24_000,
+      continuityDiscountTotal: 2_400,
+      caseSpecificSupportTotal: 0,
+      concessionTotal: 0,
+      pharmacyTotal: 500,
+    },
+  });
+  assert.strictEqual(confirmedSheet.hasPlan, true);
+  assert.match(String(confirmedSheet.plannerRow[0]), /Integrated Clinical Care/);
+  assert.strictEqual(confirmedSheet.breakdownRows[7][1], 22_100);
+  assert.strictEqual(confirmedSheet.financeRow[3], "='Treatment Planner'!B15");
+  assert.strictEqual(confirmedSheet.financeRow[4], "='Treatment Planner'!B16");
 
   console.log("✅ Pricing pathway tests passed");
 }

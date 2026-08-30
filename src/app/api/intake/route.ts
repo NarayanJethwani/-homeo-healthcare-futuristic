@@ -5,6 +5,7 @@ import {
   createPatientClinicalSheet, 
   appendPatientToMasterRecord,
   addCalendarEvent,
+  syncTreatmentPlanToClinicalSheet,
   PatientIntakeData 
 } from "@/lib/googleDrive";
 import { z } from "zod";
@@ -182,6 +183,7 @@ export async function POST(request: NextRequest) {
       return unauthorizedApiResponse("Doctor authentication is required to create a clinical workspace.");
     }
 
+    const hasConfirmedPlan = validatedData.status !== "pending_plan";
     const selectedPlan = validatedData.carePlanId ? getCarePlan(validatedData.carePlanId) : undefined;
     const selectedDurationValue = selectedPlan?.family === "acute"
       ? selectedPlan.durationValue
@@ -202,12 +204,12 @@ export async function POST(request: NextRequest) {
       state: validatedData.state,
       country: validatedData.country,
       complaint: validatedData.complaint || "No chief complaint recorded",
-      careLevel: selectedPlan?.title || validatedData.careLevel,
-      conditionsCount: validatedData.conditionsCount,
-      durationText: selectedPlan
+      careLevel: hasConfirmedPlan ? (selectedPlan?.title || validatedData.careLevel) : "",
+      conditionsCount: hasConfirmedPlan ? validatedData.conditionsCount : 0,
+      durationText: hasConfirmedPlan && selectedPlan
         ? `${formatCarePlanDuration({ durationValue: selectedDurationValue || selectedPlan.durationValue, durationUnit: selectedPlan.durationUnit })} Care Period`
-        : validatedData.durationText,
-      finalPrice: body.status === "pending_plan" && !selectedPlan ? 0 : validatedData.finalPrice,
+        : hasConfirmedPlan ? validatedData.durationText : "",
+      finalPrice: hasConfirmedPlan ? validatedData.finalPrice : 0,
       deliveryMode: validatedData.deliveryMode,
       address: validatedData.address,
       receivedAmount: validatedData.receivedAmount,
@@ -217,6 +219,7 @@ export async function POST(request: NextRequest) {
       concessionApplied: validatedData.concessionApplied,
       overridePrice: validatedData.overridePrice,
       medicineAddons: validatedData.medicineAddons,
+      planConfirmed: hasConfirmedPlan,
       date: validatedData.date,
       slot: validatedData.slot
     };
@@ -227,7 +230,7 @@ export async function POST(request: NextRequest) {
     let folderUrl = "";
     let sheetId = "";
     let sheetUrl = "";
-    let status = body.status || "active";
+    let status = validatedData.status || "active";
     let createdAt = new Date().toISOString();
 
     let isFirebaseConfigured = false;
@@ -243,7 +246,7 @@ export async function POST(request: NextRequest) {
           folderUrl = existingData.folderUrl || "";
           sheetId = existingData.sheetId || "";
           sheetUrl = existingData.sheetUrl || "";
-          status = body.status || existingData.status || "active";
+          status = validatedData.status || existingData.status || "active";
           createdAt = existingData.createdAt || new Date().toISOString();
         }
       } catch (err) {
@@ -339,10 +342,10 @@ export async function POST(request: NextRequest) {
       isMock,
       status,
       createdAt,
-      billingCycle: patientData.billingCycle || "Monthly",
-      concessionApplied: patientData.concessionApplied || "None",
-      durationValue: patientData.durationValue || 1,
-      durationUnit: selectedPlan?.durationUnit || validatedData.durationUnit || "week"
+      ...(hasConfirmedPlan ? { billingCycle: patientData.billingCycle || "monthly" } : {}),
+      ...(hasConfirmedPlan ? { concessionApplied: patientData.concessionApplied || "None" } : {}),
+      ...(hasConfirmedPlan ? { durationValue: patientData.durationValue || 1 } : {}),
+      ...(hasConfirmedPlan ? { durationUnit: selectedPlan?.durationUnit || validatedData.durationUnit || "week" } : {})
     };
 
     // Save to local in-memory fallback cache (for local demo mode)
@@ -357,6 +360,28 @@ export async function POST(request: NextRequest) {
       }
     } else {
       console.log("Firebase not configured or operating in mock-project-id. Skipping Firestore write.");
+    }
+
+    if (hasConfirmedPlan && sheetId && sheetId !== "mock-sheet-id") {
+      try {
+        await syncTreatmentPlanToClinicalSheet(sheetId, {
+          patientId: patientData.id,
+          patientName: patientData.name,
+          careLevel: patientData.careLevel,
+          billingCycle: patientData.billingCycle,
+          durationValue: patientData.durationValue,
+          conditionsCount: patientData.conditionsCount,
+          concessionApplied: patientData.concessionApplied,
+          overridePrice: patientData.overridePrice,
+          medicineAddons: patientData.medicineAddons,
+          receivedAmount: patientData.receivedAmount,
+          finalPrice: patientData.finalPrice,
+          planConfirmed: true,
+          confirmedDate: patientData.date,
+        });
+      } catch (sheetSyncError) {
+        console.warn("Patient saved, but treatment-plan sheet synchronization failed:", sheetSyncError);
+      }
     }
 
     return NextResponse.json({
