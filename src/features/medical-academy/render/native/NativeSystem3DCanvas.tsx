@@ -22,6 +22,34 @@ interface NativeSystem3DCanvasProps {
   layers?: AnatomyLayerVisibility;
 }
 
+function frameAnatomySelection(
+  cameraController: AnatomyCameraController,
+  rootGroup: THREE.Group,
+  nodes: AnatomyMeshNode[],
+  activeSubOrganId: string | null,
+  structureCount: number,
+  sceneBounds: THREE.Sphere
+) {
+  if (!activeSubOrganId) {
+    cameraController.frameScene(sceneBounds);
+    return;
+  }
+
+  if (structureCount === 1) {
+    cameraController.focusOnObject(rootGroup);
+    return;
+  }
+
+  const matchedNodes = nodes.filter(
+    (node) => node.structureId === activeSubOrganId && node.object3D.visible
+  );
+  if (matchedNodes.length > 0) {
+    cameraController.focusOnObjects(matchedNodes.map((node) => node.object3D));
+  } else {
+    cameraController.frameScene(sceneBounds);
+  }
+}
+
 export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
   systemId,
   accentColor,
@@ -34,6 +62,7 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [loadProgress, setLoadProgress] = useState<number | null>(0);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [hoveredNodeName, setHoveredNodeName] = useState<string | null>(null);
 
@@ -47,6 +76,7 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
   const raycasterRef = useRef<AnatomyRaycaster | null>(null);
   const rootGroupRef = useRef<THREE.Group | null>(null);
   const meshNodesRef = useRef<AnatomyMeshNode[]>([]);
+  const sceneBoundsRef = useRef<THREE.Sphere | null>(null);
 
   const config = SYSTEM_3D_REGISTRY[systemId] || SYSTEM_3D_REGISTRY.digestive;
   const activeAsset = resolveSystem3DAsset(config, activeSubOrganId);
@@ -57,6 +87,7 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
 
     let isMounted = true;
     setIsLoading(true);
+    setLoadProgress(0);
     setLoadError(null);
 
     // If the system has no registered development asset, fail visibly.
@@ -136,18 +167,19 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
         fallbackStructure?.id,
         fallbackStructure?.name,
         activeAsset.structures,
-        activeAsset.sourceUpAxis
+        activeAsset.sourceUpAxis,
+        (progress) => {
+          if (isMounted) setLoadProgress(progress);
+        }
       )
       .then((result) => {
         if (!isMounted) return;
 
         rootGroupRef.current = result.rootGroup;
         meshNodesRef.current = result.nodes;
+        sceneBoundsRef.current = result.boundingSphere.clone();
 
         scene.add(result.rootGroup);
-
-        // Frame the scene cleanly with 35% margin padding
-        cameraController.frameScene(result.boundingSphere);
 
         // Apply initial material styling
         materialPipeline.applyMedicalShading(
@@ -158,7 +190,26 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
           layers?.vasculature ?? true
         );
 
-        setIsLoading(false);
+        // Selection effects may run before a large GLB has loaded. Apply the
+        // requested target again now that its real mesh bounds are available.
+        frameAnatomySelection(
+          cameraController,
+          result.rootGroup,
+          result.nodes,
+          activeSubOrganId,
+          activeAsset.structures.length,
+          result.boundingSphere
+        );
+        cameraController.reframeCurrent(true);
+
+        // Do not remove the loading surface until one correctly framed frame
+        // has actually been painted.
+        renderer.render(scene, camera);
+        requestAnimationFrame(() => {
+          if (!isMounted) return;
+          setLoadProgress(100);
+          setIsLoading(false);
+        });
       })
       .catch((err) => {
         if (!isMounted) return;
@@ -181,20 +232,28 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
     // 9. Resize handler
     const handleResize = () => {
       if (!containerRef.current || !rendererRef.current || !cameraRef.current) return;
-      const w = containerRef.current.clientWidth;
-      const h = containerRef.current.clientHeight;
+      const w = Math.max(containerRef.current.clientWidth, 1);
+      const h = Math.max(containerRef.current.clientHeight, 1);
       cameraRef.current.aspect = w / h;
       cameraRef.current.updateProjectionMatrix();
+      // Update both the drawing buffer and inline CSS dimensions. Keeping the
+      // old narrow CSS size here leaves the organ stranded on the left after
+      // entering fullscreen even though the WebGL buffer is viewport-wide.
       rendererRef.current.setSize(w, h);
+      cameraControllerRef.current?.reframeCurrent(true);
     };
+    const resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver.observe(containerRef.current);
     window.addEventListener("resize", handleResize);
 
     return () => {
       isMounted = false;
       cancelAnimationFrame(animationFrameId);
+      resizeObserver.disconnect();
       window.removeEventListener("resize", handleResize);
       renderer.dispose();
       scene.clear();
+      sceneBoundsRef.current = null;
     };
     // Asset identity controls scene lifecycle. Selection, rotation, clipping,
     // and layer changes are applied by the focused effects below without
@@ -220,23 +279,15 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
         layers?.vasculature ?? true
       );
 
-      // Each Phase 1 digestive asset represents one whole organ. Frame the
-      // complete source model instead of zooming into an arbitrary child mesh.
-      if (activeSubOrganId && cameraControllerRef.current) {
-        if (activeAsset?.structures.length === 1 && rootGroupRef.current) {
-          cameraControllerRef.current.focusOnObject(rootGroupRef.current);
-        } else {
-          const matchedNodes = meshNodesRef.current.filter(
-            (node) => node.structureId === activeSubOrganId && node.object3D.visible
-          );
-          if (matchedNodes.length > 0) {
-            cameraControllerRef.current.focusOnObjects(
-              matchedNodes.map((node) => node.object3D)
-            );
-          }
-        }
-      } else if (!activeSubOrganId && cameraControllerRef.current) {
-        cameraControllerRef.current.reset(7.0);
+      if (cameraControllerRef.current && sceneBoundsRef.current) {
+        frameAnatomySelection(
+          cameraControllerRef.current,
+          rootGroupRef.current,
+          meshNodesRef.current,
+          activeSubOrganId,
+          activeAsset?.structures.length ?? 0,
+          sceneBoundsRef.current
+        );
       }
     }
   }, [activeSubOrganId, activeAsset?.id, activeAsset?.structures.length, layers?.crossSectionSlice, layers?.vasculature, accentColor]);
@@ -290,12 +341,25 @@ export const NativeSystem3DCanvas: React.FC<NativeSystem3DCanvasProps> = ({
 
       {/* Loading Overlay */}
       {isLoading && (
-        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/85 backdrop-blur-sm">
+        <div
+          className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/92 px-6 text-center backdrop-blur-sm"
+          role="status"
+          aria-live="polite"
+        >
           <div className="h-9 w-9 animate-spin rounded-full border-2 border-teal-400 border-t-transparent shadow-lg" />
           <p className="mt-3 text-xs font-semibold text-teal-300">
-            Loading {activeAsset?.provenanceStatus === "source-verified" ? "source-verified anatomy" : "3D development placeholder"}...
+            Preparing {activeAsset?.name || "3D anatomy"}
           </p>
-          <span className="mt-1 text-[10px] text-slate-400 font-mono">
+          <div className="mt-3 h-1.5 w-full max-w-64 overflow-hidden rounded-full bg-slate-800">
+            <div
+              className={`h-full rounded-full bg-teal-400 transition-[width] duration-300 ${loadProgress === null ? "w-1/3 animate-pulse" : ""}`}
+              style={loadProgress === null ? undefined : { width: `${loadProgress}%` }}
+            />
+          </div>
+          <span className="mt-2 text-[10px] font-mono text-slate-400">
+            {loadProgress === null ? "Loading source geometry…" : `${loadProgress}% · Loading source geometry`}
+          </span>
+          <span className="mt-1 max-w-md truncate text-[10px] font-mono text-slate-500">
             {activeAsset?.source || "OSTM™ Anatomy Engine"}
           </span>
         </div>

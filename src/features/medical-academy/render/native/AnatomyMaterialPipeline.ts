@@ -31,9 +31,17 @@ export class AnatomyMaterialPipeline {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
         const structureId = mesh.userData?.structureId || mesh.name.toLowerCase();
-        const isSelected = activeStructureId && (structureId === activeStructureId || mesh.name.toLowerCase().includes(activeStructureId.toLowerCase()));
+        const isSelected = Boolean(
+          activeStructureId &&
+          (structureId === activeStructureId || mesh.name.toLowerCase().includes(activeStructureId.toLowerCase()))
+        );
         const isVasculature = mesh.userData?.viewerLayer === "vasculature";
-        mesh.visible = showVasculature || !isVasculature;
+        const isAvailableLayer = showVasculature || !isVasculature;
+
+        // The viewer explicitly describes focus as "isolate". Hiding nearby
+        // structures keeps a small gland or vessel unobstructed and makes its
+        // camera bounds match what the learner can actually see.
+        mesh.visible = isAvailableLayer && (!activeStructureId || isSelected);
 
         // Preserve and upgrade material
         if (mesh.material) {
@@ -51,11 +59,11 @@ export class AnatomyMaterialPipeline {
               originalMat.transparent = false;
               originalMat.opacity = 1.0;
             } else if (activeStructureId) {
-              // Semi-transparent depth separation for context structures
+              // Hidden context retains neutral material state for restoration.
               originalMat.emissive = new THREE.Color(0x000000);
               originalMat.emissiveIntensity = 0.0;
-              originalMat.transparent = true;
-              originalMat.opacity = 0.45;
+              originalMat.transparent = false;
+              originalMat.opacity = 1.0;
             } else {
               // Default natural anatomical presentation
               originalMat.emissive = new THREE.Color(0x000000);

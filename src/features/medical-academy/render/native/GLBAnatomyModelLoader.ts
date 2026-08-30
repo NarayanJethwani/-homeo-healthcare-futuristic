@@ -92,11 +92,13 @@ export class GLBAnatomyModelLoader {
     fallbackStructureId?: string,
     fallbackAnatomicalName?: string,
     structures: AnatomicalStructureDefinition[] = [],
-    sourceUpAxis: "y" | "z" = "y"
+    sourceUpAxis: "y" | "z" = "y",
+    onProgress?: (progress: number | null) => void
   ): Promise<LoadedAnatomyResult> {
     return new Promise((resolve, reject) => {
       // Check cache first
       if (GLB_SCENE_CACHE.has(filePath)) {
+        onProgress?.(100);
         const cachedRoot = GLB_SCENE_CACHE.get(filePath)!.clone(true);
         const indexed = this.processAndIndexScene(
           cachedRoot,
@@ -114,6 +116,7 @@ export class GLBAnatomyModelLoader {
       this.loader.load(
         filePath,
         (gltf) => {
+          onProgress?.(100);
           const rootGroup = gltf.scene;
           GLB_SCENE_CACHE.set(filePath, rootGroup.clone(true));
           const indexed = this.processAndIndexScene(
@@ -127,7 +130,13 @@ export class GLBAnatomyModelLoader {
           );
           resolve(indexed);
         },
-        undefined,
+        (event) => {
+          if (event.total > 0) {
+            onProgress?.(Math.min(99, Math.round((event.loaded / event.total) * 100)));
+          } else {
+            onProgress?.(null);
+          }
+        },
         (error) => {
           console.error(`[OSTM Anatomy] Failed loading GLB: ${assetId} at ${filePath}`, error);
           reject(new Error(`Failed to load 3D anatomy model: ${assetId}`));
@@ -156,6 +165,13 @@ export class GLBAnatomyModelLoader {
     rootGroup.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
+
+        // GLTF scenes frequently share one material across multiple organs.
+        // Give every displayed mesh its own material before selection styling
+        // so highlighting one organ cannot recolor or fade another one.
+        mesh.material = Array.isArray(mesh.material)
+          ? mesh.material.map((material) => material.clone())
+          : mesh.material.clone();
         
         // Enable shadows
         mesh.castShadow = true;
