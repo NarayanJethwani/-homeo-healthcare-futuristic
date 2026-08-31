@@ -5498,3 +5498,72 @@ export async function uploadFileToFolder(
     };
   }
 }
+
+/**
+ * Extracts a Google Drive / Sheets file or folder ID from a URL or raw string ID.
+ */
+export function extractGoogleDriveId(urlOrId?: string): string | null {
+  if (!urlOrId || typeof urlOrId !== "string") return null;
+  const trimmed = urlOrId.trim();
+  if (!trimmed || trimmed.startsWith("mock-")) return null;
+
+  // Match /spreadsheets/d/{ID} or /file/d/{ID} or /folders/{ID} or /open?id={ID}
+  const match =
+    trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/) ||
+    trimmed.match(/\/folders\/([a-zA-Z0-9_-]+)/) ||
+    trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+
+  if (match && match[1]) {
+    return match[1];
+  }
+
+  // If it's already a raw ID without slashes or URL characters
+  if (!trimmed.includes("/") && !trimmed.includes(".") && !trimmed.includes("?")) {
+    return trimmed;
+  }
+
+  return null;
+}
+
+/**
+ * Permanently deletes a Google Drive file, spreadsheet, or folder by ID or URL.
+ */
+export async function deleteDriveResource(
+  urlOrId?: string
+): Promise<{ success: boolean; error?: string }> {
+  const resourceId = extractGoogleDriveId(urlOrId);
+  if (!resourceId) {
+    return { success: true };
+  }
+
+  const auth = getGoogleAuth();
+  if (!auth) {
+    console.warn("No Google auth — skipping Drive resource deletion for:", resourceId);
+    return { success: true };
+  }
+
+  try {
+    const drive = google.drive({ version: "v3", auth });
+    await drive.files.delete({
+      fileId: resourceId,
+      supportsAllDrives: true,
+    });
+    console.log(`Successfully deleted Google Drive resource: ${resourceId}`);
+    return { success: true };
+  } catch (error: any) {
+    // 404 means the file was already deleted or doesn't exist, treat as success
+    if (
+      error?.status === 404 ||
+      error?.code === 404 ||
+      error?.message?.includes("File not found")
+    ) {
+      console.log(`Google Drive resource ${resourceId} already deleted or not found.`);
+      return { success: true };
+    }
+    console.error(
+      `Failed to delete Google Drive resource ${resourceId}:`,
+      error?.message || error
+    );
+    return { success: false, error: error?.message || String(error) };
+  }
+}

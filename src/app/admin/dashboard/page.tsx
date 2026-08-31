@@ -1772,6 +1772,10 @@ export default function AdminDashboard() {
 
   const [patients, setPatients] = useState<Patient[]>([]);
   const [deletingPatientId, setDeletingPatientId] = useState("");
+  const [deleteTargetPatient, setDeleteTargetPatient] = useState<Patient | null>(null);
+  const [deleteClinicalFilesOption, setDeleteClinicalFilesOption] = useState<boolean>(true);
+  const [deleteConfirmInput, setDeleteConfirmInput] = useState<string>("");
+  const [isDeletingPatient, setIsDeletingPatient] = useState<boolean>(false);
   const [sheetOpeningMode, setSheetOpeningMode] = useState<"real" | "mock">("real");
 
   // Load sheet opening mode on mount
@@ -6737,22 +6741,34 @@ Homeo Healthcare`;
     setIsNewCaseModalOpen(true);
   };
 
-  const handleDeletePendingPatient = async (patient: Patient) => {
-    const confirmation = window.prompt(
-      `Type "${patient.name}" to delete this pending patient from the portal. The Google clinical folder and sheet will be retained for recovery.`
-    );
+  const openDeletePatientModal = (patient: Patient) => {
+    setDeleteTargetPatient(patient);
+    setDeleteClinicalFilesOption(true);
+    setDeleteConfirmInput("");
+  };
 
-    if (confirmation === null) return;
-    if (confirmation.trim() !== patient.name.trim()) {
-      alert("Patient name did not match. Nothing was deleted.");
+  const handleConfirmDeletePatient = async () => {
+    if (!deleteTargetPatient) return;
+    const patient = deleteTargetPatient;
+
+    if (deleteConfirmInput.trim().toLowerCase() !== patient.name.trim().toLowerCase()) {
+      alert(`Please type "${patient.name}" exactly to confirm deletion.`);
       return;
     }
 
+    setIsDeletingPatient(true);
     setDeletingPatientId(patient.id);
     try {
-      const response = await fetch(`/api/admin/patients/${encodeURIComponent(patient.id)}`, {
-        method: "DELETE"
+      const queryParams = new URLSearchParams({
+        deleteSheet: deleteClinicalFilesOption ? "true" : "false",
+        deleteFiles: deleteClinicalFilesOption ? "true" : "false",
       });
+      const response = await fetch(
+        `/api/admin/patients/${encodeURIComponent(patient.id)}?${queryParams.toString()}`,
+        {
+          method: "DELETE",
+        }
+      );
       const data = await response.json();
 
       if (!response.ok || !data.success) {
@@ -6762,12 +6778,18 @@ Homeo Healthcare`;
       setPatients((current) => current.filter((item) => item.id !== patient.id));
       if (selectedPatientId === patient.id) setSelectedPatientId("");
       if (timelinePatient?.id === patient.id) setTimelinePatient(null);
-      alert("Pending patient deleted. The Google clinical sheet and folder were retained for recovery.");
+      setDeleteTargetPatient(null);
+      alert(data.message || "Case successfully deleted.");
     } catch (error: any) {
       alert(error.message || "Failed to delete patient record.");
     } finally {
+      setIsDeletingPatient(false);
       setDeletingPatientId("");
     }
+  };
+
+  const handleDeletePendingPatient = async (patient: Patient) => {
+    openDeletePatientModal(patient);
   };
 
   const handleCSVImport = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -14890,21 +14912,21 @@ ${err.message || err}`);
                           <span>Portal</span>
                         </button>
 
-                        {patient.status === "pending_plan" &&
-                          (isSuperAdmin || patient.assignedDoctor === session?.uid) && (
+                        {/* Delete Patient Case Action */}
+                        {(isSuperAdmin || patient.assignedDoctor === session?.uid) && (
                           <button
                             type="button"
-                            onClick={() => handleDeletePendingPatient(patient)}
-                            disabled={deletingPatientId === patient.id}
+                            onClick={() => openDeletePatientModal(patient)}
+                            disabled={isDeletingPatient && deleteTargetPatient?.id === patient.id}
                             className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-3 rounded-full border border-rose-200 text-rose-700 hover:border-rose-500 hover:bg-rose-50 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                            title="Delete this pending patient record; Google clinical files will be retained"
+                            title="Delete this case (with option to delete Google Clinical Sheet & Drive folder)"
                           >
-                            {deletingPatientId === patient.id ? (
+                            {isDeletingPatient && deleteTargetPatient?.id === patient.id ? (
                               <RefreshCw className="w-4 h-4 animate-spin" />
                             ) : (
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-4 h-4 text-rose-600" />
                             )}
-                            <span>{deletingPatientId === patient.id ? "Deleting..." : "Delete"}</span>
+                            <span>{isDeletingPatient && deleteTargetPatient?.id === patient.id ? "Deleting..." : "Delete"}</span>
                           </button>
                         )}
 
@@ -29126,6 +29148,149 @@ Exported on: ${new Date().toLocaleDateString()}
                   </button>
                 </div>
 
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+        </Portal>
+
+        {/* 1c. Delete Patient Case Modal with Google Clinical Sheet Option */}
+        <Portal>
+        <AnimatePresence>
+          {deleteTargetPatient && (
+            <div className="fixed inset-0 h-full w-full flex items-center justify-center z-50 pointer-events-none p-4 md:p-6">
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => {
+                  if (!isDeletingPatient) setDeleteTargetPatient(null);
+                }}
+                className="absolute inset-0 bg-slate-900/40 backdrop-blur-md pointer-events-auto"
+              />
+
+              {/* Modal Container */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ type: "spring", damping: 25, stiffness: 220 }}
+                data-lenis-prevent
+                className="relative max-w-lg w-full p-6 md:p-8 bg-[#FAF9F6] dark:bg-slate-900 border border-white/60 dark:border-slate-800 shadow-2xl rounded-[36px] flex flex-col pointer-events-auto max-h-[90vh] overflow-y-auto"
+              >
+                {/* Modal Header */}
+                <div className="flex items-center justify-between border-b border-slate-900/5 dark:border-slate-800 pb-4 mb-5 flex-shrink-0">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-rose-100 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800/60 flex items-center justify-center text-rose-600 dark:text-rose-400 shadow-sm">
+                      <Trash2 className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Delete Clinical Case</h3>
+                      <span className="text-[10px] text-rose-600 font-bold uppercase tracking-wider">Permanent Removal & Cleanup</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (!isDeletingPatient) setDeleteTargetPatient(null);
+                    }}
+                    disabled={isDeletingPatient}
+                    className="w-8 h-8 rounded-full border border-slate-200 hover:border-slate-800 flex items-center justify-center transition-all bg-white dark:bg-slate-800 text-slate-600 cursor-pointer disabled:opacity-50"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="space-y-4 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  {/* Patient Info Card */}
+                  <div className="p-4 rounded-2xl bg-white dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-800 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-bold text-slate-900 dark:text-slate-100">{deleteTargetPatient.name}</span>
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                        {deleteTargetPatient.id}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">
+                      <strong>Profile:</strong> {deleteTargetPatient.age || "N/A"} Y/O · {deleteTargetPatient.gender || "N/A"} · {deleteTargetPatient.location || "N/A"}
+                    </p>
+                    {deleteTargetPatient.complaint && (
+                      <p className="text-[11px] text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 leading-relaxed font-normal">
+                        <strong>Chief Complaint:</strong> {deleteTargetPatient.complaint}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Google Drive / Sheet Deletion Option */}
+                  <div className="p-4 rounded-2xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 space-y-3">
+                    <label className="flex items-start gap-3 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={deleteClinicalFilesOption}
+                        onChange={(e) => setDeleteClinicalFilesOption(e.target.checked)}
+                        className="mt-0.5 w-4 h-4 text-rose-600 rounded border-slate-300 focus:ring-rose-500"
+                      />
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-slate-100">
+                          <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+                          <span>Delete Google Clinical Sheet & Drive Folder</span>
+                        </div>
+                        <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-normal font-normal">
+                          {deleteClinicalFilesOption
+                            ? "Will permanently purge the Google Spreadsheet and Drive folder created for this patient."
+                            : "Retains Google Drive files in cloud storage; only removes the record from the portal database."}
+                        </p>
+                      </div>
+                    </label>
+                  </div>
+
+                  {/* Security Confirmation Prompt */}
+                  <div className="space-y-2">
+                    <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                      Type <span className="font-mono text-rose-600 font-extrabold">{deleteTargetPatient.name}</span> to confirm:
+                    </label>
+                    <input
+                      type="text"
+                      value={deleteConfirmInput}
+                      onChange={(e) => setDeleteConfirmInput(e.target.value)}
+                      placeholder={`Enter "${deleteTargetPatient.name}"`}
+                      disabled={isDeletingPatient}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Footer Buttons */}
+                <div className="flex items-center justify-end gap-3 border-t border-slate-900/5 dark:border-slate-800 pt-4 mt-6 flex-shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setDeleteTargetPatient(null)}
+                    disabled={isDeletingPatient}
+                    className="px-5 py-2.5 rounded-full border border-slate-200 hover:border-slate-800 text-xs font-bold uppercase transition-all bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 cursor-pointer disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleConfirmDeletePatient}
+                    disabled={
+                      isDeletingPatient ||
+                      deleteConfirmInput.trim().toLowerCase() !== deleteTargetPatient.name.trim().toLowerCase()
+                    }
+                    className="px-6 py-2.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-md flex items-center gap-1.5"
+                  >
+                    {isDeletingPatient ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span>Deleting Case...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="w-4 h-4" />
+                        <span>Delete Case</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </motion.div>
             </div>
           )}

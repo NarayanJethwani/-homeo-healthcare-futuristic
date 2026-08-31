@@ -8,6 +8,7 @@ import {
 import { getAdminDb } from "@/lib/firebaseAdmin";
 import { mockPatientCache } from "@/lib/mockStore";
 import { normalizeRole } from "@/lib/security/rbac";
+import { deleteDriveResource } from "@/lib/googleDrive";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -26,6 +27,14 @@ export async function DELETE(
       { status: 400 }
     );
   }
+
+  const deleteSheetParam = request.nextUrl.searchParams.get("deleteSheet");
+  const deleteFilesParam = request.nextUrl.searchParams.get("deleteFiles");
+  const shouldDeleteDriveFiles =
+    deleteSheetParam === "true" ||
+    deleteSheetParam === "1" ||
+    deleteFilesParam === "true" ||
+    deleteFilesParam === "1";
 
   try {
     const firebaseConfigured = Boolean(
@@ -71,14 +80,38 @@ export async function DELETE(
       return forbiddenApiResponse("You can delete only cases assigned to you.");
     }
 
-    if (patient.status !== "pending_plan") {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Only pending cases can be deleted. Active clinical records must be retained."
-        },
-        { status: 409 }
-      );
+    // If deleting Google Drive files / clinical sheet is requested
+    let driveFilesDeleted = false;
+    if (shouldDeleteDriveFiles) {
+      const sheetUrl =
+        (patient.sheetUrl as string) ||
+        (patient.clinicalSheetUrl as string) ||
+        (patient.masterSheetUrl as string) ||
+        "";
+      const folderUrl =
+        (patient.folderUrl as string) ||
+        (patient.driveFolderUrl as string) ||
+        "";
+      const folderId =
+        (patient.folderId as string) ||
+        (patient.driveFolderId as string) ||
+        "";
+
+      // 1. Delete the clinical sheet
+      if (sheetUrl) {
+        await deleteDriveResource(sheetUrl).catch((err) =>
+          console.warn("Could not delete clinical sheet:", err)
+        );
+      }
+
+      // 2. Delete the patient drive folder (which also purges all nested sheets & attachments)
+      if (folderId || folderUrl) {
+        await deleteDriveResource(folderId || folderUrl).catch((err) =>
+          console.warn("Could not delete patient folder:", err)
+        );
+      }
+
+      driveFilesDeleted = true;
     }
 
     if (patientRef) {
@@ -90,11 +123,14 @@ export async function DELETE(
     return NextResponse.json({
       success: true,
       patientId,
-      workspaceRetained: true,
-      message: "Pending patient record deleted. Google clinical files were retained for recovery."
+      workspaceRetained: !shouldDeleteDriveFiles,
+      driveFilesDeleted,
+      message: shouldDeleteDriveFiles
+        ? "Patient case, Google clinical sheet, and patient folder were permanently deleted."
+        : "Patient case record deleted. Google clinical files were retained for recovery."
     });
   } catch (error: any) {
-    console.error("Failed to delete pending patient record:", error);
+    console.error("Failed to delete patient record:", error);
     return NextResponse.json(
       { success: false, message: error.message || "Failed to delete patient record." },
       { status: 500 }
