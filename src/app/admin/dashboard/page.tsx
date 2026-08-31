@@ -119,6 +119,10 @@ import {
   featureFlags,
 } from "../../../features/dashboard";
 import KeyboardShortcutsModal from "../../../features/dashboard/components/KeyboardShortcutsModal";
+import AppointmentSchedulerModal from "@/features/dashboard/components/AppointmentSchedulerModal";
+import CollectionLedgerWidget from "@/features/dashboard/components/CollectionLedgerWidget";
+import type { ClinicalAppointment } from "@/lib/appointmentService";
+import type { ClinicalActivity, ClinicalTask } from "@/lib/clinicalOperations";
 import {
   ClinicalCareFeeSimulator,
   type ClinicalCareSimulatorDecision,
@@ -860,6 +864,53 @@ export default function AdminDashboard() {
   const [session, setSession] = useState<UserSession | null>(null);
   const isSuperAdmin = session?.role === "admin" || (session?.role && normalizeRole(session.role) === "super-admin");
   const [activeTab, setActiveTab] = useState<"dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "treatment-planner" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence" | "cie" | "team" | "medical-academy">("dashboard");
+  const [appointments, setAppointments] = useState<ClinicalAppointment[]>([]);
+  const [appointmentsLoading, setAppointmentsLoading] = useState(false);
+  const [appointmentsError, setAppointmentsError] = useState("");
+  const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
+  const [editingAppointment, setEditingAppointment] = useState<ClinicalAppointment | null>(null);
+  const [confirmedPayments, setConfirmedPayments] = useState<any[]>([]);
+  const [clinicalTasks, setClinicalTasks] = useState<ClinicalTask[]>([]);
+  const [clinicalActivities, setClinicalActivities] = useState<ClinicalActivity[]>([]);
+
+  const refreshAppointments = async () => {
+    setAppointmentsLoading(true);
+    setAppointmentsError("");
+    try {
+      const response = await fetch("/api/appointments", { cache: "no-store" });
+      const result = await response.json();
+      if (!response.ok || !result.success) throw new Error(result.message || "Could not load appointments.");
+      setAppointments(result.appointments || []);
+    } catch (error: any) {
+      setAppointmentsError(error.message || "Could not load appointments.");
+    } finally {
+      setAppointmentsLoading(false);
+    }
+  };
+
+  const refreshConfirmedPayments = async () => {
+    try {
+      const date = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date());
+      const response = await fetch(`/api/payments?date=${date}`, { cache: "no-store" });
+      const result = await response.json();
+      if (response.ok && result.success) setConfirmedPayments(result.payments || []);
+    } catch {
+      setConfirmedPayments([]);
+    }
+  };
+
+  const refreshClinicalWork = async () => {
+    try {
+      const [tasksResponse, activityResponse] = await Promise.all([fetch("/api/clinical-tasks", { cache: "no-store" }), fetch("/api/clinical-activity", { cache: "no-store" })]);
+      const [tasksResult, activityResult] = await Promise.all([tasksResponse.json(), activityResponse.json()]);
+      if (tasksResponse.ok && tasksResult.success) setClinicalTasks(tasksResult.tasks || []);
+      if (activityResponse.ok && activityResult.success) setClinicalActivities(activityResult.activities || []);
+    } catch {
+      setClinicalTasks([]); setClinicalActivities([]);
+    }
+  };
+
+  useEffect(() => { void refreshAppointments(); void refreshConfirmedPayments(); void refreshClinicalWork(); }, []);
   const [nexusSubTab, setNexusSubTab] = useState<"repertory" | "mind-map" | "materia-medica">("repertory");
   const [cieSubTab, setCieSubTab] = useState<"cockpit" | "intake" | "miasms" | "reports">("cockpit");
   const [immersiveMode, setImmersiveMode] = useState(false);
@@ -955,7 +1006,7 @@ export default function AdminDashboard() {
         setActiveTab("treatment-planner");
         break;
       case "schedule-appointment":
-        setActiveTab("communication");
+        setIsAppointmentModalOpen(true);
         break;
       case "generate-invoice":
         if (patients.length > 0) {
@@ -5251,7 +5302,7 @@ export default function AdminDashboard() {
 
   // Sync scroll lock when fullscreen views or modals are open
   useEffect(() => {
-    const isAnyFullscreen = isReaderFullscreen || isLearningHubFullscreen || isDrugPictureFullscreen || graphViewMode === "fullscreen" || isNewCaseModalOpen || isImportModalOpen || selectedRemedyDetail !== null || mindMapDrugPictureId !== null || isResearchFullscreen || isSearchFullscreen || activeSymptomConfig !== null || activeMonographRemedy !== null;
+    const isAnyFullscreen = isReaderFullscreen || isLearningHubFullscreen || isDrugPictureFullscreen || graphViewMode === "fullscreen" || isNewCaseModalOpen || isAppointmentModalOpen || isImportModalOpen || selectedRemedyDetail !== null || mindMapDrugPictureId !== null || isResearchFullscreen || isSearchFullscreen || activeSymptomConfig !== null || activeMonographRemedy !== null;
     
     if (isAnyFullscreen) {
       document.body.style.overflow = "hidden";
@@ -5269,6 +5320,7 @@ export default function AdminDashboard() {
         if (isLearningHubFullscreen) setIsLearningHubFullscreen(false);
         if (isDrugPictureFullscreen) setIsDrugPictureFullscreen(false);
         if (isNewCaseModalOpen) setIsNewCaseModalOpen(false);
+        if (isAppointmentModalOpen) setIsAppointmentModalOpen(false);
         if (isImportModalOpen) setIsImportModalOpen(false);
         if (selectedRemedyDetail) setSelectedRemedyDetail(null);
         if (activeMonographRemedy) setActiveMonographRemedy(null);
@@ -5286,7 +5338,7 @@ export default function AdminDashboard() {
       document.body.style.overflowX = "";
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isReaderFullscreen, isLearningHubFullscreen, isDrugPictureFullscreen, graphViewMode, isNewCaseModalOpen, isImportModalOpen, selectedRemedyDetail, activeMonographRemedy, mindMapDrugPictureId, isResearchFullscreen, isSearchFullscreen, activeSymptomConfig]);
+  }, [isReaderFullscreen, isLearningHubFullscreen, isDrugPictureFullscreen, graphViewMode, isNewCaseModalOpen, isAppointmentModalOpen, isImportModalOpen, selectedRemedyDetail, activeMonographRemedy, mindMapDrugPictureId, isResearchFullscreen, isSearchFullscreen, activeSymptomConfig]);
 
   useEffect(() => {
     if (!isNewCaseModalOpen) {
@@ -5436,7 +5488,7 @@ export default function AdminDashboard() {
   const [invoiceItems, setInvoiceItems] = useState<Array<{ description: string; qty: number; unitPrice: number; amount: number }>>([]);
   const [invoiceDiscount, setInvoiceDiscount] = useState(0);
   const [invoicePaymentMode, setInvoicePaymentMode] = useState("UPI");
-  const [invoiceStatus, setInvoiceStatus] = useState("Paid");
+  const [invoiceStatus, setInvoiceStatus] = useState("Pending");
   const [generatedInvoiceUrl, setGeneratedInvoiceUrl] = useState("");
   const [manualWhatsAppPhone, setManualWhatsAppPhone] = useState("");
   const [caseSpecificSupportAmount, setCaseSpecificSupportAmount] = useState("");
@@ -5495,26 +5547,23 @@ export default function AdminDashboard() {
       return;
     }
 
+    let disposed = false;
     setIsFetchingInvoices(true);
-    const q = query(
-      collection(db, "invoices"),
-      where("patientId", "==", selectedInvoicePatient.id),
-      orderBy("createdAt", "desc")
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const list: any[] = [];
-      snapshot.forEach((doc) => {
-        list.push(doc.data());
-      });
-      setInvoicesList(list);
-      setIsFetchingInvoices(false);
-    }, (error) => {
-      console.error("Error listening to invoices:", error);
-      setIsFetchingInvoices(false);
-    });
-
-    return () => unsubscribe();
+    fetch(`/api/invoice?patientId=${encodeURIComponent(selectedInvoicePatient.id)}`, { cache: "no-store" })
+      .then((response) => response.json().then((result) => ({ response, result })))
+      .then(({ response, result }) => {
+        if (disposed) return;
+        if (!response.ok || !result.success) throw new Error(result.message || "Unable to load invoices.");
+        setInvoicesList(result.invoices || []);
+      })
+      .catch((error) => {
+        if (!disposed) {
+          console.error("Error loading invoices:", error);
+          setInvoicesList([]);
+        }
+      })
+      .finally(() => { if (!disposed) setIsFetchingInvoices(false); });
+    return () => { disposed = true; };
   }, [selectedInvoicePatient]);
 
   const openInvoiceModal = (patient: Patient) => {
@@ -9184,13 +9233,15 @@ ${err.message || err}`);
                 className="w-full h-full"
               >
                 {activeTab === "dashboard" && (() => {
+              const dashboardDate = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date());
+              const todaysAppointments = appointments.filter((appointment) => new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date(appointment.startsAt)) === dashboardDate && !["cancelled", "no-show"].includes(appointment.status));
               const overviewStats = {
-                appointmentsCount: patients.slice(0, 4).length || 4,
-                followUpsCount: patients.filter((p) => p.status === "inactive" || p.durationText?.includes("Follow-up")).length || 3,
-                abnormalReportsCount: patients.filter((p) => p.complaint.toLowerCase().includes("acid") || p.complaint.toLowerCase().includes("gerd")).length || 2,
-                emergencyCasesCount: patients.filter((p) => p.careLevel === "emergency" || p.careLevel === "high").length || 1,
-                revenueCollected: invoicesList.filter((inv) => inv.status === "Paid").slice(0, 3).reduce((sum, inv) => sum + (inv.amount || inv.grandTotal || 0), 0) || 18400,
-                recoveryIndex: patients.length > 0 ? (86.5 + (patients.filter((p) => p.status === "active").length / patients.length) * 8.5).toFixed(1) + "%" : "94.2%",
+                appointmentsCount: todaysAppointments.length,
+                followUpsCount: todaysAppointments.filter((appointment) => appointment.type === "follow-up" && appointment.status !== "completed").length,
+                abnormalReportsCount: 0,
+                emergencyCasesCount: todaysAppointments.filter((appointment) => appointment.type === "emergency" && !["completed", "cancelled"].includes(appointment.status)).length,
+                revenueCollected: confirmedPayments.reduce((sum, payment) => sum + Number(payment.amountPaise || 0), 0) / 100,
+                recoveryIndex: "—",
               };
 
               return (
@@ -9208,13 +9259,29 @@ ${err.message || err}`);
                     reduceMotion={reduceMotion}
                   />
 
+                  <CollectionLedgerWidget payments={confirmedPayments} onRefresh={async () => { await refreshConfirmedPayments(); await refreshClinicalWork(); }} />
+
                   {/* Priority 1 & 2: Today's Schedule & Smart Alerts Panel */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                     <DashboardErrorBoundary widgetName="Today's Schedule">
                       <TodaySchedule
-                        patients={patients}
+                        appointments={appointments}
                         onSelectPatient={setSelectedPatientId}
                         setActiveTab={setActiveTab}
+                        isLoading={appointmentsLoading}
+                        error={appointmentsError}
+                        onRetry={refreshAppointments}
+                        onUpdateStatus={async (appointment, status) => {
+                          const response = await fetch("/api/appointments", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: appointment.id, status }) });
+                          if (response.ok) { void refreshAppointments(); void refreshClinicalWork(); }
+                        }}
+                        onReschedule={(appointment) => { setEditingAppointment(appointment); setIsAppointmentModalOpen(true); }}
+                        onCancel={async (appointment) => {
+                          const cancellationReason = window.prompt("Reason for cancellation:");
+                          if (!cancellationReason) return;
+                          const response = await fetch("/api/appointments", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: appointment.id, status: "cancelled", cancellationReason }) });
+                          if (response.ok) { void refreshAppointments(); void refreshClinicalWork(); }
+                        }}
                         reduceMotion={reduceMotion}
                       />
                     </DashboardErrorBoundary>
@@ -9258,9 +9325,8 @@ ${err.message || err}`);
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
                     <DashboardErrorBoundary widgetName="My Tasks">
                       <MyTasksWidget
-                        onSelectPatient={setSelectedPatientId}
-                        setActiveTab={setActiveTab}
-                        reduceMotion={reduceMotion}
+                        tasks={clinicalTasks}
+                        onRefresh={refreshClinicalWork}
                       />
                     </DashboardErrorBoundary>
                     
@@ -9306,10 +9372,7 @@ ${err.message || err}`);
 
                   {/* Lower Priority: Timeline Feed */}
                   <ActivityTimeline
-                    patients={patients}
-                    onSelectPatient={setSelectedPatientId}
-                    setActiveTab={setActiveTab}
-                    reduceMotion={reduceMotion}
+                    activities={clinicalActivities}
                   />
 
                   {/* Lower Priority: Engine Telemetry Status */}
@@ -28285,6 +28348,15 @@ Exported on: ${new Date().toLocaleDateString()}
                 </div>
               </motion.div>
             </div>
+          )}
+
+          {isAppointmentModalOpen && (
+            <AppointmentSchedulerModal
+              patients={patients}
+              appointment={editingAppointment}
+              onClose={() => { setIsAppointmentModalOpen(false); setEditingAppointment(null); }}
+              onScheduled={async () => { await refreshAppointments(); await refreshClinicalWork(); }}
+            />
           )}
 
           {isNewCaseModalOpen && (

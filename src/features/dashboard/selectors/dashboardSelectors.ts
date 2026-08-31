@@ -1,7 +1,5 @@
 import { Patient, SmartAlert, CdssRecommendation, DashboardOverviewStats } from "../types";
-import { toPatientId, toAlertId } from "../types/branded";
-import { getMiasmaticClassification } from "../domain/patients";
-import { enforceCdssAdvisory } from "../domain/cdss";
+import { toPatientId } from "../types/branded";
 
 /**
  * Calculates high-level statistics for the dashboard overview panel
@@ -52,13 +50,11 @@ export function getProcessedPatientQueue(patients: Patient[] = []) {
     } else if (pat.careLevel === "low") {
       priority = "Low";
     } else {
-      priority = idx % 3 === 0 ? "Critical" : idx % 3 === 1 ? "High" : "Medium";
+      priority = "Medium";
     }
 
     // Map remedy
-    const currentRemedy = pat.status === "active"
-      ? (idx % 2 === 0 ? "Sulphur 30C (Psoric)" : "Lycopodium 200C (Sycotic)")
-      : "Constitutional Under Review";
+    const currentRemedy = "Not recorded";
 
     // Map payment status
     let paymentStatus = "Unpaid";
@@ -72,12 +68,10 @@ export function getProcessedPatientQueue(patients: Patient[] = []) {
     }
 
     // Map follow-up
-    const followUpDue = pat.status === "active" ? "Jul 15, 2026" : "Awaiting Schedule";
+    const followUpDue = "Not scheduled";
 
     // Mock pending reports from attachments
-    const pendingReports = pat.attachments && pat.attachments.length > 0
-      ? pat.attachments.map(att => att.name || "Lab report")
-      : (idx % 2 === 0 ? ["CBC Status", "TSH Axis"] : ["Fasting Glucose"]);
+    const pendingReports = pat.attachments?.map(att => att.name || "Lab report") || [];
 
     return {
       id: toPatientId(pat.id),

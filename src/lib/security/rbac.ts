@@ -78,6 +78,7 @@ export type Permission =
   | "OBSERVABILITY_VIEW"
   | "USER_MANAGE"
   | "SUBSCRIPTION_MANAGE"
+  | "PAYMENT_MANAGE"
   | KnowledgeCapability
   | RepertoryCapability
   | MateriaMedicaCapability
@@ -95,6 +96,7 @@ const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
     "OBSERVABILITY_VIEW",
     "USER_MANAGE",
     "SUBSCRIPTION_MANAGE",
+    "PAYMENT_MANAGE",
     "knowledge.contributor.manage",
     "knowledge.expansion.manage",
     "knowledge.create",
@@ -205,6 +207,7 @@ const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
     "WORKFLOW_ASSIGN",
     "RAG_INDEX_MANAGE",
     "OBSERVABILITY_VIEW",
+    "PAYMENT_MANAGE",
     "knowledge.create",
     "knowledge.editDraft",
     "knowledge.submitMedicalReview",

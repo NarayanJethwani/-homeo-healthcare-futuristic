@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { BookOpen, AlertTriangle, FileText, Activity, Compass, ArrowRight, RefreshCw } from "lucide-react";
+import { BookOpen, FileText, Activity, Compass, ArrowRight, RefreshCw } from "lucide-react";
 
 interface KnowledgeKmsWidgetProps {
   setActiveTab: (tabId: any) => void;
@@ -12,14 +12,7 @@ export default function KnowledgeKmsWidget({
   setActiveTab,
   reduceMotion = false,
 }: KnowledgeKmsWidgetProps) {
-  const kmsStats = {
-    needsReview: 5,
-    expiredCount: 2,
-    healthScore: "96%",
-    aiReadiness: "94%",
-    mostViewed: "Sulphur Constitutional Profile",
-    recentlyUpdated: "GERD Miasmatic Affinity (2h ago)",
-  };
+  const kmsStats = { needsReview: 0, expiredCount: 0, healthScore: "—", aiReadiness: "—", mostViewed: "No live analytics connected", recentlyUpdated: "No live update feed connected" };
 
   return (
     <div className="bg-white dark:bg-slate-900 p-5 rounded-[24px] border border-slate-202/80 dark:border-slate-800/80 shadow-xs space-y-4">

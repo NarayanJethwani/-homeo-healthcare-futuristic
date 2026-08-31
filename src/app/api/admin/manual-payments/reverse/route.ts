@@ -47,6 +47,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const { getAdminDb } = await import("@/lib/firebaseAdmin");
+    await getAdminDb().collection("paymentReceipts").doc(paymentId).update({
+      status: "reversed",
+      reversalReason: result.record!.reversalReason,
+      reversedBy: result.record!.reversedBy,
+      reversedAt: result.record!.reversedAt,
+    });
+    await getAdminDb().collection("invoices").doc(result.record!.invoiceId).update({ status: "Pending", paymentReceiptId: "", paidAt: "" });
+    const { recordClinicalActivity } = await import("@/lib/clinicalOperations");
+    await recordClinicalActivity({ type: "payment.reversed", title: "Payment reversed", detail: `${result.record!.invoiceId} · ${result.record!.reversalReason || "Administrative correction"}`, patientId: result.record!.patientId, actor: { id: actor.actorId, name: auth.authorized ? auth.session.name : actor.actorId, role: actor.role } });
+
     return NextResponse.json({ success: true, data: result.record }, { status: 200 });
   } catch (err: any) {
     return NextResponse.json(
