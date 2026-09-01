@@ -170,10 +170,10 @@ export function recordManualPayment(
     referenceNumber: finalReference,
     receivedAt: input.receivedAt || timestamp,
     recordedBy: actor.actorId,
-    evidenceReference: input.evidenceReference,
-    notes: input.notes,
     auditEventId,
     status: paymentStatus,
+    ...(input.evidenceReference ? { evidenceReference: input.evidenceReference } : {}),
+    ...(input.notes ? { notes: input.notes } : {}),
   };
 
   const auditEvent: ManualPaymentAuditEvent = {
@@ -185,11 +185,11 @@ export function recordManualPayment(
     actorRole: actor.role,
     timestamp,
     details: {
-      paymentId,
       amountPaise: input.amountPaise,
       paymentMethod: input.paymentMethod,
       referenceNumber: finalReference,
-      status: paymentStatus,
+      ...(input.evidenceReference ? { evidenceReference: input.evidenceReference } : {}),
+      ...(input.notes ? { notes: input.notes } : {}),
     },
   };
 

@@ -339,7 +339,13 @@ export function getAdminDb() {
     return mockDb;
   }
   ensureInitialized();
-  return getFirestore();
+  const firestoreDb = getFirestore();
+  try {
+    firestoreDb.settings({ ignoreUndefinedProperties: true });
+  } catch {
+    // Settings already applied or not configurable in current lifecycle
+  }
+  return firestoreDb;
 }
 
 export function getAdminAuth(): any {

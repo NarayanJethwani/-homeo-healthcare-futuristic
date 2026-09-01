@@ -90,10 +90,11 @@ export async function POST(request: NextRequest) {
 
     // Keep the queue workflow and the finance ledger separate: collection totals
     // come only from durable payment receipts, never invoice display status.
-    await getAdminDb().collection("paymentReceipts").doc(result.record!.paymentId).set({
+    const receiptData = JSON.parse(JSON.stringify({
       ...result.record,
       createdAt: new Date().toISOString(),
-    });
+    }));
+    await getAdminDb().collection("paymentReceipts").doc(result.record!.paymentId).set(receiptData);
     await invoiceReference.update({ status: "Paid", paidAt: result.record!.receivedAt, paymentReceiptId: result.record!.paymentId, paymentMode: result.record!.paymentMethod });
     const { recordClinicalActivity } = await import("@/lib/clinicalOperations");
     await recordClinicalActivity({ type: "payment.recorded", title: "Payment recorded", detail: `${result.record!.invoiceId} · ₹${(result.record!.amountPaise / 100).toLocaleString("en-IN")}`, patientId: result.record!.patientId, actor: { id: actor.actorId, name: auth.authorized ? auth.session.name : actor.actorId, role: actor.role } });
