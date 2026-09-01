@@ -246,6 +246,7 @@ interface Patient {
   folderUrl: string;
   folderId?: string;
   sheetUrl: string;
+  sheetId?: string;
   assignedDoctor: string;
   status: string;
   createdAt: string;
