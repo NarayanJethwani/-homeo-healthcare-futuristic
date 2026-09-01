@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   IndianRupee,
   ReceiptText,
@@ -12,10 +12,10 @@ import {
   AlertCircle,
   FileText,
   X,
-  CreditCard,
+  PlusCircle,
+  ShoppingBag,
+  UserCheck,
   Building2,
-  Banknote,
-  Smartphone,
 } from "lucide-react";
 
 export type PaymentReceipt = {
@@ -67,6 +67,8 @@ export default function CollectionLedgerWidget({
   const [patientSearch, setPatientSearch] = useState("");
   const [selectedPatient, setSelectedPatient] = useState<PatientSummary | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Form states
   const [invoiceId, setInvoiceId] = useState("");
@@ -83,9 +85,21 @@ export default function CollectionLedgerWidget({
 
   const total = payments.reduce((sum, payment) => sum + Number(payment.amountPaise || 0), 0) / 100;
 
+  // Handle outside click to close dropdown
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
   // Filter patients based on search input
   const filteredPatients = useMemo(() => {
-    if (!patientSearch.trim()) return patients.slice(0, 15);
+    if (!patients || patients.length === 0) return [];
+    if (!patientSearch.trim()) return patients.slice(0, 50);
     const query = patientSearch.toLowerCase().trim();
     return patients
       .filter(
@@ -95,12 +109,12 @@ export default function CollectionLedgerWidget({
           p.phone?.toLowerCase().includes(query) ||
           p.complaint?.toLowerCase().includes(query)
       )
-      .slice(0, 15);
+      .slice(0, 50);
   }, [patients, patientSearch]);
 
   // Fetch invoices whenever a patient is selected
   const fetchInvoicesForPatient = async (pid: string) => {
-    if (!pid) {
+    if (!pid || pid.startsWith("WALK-IN") || pid.startsWith("PHARMACY") || pid.startsWith("GENERAL")) {
       setPatientInvoices([]);
       return;
     }
@@ -147,6 +161,28 @@ export default function CollectionLedgerWidget({
     void fetchInvoicesForPatient(patient.id);
   };
 
+  const handleSelectWalkInPreset = (type: "walkin" | "pharmacy" | "general") => {
+    setSelectedPatient(null);
+    setPatientInvoices([]);
+    setMessage(null);
+    setIsDropdownOpen(false);
+
+    const nowStr = Date.now().toString().slice(-4);
+    if (type === "walkin") {
+      setPatientId("WALK-IN");
+      setPatientSearch("Walk-in Patient (WALK-IN)");
+      setInvoiceId(`INV-WALKIN-${nowStr}`);
+    } else if (type === "pharmacy") {
+      setPatientId("PHARMACY");
+      setPatientSearch("Pharmacy / Remedy Sale (PHARMACY)");
+      setInvoiceId(`INV-PHARM-${nowStr}`);
+    } else {
+      setPatientId("GENERAL");
+      setPatientSearch("General Counter Receipt (GENERAL)");
+      setInvoiceId(`INV-GEN-${nowStr}`);
+    }
+  };
+
   const handleClearPatient = () => {
     setSelectedPatient(null);
     setPatientId("");
@@ -155,6 +191,20 @@ export default function CollectionLedgerWidget({
     setAmount("");
     setPatientInvoices([]);
     setIsDropdownOpen(false);
+    inputRef.current?.focus();
+  };
+
+  const handleStartNewReceipt = () => {
+    setSelectedPatient(null);
+    setPatientId("");
+    setPatientSearch("");
+    setInvoiceId("");
+    setAmount("");
+    setReference("");
+    setPatientInvoices([]);
+    setMessage(null);
+    setIsDropdownOpen(true);
+    setTimeout(() => inputRef.current?.focus(), 50);
   };
 
   const handleSelectInvoice = (inv: InvoiceSummary) => {
@@ -176,26 +226,29 @@ export default function CollectionLedgerWidget({
     setSaving(true);
     setMessage(null);
 
-    const targetPatientId = selectedPatient ? selectedPatient.id : patientId.trim();
+    const targetPatientId = selectedPatient ? selectedPatient.id : patientId.trim() || patientSearch.trim();
     if (!targetPatientId) {
-      setMessage({ type: "error", text: "Please select or specify a Patient ID." });
+      setMessage({ type: "error", text: "Please select a registered patient or choose a Walk-in preset." });
       setSaving(false);
       return;
     }
 
     const calculatedAmountPaise = Math.round(Number(amount) * 100);
     if (!calculatedAmountPaise || calculatedAmountPaise <= 0) {
-      setMessage({ type: "error", text: "Please enter a valid payment amount." });
+      setMessage({ type: "error", text: "Please enter a valid payment amount in Rupees." });
       setSaving(false);
       return;
     }
 
     try {
+      const cleanPatientId = targetPatientId.replace(/[^A-Za-z0-9-_]/g, "").slice(0, 30) || "WALK-IN";
+      const autoInvoiceId = invoiceId.trim() || `INV-${cleanPatientId.slice(-6)}-${Date.now().toString().slice(-4)}`;
+
       const response = await fetch("/api/admin/manual-payments/record", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          invoiceId: invoiceId.trim() || `INV-${targetPatientId.replace(/[^A-Za-z0-9]/g, "").slice(-6)}-${Date.now().toString().slice(-4)}`,
+          invoiceId: autoInvoiceId,
           patientId: targetPatientId,
           amountPaise: calculatedAmountPaise,
           paymentMethod: method,
@@ -210,18 +263,17 @@ export default function CollectionLedgerWidget({
 
       setMessage({
         type: "success",
-        text: `Receipt ${result.data?.paymentId || "confirmed"} recorded successfully! Invoice marked Paid.`,
+        text: `Receipt confirmed for ₹${Number(amount).toLocaleString("en-IN")} (${autoInvoiceId})! Recorded successfully.`,
       });
 
-      // Reset form fields
+      // Clear the current form fields to be ready for next receipt
+      setSelectedPatient(null);
+      setPatientId("");
+      setPatientSearch("");
       setInvoiceId("");
       setAmount("");
       setReference("");
-
-      // Refresh invoices for current patient
-      if (targetPatientId) {
-        void fetchInvoicesForPatient(targetPatientId);
-      }
+      setPatientInvoices([]);
 
       await onRefresh?.();
     } catch (error: any) {
@@ -259,24 +311,68 @@ export default function CollectionLedgerWidget({
       {/* Main Payment Recording Form */}
       {open && (
         <form onSubmit={record} className="mt-3 rounded-2xl bg-slate-50 p-4 dark:bg-slate-850">
-          <div className="mb-3">
+          {/* Quick Preset Receipt Types */}
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/60 pb-2.5 dark:border-slate-700/60">
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              Select Patient & Confirm Payment Receipt
+              Receipt Type & Patient Selection:
             </span>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => {
+                  handleClearPatient();
+                  setIsDropdownOpen(true);
+                }}
+                className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-700 shadow-xs hover:border-emerald-500 hover:bg-emerald-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 cursor-pointer"
+              >
+                <UserCheck className="h-3 w-3 text-emerald-600" />
+                <span>Select Registered Patient ({patients.length})</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSelectWalkInPreset("walkin")}
+                className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-700 shadow-xs hover:border-emerald-500 hover:bg-emerald-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 cursor-pointer"
+              >
+                <span>🚶 Walk-in Receipt</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSelectWalkInPreset("pharmacy")}
+                className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-700 shadow-xs hover:border-emerald-500 hover:bg-emerald-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 cursor-pointer"
+              >
+                <ShoppingBag className="h-3 w-3 text-amber-600" />
+                <span>Pharmacy / Remedy Sale</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSelectWalkInPreset("general")}
+                className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-700 shadow-xs hover:border-emerald-500 hover:bg-emerald-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 cursor-pointer"
+              >
+                <Building2 className="h-3 w-3 text-blue-600" />
+                <span>Other / Counter</span>
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {/* 1. Patient Selector / Autocomplete */}
-            <div className="relative">
-              <label className="mb-1 block text-[9px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
-                Patient Selection *
-              </label>
+            <div className="relative" ref={dropdownRef}>
+              <div className="mb-1 flex items-center justify-between">
+                <label className="block text-[9px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+                  Patient Selection *
+                </label>
+                <span className="text-[8px] font-semibold text-slate-400">
+                  {patients.length ? `${patients.length} patients loaded` : "Type name or pick preset"}
+                </span>
+              </div>
               <div className="relative">
                 <input
+                  ref={inputRef}
                   type="text"
-                  required={!selectedPatient && !patientId}
+                  required={!selectedPatient && !patientId && !patientSearch.trim()}
                   value={patientSearch}
                   onFocus={() => setIsDropdownOpen(true)}
+                  onClick={() => setIsDropdownOpen(true)}
                   onChange={(e) => {
                     setPatientSearch(e.target.value);
                     setPatientId(e.target.value);
@@ -286,49 +382,116 @@ export default function CollectionLedgerWidget({
                       setPatientInvoices([]);
                     }
                   }}
-                  className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-8 pr-8 text-[11px] font-semibold text-slate-800 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-                  placeholder="Search patient name, ID or phone..."
+                  className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-8 pr-16 text-[11px] font-semibold text-slate-800 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                  placeholder="Click to browse or search patients..."
                 />
                 <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
-                {patientSearch && (
+                <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1">
+                  {patientSearch && (
+                    <button
+                      type="button"
+                      onClick={handleClearPatient}
+                      className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                      title="Clear selection"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
                   <button
                     type="button"
-                    onClick={handleClearPatient}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                    onClick={() => setIsDropdownOpen((prev) => !prev)}
+                    className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                    title="Toggle patient list"
                   >
-                    <X className="h-3.5 w-3.5" />
+                    <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`} />
                   </button>
-                )}
+                </div>
               </div>
 
               {/* Patient Dropdown Menu */}
-              {isDropdownOpen && filteredPatients.length > 0 && (
-                <div className="absolute z-20 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg dark:border-slate-700 dark:bg-slate-800">
-                  <div className="px-2 py-1 text-[9px] font-bold text-slate-400 uppercase tracking-wider">
-                    Matching Patients ({filteredPatients.length})
-                  </div>
-                  {filteredPatients.map((p) => (
+              {isDropdownOpen && (
+                <div className="absolute z-30 mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl dark:border-slate-700 dark:bg-slate-800">
+                  <div className="flex items-center justify-between px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                    <span>
+                      {patientSearch.trim() ? `Search Results (${filteredPatients.length})` : `All Registered Patients (${filteredPatients.length})`}
+                    </span>
                     <button
-                      key={p.id}
                       type="button"
-                      onClick={() => handleSelectPatient(p)}
-                      className="flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-[11px] transition hover:bg-emerald-50 dark:hover:bg-slate-700 cursor-pointer"
+                      onClick={() => setIsDropdownOpen(false)}
+                      className="text-[9px] font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
                     >
-                      <div className="flex items-center gap-2 overflow-hidden">
-                        <User className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
-                        <div className="truncate">
-                          <span className="font-bold text-slate-800 dark:text-slate-200">{p.name}</span>
-                          <span className="ml-1.5 text-[9px] font-bold text-slate-400">({p.id})</span>
-                          {p.phone && <span className="ml-1.5 text-[9px] text-slate-400">· {p.phone}</span>}
-                        </div>
-                      </div>
-                      {p.careLevel && (
-                        <span className="ml-2 shrink-0 rounded bg-emerald-100 px-1.5 py-0.5 text-[8px] font-extrabold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                          {p.careLevel}
-                        </span>
-                      )}
+                      Close ✕
                     </button>
-                  ))}
+                  </div>
+
+                  {/* Preset options in dropdown */}
+                  <div className="mb-1 grid grid-cols-3 gap-1 border-b border-slate-100 pb-1.5 pt-0.5 dark:border-slate-700">
+                    <button
+                      type="button"
+                      onClick={() => handleSelectWalkInPreset("walkin")}
+                      className="rounded bg-slate-100 px-1.5 py-1 text-center text-[9px] font-bold text-slate-700 hover:bg-emerald-100 hover:text-emerald-800 dark:bg-slate-700 dark:text-slate-200 cursor-pointer"
+                    >
+                      🚶 Walk-in
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleSelectWalkInPreset("pharmacy")}
+                      className="rounded bg-slate-100 px-1.5 py-1 text-center text-[9px] font-bold text-slate-700 hover:bg-amber-100 hover:text-amber-800 dark:bg-slate-700 dark:text-slate-200 cursor-pointer"
+                    >
+                      💊 Pharmacy
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleSelectWalkInPreset("general")}
+                      className="rounded bg-slate-100 px-1.5 py-1 text-center text-[9px] font-bold text-slate-700 hover:bg-blue-100 hover:text-blue-800 dark:bg-slate-700 dark:text-slate-200 cursor-pointer"
+                    >
+                      🏥 General
+                    </button>
+                  </div>
+
+                  {filteredPatients.length > 0 ? (
+                    filteredPatients.map((p) => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => handleSelectPatient(p)}
+                        className="flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-[11px] transition hover:bg-emerald-50 dark:hover:bg-slate-700 cursor-pointer"
+                      >
+                        <div className="flex items-center gap-2 overflow-hidden">
+                          <User className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
+                          <div className="truncate">
+                            <span className="font-bold text-slate-800 dark:text-slate-200">{p.name}</span>
+                            <span className="ml-1.5 text-[9px] font-bold text-slate-400">({p.id})</span>
+                            {p.phone && <span className="ml-1.5 text-[9px] text-slate-400">· {p.phone}</span>}
+                          </div>
+                        </div>
+                        {p.careLevel && (
+                          <span className="ml-2 shrink-0 rounded bg-emerald-100 px-1.5 py-0.5 text-[8px] font-extrabold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                            {p.careLevel}
+                          </span>
+                        )}
+                      </button>
+                    ))
+                  ) : (
+                    <div className="p-3 text-center">
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                        No registered patient found matching &ldquo;{patientSearch}&rdquo;.
+                      </p>
+                      {patientSearch.trim() && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setPatientId(patientSearch.trim());
+                            setIsDropdownOpen(false);
+                          }}
+                          className="mt-2 inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-2.5 py-1 text-[10px] font-bold text-white hover:bg-emerald-700 cursor-pointer"
+                        >
+                          <PlusCircle className="h-3 w-3" />
+                          <span>Use &ldquo;{patientSearch.trim()}&rdquo; as Custom Patient</span>
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -485,21 +648,35 @@ export default function CollectionLedgerWidget({
               )}
             </button>
 
-            {/* Message alert */}
+            {/* Message alert & Record Another Receipt button */}
             {message && (
               <div
-                className={`flex items-center gap-2 rounded-xl p-2.5 text-[10px] font-semibold sm:col-span-2 ${
+                className={`flex flex-col gap-2 rounded-xl p-3 sm:col-span-2 ${
                   message.type === "success"
                     ? "border border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
                     : "border border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300"
                 }`}
               >
-                {message.type === "success" ? (
-                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
-                ) : (
-                  <AlertCircle className="h-3.5 w-3.5 shrink-0 text-rose-600" />
+                <div className="flex items-center gap-2 text-[10px] font-semibold">
+                  {message.type === "success" ? (
+                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
+                  ) : (
+                    <AlertCircle className="h-3.5 w-3.5 shrink-0 text-rose-600" />
+                  )}
+                  <span>{message.text}</span>
+                </div>
+                {message.type === "success" && (
+                  <div className="pt-1">
+                    <button
+                      type="button"
+                      onClick={handleStartNewReceipt}
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-[10px] font-bold text-white shadow-xs hover:bg-emerald-700 transition cursor-pointer"
+                    >
+                      <PlusCircle className="h-3.5 w-3.5" />
+                      <span>Record Another Receipt</span>
+                    </button>
+                  </div>
                 )}
-                <span>{message.text}</span>
               </div>
             )}
           </div>
@@ -512,7 +689,7 @@ export default function CollectionLedgerWidget({
           <div className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
             Recent Confirmed Receipts Today ({payments.length})
           </div>
-          {payments.slice(0, 6).map((payment) => (
+          {payments.slice(0, 8).map((payment) => (
             <div
               key={payment.paymentId}
               className="grid grid-cols-[1fr_auto] items-center gap-3 rounded-xl bg-slate-50 px-3 py-2 text-[10px] dark:bg-slate-850"
