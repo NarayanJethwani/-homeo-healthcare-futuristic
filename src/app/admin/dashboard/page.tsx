@@ -7718,16 +7718,17 @@ ${err.message || err}`);
       return;
     }
     
-    const hasRealSheet = activePatient.sheetUrl && 
-                         activePatient.sheetUrl.startsWith("https://") && 
-                         activePatient.sheetUrl.includes("google.com/spreadsheets");
+    const hasRealSheet = Boolean(
+      (activePatient.sheetId && activePatient.sheetId !== "mock-sheet-id") ||
+      (activePatient.sheetUrl && (activePatient.sheetUrl.includes("google.com") || activePatient.sheetUrl.startsWith("https://")))
+    );
 
     if (hasRealSheet && sheetOpeningMode === "real") {
       setIsSyncingRepertory(true);
 
-      let sheetId = (activePatient as any).sheetId;
-      if (!sheetId && activePatient.sheetUrl) {
-        const match = activePatient.sheetUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+      let sheetId = (activePatient as any).sheetId || "";
+      if (activePatient.sheetUrl) {
+        const match = activePatient.sheetUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/) || activePatient.sheetUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
         if (match) {
           sheetId = match[1];
         }
@@ -7739,6 +7740,7 @@ ${err.message || err}`);
         body: JSON.stringify({
           patientId: activePatient.id,
           sheetId: sheetId || "",
+          sheetUrl: activePatient.sheetUrl || "",
           rubrics: rubricsPayload,
           remedies: remedies
         })
@@ -7747,7 +7749,9 @@ ${err.message || err}`);
       .then(data => {
         if (data.success) {
           alert("Selected rubrics synchronized directly to your actual Google Sheet Repertorization matrix!");
-          window.open(activePatient.sheetUrl, "_blank");
+          if (activePatient.sheetUrl && activePatient.sheetUrl.startsWith("http")) {
+            window.open(activePatient.sheetUrl, "_blank");
+          }
         } else {
           alert(`Sync failed: ${data.message || "Unknown error"}`);
         }
@@ -9281,7 +9285,7 @@ ${err.message || err}`);
                     reduceMotion={reduceMotion}
                   />
 
-                  <CollectionLedgerWidget payments={confirmedPayments} onRefresh={async () => { await refreshConfirmedPayments(); await refreshClinicalWork(); }} />
+                  <CollectionLedgerWidget patients={patients} payments={confirmedPayments} onRefresh={async () => { await refreshConfirmedPayments(); await refreshClinicalWork(); }} />
 
                   {/* Priority 1 & 2: Today's Schedule & Smart Alerts Panel */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
@@ -31356,6 +31360,48 @@ Exported on: ${new Date().toLocaleDateString()}
                                   <Send className="w-3.5 h-3.5" />
                                   <span>WhatsApp</span>
                                 </button>
+
+                                {/* Confirm Receipt of Payment */}
+                                {inv.status !== "Paid" && (
+                                  <button
+                                    onClick={async () => {
+                                      const grandTotal = Number(inv.grandTotal || 0);
+                                      const confirmed = window.confirm(`Confirm receipt of ₹${grandTotal.toLocaleString("en-IN")} for invoice ${inv.id}?`);
+                                      if (!confirmed) return;
+                                      try {
+                                        const response = await fetch("/api/admin/manual-payments/record", {
+                                          method: "POST",
+                                          headers: { "Content-Type": "application/json" },
+                                          body: JSON.stringify({
+                                            invoiceId: inv.id,
+                                            patientId: selectedInvoicePatient?.id || inv.patientId,
+                                            amountPaise: Math.round(grandTotal * 100),
+                                            paymentMethod: (inv.paymentMode || "UPI").toLowerCase().replace(/\s+/g, "_"),
+                                            referenceNumber: `REC-${Date.now().toString().slice(-6)}`,
+                                          }),
+                                        });
+                                        const result = await response.json();
+                                        if (response.ok && result.success) {
+                                          alert("Payment receipt confirmed successfully! Invoice marked Paid.");
+                                          setInvoicesList((prev) =>
+                                            prev.map((item) => (item.id === inv.id ? { ...item, status: "Paid" } : item))
+                                          );
+                                          void refreshConfirmedPayments();
+                                          void refreshClinicalWork();
+                                        } else {
+                                          alert(result.error || "Failed to confirm payment.");
+                                        }
+                                      } catch (err: any) {
+                                        alert(err.message || "Failed to confirm payment.");
+                                      }
+                                    }}
+                                    className="p-1.5 rounded-lg border border-emerald-400 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-all cursor-pointer flex items-center gap-1 font-bold text-[9px] uppercase tracking-wider"
+                                    title="Confirm Receipt of Payment"
+                                  >
+                                    <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                                    <span>Confirm Payment</span>
+                                  </button>
+                                )}
                               </div>
                             </div>
                           </div>

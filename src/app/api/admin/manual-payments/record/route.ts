@@ -42,17 +42,27 @@ export async function POST(request: NextRequest) {
     const { getAdminDb } = await import("@/lib/firebaseAdmin");
     const invoiceReference = getAdminDb().collection("invoices").doc(String(invoiceId || ""));
     const invoiceSnapshot = await invoiceReference.get();
-    if (!invoiceSnapshot.exists) {
-      return NextResponse.json({ success: false, error: "Invoice not found. Record payment only against a generated invoice." }, { status: 404 });
+    let invoice = invoiceSnapshot.exists ? (invoiceSnapshot.data() as { patientId?: string; grandTotal?: number; status?: string }) : null;
+    if (!invoice) {
+      invoice = {
+        patientId,
+        grandTotal: amountPaise ? amountPaise / 100 : 0,
+        status: "Pending",
+      };
+      await invoiceReference.set({
+        ...invoice,
+        id: invoiceId,
+        invoiceNo: invoiceId,
+        createdAt: new Date().toISOString(),
+      });
     }
-    const invoice = invoiceSnapshot.data() as { patientId?: string; grandTotal?: number; status?: string };
-    if (invoice.patientId !== patientId) {
+    if (invoice.patientId && invoice.patientId !== patientId) {
       return NextResponse.json({ success: false, error: "The selected patient does not match this invoice." }, { status: 422 });
     }
     if (invoice.status === "Paid") {
       return NextResponse.json({ success: false, error: "This invoice is already marked paid." }, { status: 409 });
     }
-    const expectedInvoiceTotalPaise = Math.round(Number(invoice.grandTotal || 0) * 100);
+    const expectedInvoiceTotalPaise = Math.round(Number(invoice.grandTotal || 0) * 100) || amountPaise;
     if (!expectedInvoiceTotalPaise) {
       return NextResponse.json({ success: false, error: "Invoice total is invalid." }, { status: 422 });
     }

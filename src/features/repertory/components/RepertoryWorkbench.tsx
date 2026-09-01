@@ -556,9 +556,9 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
 
     setIsSyncingToSheet(true);
     try {
-      let sheetId = loadedPatient.sheetId;
-      if (!sheetId && loadedPatient.sheetUrl) {
-        const match = loadedPatient.sheetUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+      let sheetId = loadedPatient.sheetId || "";
+      if (loadedPatient.sheetUrl) {
+        const match = loadedPatient.sheetUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/) || loadedPatient.sheetUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
         if (match) {
           sheetId = match[1];
         }
@@ -570,6 +570,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
         body: JSON.stringify({
           patientId: loadedPatient.id,
           sheetId: sheetId || "",
+          sheetUrl: loadedPatient.sheetUrl || "",
           rubrics: rubricsPayload,
           remedies: scoringResult?.topRemedies.map(tr => tr.remedyId) || ["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"]
         })

@@ -5,12 +5,20 @@ import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiA
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+function extractSpreadsheetId(input?: string): string {
+  if (!input) return "";
+  const match = input.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/) || input.match(/\/d\/([a-zA-Z0-9-_]+)/);
+  if (match) return match[1];
+  if (input.startsWith("http")) return "";
+  return input;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const session = await requireAdminApiSession(request);
     if (!session) return unauthorizedApiResponse();
 
-    const { patientId, rubrics, remedies, sheetId: clientSheetId } = await request.json();
+    const { patientId, rubrics, remedies, sheetId: clientSheetId, sheetUrl: clientSheetUrl } = await request.json();
     if (!patientId || !rubrics || !Array.isArray(rubrics)) {
       return NextResponse.json(
         { success: false, message: "Missing patientId or invalid rubrics parameter." },
@@ -18,16 +26,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let sheetId = clientSheetId || "mock-sheet-id";
+    let sheetId = extractSpreadsheetId(clientSheetId) || extractSpreadsheetId(clientSheetUrl) || "";
 
-    // 1. Fetch patient document to get sheetId only if not provided by client
+    // 1. Fetch patient document to get sheetId / sheetUrl if not provided or mock
     if ((!sheetId || sheetId === "mock-sheet-id") && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "mock-project-id") {
       try {
         const { getAdminDb } = await import("@/lib/firebaseAdmin");
         const patientSnap = await getAdminDb().collection("patients").doc(patientId).get();
         if (patientSnap.exists) {
           const patientData = patientSnap.data();
-          sheetId = patientData?.sheetId || "mock-sheet-id";
+          sheetId = extractSpreadsheetId(patientData?.sheetId) || extractSpreadsheetId(patientData?.sheetUrl) || "mock-sheet-id";
         }
       } catch (dbErr: any) {
         console.error("Firestore patient fetch failed in export-repertory:", dbErr);
@@ -43,8 +51,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { 
             success: false, 
-            message: "Failed to update Google Sheets. Make sure credentials are correct.", 
-            error: sheetErr.message || sheetErr 
+            message: "Failed to update Google Sheets. Make sure sheet credentials and tab permissions are correct.", 
+            error: sheetErr.message || String(sheetErr) 
           },
           { status: 500 }
         );
