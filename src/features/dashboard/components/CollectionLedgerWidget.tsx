@@ -199,7 +199,7 @@ export default function CollectionLedgerWidget({
           patientId: targetPatientId,
           amountPaise: calculatedAmountPaise,
           paymentMethod: method,
-          referenceNumber: reference.trim() || undefined,
+          referenceNumber: reference.trim(),
         }),
       });
 
