@@ -155,6 +155,15 @@ export default function AnalyticsPanel({
     );
   }
 
+  const hasOperationalAnalytics = Boolean((globalThis as any).__HOMEOPATHY_ANALYTICS_DATA_READY__);
+  if (!hasOperationalAnalytics) return (
+    <div className="rounded-[32px] border border-slate-200 bg-white p-6 text-center shadow-xs dark:border-slate-800 dark:bg-slate-900">
+      <Activity className="mx-auto h-7 w-7 text-slate-300" />
+      <h3 className="mt-2 text-sm font-bold text-slate-700 dark:text-slate-200">Operational analytics pending</h3>
+      <p className="mx-auto mt-1 max-w-md text-xs leading-relaxed text-slate-400">Trends will appear after verified appointments, outcomes and payment receipts have accumulated. Demonstration chart values are not displayed.</p>
+    </div>
+  );
+
   return (
     <div className="bg-white dark:bg-slate-900 p-6 rounded-[32px] border border-slate-200/80 dark:border-slate-800/80 shadow-xs space-y-6 select-text">
       {/* Header and timeframe filters */}

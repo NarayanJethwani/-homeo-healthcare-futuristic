@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { Brain, Star, ArrowRight, ShieldAlert, AlertTriangle, RefreshCw, X } from "lucide-react";
 import { CdssRecommendation } from "../types";
-import { useCdss } from "../hooks/useCdss";
 
 interface AiRecommendationsPanelProps {
   patients?: any[];
@@ -16,7 +15,6 @@ interface AiRecommendationsPanelProps {
 }
 
 export default function AiRecommendationsPanel({
-  patients = [],
   onSelectPatient,
   setActiveTab,
   isLoading = false,
@@ -24,21 +22,17 @@ export default function AiRecommendationsPanel({
   onRetry,
   reduceMotion = false,
 }: AiRecommendationsPanelProps) {
-  const [localDismissedRecs, setLocalDismissedRecs] = useState<string[]>([]);
-
-  const handleDismiss = (id: string) => {
-    setLocalDismissedRecs((prev) => [...prev, id]);
-  };
+  const [, setDismissedRecommendationIds] = useState<string[]>([]);
+  const handleDismiss = (id: string) => setDismissedRecommendationIds((current) => [...current, id]);
 
   const handleOpenPatient = (patientId: string) => {
     onSelectPatient(patientId);
     setActiveTab("patients");
   };
 
-  const { recommendations: rawRecommendations } = useCdss(patients);
-  const recommendations = useMemo(() => {
-    return rawRecommendations.filter((rec) => !localDismissedRecs.includes(rec.id));
-  }, [rawRecommendations, localDismissedRecs]);
+  // Patient complaint text alone must not create a pseudo-clinical recommendation.
+  // Only persisted, evidence-backed decision-support runs will populate this panel.
+  const recommendations: CdssRecommendation[] = [];
 
   if (isLoading) {
     return (
@@ -158,7 +152,7 @@ export default function AiRecommendationsPanel({
               <div className="p-2.5 bg-rose-50/40 dark:bg-rose-955/5 border border-rose-100/30 dark:border-rose-900/20 rounded-xl text-[9px] text-rose-750 dark:text-rose-400/90 leading-relaxed flex items-start gap-1.5 select-none font-sans">
                 <AlertTriangle className="w-3.5 h-3.5 text-rose-500 shrink-0 mt-0.5" />
                 <p>
-                  <span className="font-bold uppercase tracking-wider">Advisory Notice (Not a confirmed diagnosis):</span> {rec.advisoryDisclaimer}
+                  <span className="font-bold uppercase tracking-wider">Advisory Notice (Not a confirmed diagnosis):</span> Requires clinician review with an evidence-backed decision-support run.
                 </p>
               </div>
 

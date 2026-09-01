@@ -119,6 +119,10 @@ import {
   featureFlags,
 } from "../../../features/dashboard";
 import KeyboardShortcutsModal from "../../../features/dashboard/components/KeyboardShortcutsModal";
+import AppointmentSchedulerModal from "@/features/dashboard/components/AppointmentSchedulerModal";
+import CollectionLedgerWidget from "@/features/dashboard/components/CollectionLedgerWidget";
+import type { ClinicalAppointment } from "@/lib/appointmentService";
+import type { ClinicalActivity, ClinicalTask } from "@/lib/clinicalOperations";
 import {
   ClinicalCareFeeSimulator,
   type ClinicalCareSimulatorDecision,
@@ -242,6 +246,7 @@ interface Patient {
   folderUrl: string;
   folderId?: string;
   sheetUrl: string;
+  sheetId?: string;
   assignedDoctor: string;
   status: string;
   createdAt: string;
@@ -860,6 +865,53 @@ export default function AdminDashboard() {
   const [session, setSession] = useState<UserSession | null>(null);
   const isSuperAdmin = session?.role === "admin" || (session?.role && normalizeRole(session.role) === "super-admin");
   const [activeTab, setActiveTab] = useState<"dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "treatment-planner" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence" | "cie" | "team" | "medical-academy">("dashboard");
+  const [appointments, setAppointments] = useState<ClinicalAppointment[]>([]);
+  const [appointmentsLoading, setAppointmentsLoading] = useState(false);
+  const [appointmentsError, setAppointmentsError] = useState("");
+  const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
+  const [editingAppointment, setEditingAppointment] = useState<ClinicalAppointment | null>(null);
+  const [confirmedPayments, setConfirmedPayments] = useState<any[]>([]);
+  const [clinicalTasks, setClinicalTasks] = useState<ClinicalTask[]>([]);
+  const [clinicalActivities, setClinicalActivities] = useState<ClinicalActivity[]>([]);
+
+  const refreshAppointments = async () => {
+    setAppointmentsLoading(true);
+    setAppointmentsError("");
+    try {
+      const response = await fetch("/api/appointments", { cache: "no-store" });
+      const result = await response.json();
+      if (!response.ok || !result.success) throw new Error(result.message || "Could not load appointments.");
+      setAppointments(result.appointments || []);
+    } catch (error: any) {
+      setAppointmentsError(error.message || "Could not load appointments.");
+    } finally {
+      setAppointmentsLoading(false);
+    }
+  };
+
+  const refreshConfirmedPayments = async () => {
+    try {
+      const date = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date());
+      const response = await fetch(`/api/payments?date=${date}`, { cache: "no-store" });
+      const result = await response.json();
+      if (response.ok && result.success) setConfirmedPayments(result.payments || []);
+    } catch {
+      setConfirmedPayments([]);
+    }
+  };
+
+  const refreshClinicalWork = async () => {
+    try {
+      const [tasksResponse, activityResponse] = await Promise.all([fetch("/api/clinical-tasks", { cache: "no-store" }), fetch("/api/clinical-activity", { cache: "no-store" })]);
+      const [tasksResult, activityResult] = await Promise.all([tasksResponse.json(), activityResponse.json()]);
+      if (tasksResponse.ok && tasksResult.success) setClinicalTasks(tasksResult.tasks || []);
+      if (activityResponse.ok && activityResult.success) setClinicalActivities(activityResult.activities || []);
+    } catch {
+      setClinicalTasks([]); setClinicalActivities([]);
+    }
+  };
+
+  useEffect(() => { void refreshAppointments(); void refreshConfirmedPayments(); void refreshClinicalWork(); }, []);
   const [nexusSubTab, setNexusSubTab] = useState<"repertory" | "mind-map" | "materia-medica">("repertory");
   const [cieSubTab, setCieSubTab] = useState<"cockpit" | "intake" | "miasms" | "reports">("cockpit");
   const [immersiveMode, setImmersiveMode] = useState(false);
@@ -955,7 +1007,7 @@ export default function AdminDashboard() {
         setActiveTab("treatment-planner");
         break;
       case "schedule-appointment":
-        setActiveTab("communication");
+        setIsAppointmentModalOpen(true);
         break;
       case "generate-invoice":
         if (patients.length > 0) {
@@ -1721,6 +1773,10 @@ export default function AdminDashboard() {
 
   const [patients, setPatients] = useState<Patient[]>([]);
   const [deletingPatientId, setDeletingPatientId] = useState("");
+  const [deleteTargetPatient, setDeleteTargetPatient] = useState<Patient | null>(null);
+  const [deleteClinicalFilesOption, setDeleteClinicalFilesOption] = useState<boolean>(true);
+  const [deleteConfirmInput, setDeleteConfirmInput] = useState<string>("");
+  const [isDeletingPatient, setIsDeletingPatient] = useState<boolean>(false);
   const [sheetOpeningMode, setSheetOpeningMode] = useState<"real" | "mock">("real");
 
   // Load sheet opening mode on mount
@@ -5251,7 +5307,7 @@ export default function AdminDashboard() {
 
   // Sync scroll lock when fullscreen views or modals are open
   useEffect(() => {
-    const isAnyFullscreen = isReaderFullscreen || isLearningHubFullscreen || isDrugPictureFullscreen || graphViewMode === "fullscreen" || isNewCaseModalOpen || isImportModalOpen || selectedRemedyDetail !== null || mindMapDrugPictureId !== null || isResearchFullscreen || isSearchFullscreen || activeSymptomConfig !== null || activeMonographRemedy !== null;
+    const isAnyFullscreen = isReaderFullscreen || isLearningHubFullscreen || isDrugPictureFullscreen || graphViewMode === "fullscreen" || isNewCaseModalOpen || isAppointmentModalOpen || isImportModalOpen || selectedRemedyDetail !== null || mindMapDrugPictureId !== null || isResearchFullscreen || isSearchFullscreen || activeSymptomConfig !== null || activeMonographRemedy !== null;
     
     if (isAnyFullscreen) {
       document.body.style.overflow = "hidden";
@@ -5269,6 +5325,7 @@ export default function AdminDashboard() {
         if (isLearningHubFullscreen) setIsLearningHubFullscreen(false);
         if (isDrugPictureFullscreen) setIsDrugPictureFullscreen(false);
         if (isNewCaseModalOpen) setIsNewCaseModalOpen(false);
+        if (isAppointmentModalOpen) setIsAppointmentModalOpen(false);
         if (isImportModalOpen) setIsImportModalOpen(false);
         if (selectedRemedyDetail) setSelectedRemedyDetail(null);
         if (activeMonographRemedy) setActiveMonographRemedy(null);
@@ -5286,7 +5343,7 @@ export default function AdminDashboard() {
       document.body.style.overflowX = "";
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isReaderFullscreen, isLearningHubFullscreen, isDrugPictureFullscreen, graphViewMode, isNewCaseModalOpen, isImportModalOpen, selectedRemedyDetail, activeMonographRemedy, mindMapDrugPictureId, isResearchFullscreen, isSearchFullscreen, activeSymptomConfig]);
+  }, [isReaderFullscreen, isLearningHubFullscreen, isDrugPictureFullscreen, graphViewMode, isNewCaseModalOpen, isAppointmentModalOpen, isImportModalOpen, selectedRemedyDetail, activeMonographRemedy, mindMapDrugPictureId, isResearchFullscreen, isSearchFullscreen, activeSymptomConfig]);
 
   useEffect(() => {
     if (!isNewCaseModalOpen) {
@@ -5436,7 +5493,7 @@ export default function AdminDashboard() {
   const [invoiceItems, setInvoiceItems] = useState<Array<{ description: string; qty: number; unitPrice: number; amount: number }>>([]);
   const [invoiceDiscount, setInvoiceDiscount] = useState(0);
   const [invoicePaymentMode, setInvoicePaymentMode] = useState("UPI");
-  const [invoiceStatus, setInvoiceStatus] = useState("Paid");
+  const [invoiceStatus, setInvoiceStatus] = useState("Pending");
   const [generatedInvoiceUrl, setGeneratedInvoiceUrl] = useState("");
   const [manualWhatsAppPhone, setManualWhatsAppPhone] = useState("");
   const [caseSpecificSupportAmount, setCaseSpecificSupportAmount] = useState("");
@@ -5495,26 +5552,23 @@ export default function AdminDashboard() {
       return;
     }
 
+    let disposed = false;
     setIsFetchingInvoices(true);
-    const q = query(
-      collection(db, "invoices"),
-      where("patientId", "==", selectedInvoicePatient.id),
-      orderBy("createdAt", "desc")
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const list: any[] = [];
-      snapshot.forEach((doc) => {
-        list.push(doc.data());
-      });
-      setInvoicesList(list);
-      setIsFetchingInvoices(false);
-    }, (error) => {
-      console.error("Error listening to invoices:", error);
-      setIsFetchingInvoices(false);
-    });
-
-    return () => unsubscribe();
+    fetch(`/api/invoice?patientId=${encodeURIComponent(selectedInvoicePatient.id)}`, { cache: "no-store" })
+      .then((response) => response.json().then((result) => ({ response, result })))
+      .then(({ response, result }) => {
+        if (disposed) return;
+        if (!response.ok || !result.success) throw new Error(result.message || "Unable to load invoices.");
+        setInvoicesList(result.invoices || []);
+      })
+      .catch((error) => {
+        if (!disposed) {
+          console.error("Error loading invoices:", error);
+          setInvoicesList([]);
+        }
+      })
+      .finally(() => { if (!disposed) setIsFetchingInvoices(false); });
+    return () => { disposed = true; };
   }, [selectedInvoicePatient]);
 
   const openInvoiceModal = (patient: Patient) => {
@@ -6688,22 +6742,34 @@ Homeo Healthcare`;
     setIsNewCaseModalOpen(true);
   };
 
-  const handleDeletePendingPatient = async (patient: Patient) => {
-    const confirmation = window.prompt(
-      `Type "${patient.name}" to delete this pending patient from the portal. The Google clinical folder and sheet will be retained for recovery.`
-    );
+  const openDeletePatientModal = (patient: Patient) => {
+    setDeleteTargetPatient(patient);
+    setDeleteClinicalFilesOption(true);
+    setDeleteConfirmInput("");
+  };
 
-    if (confirmation === null) return;
-    if (confirmation.trim() !== patient.name.trim()) {
-      alert("Patient name did not match. Nothing was deleted.");
+  const handleConfirmDeletePatient = async () => {
+    if (!deleteTargetPatient) return;
+    const patient = deleteTargetPatient;
+
+    if (deleteConfirmInput.trim().toLowerCase() !== patient.name.trim().toLowerCase()) {
+      alert(`Please type "${patient.name}" exactly to confirm deletion.`);
       return;
     }
 
+    setIsDeletingPatient(true);
     setDeletingPatientId(patient.id);
     try {
-      const response = await fetch(`/api/admin/patients/${encodeURIComponent(patient.id)}`, {
-        method: "DELETE"
+      const queryParams = new URLSearchParams({
+        deleteSheet: deleteClinicalFilesOption ? "true" : "false",
+        deleteFiles: deleteClinicalFilesOption ? "true" : "false",
       });
+      const response = await fetch(
+        `/api/admin/patients/${encodeURIComponent(patient.id)}?${queryParams.toString()}`,
+        {
+          method: "DELETE",
+        }
+      );
       const data = await response.json();
 
       if (!response.ok || !data.success) {
@@ -6713,12 +6779,18 @@ Homeo Healthcare`;
       setPatients((current) => current.filter((item) => item.id !== patient.id));
       if (selectedPatientId === patient.id) setSelectedPatientId("");
       if (timelinePatient?.id === patient.id) setTimelinePatient(null);
-      alert("Pending patient deleted. The Google clinical sheet and folder were retained for recovery.");
+      setDeleteTargetPatient(null);
+      alert(data.message || "Case successfully deleted.");
     } catch (error: any) {
       alert(error.message || "Failed to delete patient record.");
     } finally {
+      setIsDeletingPatient(false);
       setDeletingPatientId("");
     }
+  };
+
+  const handleDeletePendingPatient = async (patient: Patient) => {
+    openDeletePatientModal(patient);
   };
 
   const handleCSVImport = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -7647,16 +7719,17 @@ ${err.message || err}`);
       return;
     }
     
-    const hasRealSheet = activePatient.sheetUrl && 
-                         activePatient.sheetUrl.startsWith("https://") && 
-                         activePatient.sheetUrl.includes("google.com/spreadsheets");
+    const hasRealSheet = Boolean(
+      (activePatient.sheetId && activePatient.sheetId !== "mock-sheet-id") ||
+      (activePatient.sheetUrl && (activePatient.sheetUrl.includes("google.com") || activePatient.sheetUrl.startsWith("https://")))
+    );
 
     if (hasRealSheet && sheetOpeningMode === "real") {
       setIsSyncingRepertory(true);
 
-      let sheetId = (activePatient as any).sheetId;
-      if (!sheetId && activePatient.sheetUrl) {
-        const match = activePatient.sheetUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+      let sheetId = (activePatient as any).sheetId || "";
+      if (activePatient.sheetUrl) {
+        const match = activePatient.sheetUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/) || activePatient.sheetUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
         if (match) {
           sheetId = match[1];
         }
@@ -7668,6 +7741,7 @@ ${err.message || err}`);
         body: JSON.stringify({
           patientId: activePatient.id,
           sheetId: sheetId || "",
+          sheetUrl: activePatient.sheetUrl || "",
           rubrics: rubricsPayload,
           remedies: remedies
         })
@@ -7676,7 +7750,9 @@ ${err.message || err}`);
       .then(data => {
         if (data.success) {
           alert("Selected rubrics synchronized directly to your actual Google Sheet Repertorization matrix!");
-          window.open(activePatient.sheetUrl, "_blank");
+          if (activePatient.sheetUrl && activePatient.sheetUrl.startsWith("http")) {
+            window.open(activePatient.sheetUrl, "_blank");
+          }
         } else {
           alert(`Sync failed: ${data.message || "Unknown error"}`);
         }
@@ -9184,13 +9260,15 @@ ${err.message || err}`);
                 className="w-full h-full"
               >
                 {activeTab === "dashboard" && (() => {
+              const dashboardDate = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date());
+              const todaysAppointments = appointments.filter((appointment) => new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date(appointment.startsAt)) === dashboardDate && !["cancelled", "no-show"].includes(appointment.status));
               const overviewStats = {
-                appointmentsCount: patients.slice(0, 4).length || 4,
-                followUpsCount: patients.filter((p) => p.status === "inactive" || p.durationText?.includes("Follow-up")).length || 3,
-                abnormalReportsCount: patients.filter((p) => p.complaint.toLowerCase().includes("acid") || p.complaint.toLowerCase().includes("gerd")).length || 2,
-                emergencyCasesCount: patients.filter((p) => p.careLevel === "emergency" || p.careLevel === "high").length || 1,
-                revenueCollected: invoicesList.filter((inv) => inv.status === "Paid").slice(0, 3).reduce((sum, inv) => sum + (inv.amount || inv.grandTotal || 0), 0) || 18400,
-                recoveryIndex: patients.length > 0 ? (86.5 + (patients.filter((p) => p.status === "active").length / patients.length) * 8.5).toFixed(1) + "%" : "94.2%",
+                appointmentsCount: todaysAppointments.length,
+                followUpsCount: todaysAppointments.filter((appointment) => appointment.type === "follow-up" && appointment.status !== "completed").length,
+                abnormalReportsCount: 0,
+                emergencyCasesCount: todaysAppointments.filter((appointment) => appointment.type === "emergency" && !["completed", "cancelled"].includes(appointment.status)).length,
+                revenueCollected: confirmedPayments.reduce((sum, payment) => sum + Number(payment.amountPaise || 0), 0) / 100,
+                recoveryIndex: "—",
               };
 
               return (
@@ -9208,13 +9286,29 @@ ${err.message || err}`);
                     reduceMotion={reduceMotion}
                   />
 
+                  <CollectionLedgerWidget patients={patients} payments={confirmedPayments} onRefresh={async () => { await refreshConfirmedPayments(); await refreshClinicalWork(); }} />
+
                   {/* Priority 1 & 2: Today's Schedule & Smart Alerts Panel */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                     <DashboardErrorBoundary widgetName="Today's Schedule">
                       <TodaySchedule
-                        patients={patients}
+                        appointments={appointments}
                         onSelectPatient={setSelectedPatientId}
                         setActiveTab={setActiveTab}
+                        isLoading={appointmentsLoading}
+                        error={appointmentsError}
+                        onRetry={refreshAppointments}
+                        onUpdateStatus={async (appointment, status) => {
+                          const response = await fetch("/api/appointments", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: appointment.id, status }) });
+                          if (response.ok) { void refreshAppointments(); void refreshClinicalWork(); }
+                        }}
+                        onReschedule={(appointment) => { setEditingAppointment(appointment); setIsAppointmentModalOpen(true); }}
+                        onCancel={async (appointment) => {
+                          const cancellationReason = window.prompt("Reason for cancellation:");
+                          if (!cancellationReason) return;
+                          const response = await fetch("/api/appointments", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: appointment.id, status: "cancelled", cancellationReason }) });
+                          if (response.ok) { void refreshAppointments(); void refreshClinicalWork(); }
+                        }}
                         reduceMotion={reduceMotion}
                       />
                     </DashboardErrorBoundary>
@@ -9258,9 +9352,8 @@ ${err.message || err}`);
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
                     <DashboardErrorBoundary widgetName="My Tasks">
                       <MyTasksWidget
-                        onSelectPatient={setSelectedPatientId}
-                        setActiveTab={setActiveTab}
-                        reduceMotion={reduceMotion}
+                        tasks={clinicalTasks}
+                        onRefresh={refreshClinicalWork}
                       />
                     </DashboardErrorBoundary>
                     
@@ -9306,10 +9399,7 @@ ${err.message || err}`);
 
                   {/* Lower Priority: Timeline Feed */}
                   <ActivityTimeline
-                    patients={patients}
-                    onSelectPatient={setSelectedPatientId}
-                    setActiveTab={setActiveTab}
-                    reduceMotion={reduceMotion}
+                    activities={clinicalActivities}
                   />
 
                   {/* Lower Priority: Engine Telemetry Status */}
@@ -14827,21 +14917,21 @@ ${err.message || err}`);
                           <span>Portal</span>
                         </button>
 
-                        {patient.status === "pending_plan" &&
-                          (isSuperAdmin || patient.assignedDoctor === session?.uid) && (
+                        {/* Delete Patient Case Action */}
+                        {(isSuperAdmin || patient.assignedDoctor === session?.uid) && (
                           <button
                             type="button"
-                            onClick={() => handleDeletePendingPatient(patient)}
-                            disabled={deletingPatientId === patient.id}
+                            onClick={() => openDeletePatientModal(patient)}
+                            disabled={isDeletingPatient && deleteTargetPatient?.id === patient.id}
                             className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-3 rounded-full border border-rose-200 text-rose-700 hover:border-rose-500 hover:bg-rose-50 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                            title="Delete this pending patient record; Google clinical files will be retained"
+                            title="Delete this case (with option to delete Google Clinical Sheet & Drive folder)"
                           >
-                            {deletingPatientId === patient.id ? (
+                            {isDeletingPatient && deleteTargetPatient?.id === patient.id ? (
                               <RefreshCw className="w-4 h-4 animate-spin" />
                             ) : (
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-4 h-4 text-rose-600" />
                             )}
-                            <span>{deletingPatientId === patient.id ? "Deleting..." : "Delete"}</span>
+                            <span>{isDeletingPatient && deleteTargetPatient?.id === patient.id ? "Deleting..." : "Delete"}</span>
                           </button>
                         )}
 
@@ -28287,6 +28377,15 @@ Exported on: ${new Date().toLocaleDateString()}
             </div>
           )}
 
+          {isAppointmentModalOpen && (
+            <AppointmentSchedulerModal
+              patients={patients}
+              appointment={editingAppointment}
+              onClose={() => { setIsAppointmentModalOpen(false); setEditingAppointment(null); }}
+              onScheduled={async () => { await refreshAppointments(); await refreshClinicalWork(); }}
+            />
+          )}
+
           {isNewCaseModalOpen && (
             <div className="fixed inset-0 h-full w-full flex items-center justify-center z-50 pointer-events-none p-4 md:p-6">
               {/* Backdrop */}
@@ -29054,6 +29153,149 @@ Exported on: ${new Date().toLocaleDateString()}
                   </button>
                 </div>
 
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+        </Portal>
+
+        {/* 1c. Delete Patient Case Modal with Google Clinical Sheet Option */}
+        <Portal>
+        <AnimatePresence>
+          {deleteTargetPatient && (
+            <div className="fixed inset-0 h-full w-full flex items-center justify-center z-50 pointer-events-none p-4 md:p-6">
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => {
+                  if (!isDeletingPatient) setDeleteTargetPatient(null);
+                }}
+                className="absolute inset-0 bg-slate-900/40 backdrop-blur-md pointer-events-auto"
+              />
+
+              {/* Modal Container */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ type: "spring", damping: 25, stiffness: 220 }}
+                data-lenis-prevent
+                className="relative max-w-lg w-full p-6 md:p-8 bg-[#FAF9F6] dark:bg-slate-900 border border-white/60 dark:border-slate-800 shadow-2xl rounded-[36px] flex flex-col pointer-events-auto max-h-[90vh] overflow-y-auto"
+              >
+                {/* Modal Header */}
+                <div className="flex items-center justify-between border-b border-slate-900/5 dark:border-slate-800 pb-4 mb-5 flex-shrink-0">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-rose-100 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800/60 flex items-center justify-center text-rose-600 dark:text-rose-400 shadow-sm">
+                      <Trash2 className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Delete Clinical Case</h3>
+                      <span className="text-[10px] text-rose-600 font-bold uppercase tracking-wider">Permanent Removal & Cleanup</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (!isDeletingPatient) setDeleteTargetPatient(null);
+                    }}
+                    disabled={isDeletingPatient}
+                    className="w-8 h-8 rounded-full border border-slate-200 hover:border-slate-800 flex items-center justify-center transition-all bg-white dark:bg-slate-800 text-slate-600 cursor-pointer disabled:opacity-50"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="space-y-4 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  {/* Patient Info Card */}
+                  <div className="p-4 rounded-2xl bg-white dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-800 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-bold text-slate-900 dark:text-slate-100">{deleteTargetPatient.name}</span>
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                        {deleteTargetPatient.id}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">
+                      <strong>Profile:</strong> {deleteTargetPatient.age || "N/A"} Y/O · {deleteTargetPatient.gender || "N/A"} · {deleteTargetPatient.location || "N/A"}
+                    </p>
+                    {deleteTargetPatient.complaint && (
+                      <p className="text-[11px] text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 leading-relaxed font-normal">
+                        <strong>Chief Complaint:</strong> {deleteTargetPatient.complaint}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Google Drive / Sheet Deletion Option */}
+                  <div className="p-4 rounded-2xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 space-y-3">
+                    <label className="flex items-start gap-3 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={deleteClinicalFilesOption}
+                        onChange={(e) => setDeleteClinicalFilesOption(e.target.checked)}
+                        className="mt-0.5 w-4 h-4 text-rose-600 rounded border-slate-300 focus:ring-rose-500"
+                      />
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-slate-100">
+                          <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+                          <span>Delete Google Clinical Sheet & Drive Folder</span>
+                        </div>
+                        <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-normal font-normal">
+                          {deleteClinicalFilesOption
+                            ? "Will permanently purge the Google Spreadsheet and Drive folder created for this patient."
+                            : "Retains Google Drive files in cloud storage; only removes the record from the portal database."}
+                        </p>
+                      </div>
+                    </label>
+                  </div>
+
+                  {/* Security Confirmation Prompt */}
+                  <div className="space-y-2">
+                    <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                      Type <span className="font-mono text-rose-600 font-extrabold">{deleteTargetPatient.name}</span> to confirm:
+                    </label>
+                    <input
+                      type="text"
+                      value={deleteConfirmInput}
+                      onChange={(e) => setDeleteConfirmInput(e.target.value)}
+                      placeholder={`Enter "${deleteTargetPatient.name}"`}
+                      disabled={isDeletingPatient}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Footer Buttons */}
+                <div className="flex items-center justify-end gap-3 border-t border-slate-900/5 dark:border-slate-800 pt-4 mt-6 flex-shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setDeleteTargetPatient(null)}
+                    disabled={isDeletingPatient}
+                    className="px-5 py-2.5 rounded-full border border-slate-200 hover:border-slate-800 text-xs font-bold uppercase transition-all bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 cursor-pointer disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleConfirmDeletePatient}
+                    disabled={
+                      isDeletingPatient ||
+                      deleteConfirmInput.trim().toLowerCase() !== deleteTargetPatient.name.trim().toLowerCase()
+                    }
+                    className="px-6 py-2.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-md flex items-center gap-1.5"
+                  >
+                    {isDeletingPatient ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span>Deleting Case...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="w-4 h-4" />
+                        <span>Delete Case</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </motion.div>
             </div>
           )}
@@ -31119,6 +31361,48 @@ Exported on: ${new Date().toLocaleDateString()}
                                   <Send className="w-3.5 h-3.5" />
                                   <span>WhatsApp</span>
                                 </button>
+
+                                {/* Confirm Receipt of Payment */}
+                                {inv.status !== "Paid" && (
+                                  <button
+                                    onClick={async () => {
+                                      const grandTotal = Number(inv.grandTotal || 0);
+                                      const confirmed = window.confirm(`Confirm receipt of ₹${grandTotal.toLocaleString("en-IN")} for invoice ${inv.id}?`);
+                                      if (!confirmed) return;
+                                      try {
+                                        const response = await fetch("/api/admin/manual-payments/record", {
+                                          method: "POST",
+                                          headers: { "Content-Type": "application/json" },
+                                          body: JSON.stringify({
+                                            invoiceId: inv.id,
+                                            patientId: selectedInvoicePatient?.id || inv.patientId,
+                                            amountPaise: Math.round(grandTotal * 100),
+                                            paymentMethod: (inv.paymentMode || "UPI").toLowerCase().replace(/\s+/g, "_"),
+                                            referenceNumber: `REC-${Date.now().toString().slice(-6)}`,
+                                          }),
+                                        });
+                                        const result = await response.json();
+                                        if (response.ok && result.success) {
+                                          alert("Payment receipt confirmed successfully! Invoice marked Paid.");
+                                          setInvoicesList((prev) =>
+                                            prev.map((item) => (item.id === inv.id ? { ...item, status: "Paid" } : item))
+                                          );
+                                          void refreshConfirmedPayments();
+                                          void refreshClinicalWork();
+                                        } else {
+                                          alert(result.error || "Failed to confirm payment.");
+                                        }
+                                      } catch (err: any) {
+                                        alert(err.message || "Failed to confirm payment.");
+                                      }
+                                    }}
+                                    className="p-1.5 rounded-lg border border-emerald-400 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-all cursor-pointer flex items-center gap-1 font-bold text-[9px] uppercase tracking-wider"
+                                    title="Confirm Receipt of Payment"
+                                  >
+                                    <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                                    <span>Confirm Payment</span>
+                                  </button>
+                                )}
                               </div>
                             </div>
                           </div>

@@ -25,12 +25,15 @@ export async function GET(request: NextRequest) {
       return jsonResponse({ success: false, message: "Authentication required." }, 401);
     }
 
-    const invoiceNo = request.nextUrl.searchParams.get("invoiceNo")?.trim();
-    if (!invoiceNo) {
-      return jsonResponse({ success: false, message: "Missing invoice number." }, 400);
-    }
-
     const { getAdminDb } = await import("@/lib/firebaseAdmin");
+    const invoiceNo = request.nextUrl.searchParams.get("invoiceNo")?.trim();
+    const patientId = request.nextUrl.searchParams.get("patientId")?.trim();
+    if (patientId) {
+      const snapshot = await getAdminDb().collection("invoices").where("patientId", "==", patientId).get();
+      const invoices = snapshot.docs.map((document: any) => document.data()).sort((a: any, b: any) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+      return jsonResponse({ success: true, invoices });
+    }
+    if (!invoiceNo) return jsonResponse({ success: false, message: "Provide an invoice number or patient." }, 400);
     const invoiceDoc = await getAdminDb().collection("invoices").doc(invoiceNo).get();
     if (!invoiceDoc.exists) {
       return jsonResponse({ success: false, message: "Invoice not found." }, 404);

@@ -31,14 +31,7 @@ export default function SystemStatusGrid({
     const totalLogs = telemetryLogs.length;
     const isAiRouterOverloaded = failedLogsCount > 2 || (totalLogs > 0 && (failedLogsCount / totalLogs) > 0.05);
 
-    return [
-      { name: "Firebase db", status: "online", latency: "14ms" },
-      { name: "AI Router service", status: isAiRouterOverloaded ? "warning" : "online", latency: "185ms" },
-      { name: "Primary LLMs", status: "online", latency: "1.2s" },
-      { name: "Clinical Storage", status: "online", latency: "24ms" },
-      { name: "Communications (SMTP/WA)", status: "online", latency: "95ms" },
-      { name: "Billing & Invoices", status: "online", latency: "12ms" },
-    ];
+    return [{ name: "AI Router service", status: isAiRouterOverloaded ? "warning" : "online", latency: totalLogs > 0 ? "Telemetry connected" : "No telemetry yet" }];
   }, [telemetryLogs, failedLogsCount]);
 
   const getStatusIcon = (status: string) => {

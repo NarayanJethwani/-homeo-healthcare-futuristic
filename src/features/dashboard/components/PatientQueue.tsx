@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Users, FileText, ArrowRight, AlertCircle, RefreshCw, ChevronDown, ChevronUp, Clock, CreditCard, ShieldAlert, Video } from "lucide-react";
+import { Users, FileText, ArrowRight, AlertCircle, RefreshCw, ChevronDown, ChevronUp, Clock, CreditCard, Video } from "lucide-react";
 import { Patient } from "../types";
 import { usePatientQueue } from "../hooks/usePatientQueue";
 
@@ -30,58 +30,7 @@ export default function PatientQueue({
   // Track expanded card IDs locally for progressive disclosure
   const [expandedCardIds, setExpandedCardIds] = useState<Record<string, boolean>>({});
 
-  const displayQueue = React.useMemo(() => {
-    return queue.length > 0 ? queue : [
-      {
-        id: "pat-rahul-01",
-        name: "Rahul Sharma",
-        age: "34",
-        gender: "Male",
-        complaint: "Suppressed Eczema & Chronic Asthma flares",
-        priority: "Critical",
-        lastVisit: "12 Mar 2026",
-        assignedDoctor: "Dr. N. Jethwani",
-        currentRemedy: "Sulphur 200C",
-        followUpDue: "Jul 14, 2026",
-        outstandingReports: "2 files",
-        paymentStatus: "Paid",
-        stage: "Intake Pending",
-        pendingReports: ["IgE Panel", "Absolute Eosinophils"],
-      },
-      {
-        id: "pat-meera-02",
-        name: "Meera Jethwani",
-        age: "62",
-        gender: "Female",
-        complaint: "Severe GERD & Autonomic Dysregulation",
-        priority: "High",
-        lastVisit: "22 Feb 2026",
-        assignedDoctor: "Dr. N. Jethwani",
-        currentRemedy: "Nux Vomica 200C",
-        followUpDue: "Jul 18, 2026",
-        outstandingReports: "2 files",
-        paymentStatus: "Pending",
-        stage: "Report Analyzer",
-        pendingReports: ["TSH Axis", "Fasting Glucose"],
-      },
-      {
-        id: "pat-kabir-03",
-        name: "Baby Kabir",
-        age: "5",
-        gender: "Male",
-        complaint: "Dry Psoric Skin Itching & eruptions",
-        priority: "Medium",
-        lastVisit: "08 Jan 2026",
-        assignedDoctor: "Dr. R. Lokhande",
-        currentRemedy: "Graphites 6C",
-        followUpDue: "Jul 22, 2026",
-        outstandingReports: "1 file",
-        paymentStatus: "Partial",
-        stage: "Outreach Pending",
-        pendingReports: ["CBC Count"],
-      },
-    ];
-  }, [queue]);
+  const displayQueue = queue;
 
   const toggleExpand = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();

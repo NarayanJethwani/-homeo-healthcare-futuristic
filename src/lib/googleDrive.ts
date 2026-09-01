@@ -4747,25 +4747,25 @@ export function getRepertoryFormattingRequests(
   const requests: any[] = [];
   const totalCols = 5 + remediesCount;
 
-  // Clear existing conditional format rules
-  existingRules.forEach(() => {
+  // Clear existing conditional format rules in reverse index order
+  for (let i = (existingRules.length || 0) - 1; i >= 0; i--) {
     requests.push({
       deleteConditionalFormatRule: {
-        index: 0,
+        index: i,
         sheetId: repertoryId
       }
     });
-  });
+  }
 
-  // Unmerge all cells in the matrix area (to clear old merges from different rubric sizes)
+  // Unmerge all cells in the working area (rows 0-100, cols 0-50) to clear old merges from different rubric/remedy dimensions
   requests.push({
     unmergeCells: {
       range: {
         sheetId: repertoryId,
-        startRowIndex: 3,
-        endRowIndex: 50,
+        startRowIndex: 0,
+        endRowIndex: 100,
         startColumnIndex: 0,
-        endColumnIndex: totalCols
+        endColumnIndex: Math.max(50, totalCols + 5)
       }
     }
   });
@@ -5240,13 +5240,22 @@ export function getRepertoryFormattingRequests(
  * Synchronizes selected repertory rubrics directly to the patient's clinical sheet 'Repertorization' tab
  */
 export async function syncRepertoryToClinicalSheet(
-  sheetId: string,
+  sheetIdOrUrl: string,
   rubrics: RepertoryExportRubric[],
   remedies: string[] = ["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"]
 ): Promise<void> {
   const auth = getGoogleAuth();
   if (!auth) {
     console.warn("Google API Auth missing. Skipping Repertory sync to Google Sheets.");
+    return;
+  }
+
+  // Sanitize spreadsheet ID in case a full URL was passed
+  const match = sheetIdOrUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/) || sheetIdOrUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+  const sheetId = match ? match[1] : sheetIdOrUrl;
+
+  if (!sheetId || sheetId === "mock-sheet-id" || sheetId === "mock-sheet") {
+    console.log("Mock sheet ID provided, skipping live Google Sheet update.");
     return;
   }
 
@@ -5257,20 +5266,58 @@ export async function syncRepertoryToClinicalSheet(
     const M = remedies.length;
     const totalCols = 5 + M; // 4 initial columns (A,B,C,D) + M remedies + 1 Totality Score column
 
-    // Fetch spreadsheet metadata to get the sheetId and existing conditional formatting rules of "Repertorization"
+    // Fetch spreadsheet metadata to get existing tabs and conditional formatting rules
     const spreadsheetInfo = await sheets.spreadsheets.get({ spreadsheetId: sheetId });
-    const repertorySheet = spreadsheetInfo.data.sheets?.find(s => s.properties?.title === "Repertorization");
-    if (!repertorySheet) {
-      throw new Error("Repertorization tab not found in the spreadsheet.");
-    }
-    const repertoryId = repertorySheet.properties?.sheetId ?? 3;
-    const existingRules = repertorySheet.conditionalFormats || [];
+    
+    // Find tab matching "Repertorization", "Repertory", "AI Repertory Lab", "Repertorization Matrix", "Repertorisation"
+    let repertorySheet = spreadsheetInfo.data.sheets?.find(s => {
+      const title = (s.properties?.title || "").trim().toLowerCase();
+      return title === "repertorization" || 
+             title === "repertory" || 
+             title === "repertory matrix" || 
+             title === "repertorization matrix" || 
+             title === "ai repertory lab" ||
+             title === "repertorisation";
+    });
 
-    // In case N is 0, we just clear the sheet (or write default headers)
+    let repertorySheetTitle = repertorySheet?.properties?.title || "Repertorization";
+    let repertoryId = repertorySheet?.properties?.sheetId;
+    let existingRules = repertorySheet?.conditionalFormats || [];
+
+    if (!repertorySheet || repertoryId === undefined) {
+      // Create the Repertorization tab dynamically so sync never fails for missing tab
+      try {
+        const addSheetRes = await sheets.spreadsheets.batchUpdate({
+          spreadsheetId: sheetId,
+          requestBody: {
+            requests: [
+              {
+                addSheet: {
+                  properties: {
+                    title: "Repertorization"
+                  }
+                }
+              }
+            ]
+          }
+        });
+        repertorySheetTitle = "Repertorization";
+        repertoryId = addSheetRes.data.replies?.[0]?.addSheet?.properties?.sheetId ?? 3;
+        existingRules = [];
+      } catch (addSheetErr) {
+        console.warn("Could not add Repertorization tab, falling back to first available sheet:", addSheetErr);
+        repertorySheet = spreadsheetInfo.data.sheets?.[0];
+        repertorySheetTitle = repertorySheet?.properties?.title || "Sheet1";
+        repertoryId = repertorySheet?.properties?.sheetId ?? 0;
+        existingRules = repertorySheet?.conditionalFormats || [];
+      }
+    }
+
+    // In case N is 0, write clean headers and empty matrix
     if (N === 0) {
       const emptyRow = Array(totalCols).fill("");
       const titleRow = [...emptyRow];
-      titleRow[0] = "REPERTORY GRID & Dynamic ANALYSIS MATRIX";
+      titleRow[0] = "REPERTORY GRID & DYNAMIC ANALYSIS MATRIX";
       const headerRow = ["Rubric Name", "Chapter / Location", "Source", "Importance Weight", ...remedies, "Totality Score"];
       const emptyRows = [
         emptyRow,
@@ -5282,7 +5329,7 @@ export async function syncRepertoryToClinicalSheet(
       }
       await sheets.spreadsheets.values.update({
         spreadsheetId: sheetId,
-        range: `'Repertorization'!A1:${getColumnLetter(totalCols - 1)}50`,
+        range: `'${repertorySheetTitle}'!A1:${getColumnLetter(totalCols - 1)}50`,
         valueInputOption: "USER_ENTERED",
         requestBody: {
           values: emptyRows
@@ -5293,24 +5340,25 @@ export async function syncRepertoryToClinicalSheet(
 
     const numRubrics = Math.max(10, N);
     const lastRubricRow = 4 + numRubrics - 1;
+    const lastActiveRubricRow = 4 + N - 1;
 
     const rows: any[][] = [
       Array(totalCols).fill(""),
-      ["REPERTORY GRID & Dynamic ANALYSIS MATRIX", ...Array(totalCols - 1).fill("")],
+      ["REPERTORY GRID & DYNAMIC ANALYSIS MATRIX", ...Array(totalCols - 1).fill("")],
       ["Rubric Name", "Chapter / Location", "Source", "Importance Weight", ...remedies, "Totality Score"]
     ];
 
-    // Add rubric rows
+    // Add active rubric rows
     rubrics.forEach((r, idx) => {
       const rowNum = 4 + idx;
-      const rowValues = [
+      const rowValues: any[] = [
         r.name,
         r.chapter,
         r.source || "Kent",
         r.weight || 1
       ];
       remedies.forEach(rem => {
-        rowValues.push(r.grades[rem] || 0);
+        rowValues.push(r.grades?.[rem] ?? 0);
       });
       
       // Totality Score formula: e.g. "=D4*SUM(E4:O4)"
@@ -5320,9 +5368,8 @@ export async function syncRepertoryToClinicalSheet(
       rows.push(rowValues);
     });
 
-    // Pad remaining rows up to numRubrics
+    // Pad remaining rows up to numRubrics with empty cells
     for (let idx = N; idx < numRubrics; idx++) {
-      const rowNum = 4 + idx;
       const rowValues = [
         "", // Rubric Name
         "", // Chapter / Location
@@ -5332,10 +5379,7 @@ export async function syncRepertoryToClinicalSheet(
       remedies.forEach(() => {
         rowValues.push("");
       });
-      
-      const firstRemCol = getColumnLetter(4);
-      const lastRemCol = getColumnLetter(4 + M - 1);
-      rowValues.push(`=IF(D${rowNum}="", "", D${rowNum}*SUM(${firstRemCol}${rowNum}:${lastRemCol}${rowNum}))`);
+      rowValues.push("");
       rows.push(rowValues);
     }
 
@@ -5348,20 +5392,20 @@ export async function syncRepertoryToClinicalSheet(
     const sumGradesRowIndex = lastRubricRow + 4;
     const totalityRankRowIndex = lastRubricRow + 5;
 
-    // Symptom Coverage row
+    // Symptom Coverage row (counting only active rubric weights as denominator)
     const coverageRow = ["Symptom Coverage", "", "", ""];
     remedies.forEach((rem, idx) => {
       const colLetter = getColumnLetter(4 + idx);
-      coverageRow.push(`=COUNTIFS(${colLetter}4:${colLetter}${lastRubricRow}, ">0") / MAX(1, COUNTA($D$4:$D$${lastRubricRow}))`);
+      coverageRow.push(`=COUNTIFS(${colLetter}4:${colLetter}${lastRubricRow}, ">0") / MAX(1, COUNTIF($D$4:$D$${lastRubricRow}, ">0"))`);
     });
     coverageRow.push("");
     rows.push(coverageRow);
 
-    // Sum of Grades row
+    // Sum of Grades row (multiplying active rubric weights)
     const sumGradesRow = ["Sum of Grades", "", "", ""];
     remedies.forEach((rem, idx) => {
       const colLetter = getColumnLetter(4 + idx);
-      sumGradesRow.push(`=SUMPRODUCT(${colLetter}4:${colLetter}${lastRubricRow}, $D$4:$D$${lastRubricRow})`);
+      sumGradesRow.push(`=SUMPRODUCT(${colLetter}4:${colLetter}${lastActiveRubricRow}, $D$4:$D$${lastActiveRubricRow})`);
     });
     sumGradesRow.push("");
     rows.push(sumGradesRow);
@@ -5387,27 +5431,27 @@ export async function syncRepertoryToClinicalSheet(
     // Rank 1
     rows.push([
       "Rank 1",
-      `=INDEX($${firstRemCol}$3:$${lastRemCol}$3, MATCH(MAX(${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}), ${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}, 0))`,
+      `=IFERROR(INDEX($${firstRemCol}$3:$${lastRemCol}$3, MATCH(MAX(${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}), ${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}, 0)), "N/A")`,
       "Score",
-      `=MAX(${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex})`,
+      `=IFERROR(MAX(${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}), 0)`,
       ...Array(totalCols - 4).fill("")
     ]);
 
     // Rank 2
     rows.push([
       "Rank 2",
-      `=INDEX($${firstRemCol}$3:$${lastRemCol}$3, MATCH(LARGE(${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}, 2), ${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}, 0))`,
+      `=IFERROR(INDEX($${firstRemCol}$3:$${lastRemCol}$3, MATCH(LARGE(${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}, 2), ${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}, 0)), "N/A")`,
       "Score",
-      `=LARGE(${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}, 2)`,
+      `=IFERROR(LARGE(${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}, 2), 0)`,
       ...Array(totalCols - 4).fill("")
     ]);
 
     // Rank 3
     rows.push([
       "Rank 3",
-      `=INDEX($${firstRemCol}$3:$${lastRemCol}$3, MATCH(LARGE(${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}, 3), ${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}, 0))`,
+      `=IFERROR(INDEX($${firstRemCol}$3:$${lastRemCol}$3, MATCH(LARGE(${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}, 3), ${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}, 0)), "N/A")`,
       "Score",
-      `=LARGE(${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}, 3)`,
+      `=IFERROR(LARGE(${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}, 3), 0)`,
       ...Array(totalCols - 4).fill("")
     ]);
 
@@ -5417,23 +5461,31 @@ export async function syncRepertoryToClinicalSheet(
       rows.push(Array(totalCols).fill(""));
     }
 
+    // 1. Write the repertory grid data to the sheet tab
     await sheets.spreadsheets.values.update({
       spreadsheetId: sheetId,
-      range: `'Repertorization'!A1:${getColumnLetter(totalCols - 1)}50`,
+      range: `'${repertorySheetTitle}'!A1:${getColumnLetter(totalCols - 1)}50`,
       valueInputOption: "USER_ENTERED",
       requestBody: {
         values: rows
       }
     });
 
-    // Apply dynamic formatting to match the number of rubrics (numRubrics) and remedies (M)
-    const formattingRequests = getRepertoryFormattingRequests(repertoryId, numRubrics, existingRules, M);
-    await sheets.spreadsheets.batchUpdate({
-      spreadsheetId: sheetId,
-      requestBody: {
-        requests: formattingRequests
+    // 2. Apply dynamic formatting to match the number of rubrics (numRubrics) and remedies (M)
+    try {
+      const activeRepertoryId = repertoryId ?? 0;
+      const formattingRequests = getRepertoryFormattingRequests(activeRepertoryId, numRubrics, existingRules, M);
+      if (formattingRequests.length > 0) {
+        await sheets.spreadsheets.batchUpdate({
+          spreadsheetId: sheetId,
+          requestBody: {
+            requests: formattingRequests
+          }
+        });
       }
-    });
+    } catch (fmtError) {
+      console.warn("Repertory grid values written successfully, formatting adjustments returned warning:", fmtError);
+    }
 
   } catch (error) {
     console.error("Error writing repertory rubrics to patient Google Sheet:", error);
@@ -5496,5 +5548,74 @@ export async function uploadFileToFolder(
       fileId: "",
       fileUrl: "",
     };
+  }
+}
+
+/**
+ * Extracts a Google Drive / Sheets file or folder ID from a URL or raw string ID.
+ */
+export function extractGoogleDriveId(urlOrId?: string): string | null {
+  if (!urlOrId || typeof urlOrId !== "string") return null;
+  const trimmed = urlOrId.trim();
+  if (!trimmed || trimmed.startsWith("mock-")) return null;
+
+  // Match /spreadsheets/d/{ID} or /file/d/{ID} or /folders/{ID} or /open?id={ID}
+  const match =
+    trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/) ||
+    trimmed.match(/\/folders\/([a-zA-Z0-9_-]+)/) ||
+    trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+
+  if (match && match[1]) {
+    return match[1];
+  }
+
+  // If it's already a raw ID without slashes or URL characters
+  if (!trimmed.includes("/") && !trimmed.includes(".") && !trimmed.includes("?")) {
+    return trimmed;
+  }
+
+  return null;
+}
+
+/**
+ * Permanently deletes a Google Drive file, spreadsheet, or folder by ID or URL.
+ */
+export async function deleteDriveResource(
+  urlOrId?: string
+): Promise<{ success: boolean; error?: string }> {
+  const resourceId = extractGoogleDriveId(urlOrId);
+  if (!resourceId) {
+    return { success: true };
+  }
+
+  const auth = getGoogleAuth();
+  if (!auth) {
+    console.warn("No Google auth — skipping Drive resource deletion for:", resourceId);
+    return { success: true };
+  }
+
+  try {
+    const drive = google.drive({ version: "v3", auth });
+    await drive.files.delete({
+      fileId: resourceId,
+      supportsAllDrives: true,
+    });
+    console.log(`Successfully deleted Google Drive resource: ${resourceId}`);
+    return { success: true };
+  } catch (error: any) {
+    // 404 means the file was already deleted or doesn't exist, treat as success
+    if (
+      error?.status === 404 ||
+      error?.code === 404 ||
+      error?.message?.includes("File not found")
+    ) {
+      console.log(`Google Drive resource ${resourceId} already deleted or not found.`);
+      return { success: true };
+    }
+    console.error(
+      `Failed to delete Google Drive resource ${resourceId}:`,
+      error?.message || error
+    );
+    return { success: false, error: error?.message || String(error) };
   }
 }
