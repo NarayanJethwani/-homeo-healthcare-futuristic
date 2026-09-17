@@ -32,8 +32,8 @@ assert.equal(FEATURE_FLAGS.STORE_CLINICAL_CARE_V1_ENABLED, true);
 assert.equal(isStoreClinicalCareV1Enabled(), true);
 console.log("✅ TEST PASSED: 1. Feature Flag STORE_CLINICAL_CARE_V1_ENABLED is enabled by default");
 
-// Test 2: Integer paise totals include the governed 0/5/10/15/20 continuity ladder
-const durationMultiplier = { 1: 1, 2: 1.9, 4: 3.6, 8: 6.8, 12: 9.6 } as const;
+// Test 2: Integer paise totals keep the two-week rate standard and apply benefits from four weeks onward.
+const durationMultiplier = { 1: 1, 2: 2, 4: 3.6, 8: 6.8, 12: 9.6 } as const;
 for (const weeks of ALLOWED_CARE_DURATIONS) {
   assert.equal(calculateCarePeriodTotalPaise(CLINICAL_CARE_TIER_OPTIONS.focused.weeklyRatePaise, weeks), 300000 * durationMultiplier[weeks]);
   assert.equal(calculateCarePeriodTotalPaise(CLINICAL_CARE_TIER_OPTIONS.integrated.weeklyRatePaise, weeks), 600000 * durationMultiplier[weeks]);
@@ -45,8 +45,8 @@ assert.equal(formatINRFromPaise(1200000), "₹12,000");
 assert.equal(formatINRFromPaise(2400000), "₹24,000");
 assert.equal(calculateTierCarePeriodTotalPaise("acute_mild", 1), 100000);
 assert.equal(calculateTierCarePeriodTotalPaise("acute_wellness", 1), 200000);
-assert.equal(getTierCarePeriodLabel("acute_mild", 1), "3 days");
-assert.equal(getTierCarePeriodLabel("acute_wellness", 1), "7 days");
+assert.equal(getTierCarePeriodLabel("acute_mild", 1), "2 days");
+assert.equal(getTierCarePeriodLabel("acute_wellness", 1), "4 days");
 console.log("✅ TEST PASSED: 2. Complete care-period amounts calculate correctly in integer paise");
 
 // Test 3: Absence of legacy package names and checkout language
@@ -62,7 +62,7 @@ const legacyPackageNames = [
 ];
 
 const patientFacingTierNames = Object.values(CLINICAL_CARE_TIER_OPTIONS).map((t) => t.name);
-assert.deepEqual(patientFacingTierNames, ["Mild Acute Care", "Acute Wellness Care", "Focused Clinical Care", "Integrated Chronic Care", "Complex Chronic Care", "Advanced Chronic Care"]);
+assert.deepEqual(patientFacingTierNames, ["Mild Acute Care", "Acute Wellness Care", "Subacute Care", "Focused Membership", "Integrated Membership", "Comprehensive Membership", "Focused Clinical Care", "Integrated Chronic Care", "Complex Chronic Care", "Advanced Chronic Care"]);
 
 for (const name of legacyPackageNames) {
   assert.equal(patientFacingTierNames.includes(name), false, `Legacy name '${name}' must not exist in new tier options`);
@@ -224,3 +224,47 @@ assert.ok(patientWa.messageText.includes("₹24,000"));
 console.log("✅ TEST PASSED: 10. Patient assessment WhatsApp review link targets doctor assistance number 8446056789 with full details");
 
 console.log("\n🎉 All 10 Isolated /store Clinical Care Portal Tests Passed 100%!");
+
+// Fixed billing periods must survive stale weekly selections and the review handoff.
+for (const [id, amount, value, unit] of [
+  ["acute_mild", 100000, 2, "day"], ["acute_wellness", 200000, 4, "day"],
+  ["subacute", 300000, 1, "week"],
+] as const) {
+  for (const weeks of ALLOWED_CARE_DURATIONS) {
+    const quote = calculateItemizedPharmacyQuotation({ tierId: id, durationWeeks: weeks });
+    assert.equal(quote.finalTotalPaise, amount);
+    assert.equal(quote.continuityDiscountPercent, 0);
+    const result = processCareAssessmentSubmission({ ...validIntake, selectedTierId: id, preferredDurationWeeks: weeks });
+    assert.equal(result.success, true);
+    if (result.success) {
+      assert.equal(result.data.totalEstimatedAmountPaise, amount);
+      assert.equal(result.data.carePeriodValue, value);
+      assert.equal(result.data.carePeriodUnit, unit);
+      assert.equal(result.data.preliminaryRecommendation.suggestedTierId, id);
+      const payload = buildPatientWhatsAppReviewLink({ patientName: "Test", selectedTierName: result.data.preliminaryRecommendation.suggestedTierName, preferredDurationWeeks: weeks, carePeriodLabel: result.data.carePeriodLabel, totalEstimatedAmountFormatted: result.data.totalEstimatedAmountFormatted, mainHealthArea: "Test" });
+      assert.ok(payload.messageText.includes(result.data.carePeriodLabel));
+      assert.ok(payload.messageText.includes(CLINICAL_CARE_TIER_OPTIONS[id].name));
+    }
+  }
+}
+
+for (const [id, twoWeekAmount, monthlyAmount] of [
+  ["membership_focused", 300000, 500000],
+  ["membership_integrated", 600000, 1000000],
+  ["membership_comprehensive", 1200000, 2000000],
+] as const) {
+  for (const [weeks, amount, value, unit] of [[2, twoWeekAmount, 2, "week"], [4, monthlyAmount, 1, "month"]] as const) {
+    const quote = calculateItemizedPharmacyQuotation({ tierId: id, durationWeeks: weeks });
+    assert.equal(quote.finalTotalPaise, amount);
+    assert.equal(quote.continuityDiscountPercent, 0);
+    const result = processCareAssessmentSubmission({ ...validIntake, selectedTierId: id, preferredDurationWeeks: weeks });
+    assert.equal(result.success, true);
+    if (result.success) {
+      assert.equal(result.data.totalEstimatedAmountPaise, amount);
+      assert.equal(result.data.carePeriodValue, value);
+      assert.equal(result.data.carePeriodUnit, unit);
+      assert.equal(result.data.preliminaryRecommendation.suggestedTierId, id);
+    }
+  }
+}
+console.log("Fixed acute, subacute and membership payment-period billing checks passed.");

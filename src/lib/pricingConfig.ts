@@ -71,7 +71,7 @@ export const COMPLETE_HEALTH_TRANSFORMATION_DURATIONS = STANDARD_CARE_PERIOD_DUR
 
 export const CONTINUITY_DISCOUNT_PERCENTAGE = {
   1: 0,
-  2: 5,
+  2: 0,
   4: 10,
   8: 15,
   12: 20,
@@ -118,7 +118,8 @@ export const CARE_PLAN_CATALOG: Record<CarePlanId, CarePlanDefinition> = {
     family: "acute",
     title: "Mild Acute Care",
     price: 1_000,
-    durationValue: 3,
+    // Legacy ID is retained for compatibility with existing records.
+    durationValue: 2,
     durationUnit: "day",
     legacyCareLevelKey: "mild",
     scope: "Short physician-reviewed support for one suitable mild, non-emergency acute concern.",
@@ -130,10 +131,11 @@ export const CARE_PLAN_CATALOG: Record<CarePlanId, CarePlanDefinition> = {
     family: "acute",
     title: "Acute Wellness Care",
     price: 2_000,
-    durationValue: 7,
+    // Legacy ID is retained for compatibility with existing records.
+    durationValue: 4,
     durationUnit: "day",
     legacyCareLevelKey: "mild",
-    scope: "Seven-day physician-reviewed support for a suitable non-emergency acute concern.",
+    scope: "Four-day physician-reviewed support for a suitable non-emergency acute concern.",
     reassessmentRequired: true,
     emergencyCare: false,
   },
@@ -483,7 +485,7 @@ export function buildGoogleSheetsCareRateFormula(
   const rate = (weekly: number) => `${weekly}`;
   const has = (term: string) => `ISNUMBER(SEARCH("${term}", ${careLevelCell}))`;
 
-  return `=IF(OR(${has("Advanced Physician")}, ${has("Advanced Chronic")}, ${has("Complete")}, ${has("Multisystem")}), ${rate(CARE_LEVELS_DETAILS.comprehensive.weeklyPrice)}, IF(OR(${has("Case-Specific")}, ${has("Records")}, ${has("Pathology Support")}), 0, IF(OR(${has("Priority")}, ${has("Critical")}), ${rate(CARE_LEVELS_DETAILS.acute_critical.weeklyPrice)}, IF(OR(${has("Complex Clinical")}, ${has("Complex Chronic")}, ${has("Advanced Constitutional")}, ${has("Deep")}, ${has("Systemic")}), ${rate(CARE_LEVELS_DETAILS.focused.weeklyPrice)}, IF(OR(${has("Integrated Clinical")}, ${has("Integrated Chronic")}, ${has("Constitutional")}, ${has("Core")}), ${rate(CARE_LEVELS_DETAILS.moderate.weeklyPrice)}, IF(OR(${has("Focused Chronic")}, ${has("Focused Clinical")}), ${rate(CARE_LEVELS_DETAILS.chronic_focused.weeklyPrice)}, IF(OR(${has("Acute Wellness")}, ${has("Mild Acute")}, ${has("Wellness")}, ${has("Acute")}, ${has("Essential")}), ${rate(CARE_LEVELS_DETAILS.mild.weeklyPrice)}, 0)))))))`;
+  return `=IF(${has("Comprehensive Membership")}, IF(B4="Monthly", 5000, 6000), IF(${has("Integrated Membership")}, IF(B4="Monthly", 2500, 3000), IF(${has("Focused Membership")}, IF(B4="Monthly", 1250, 1500), IF(OR(${has("Advanced Physician")}, ${has("Advanced Chronic")}, ${has("Complete")}, ${has("Multisystem")}), ${rate(CARE_LEVELS_DETAILS.comprehensive.weeklyPrice)}, IF(OR(${has("Case-Specific")}, ${has("Records")}, ${has("Pathology Support")}), 0, IF(OR(${has("Priority")}, ${has("Critical")}), ${rate(CARE_LEVELS_DETAILS.acute_critical.weeklyPrice)}, IF(OR(${has("Complex Clinical")}, ${has("Complex Chronic")}, ${has("Advanced Constitutional")}, ${has("Deep")}, ${has("Systemic")}), ${rate(CARE_LEVELS_DETAILS.focused.weeklyPrice)}, IF(OR(${has("Integrated Clinical")}, ${has("Integrated Chronic")}, ${has("Constitutional")}, ${has("Core")}), ${rate(CARE_LEVELS_DETAILS.moderate.weeklyPrice)}, IF(OR(${has("Focused Chronic")}, ${has("Focused Clinical")}), ${rate(CARE_LEVELS_DETAILS.chronic_focused.weeklyPrice)}, IF(OR(${has("Acute Wellness")}, ${has("Mild Acute")}, ${has("Wellness")}, ${has("Acute")}, ${has("Essential")}), ${rate(CARE_LEVELS_DETAILS.mild.weeklyPrice)}, 0))))))))))`;
 }
 
 export function buildGoogleSheetsCarePeriodWeeksFormula(
@@ -499,5 +501,18 @@ export function buildGoogleSheetsContinuityBenefitFormula(
   durationCell = "C4",
 ): string {
   const weeks = buildGoogleSheetsCarePeriodWeeksFormula(billingCycleCell, durationCell);
-  return `=${listTotalCell}*IF(${weeks}=2, 5%, IF(${weeks}=4, 10%, IF(${weeks}=8, 15%, IF(${weeks}=12, 20%, 0))))`;
+  const hasMembership = `OR(ISNUMBER(SEARCH("Focused Membership", A4)), ISNUMBER(SEARCH("Integrated Membership", A4)), ISNUMBER(SEARCH("Comprehensive Membership", A4)))`;
+  return `=IF(${hasMembership}, 0, ${listTotalCell}*IF(${weeks}=4, 10%, IF(${weeks}=8, 15%, IF(${weeks}=12, 20%, 0))))`;
+}
+
+export function buildGoogleSheetsListCareTotalFormula(
+  careLevelCell = "A4",
+  billingCycleCell = "B4",
+  durationCell = "C4",
+  weeklyRateCell = "B8",
+): string {
+  const has = (term: string) => `ISNUMBER(SEARCH("${term}", ${careLevelCell}))`;
+  const memberTotal = (monthly: number, twoWeeks: number) => `IF(${billingCycleCell}="Monthly", ${durationCell}*${monthly}, ${durationCell}/2*${twoWeeks})`;
+  const weeks = buildGoogleSheetsCarePeriodWeeksFormula(billingCycleCell, durationCell);
+  return `=IF(${has("Comprehensive Membership")}, ${memberTotal(20000, 12000)}, IF(${has("Integrated Membership")}, ${memberTotal(10000, 6000)}, IF(${has("Focused Membership")}, ${memberTotal(5000, 3000)}, ${weeklyRateCell}*${weeks})))`;
 }

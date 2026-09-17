@@ -153,12 +153,12 @@ export const PhysicianQuotationBuilder: React.FC<PhysicianQuotationBuilderProps>
           <select
             id="tier-select"
             value={tierId}
-            onChange={(e) => { const nextTier = CLINICAL_CARE_TIER_OPTIONS[e.target.value as keyof typeof CLINICAL_CARE_TIER_OPTIONS]; setTierId(e.target.value); if (nextTier?.family === "acute") setDurationWeeks(1); }}
+            onChange={(e) => { const nextTier = CLINICAL_CARE_TIER_OPTIONS[e.target.value as keyof typeof CLINICAL_CARE_TIER_OPTIONS]; setTierId(e.target.value); if (nextTier?.family === "membership") setDurationWeeks(4); else if (nextTier?.family !== "chronic") setDurationWeeks(1); }}
             className="w-full rounded-2xl border border-slate-200 bg-white p-3.5 text-xs font-bold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
           >
             {Object.values(CLINICAL_CARE_TIER_OPTIONS).map((t) => (
               <option key={t.id} value={t.id}>
-                {t.name} (₹{t.weeklyRateINR.toLocaleString("en-IN")}{t.family === "acute" ? ` / ${getTierCarePeriodLabel(t.id, 1)}` : "/week"})
+                {t.name} (₹{t.weeklyRateINR.toLocaleString("en-IN")}{t.family !== "chronic" ? ` / ${getTierCarePeriodLabel(t.id, 1)}` : "/week"})
               </option>
             ))}
           </select>
@@ -172,15 +172,18 @@ export const PhysicianQuotationBuilder: React.FC<PhysicianQuotationBuilderProps>
           <select
             id="duration-select"
             value={durationWeeks}
-            disabled={(CLINICAL_CARE_TIER_OPTIONS[tierId as keyof typeof CLINICAL_CARE_TIER_OPTIONS] || CLINICAL_CARE_TIER_OPTIONS.focused).family === "acute"}
+            disabled={["acute", "subacute"].includes((CLINICAL_CARE_TIER_OPTIONS[tierId as keyof typeof CLINICAL_CARE_TIER_OPTIONS] || CLINICAL_CARE_TIER_OPTIONS.focused).family)}
             onChange={(e) => setDurationWeeks(Number(e.target.value) as ClinicalCareDurationWeeks)}
             className="w-full rounded-2xl border border-slate-200 bg-white p-3.5 text-xs font-bold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
           >
-            <option value={1}>1 Week</option>
-            <option value={2}>2 Weeks</option>
-            <option value={4}>4 Weeks (Recommended)</option>
-            <option value={8}>8 Weeks</option>
-            <option value={12}>12 Weeks</option>
+            {(CLINICAL_CARE_TIER_OPTIONS[tierId as keyof typeof CLINICAL_CARE_TIER_OPTIONS] || CLINICAL_CARE_TIER_OPTIONS.focused).family === "membership" ? <>
+              <option value={2}>2 Weeks</option><option value={4}>1 Calendar Month</option>
+            </> : (CLINICAL_CARE_TIER_OPTIONS[tierId as keyof typeof CLINICAL_CARE_TIER_OPTIONS] || CLINICAL_CARE_TIER_OPTIONS.focused).family !== "chronic" ? (
+              <option value={durationWeeks}>{getTierCarePeriodLabel(tierId, durationWeeks)}</option>
+            ) : <>
+              <option value={1}>1 Week</option><option value={2}>2 Weeks</option>
+              <option value={4}>4 Weeks</option><option value={8}>8 Weeks</option><option value={12}>12 Weeks</option>
+            </>}
           </select>
         </div>
 
@@ -288,7 +291,7 @@ export const PhysicianQuotationBuilder: React.FC<PhysicianQuotationBuilderProps>
 
         <dl className="space-y-2 text-xs font-semibold">
           <div className="flex justify-between">
-            <dt className="text-slate-400">List Professional Care Fee ({durationWeeks} wks)</dt>
+            <dt className="text-slate-400">List Professional Care Fee ({getTierCarePeriodLabel(tierId, durationWeeks)})</dt>
             <dd className="font-bold">{formatINRFromPaise(quotationBreakdown.listProfessionalFeePaise)}</dd>
           </div>
           {quotationBreakdown.continuityDiscountPaise > 0 && <div className="flex justify-between text-emerald-400"><dt>Continuity Care Benefit ({quotationBreakdown.continuityDiscountPercent}%)</dt><dd>-{formatINRFromPaise(quotationBreakdown.continuityDiscountPaise)}</dd></div>}

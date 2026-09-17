@@ -8,9 +8,17 @@ interface FAQItem {
 
 const FAQ_ITEMS: FAQItem[] = [
   {
+    question: "What is included in a membership follow-up plan?",
+    answer: "Membership is for one person. Focused Membership is ₹3,000 for 2 weeks or ₹5,000 per calendar month for one agreed concern and one consultation up to 30 minutes. Integrated Membership is ₹6,000 for 2 weeks or ₹10,000 per calendar month for two related mild, stable concerns and one consultation up to 60 minutes. Comprehensive Membership is ₹12,000 for 2 weeks or ₹20,000 per calendar month for multiple stable concerns and one detailed scheduled consultation. Routine individually prescribed homeopathic medicines and brief clarification of existing instructions during clinic hours are included. It is not insurance or unlimited care. Extra acute care is separately assessed and charged under the acute plans. Delivery, additional services, cancellation and any applicable credit terms are agreed before payment.",
+  },
+  {
+    question: "Can I move to membership after improvement?",
+    answer: "Yes, when your physician confirms that monthly follow-up is appropriate. Renewal is optional and based on continuing need. You may complete care when follow-up is no longer needed, or be reassessed for a more frequent care plan if your needs increase. Membership does not replace other clinicians’ treatment; do not stop prescribed medicines without consulting the prescribing clinician.",
+  },
+  {
     question: "How is my care level and recommended pathway determined?",
     answer:
-      "The public guide separates acute from chronic care and asks about the follow-up or coordination workload you expect. Diagnosis, organ-system count, symptom severity, age, and financial circumstances do not automatically increase the fee. Your physician confirms clinical suitability, scope, and the final quotation.",
+      "Your physician considers the concerns and organ systems involved, pathological findings, records, and the review or coordination required. These inform the agreed scope; organ count or diagnosis does not automatically multiply the fee. Acute, subacute, chronic and monthly follow-up options serve different needs.",
   },
   {
     question: "Are routine homeopathic medicines included in the care fee?",

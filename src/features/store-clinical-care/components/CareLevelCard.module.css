@@ -1,0 +1,114 @@
+.root { color: #1a342c; margin-bottom: 3rem; scroll-margin-top: 7rem; }
+.intro { display:flex; gap:2rem; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
+.intro h2 { font-family:Georgia,serif; font-size:clamp(1.8rem,3vw,2.8rem); line-height:1.15; margin:.5rem 0 .8rem; max-width:760px; }
+.intro p:not(.eyebrow) { color:#56675f; font-size:.9rem; max-width:750px; }
+.eyebrow { font-size:.65rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#397460; }
+.presentationButton { display:flex; align-items:center; gap:.6rem; flex-shrink:0; border:1px solid #b9d5c8; border-radius:12px; padding:.85rem 1rem; font-size:.8rem; font-weight:700; background:#fff; cursor:pointer; }
+.nav { display:flex; gap:.5rem; flex-wrap:wrap; background:#eef4ef; border:1px solid #dce7df; border-radius:14px; padding:.4rem; margin:0 0 1.5rem; }
+.nav button { flex:1; padding:.8rem; border-radius:10px; color:#264d3e; font-size:.8rem; font-weight:750; cursor:pointer; }
+.nav button:hover,.nav button[aria-pressed=true] { background:#254f40; color:white; }
+.group { scroll-margin-top:7rem; margin-bottom:2.6rem; }
+.groupHeading { margin-bottom:1rem; }
+.groupHeading h3 { font-family:Georgia,serif; font-size:1.9rem; line-height:1.2; margin:.25rem 0 .4rem; }
+.groupHeading p:last-child { font-size:.8rem; color:#5a6c61; }
+.cards { display:grid; gap:1rem; }
+.card { text-align:left; display:flex; flex-direction:column; min-width:0; border:1px solid #d5e3db; border-top:4px solid #b6d4c3; border-radius:18px; padding:1.2rem; background:#fff; cursor:pointer; transition:border-color .15s,box-shadow .15s,background-color .15s,transform .15s; color:#1b382c; }
+.card:hover { box-shadow:0 10px 28px #183d2614; transform:translateY(-2px); }
+.card[data-tier="acute_mild"]:hover,.card[data-tier="acute_mild"].selected { border-color:#3f986c; background:#eefaf4; box-shadow:0 0 0 1px #3f986c,0 10px 28px #1a6f4318; }
+.card[data-tier="acute_wellness"]:hover,.card[data-tier="acute_wellness"].selected { border-color:#1595a3; background:#edfafd; box-shadow:0 0 0 1px #1595a3,0 10px 28px #087d8f18; }
+.card[data-tier="subacute"]:hover,.card[data-tier="subacute"].selected { border-color:#5b7bd5; background:#f1f4ff; box-shadow:0 0 0 1px #5b7bd5,0 10px 28px #375bc218; }
+.card[data-tier="focused"]:hover,.card[data-tier="focused"].selected { border-color:#4d8d5d; background:#f0f8ef; box-shadow:0 0 0 1px #4d8d5d,0 10px 28px #34663c18; }
+.card[data-tier="integrated"]:hover,.card[data-tier="integrated"].selected { border-color:#3b82c4; background:#f0f7ff; box-shadow:0 0 0 1px #3b82c4,0 10px 28px #286ba918; }
+.card[data-tier="complex"]:hover,.card[data-tier="complex"].selected { border-color:#8a65bc; background:#f7f1ff; box-shadow:0 0 0 1px #8a65bc,0 10px 28px #7040a018; }
+.card[data-tier="advanced"]:hover,.card[data-tier="advanced"].selected { border-color:#b47828; background:#fff8eb; box-shadow:0 0 0 1px #b47828,0 10px 28px #9b631b18; }
+.card[data-tier="membership_focused"]:hover,.card[data-tier="membership_focused"].selected { border-color:#247e79; background:#edf9f7; box-shadow:0 0 0 1px #247e79,0 10px 28px #176d6718; }
+.card[data-tier="membership_integrated"]:hover,.card[data-tier="membership_integrated"].selected { border-color:#bd5c78; background:#fff1f5; box-shadow:0 0 0 1px #bd5c78,0 10px 28px #a53e5e18; }
+.card[data-tier="membership_comprehensive"]:hover,.card[data-tier="membership_comprehensive"].selected { border-color:#7d5bbd; background:#f7f1ff; box-shadow:0 0 0 1px #7d5bbd,0 10px 28px #6941a018; }
+.planName { min-height:2.8em; font-size:1.1rem; font-weight:750; line-height:1.35; }
+.price { display:block; font-size:2.25rem; font-weight:800; letter-spacing:-.04em; line-height:1.2; margin-top:.45rem; }
+.period { display:block; font-size:.73rem; color:#617168; min-height:2rem; margin:.3rem 0 .7rem; }
+.paymentOption { display:block; margin:-.35rem 0 .7rem; color:#4d7568; font-size:.7rem; font-weight:700; }
+.rows { display:grid; flex:1; }
+.rows > span { display:block; min-height:4.7rem; border-top:1px solid #e1e9e3; padding:.7rem 0; font-size:.79rem; line-height:1.45; }
+.rows small { display:block; color:#718278; font-size:.58rem; font-weight:750; letter-spacing:.09em; margin-bottom:.25rem; }
+.select { display:block; margin-top:.4rem; border-radius:10px; padding:.65rem; text-align:center; font-size:.75rem; font-weight:750; background:#edf2ee; }
+.selected .select { color:white; }
+.card[data-tier="acute_mild"].selected .select { background:#2f865d; }
+.card[data-tier="acute_wellness"].selected .select { background:#117d89; }
+.card[data-tier="subacute"].selected .select { background:#506fc3; }
+.card[data-tier="focused"].selected .select { background:#3b794a; }
+.card[data-tier="integrated"].selected .select { background:#2f6ea9; }
+.card[data-tier="complex"].selected .select { background:#7650a9; }
+.card[data-tier="advanced"].selected .select { background:#99631f; }
+.card[data-tier="membership_focused"].selected .select { background:#1e6c68; }
+.card[data-tier="membership_integrated"].selected .select { background:#a54b67; }
+.card[data-tier="membership_comprehensive"].selected .select { background:#68459f; }
+.groupNote { margin:.8rem 0; color:#5e6d64; font-size:.75rem; line-height:1.55; }
+.included { display:flex; align-items:center; gap:.5rem; margin-top:.8rem; font-size:.74rem; color:#37674e; }
+.included svg { flex-shrink:0; }
+.summary { border-radius:20px; border:1px solid #cfdfd3; background:#f6faf6; padding:1.5rem; display:grid; gap:2rem; grid-template-columns:1.4fr 1fr; }
+.summary h3 { font-size:1.7rem; font-family:Georgia,serif; margin:.4rem 0; }
+.summary p { font-size:.83rem; }
+.total { display:flex; flex-direction:column; gap:.45rem; }
+.total > span,.total small { font-size:.75rem; color:#5b7062; }
+.total strong { font-size:2.4rem; line-height:1.2; }
+.total button,.presentationFooter button { display:flex; justify-content:center; align-items:center; gap:.5rem; background:#254f40; color:white; border-radius:12px; padding:.9rem 1rem; font-size:.8rem; font-weight:700; margin-top:.5rem; cursor:pointer; }
+.total button:disabled,.presentationFooter button:disabled { background:#748478; cursor:not-allowed; }
+.duration { margin-top:1.2rem; font-size:.8rem; }
+.duration summary { cursor:pointer; font-weight:700; }
+.durationButtons { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.8rem; }
+.durationButtons button { padding:.65rem; border:1px solid #b8cbbc; border-radius:10px; background:white; cursor:pointer; }
+.durationButtons button[aria-pressed=true] { background:#d7ecdb; border-color:#397a55; }
+.durationButtons small { display:block; font-size:.65rem; }
+.calculator { display:grid; grid-template-columns:1.1fr 2.2fr .85fr; gap:1rem; align-items:center; margin-top:1rem; border:1px solid #c9ddd0; border-radius:18px; padding:1rem; background:#f4f9f5; }
+.calculator h4 { font-family:Georgia,serif; font-size:1.2rem; margin:.3rem 0; }
+.calculator p { font-size:.73rem; color:#5d7064; line-height:1.45; }
+.calculatorChoices { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:.5rem; }
+.calculatorChoices button { display:flex; min-height:5.7rem; flex-direction:column; align-items:flex-start; justify-content:center; border:1px solid #c7d6cb; border-radius:11px; padding:.55rem; background:#fff; cursor:pointer; text-align:left; }
+.calculatorChoices button:hover,.calculatorChoices button[aria-pressed=true] { border-color:#347553; background:#e1f0e4; box-shadow:0 0 0 1px #347553; }
+.calculatorChoices strong { font-size:.73rem; }
+.calculatorChoices span { margin:.25rem 0; font-size:1rem; font-weight:800; }
+.calculatorChoices small { font-size:.57rem; color:#597066; line-height:1.25; }
+.calculatorChoices .listPrice { margin-top:.15rem; text-decoration:line-through; }
+.chronicCalculator[data-tier="focused"] .calculatorChoices button { border-color:#b8d9bd; background:#f4fbf3; }
+.chronicCalculator[data-tier="focused"] .calculatorChoices button:hover,.chronicCalculator[data-tier="focused"] .calculatorChoices button[aria-pressed=true] { border-color:#4d8d5d; background:#deefdc; box-shadow:0 0 0 1px #4d8d5d; }
+.chronicCalculator[data-tier="integrated"] .calculatorChoices button { border-color:#b8d5ed; background:#f3f9ff; }
+.chronicCalculator[data-tier="integrated"] .calculatorChoices button:hover,.chronicCalculator[data-tier="integrated"] .calculatorChoices button[aria-pressed=true] { border-color:#3b82c4; background:#dceeff; box-shadow:0 0 0 1px #3b82c4; }
+.chronicCalculator[data-tier="complex"] .calculatorChoices button { border-color:#d4c1eb; background:#faf6ff; }
+.chronicCalculator[data-tier="complex"] .calculatorChoices button:hover,.chronicCalculator[data-tier="complex"] .calculatorChoices button[aria-pressed=true] { border-color:#8a65bc; background:#ebe1f7; box-shadow:0 0 0 1px #8a65bc; }
+.chronicCalculator[data-tier="advanced"] .calculatorChoices button { border-color:#ebcf9c; background:#fffaf1; }
+.chronicCalculator[data-tier="advanced"] .calculatorChoices button:hover,.chronicCalculator[data-tier="advanced"] .calculatorChoices button[aria-pressed=true] { border-color:#b47828; background:#fbedcf; box-shadow:0 0 0 1px #b47828; }
+.membershipCalculator[data-tier="membership_focused"] .calculatorChoices button { border-color:#a9d8d3; background:#f2fbfa; }
+.membershipCalculator[data-tier="membership_focused"] .calculatorChoices button:hover,.membershipCalculator[data-tier="membership_focused"] .calculatorChoices button[aria-pressed=true] { border-color:#247e79; background:#d9f2ef; box-shadow:0 0 0 1px #247e79; }
+.membershipCalculator[data-tier="membership_integrated"] .calculatorChoices button { border-color:#e7b5c4; background:#fff4f7; }
+.membershipCalculator[data-tier="membership_integrated"] .calculatorChoices button:hover,.membershipCalculator[data-tier="membership_integrated"] .calculatorChoices button[aria-pressed=true] { border-color:#bd5c78; background:#fde0e9; box-shadow:0 0 0 1px #bd5c78; }
+.membershipCalculator[data-tier="membership_comprehensive"] .calculatorChoices button { border-color:#cfbde9; background:#faf6ff; }
+.membershipCalculator[data-tier="membership_comprehensive"] .calculatorChoices button:hover,.membershipCalculator[data-tier="membership_comprehensive"] .calculatorChoices button[aria-pressed=true] { border-color:#7d5bbd; background:#eadff8; box-shadow:0 0 0 1px #7d5bbd; }
+.calculatorTotal { display:flex; flex-direction:column; gap:.2rem; border-left:1px solid #cddcd1; padding-left:1rem; }
+.calculatorTotal span,.calculatorTotal small { font-size:.66rem; color:#5c7064; }
+.calculatorTotal strong { font-size:1.5rem; }
+.warning { padding:1rem; background:#fff1ed; color:#85371f; border-radius:12px; margin-bottom:1rem; }
+.presentation { position:fixed; inset:0; width:100vw; height:100dvh; max-width:none; max-height:none; margin:0; padding:1.2rem 2rem; border:0; background:#f7faf7; color:#1a342c; overflow:auto; z-index:9999; }
+.presentation::backdrop { background:#152d25cc; }
+.presentationHeader { display:flex; align-items:center; justify-content:space-between; margin-bottom:.8rem; }
+.presentationHeader strong { font-size:1rem; }
+.presentationHeader span { color:#718075; font-weight:400; margin-left:1rem; font-size:.8rem; }
+.presentationHeader button { padding:.5rem; cursor:pointer; }
+.presentation .nav { margin-bottom:1rem; }
+.presentation .group { margin-bottom:.8rem; }
+.presentation .groupHeading h3 { font-size:1.7rem; }
+.presentation .card { padding:1rem; }
+.presentation .rows > span { min-height:4.1rem; padding:.5rem 0; }
+.presentationFooter { display:flex; gap:1rem; align-items:center; justify-content:space-between; border-top:1px solid #d4e2d6; padding-top:.6rem; font-size:.8rem; }
+.root button:focus-visible,.presentation button:focus-visible { outline:3px solid #268766; outline-offset:3px; }
+@media(min-width:768px) { .three { grid-template-columns:repeat(3,minmax(0,1fr)); } .two,.four { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(min-width:1024px) { .four { grid-template-columns:repeat(4,minmax(0,1fr)); } }
+@media(max-width:767px) { .intro { align-items:flex-start; flex-direction:column; gap:1rem; } .summary { grid-template-columns:1fr; } .presentation { padding:1rem; } .presentationFooter { flex-direction:column; align-items:stretch; } .nav button { flex-basis:100%; } .planName { min-height:0; } }
+@media(max-width:1023px) { .calculator { grid-template-columns:1fr; } .calculatorTotal { border-left:0; border-top:1px solid #cddcd1; padding:1rem 0 0; } }
+@media(max-width:640px) { .calculatorChoices { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(min-width:1024px) {
+  .presentation .planName { min-height:1.5em; font-size:1rem; }
+  .presentation .period { min-height:1rem; }
+  .presentation .rows > span { min-height:3.65rem; }
+  .presentation .groupHeading { margin-bottom:.8rem; }
+}

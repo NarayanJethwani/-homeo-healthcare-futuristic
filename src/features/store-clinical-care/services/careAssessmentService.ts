@@ -1,5 +1,3 @@
-import { randomUUID } from "crypto";
-import { CARE_PLAN_CATALOG } from "@/lib/pricingConfig";
 import {
   CLINICAL_CARE_TIER_OPTIONS,
   ALLOWED_CARE_DURATIONS,
@@ -39,7 +37,7 @@ export function validatePatientIntake(data: Partial<PatientIntakeData>): CareAss
   const selectedTier = data.selectedTierId && data.selectedTierId in CLINICAL_CARE_TIER_OPTIONS
     ? CLINICAL_CARE_TIER_OPTIONS[data.selectedTierId as keyof typeof CLINICAL_CARE_TIER_OPTIONS]
     : undefined;
-  if (selectedTier?.family !== "acute" && (!data.preferredDurationWeeks || !ALLOWED_CARE_DURATIONS.includes(data.preferredDurationWeeks as ClinicalCareDurationWeeks))) {
+  if (selectedTier?.family === "chronic" && (!data.preferredDurationWeeks || !ALLOWED_CARE_DURATIONS.includes(data.preferredDurationWeeks as ClinicalCareDurationWeeks))) {
     errors.push("Please select a valid care duration (1, 2, 4, 8, or 12 weeks).");
   }
 
@@ -77,7 +75,7 @@ export function processCareAssessmentSubmission(
     ? CLINICAL_CARE_TIER_OPTIONS[data.selectedTierId as keyof typeof CLINICAL_CARE_TIER_OPTIONS]
     : CLINICAL_CARE_TIER_OPTIONS.focused;
   const preliminaryRecommendation = calculatePreliminaryCareRecommendation({
-    careFamily: requestedTier.family,
+    careFamily: requestedTier.family === "acute" ? "acute" : "chronic",
     supportIntensity: requestedTier.id === "advanced" ? "direct" : requestedTier.id === "complex" ? "frequent" : requestedTier.id === "integrated" || requestedTier.id === "acute_wellness" ? "closer" : "standard",
     safetyStatus: "clear",
   });
@@ -92,9 +90,12 @@ export function processCareAssessmentSubmission(
   const totalPaise = calculateTierCarePeriodTotalPaise(tier.id, durationWeeks);
   const totalFormatted = formatINRFromPaise(totalPaise);
   const carePeriodLabel = getTierCarePeriodLabel(tier.id, durationWeeks);
-  const plan = CARE_PLAN_CATALOG[tier.carePlanId];
+  // Preserve the explicitly requested plan throughout review; it is not a diagnosis.
+  preliminaryRecommendation.suggestedTierId = tier.id;
+  preliminaryRecommendation.suggestedTierName = tier.name;
+  preliminaryRecommendation.rationale = "Requested care scope; suitability and final quotation require physician review.";
 
-  const submissionId = `CAS-${new Date().getFullYear()}-${randomUUID().slice(0, 8).toUpperCase()}`;
+  const submissionId = `CAS-${new Date().getFullYear()}-${globalThis.crypto.randomUUID().slice(0, 8).toUpperCase()}`;
 
   const sanitizedDTO: SanitizedAssessmentResponseDTO = {
     success: true,
@@ -104,8 +105,8 @@ export function processCareAssessmentSubmission(
     mainHealthArea: data.mainHealthArea!.trim(),
     preferredDurationWeeks: durationWeeks,
     carePeriodLabel,
-    carePeriodValue: tier.family === "acute" ? plan.durationValue : durationWeeks,
-    carePeriodUnit: tier.family === "acute" ? "day" : "week",
+    carePeriodValue: tier.family === "chronic" ? durationWeeks : tier.family === "membership" && durationWeeks === 2 ? 2 : tier.periodValue,
+    carePeriodUnit: tier.family === "chronic" || tier.family === "membership" && durationWeeks === 2 ? "week" : tier.periodUnit,
     totalEstimatedAmountPaise: totalPaise,
     totalEstimatedAmountFormatted: totalFormatted,
     preliminaryRecommendation,

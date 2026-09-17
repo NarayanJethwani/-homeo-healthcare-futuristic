@@ -13,12 +13,13 @@ import { EmergencyGuidanceBanner } from "./EmergencyGuidanceBanner";
 import { processCareAssessmentSubmission } from "../services/careAssessmentService";
 import { calculatePreliminaryCareRecommendation } from "../services/careRecommendationEngine";
 import { trackStoreFunnelEvent } from "../services/storeAnalytics";
-import type { ClinicalCareDurationWeeks, PatientIntakeData, SanitizedAssessmentResponseDTO, StoreClinicalCareTierId } from "../domain/types";
+import { CLINICAL_CARE_TIER_OPTIONS, type ClinicalCareDurationWeeks, PatientIntakeData, SanitizedAssessmentResponseDTO, StoreClinicalCareTierId } from "../domain/types";
 
 const ALLOWED_DURATIONS = new Set<ClinicalCareDurationWeeks>([1, 2, 4, 8, 12]);
 
 function normalizeStoreTier(value: string | null): StoreClinicalCareTierId {
   const clean = (value || "").toLowerCase();
+  if (Object.hasOwn(CLINICAL_CARE_TIER_OPTIONS, clean)) return clean as StoreClinicalCareTierId;
   if (["acute_mild", "acute_mild_3d", "mild acute"].includes(clean)) return "acute_mild";
   if (["acute_wellness", "acute_wellness_7d", "acute", "wellness", "mild"].includes(clean)) return "acute_wellness";
   if (["integrated", "moderate", "constitutional", "chronic"].includes(clean)) return "integrated";
@@ -150,7 +151,7 @@ export const StoreClinicalCareView: React.FC = () => {
 
             {activeDiscoveryTab === "pathways" ? (
               <div id="care-pathways-panel" role="tabpanel" aria-labelledby="care-pathways-tab">
-                <CarePathwayCheck answers={pathwayAnswers} recommendation={preliminaryRec} onChange={handlePathwayAnswersChange} />
+
                 <CareLevelCard
                   selectedTierId={selectedTierId}
                   selectedDurationWeeks={selectedDurationWeeks}
@@ -158,7 +159,7 @@ export const StoreClinicalCareView: React.FC = () => {
                   onSelectTier={(tierId) => {
                     const nextTier = normalizeStoreTier(tierId);
                     setSelectedTierId(nextTier);
-                    if (nextTier.startsWith("acute_")) setSelectedDurationWeeks(1);
+                    if (CLINICAL_CARE_TIER_OPTIONS[nextTier].family !== "chronic") setSelectedDurationWeeks(1);
                     trackStoreFunnelEvent("store_pathway_selected", { pathway: nextTier, durationWeeks: selectedDurationWeeks });
                   }}
                   onSelectDuration={(weeks) => {
@@ -167,6 +168,7 @@ export const StoreClinicalCareView: React.FC = () => {
                   }}
                   onProceedToAssessment={openAssessment}
                 />
+                <details className="mb-8 rounded-2xl border border-slate-200 bg-white p-5"><summary className="cursor-pointer font-bold text-slate-700">Not sure where to begin? Open the pathway guide</summary><div className="mt-5"><CarePathwayCheck answers={pathwayAnswers} recommendation={preliminaryRec} onChange={handlePathwayAnswersChange} /></div></details>
               </div>
             ) : (
               <div id="health-concerns-panel" role="tabpanel" aria-labelledby="health-concerns-tab">

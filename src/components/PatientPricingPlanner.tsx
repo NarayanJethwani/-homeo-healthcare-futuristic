@@ -483,7 +483,7 @@ export default function PatientPricingPlanner({
               These totals are references, not selectable packages. Your physician recommends the appropriate duration and confirms scope and final fee after assessment. This is individual—not family—care, and outcomes vary by individual clinical response.
             </p>
             <div className="rounded-2xl border border-mint/20 bg-mint/10 p-4 mt-4 text-xs font-semibold text-slate-200 leading-relaxed">
-              <strong className="text-mint">Transparent intensive-care example:</strong> Two-week program ₹22,800 after the 5% continuity benefit. Any physician-assigned additional support is itemized separately and requires approval.
+              <strong className="text-mint">Transparent intensive-care example:</strong> Two-week program ₹24,000 at the standard rate. Continuity benefits begin from four weeks. Any physician-assigned additional support is itemized separately and requires approval.
             </div>
             {onContinue ? (
               <button type="button" onClick={() => onContinue(completeSelection)} className="pricing-primary-action w-full mt-5 py-4 rounded-full bg-mint hover:bg-mint-dark text-white text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint focus-visible:ring-offset-2 focus-visible:ring-offset-[#1A2421]">
