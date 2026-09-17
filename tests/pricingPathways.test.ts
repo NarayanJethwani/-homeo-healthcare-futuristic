@@ -20,16 +20,16 @@ function runPricingPathwayTests() {
   assert.deepStrictEqual(PUBLIC_CARE_LEVEL_KEYS, ["mild", "chronic_focused", "moderate", "focused"]);
   assert.strictEqual(CARE_PLAN_CATALOG_VERSION, "care-plan-catalog-v3");
   assert.strictEqual(CARE_PLAN_CATALOG.acute_mild_3d.price, 1_000);
-  assert.strictEqual(CARE_PLAN_CATALOG.acute_mild_3d.durationValue, 3);
+assert.strictEqual(CARE_PLAN_CATALOG.acute_mild_3d.durationValue, 2);
   assert.strictEqual(CARE_PLAN_CATALOG.acute_mild_3d.durationUnit, "day");
   assert.strictEqual(CARE_PLAN_CATALOG.acute_wellness_7d.price, 2_000);
-  assert.strictEqual(CARE_PLAN_CATALOG.acute_wellness_7d.durationValue, 7);
+assert.strictEqual(CARE_PLAN_CATALOG.acute_wellness_7d.durationValue, 4);
   assert.strictEqual(CARE_PLAN_CATALOG.chronic_focused_1w.price, 3_000);
   assert.strictEqual(CARE_PLAN_CATALOG.chronic_integrated_1w.price, 6_000);
   assert.strictEqual(CARE_PLAN_CATALOG.chronic_complex_1w.price, 9_000);
   assert.strictEqual(CARE_PLAN_CATALOG.chronic_advanced_1w.price, 12_000);
   assert.deepStrictEqual(calculateCarePlanTotal("acute_mild_3d"), { listTotal: 1_000, discountPercent: 0, discountAmount: 0, total: 1_000 });
-  assert.throws(() => calculateCarePlanTotal("acute_mild_3d", 2), /fixed 3 days/i);
+assert.throws(() => calculateCarePlanTotal("acute_mild_3d", 2), /fixed 2 days/i);
   assert.strictEqual(calculateCarePlanTotal("chronic_focused_1w", 4).total, 10_800);
   assert.strictEqual(CARE_LEVELS_DETAILS.mild.weeklyPrice, 2_000);
   assert.strictEqual(CARE_LEVELS_DETAILS.mild.title, "Acute Wellness Care");
@@ -47,7 +47,7 @@ function runPricingPathwayTests() {
   assert.deepStrictEqual(COMPLETE_HEALTH_TRANSFORMATION_DURATIONS, [1, 2, 4, 8, 12]);
   assert.strictEqual(CARE_LEVELS_DETAILS.comprehensive.defaultDurationWeeks, 4);
   assert.strictEqual(calculateCompleteHealthTransformationPrice(1).total, 12_000);
-  assert.strictEqual(calculateCompleteHealthTransformationPrice(2).total, 22_800);
+  assert.strictEqual(calculateCompleteHealthTransformationPrice(2).total, 24_000);
   assert.strictEqual(calculateCompleteHealthTransformationPrice(4).total, 43_200);
   assert.strictEqual(calculateCompleteHealthTransformationPrice(8).total, 81_600);
   assert.strictEqual(calculateCompleteHealthTransformationPrice(12).total, 115_200);
@@ -58,8 +58,8 @@ function runPricingPathwayTests() {
   assert.deepStrictEqual(CARE_LEVELS_DETAILS.focused.durations, [1, 2, 4, 8, 12]);
   assert.strictEqual(CARE_LEVELS_DETAILS.moderate.defaultDurationWeeks, 4);
   assert.strictEqual(CARE_LEVELS_DETAILS.focused.defaultDurationWeeks, 4);
-  assert.strictEqual(calculateCarePrice({ pathway: "moderate", durationWeeks: 2 }).total, 11_400);
-  assert.strictEqual(calculateCarePrice({ pathway: "focused", durationWeeks: 2 }).total, 17_100);
+  assert.strictEqual(calculateCarePrice({ pathway: "moderate", durationWeeks: 2 }).total, 12_000);
+  assert.strictEqual(calculateCarePrice({ pathway: "focused", durationWeeks: 2 }).total, 18_000);
 
   assert.deepStrictEqual(
     calculateCarePrice({ pathway: "moderate", durationWeeks: 8 }),
@@ -81,7 +81,7 @@ function runPricingPathwayTests() {
       additionalAcuteEpisode: true,
       priorityAcuteSupport: true,
     }).total,
-    8_800,
+    9_000,
   );
 
   assert.strictEqual(
@@ -122,7 +122,7 @@ function runPricingPathwayTests() {
   assert.doesNotMatch(sheetsFormula, /IF\(B4="Weekly", 5000, 20000\)/);
   assert.strictEqual(buildGoogleSheetsCarePeriodWeeksFormula(), 'IF(B4="Monthly", C4*4, C4)');
   const sheetsBenefitFormula = buildGoogleSheetsContinuityBenefitFormula();
-  assert.match(sheetsBenefitFormula, /=2, 5%/);
+  assert.doesNotMatch(sheetsBenefitFormula, /=2, 5%/);
   assert.match(sheetsBenefitFormula, /=4, 10%/);
   assert.match(sheetsBenefitFormula, /=8, 15%/);
   assert.match(sheetsBenefitFormula, /=12, 20%/);

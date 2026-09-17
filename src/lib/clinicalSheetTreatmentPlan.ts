@@ -1,7 +1,7 @@
 import {
-  buildGoogleSheetsCarePeriodWeeksFormula,
   buildGoogleSheetsCareRateFormula,
   buildGoogleSheetsContinuityBenefitFormula,
+  buildGoogleSheetsListCareTotalFormula,
   getCareLevelDisplayNameWithIcon,
 } from "./pricingConfig";
 
@@ -72,7 +72,7 @@ export function buildClinicalSheetTreatmentPlanValues(data: ClinicalSheetTreatme
     : whenPlanSelected(buildGoogleSheetsContinuityBenefitFormula());
   const listCareTotal = hasPlan && breakdown?.listCareTotal !== undefined
     ? breakdown.listCareTotal
-    : whenPlanSelected(`=B8*${buildGoogleSheetsCarePeriodWeeksFormula()}`);
+    : whenPlanSelected(buildGoogleSheetsListCareTotalFormula());
   const scopeReview = hasPlan && breakdown?.caseSpecificSupportTotal !== undefined ? breakdown.caseSpecificSupportTotal : "";
   const assessmentAddons = hasPlan && breakdown?.assessmentAddonsTotal !== undefined ? breakdown.assessmentAddonsTotal : "";
   const concessionAmount = hasPlan && breakdown?.concessionTotal !== undefined
@@ -84,9 +84,9 @@ export function buildClinicalSheetTreatmentPlanValues(data: ClinicalSheetTreatme
 
   const plannerRow = [careLevel, billingCycle, durationValue, conditionsCount, concession, overridePrice, medicineAddons];
   const breakdownRows = [
-    ["Weekly Care Rate", weeklyCareRate, "Weekly rate from the synchronized care pathway"],
-    ["Continuity Care Benefit", continuityBenefit, "0% / 5% / 10% / 15% / 20% benefit for 1 / 2 / 4 / 8 / 12 weeks"],
-    ["List Care Period Total", listCareTotal, "Weekly rate multiplied by the confirmed care period"],
+    ["Care Rate", weeklyCareRate, "Weekly rate or membership weekly equivalent from the synchronized care pathway"],
+    ["Continuity Care Benefit", continuityBenefit, "No benefit for 1–2 weeks; 10% / 15% / 20% benefit for 4 / 8 / 12 weeks. Membership payment periods have no continuity benefit."],
+    ["List Care Period Total", listCareTotal, "Confirmed chronic duration total or selected membership payment period"],
     ["Physician Scope Review", scopeReview, "Doctor-entered case-specific support; never added automatically"],
     ["Assessment Add-ons", assessmentAddons, "Doctor-entered records review or acute support"],
     ["Clinical Concession Amount", concessionAmount, "Approved concession after the continuity benefit"],

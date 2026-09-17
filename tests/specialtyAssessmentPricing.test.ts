@@ -20,16 +20,16 @@ function runSpecialtyAssessmentPricingTests() {
   assert.deepStrictEqual(SPECIALTY_SUPPORT_TIERS.advanced.durations, [1, 2, 4, 8, 12]);
   assert.deepStrictEqual(SPECIALTY_SUPPORT_TIERS.complete.durations, [1, 2, 4, 8, 12]);
 
-  assert.strictEqual(calculateSpecialtyTierTotal("constitutional", 2), 11_400);
+  assert.strictEqual(calculateSpecialtyTierTotal("constitutional", 2), 12_000);
   assert.strictEqual(calculateSpecialtyTierTotal("constitutional", 12), 57_600);
   assert.strictEqual(calculateSpecialtyTierTotal("advanced", 4), 32_400);
   assert.strictEqual(calculateSpecialtyTierTotal("advanced", 12), 86_400);
-  assert.strictEqual(calculateSpecialtyTierTotal("complete", 2), 22_800);
+  assert.strictEqual(calculateSpecialtyTierTotal("complete", 2), 24_000);
   assert.strictEqual(calculateSpecialtyTierTotal("complete", 4), 43_200);
   assert.strictEqual(calculateSpecialtyTierTotal("complete", 12), 115_200);
   assert.strictEqual(formatSpecialtyTierTotal("complete", 12), "₹1,15,200");
   assert.strictEqual(formatSpecialtyTierTotal("complete", 1), "₹12,000");
-  assert.strictEqual(formatSpecialtyTierTotal("complete", 2), "₹22,800");
+  assert.strictEqual(formatSpecialtyTierTotal("complete", 2), "₹24,000");
 
   const expectedOrganSystems = [
     "Cardiology",
