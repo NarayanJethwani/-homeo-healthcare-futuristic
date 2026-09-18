@@ -20,8 +20,8 @@ interface CareLevelCardProps {
 
 type GroupId = "acute" | "chronic" | "membership";
 const GROUPS: { id: GroupId; title: string; note: string; ids: StoreClinicalCareTierId[] }[] = [
-  { id: "acute", title: "Acute & Subacute Care", note: "Short, defined care periods · reassessment before extension", ids: ["acute_mild", "acute_wellness", "subacute"] },
-  { id: "chronic", title: "Chronic Care", note: "Weekly physician-led care · review schedules agreed individually", ids: ["focused", "integrated", "complex", "advanced"] },
+  { id: "chronic", title: "Chronic Care", note: "Structured physician-led care · review schedules agreed individually", ids: ["focused", "integrated", "complex", "advanced"] },
+  { id: "acute", title: "Acute & Subacute Care", note: "A practical short starting period for suitable new and walk-in concerns", ids: ["acute_mild", "acute_wellness", "subacute"] },
   { id: "membership", title: "Membership Follow-up Plans", note: "One person · one scheduled consultation per paid period · optional renewal", ids: ["membership_focused", "membership_integrated", "membership_comprehensive"] },
 ];
 
@@ -29,7 +29,7 @@ export const CareLevelCard: React.FC<CareLevelCardProps> = ({ selectedTierId, se
   const safeId = (Object.hasOwn(CLINICAL_CARE_TIER_OPTIONS, selectedTierId) ? selectedTierId : "focused") as StoreClinicalCareTierId;
   const tier = CLINICAL_CARE_TIER_OPTIONS[safeId];
   const [presenting, setPresenting] = useState(false);
-  const [groupId, setGroupId] = useState<GroupId>("acute");
+  const [groupId, setGroupId] = useState<GroupId>("chronic");
   const dialog = useRef<HTMLDialogElement>(null);
   const blocked = preliminaryRecommendation?.blockedBySafetyGate === true;
   const period = getTierCarePeriodLabel(safeId, selectedDurationWeeks);
@@ -112,8 +112,8 @@ export const CareLevelCard: React.FC<CareLevelCardProps> = ({ selectedTierId, se
     </div>
   );
   const groupCards = (group: typeof GROUPS[number], presentation = false) => (
-    <section key={group.id} id={presentation ? undefined : `care-group-${group.id}`} className={styles.group} aria-label={group.title}>
-      <div className={styles.groupHeading}><div><p className={styles.eyebrow}>{group.id === "acute" ? "01 · Short-term care" : group.id === "chronic" ? "02 · Ongoing care" : "03 · Lower-intensity follow-up"}</p><h3>{group.title}</h3><p>{group.note}</p></div></div>
+    <section key={group.id} id={presentation ? undefined : `care-group-${group.id}`} className={`${styles.group} ${styles[group.id]}`} aria-label={group.title}>
+      <div className={styles.groupHeading}><div><p className={styles.eyebrow}>{group.id === "chronic" ? "01 · Ongoing care" : group.id === "acute" ? "02 · Short-term care" : "03 · Lower-intensity follow-up"}</p><h3>{group.title}</h3><p>{group.note}</p></div></div>
       <div className={`${styles.cards} ${group.id === "chronic" ? styles.four : styles.three}`}>
         {group.ids.map(id => {
           const plan = CLINICAL_CARE_TIER_OPTIONS[id];
@@ -134,6 +134,7 @@ export const CareLevelCard: React.FC<CareLevelCardProps> = ({ selectedTierId, se
         })}
       </div>
       {group.id === "chronic" && <p className={styles.groupNote}>Your doctor agrees the organ systems and concerns covered, considering case history, pathological findings and review needs. Case analysis, repertorisation and constitutional prescribing are used where appropriate at every level. Organ count alone does not determine the fee; referral may be required.</p>}
+      {group.id === "acute" && <p className={styles.groupNote}>For suitable recent, non-emergency concerns, including an acute flare-up that needs reassessment. Your doctor confirms whether short acute care, investigation, urgent conventional treatment or referral is appropriate.</p>}
       {group.id === "chronic" && durationCalculator()}
       {group.id === "chronic" && <p className={styles.groupNote}>As you improve, your doctor may recommend less frequent follow-up or completing care. Before prepaying, read the <a href="#care-payment-policy" className="font-bold underline underline-offset-4" onClick={() => setPresenting(false)}>unused-fee and family-adjustment policy</a>.</p>}
       {group.id === "membership" && membershipPaymentOptions()}
@@ -143,7 +144,7 @@ export const CareLevelCard: React.FC<CareLevelCardProps> = ({ selectedTierId, se
   );
 
   return <section id="care-pathways-pricing" aria-labelledby="care-pathways-heading" className={styles.root}>
-    <div className={styles.intro}><div><p className={styles.eyebrow}>Care plans & professional fees</p><h2 id="care-pathways-heading">The right level of care, clearly explained.</h2><p>Compare the concerns covered, case analysis and follow-up. Your doctor confirms the scope and review schedule before payment.</p></div><button type="button" className={styles.presentationButton} onClick={() => { setGroupId(GROUPS.find(g => g.ids.includes(safeId))?.id || "acute"); setPresenting(true); }}><Monitor size={18} /> Presentation view</button></div>
+    <div className={styles.intro}><div><p className={styles.eyebrow}>Care plans & professional fees</p><h2 id="care-pathways-heading">Chronic care first. Clear support when a concern changes.</h2><p>Compare the concerns covered, case analysis and follow-up. Your doctor confirms the scope and review schedule before payment.</p></div><button type="button" className={styles.presentationButton} onClick={() => { setGroupId(GROUPS.find(g => g.ids.includes(safeId))?.id || "chronic"); setPresenting(true); }}><Monitor size={18} /> Presentation view</button></div>
     <nav className={styles.nav} aria-label="Care plan sections">{GROUPS.map(g => <button type="button" key={g.id} onClick={() => selectGroup(g.id)}>{g.title}</button>)}</nav>
     {blocked && <p role="alert" className={styles.warning}>Urgent or uncertain warning signs require clinical assessment before a plan is requested. These plans are not emergency services.</p>}
     {GROUPS.map(g => groupCards(g))}
