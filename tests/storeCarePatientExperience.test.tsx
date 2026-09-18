@@ -38,6 +38,15 @@ describe("patient-facing care comparison", () => {
     expect(chronic.getByRole("button", { name: /2\s*weeks\s*₹24,000\s*Standard\s*rate/ }).getAttribute("aria-pressed")).toBe("true");
     expect(chronic.getByRole("button", { name: /12\s*weeks\s*₹1,15,200\s*20%\s*continuity\s*benefit\s*₹1,44,000/ })).toBeTruthy();
   });
+  it("leads with chronic care while keeping acute care clear for new and walk-in concerns", () => {
+    render(<MembershipComparison />);
+    expect(screen.getAllByRole("region").map((region) => region.getAttribute("aria-label")).filter(Boolean)).toEqual([
+      "Chronic Care",
+      "Acute & Subacute Care",
+      "Membership Follow-up Plans",
+    ]);
+    expect(screen.getByText(/practical short starting period for suitable new and walk-in concerns/i)).toBeTruthy();
+  });
   it("opens help without selecting a paid plan and preserves membership period in the actual page", () => {
     render(<StoreClinicalCareView />);
     fireEvent.click(screen.getByRole("button", { name: "Help me choose a plan" }));
