@@ -1743,5 +1743,17 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "ownerArea": "commerce-pricing",
     "testLayer": "unit",
     "reason": "Validates isolated /store Clinical Care Page Upgrade: STORE_CLINICAL_CARE_V1_ENABLED=true, patient-facing care names (Focused, Integrated, Complex, Advanced), governed continuity rates across 1/2/4/8/12 week durations, concise 4-step patient intake journey, DTO sanitization, included homeopathic medicines, emergency notice, and zero payment triggers"
+  },
+  {
+    "path": "tests/storeCarePatientExperience.test.tsx",
+    "status": "quarantined",
+    "ownerArea": "commerce-pricing",
+    "testLayer": "integration",
+    "reason": "Patient-facing Store interaction coverage requires the dedicated Vitest jsdom React Testing Library runner",
+    "risk": "low",
+    "trackingIssue": "QUARANTINE-TESTS-STORECAREPATIENTEXPERIENCE-TEST-TSX",
+    "owner": "commerce-pricing",
+    "lastExecutionResult": "5 tests passing via npm run test:ui",
+    "plannedResolution": "Execute via npm run test:ui (Vitest/jsdom)"
   }
 ];

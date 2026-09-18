@@ -82,7 +82,7 @@ export default function LucyButton() {
     setIsOpen(!isOpen);
   };
 
-  if (pathname?.startsWith("/admin") || isPortalHost) return null;
+  if (pathname?.startsWith("/admin") || isPortalHost || isPricingRoute) return null;
 
   return (
     <>

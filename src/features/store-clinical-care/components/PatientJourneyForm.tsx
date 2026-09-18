@@ -16,6 +16,7 @@ import {
   type PatientIntakeData,
   type ClinicalCareDurationWeeks,
 } from "../domain/types";
+import { UNUSED_FEES_POLICY } from "./CarePlanContent";
 import { validatePatientIntake } from "../services/careAssessmentService";
 import { buildPatientWhatsAppReviewLink } from "../services/careRecommendationEngine";
 
@@ -24,7 +25,7 @@ interface PatientJourneyFormProps {
   initialDurationWeeks?: ClinicalCareDurationWeeks;
   initialMainArea?: string;
   initialCondition?: string;
-  onSubmitAssessment: (intakeData: PatientIntakeData) => Promise<void>;
+  onSubmitAssessment: (intakeData: PatientIntakeData, preparedReviewUrl: string) => Promise<void>;
   isSubmitting?: boolean;
 }
 
@@ -47,7 +48,7 @@ const STEPS: StepConfig[] = [
   },
   {
     key: "history_duration",
-    title: "Chronicity & Previous Care",
+    title: "History & Previous Care",
     subtitle: "Specify symptom duration and prior treatments attempted",
   },
   {
@@ -73,7 +74,7 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
     phone: "",
     email: "",
     age: "",
-    gender: "female",
+    gender: "",
     city: "",
     mainHealthArea: initialMainArea,
     concernDescription: initialCondition ? `Primary concern: ${initialCondition}` : "",
@@ -148,6 +149,8 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
     const carePeriodLabel = getTierCarePeriodLabel(selectedTier.id, data.preferredDurationWeeks);
 
     const waPayload = buildPatientWhatsAppReviewLink({
+      age: data.age, gender: data.gender, email: data.email, durationText: data.durationText,
+      relatedHealthAreas: data.relatedHealthAreas, previousTreatments: data.previousTreatments, recordsSummary: data.recordsSummary,
       patientName: data.patientName,
       phone: data.phone,
       selectedTierName: selectedTier.name,
@@ -163,7 +166,7 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
       window.open(waPayload.whatsappUrl, "_blank", "noopener,noreferrer");
     }
 
-    await onSubmitAssessment(data);
+    await onSubmitAssessment(data, waPayload.whatsappUrl);
   };
 
   const selectedTier = CLINICAL_CARE_TIER_OPTIONS[data.selectedTierId as keyof typeof CLINICAL_CARE_TIER_OPTIONS] || CLINICAL_CARE_TIER_OPTIONS.integrated;
@@ -175,6 +178,10 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
 
   return (
     <div id="clinical-assessment-form" className="rounded-3xl border border-slate-200/80 bg-white/90 backdrop-blur-md p-6 md:p-10 shadow-xl mb-12">
+      <div className="mb-6 text-sm leading-relaxed text-slate-600">
+        <p><strong>Your details → Your concern → Previous care → Review &amp; send</strong></p>
+        <p className="mt-2">This form prepares a WhatsApp message. You review and send it to the clinic yourself; no payment is taken here.</p>
+      </div>
       {/* Progress Steps Header */}
       <div className="mb-8 border-b border-slate-200/80 pb-6">
         <div className="flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">
@@ -219,7 +226,7 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
                 required
                 value={data.patientName}
                 onChange={(e) => updateField("patientName", e.target.value)}
-                placeholder="e.g. Dr. Ramesh Patel"
+                placeholder="e.g. Ramesh Patel"
                 className="w-full rounded-2xl border border-slate-200 bg-white p-3.5 text-xs font-bold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
               />
             </div>
@@ -278,9 +285,11 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
                   onChange={(e) => updateField("gender", e.target.value)}
                   className="w-full rounded-2xl border border-slate-200 bg-white p-3.5 text-xs font-bold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
                 >
+                  <option value="">Select (optional)</option>
                   <option value="female">Female</option>
                   <option value="male">Male</option>
                   <option value="other">Other</option>
+                  <option value="prefer_not_to_say">Prefer not to say</option>
                 </select>
               </div>
             </div>
@@ -331,7 +340,7 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label htmlFor="durationText" className="block text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-2">
-                Symptom Duration / Chronicity
+                How long have you had this concern?
               </label>
               <select
                 id="durationText"
@@ -339,6 +348,8 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
                 onChange={(e) => updateField("durationText", e.target.value)}
                 className="w-full rounded-2xl border border-slate-200 bg-white p-3.5 text-xs font-bold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
               >
+                <option value="A few days">A few days</option>
+                <option value="A few weeks">A few weeks</option>
                 <option value="Less than 6 months">Less than 6 months</option>
                 <option value="6 months to 1 year">6 months to 1 year</option>
                 <option value="1 to 3 years">1 to 3 years</option>
@@ -387,6 +398,8 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
                 {continuityPercent > 0 && <div className="flex justify-between gap-4 text-emerald-700"><dt className="font-bold">Continuity benefit ({continuityPercent}%)</dt><dd className="font-black">−{formatINRFromPaise(listTotalPaise - totalPaise)}</dd></div>}
                 <div className="flex justify-between gap-4 border-t border-slate-200 pt-3"><dt className="font-bold text-slate-700">Estimated care fee</dt><dd className="text-base font-black text-[#1A2421]">{totalFormatted}</dd></div>
               </dl>
+              {selectedTier.family === "membership" && <p className="mt-3 text-sm font-semibold text-slate-700">One person · one scheduled consultation in this paid period · optional renewal.</p>}
+              <p className="mt-3 text-sm text-slate-600">{UNUSED_FEES_POLICY}</p>
               <p className="mt-3 text-[11px] font-semibold leading-relaxed text-slate-500">No payment is taken now. Your physician confirms the pathway, schedule, care period, and final quotation first.</p>
             </div>
 
@@ -458,11 +471,11 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
               className="px-8 py-3.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black uppercase tracking-wider transition-all shadow-lg flex items-center gap-2"
             >
               {isSubmitting ? (
-                <span>Submitting for Physician Review...</span>
+                <span>Preparing your review request...</span>
               ) : (
                 <>
                   <MessageCircle className="w-4 h-4" />
-                  <span>Continue to Physician Review</span>
+                  <span>Review &amp; send on WhatsApp</span>
                 </>
               )}
             </button>

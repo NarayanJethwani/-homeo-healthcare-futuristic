@@ -112,3 +112,26 @@
   .presentation .rows > span { min-height:3.65rem; }
   .presentation .groupHeading { margin-bottom:.8rem; }
 }
+
+/* Readable comparisons, including the compact consultation presentation. */
+.root { color-scheme:light; }
+.eyebrow { font-size:.72rem; }
+.period,.paymentOption { font-size:.8rem; color:#415b4e; }
+.rows { grid-template-rows:repeat(3,1fr); }
+.rows > span { font-size:.85rem; line-height:1.5; min-height:5.5rem; }
+.rows small { color:#496152; font-size:.67rem; }
+.groupNote,.included { font-size:.85rem; line-height:1.6; }
+.calculator p { font-size:.82rem; }
+.calculatorChoices strong { font-size:.8rem; }
+.calculatorChoices small { font-size:.7rem; color:#3e594c; }
+.calculatorTotal span,.calculatorTotal small { font-size:.8rem; color:#405a4c; }
+.membershipCalculator .calculatorChoices { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.paymentExplanation { grid-column:1/-1; border-top:1px solid #cddcd1; padding-top:.85rem; }
+.beforePayment { scroll-margin-top:7rem; margin-top:1rem; padding:1.25rem; border:1px solid #cddcd1; border-radius:16px; background:#f6faf6; }
+.beforePayment h3 { font-family:Georgia,serif; font-size:1.2rem; margin-bottom:.7rem; }
+.beforePayment p { color:#3e594c; font-size:.85rem; line-height:1.6; margin-top:.65rem; }
+.presentation .rows > span { min-height:4.6rem; font-size:.8rem; }
+.presentation .groupNote,.presentation .included { font-size:.77rem; line-height:1.4; }
+.presentation .calculator p { font-size:.75rem; }
+@media(min-width:1024px) and (max-width:1199px) { .calculator { grid-template-columns:1fr; } .calculatorTotal { border-left:0; border-top:1px solid #cddcd1; padding:1rem 0 0; } }
+@media(prefers-reduced-motion:reduce) { .card { transition:none; } .card:hover { transform:none; } }

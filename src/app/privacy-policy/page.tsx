@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Magnetic from "@/components/Magnetic";
 
+import { MEMBERSHIP_ALLOWANCE, UNUSED_FEES_POLICY } from "@/features/store-clinical-care/services/carePlanPolicy";
+
 type TabType = "privacy" | "terms" | "telehealth";
 
 export default function PrivacyPolicyPage() {
@@ -251,7 +253,7 @@ export default function PrivacyPolicyPage() {
                     <FileText className="w-6 h-6 text-mint" /> Clinical Terms & Conditions
                   </h2>
                   <p className="text-xs text-slate-700 font-bold uppercase tracking-wider mb-6">
-                    Last Updated: May 2026
+                    Last Updated: September 2026
                   </p>
                   <p className="text-sm text-slate-700 font-semibold leading-relaxed mb-6">
                     By booking an online or in-person consultation through homeo.healthcare or Ramkrishna Homeopathic Consultancy, you agree to comply with and be bound by the following clinical terms and policies.
@@ -266,7 +268,7 @@ export default function PrivacyPolicyPage() {
                         1. Consultation & Booking Terms
                       </h4>
                       <p className="text-xs text-slate-700 leading-relaxed">
-                        A clinical slot constitutes a dedicated medical evaluation window. New-case consultations span 60-90 minutes, and follow-ups span 15-30 minutes. Appointments cancelled or rescheduled at least 24 hours prior to the slot receive a full refund. Cancellations made under 24 hours are subject to a rescheduling fee.
+                        Consultations are scheduled by appointment and follow the agreed case scope. Please contact the clinic as early as possible if you need to reschedule. For memberships: {MEMBERSHIP_ALLOWANCE} Additional consultations require reassessment and an agreed fee. Consultation length is based on the case, without a fixed minute allowance in the plan comparison.
                       </p>
                     </div>
                   </div>
@@ -287,10 +289,10 @@ export default function PrivacyPolicyPage() {
                     <CreditCard className="w-5 h-5 text-lavender-dark flex-shrink-0 mt-0.5" />
                     <div>
                       <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-1">
-                        3. Refund and Pharmacy Purity Policy
+                        3. Care-plan Fees & Family Adjustment
                       </h4>
                       <p className="text-xs text-slate-700 leading-relaxed">
-                        Under global pharmaceutical and clinical safety guidelines, custom-prepared dilutions and constitutional remedy packages once shipped cannot be returned or refunded. For multi-month packages, clinical cancellation is eligible for a pro-rata refund for the remaining consultation months, minus the cost of remedies already manufactured and dispatched.
+                        For new care-plan payments: {UNUSED_FEES_POLICY} Each family member requires their own assessment; prescribed medicines must not be shared. Previously agreed written payment and cancellation terms remain applicable to payments already made. This policy does not limit rights or remedies available under applicable law.
                       </p>
                     </div>
                   </div>

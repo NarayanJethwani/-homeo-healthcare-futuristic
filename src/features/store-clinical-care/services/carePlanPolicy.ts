@@ -1,0 +1,2 @@
+export const MEMBERSHIP_ALLOWANCE = "One scheduled consultation per paid period: one for 2 weeks, or one for a calendar month. Each renewal includes one scheduled consultation.";
+export const UNUSED_FEES_POLICY = "Care-plan fees are non-refundable, subject to applicable law. On request and with doctor approval, unused fees may be adjusted toward a family member’s separately assessed care. The eligible amount and care plan must be confirmed in writing; adjustment is not automatic.";
