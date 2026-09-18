@@ -1753,7 +1753,7 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "risk": "low",
     "trackingIssue": "QUARANTINE-TESTS-STORECAREPATIENTEXPERIENCE-TEST-TSX",
     "owner": "commerce-pricing",
-    "lastExecutionResult": "5 tests passing via npm run test:ui",
+    "lastExecutionResult": "6 tests passing via npm run test:ui",
     "plannedResolution": "Execute via npm run test:ui (Vitest/jsdom)"
   }
 ];
