@@ -7,6 +7,7 @@ import {
   type ClinicalCareDurationWeeks, type PreliminaryCareRecommendation, type StoreClinicalCareTierId,
 } from "../domain/types";
 import styles from "./CareLevelCard.module.css";
+import { CARE_PLAN_DETAILS, MEMBERSHIP_ALLOWANCE, UNUSED_FEES_POLICY } from "./CarePlanContent";
 
 interface CareLevelCardProps {
   selectedTierId: string;
@@ -21,20 +22,8 @@ type GroupId = "acute" | "chronic" | "membership";
 const GROUPS: { id: GroupId; title: string; note: string; ids: StoreClinicalCareTierId[] }[] = [
   { id: "acute", title: "Acute & Subacute Care", note: "Short, defined care periods · reassessment before extension", ids: ["acute_mild", "acute_wellness", "subacute"] },
   { id: "chronic", title: "Chronic Care", note: "Weekly physician-led care · review schedules agreed individually", ids: ["focused", "integrated", "complex", "advanced"] },
-  { id: "membership", title: "Membership Follow-up Plans", note: "One person · one scheduled consultation · choose a 2-week or calendar-month payment period", ids: ["membership_focused", "membership_integrated", "membership_comprehensive"] },
+  { id: "membership", title: "Membership Follow-up Plans", note: "One person · one scheduled consultation per paid period · optional renewal", ids: ["membership_focused", "membership_integrated", "membership_comprehensive"] },
 ];
-const DETAILS: Record<StoreClinicalCareTierId, { scope: string; review: string; support: string }> = {
-  acute_mild: { scope: "One suitable mild acute concern", review: "Within a fixed 2-day care period", support: "Reassessment before any extension" },
-  acute_wellness: { scope: "A suitable non-emergency acute concern", review: "Within a fixed 4-day care period", support: "Reassessment before any extension" },
-  subacute: { scope: "A persisting or transitional concern", review: "Within a fixed 1-week care period", support: "Planned reassessment before continuation" },
-  focused: { scope: "One defined chronic concern", review: "Standard planned weekly follow-up", support: "Routine progress review" },
-  integrated: { scope: "Related concerns across organ systems", review: "Closer planned review", support: "Records coordination when agreed" },
-  complex: { scope: "Complex or multi-system chronic concerns", review: "Frequent planned review", support: "Enhanced supervision and coordination" },
-  advanced: { scope: "High-workload chronic care", review: "High-frequency physician review", support: "Extensive coordination when agreed" },
-  membership_focused: { scope: "One person · one agreed concern", review: "1 consultation / month · up to 30 minutes", support: "Brief clarification during clinic hours" },
-  membership_integrated: { scope: "One person · two related mild, stable concerns", review: "1 consultation / month · up to 60 minutes", support: "Brief clarification during clinic hours" },
-  membership_comprehensive: { scope: "One person · multiple stable concerns", review: "1 detailed consultation / month · up to 75 minutes", support: "Brief clarification during clinic hours" },
-};
 
 export const CareLevelCard: React.FC<CareLevelCardProps> = ({ selectedTierId, selectedDurationWeeks, preliminaryRecommendation, onSelectTier, onSelectDuration, onProceedToAssessment }) => {
   const safeId = (Object.hasOwn(CLINICAL_CARE_TIER_OPTIONS, selectedTierId) ? selectedTierId : "focused") as StoreClinicalCareTierId;
@@ -110,15 +99,16 @@ export const CareLevelCard: React.FC<CareLevelCardProps> = ({ selectedTierId, se
           return <button type="button" key={weeks} aria-pressed={membershipDurationWeeks === weeks} onClick={() => { if (tier.family !== "membership") onSelectTier(membershipTierId); onSelectDuration(weeks); }}>
             <strong>{isTwoWeeks ? "2 weeks" : "Calendar month"}</strong>
             <span>{formatINRFromPaise(payment)}</span>
-            <small>{isTwoWeeks ? "Convenient 2-week payment" : "Monthly follow-up period"}</small>
+            <small>{isTwoWeeks ? "Lower upfront payment" : "One calendar month of care"}</small>
           </button>;
         })}
       </div>
       <div className={styles.calculatorTotal}>
         <span>Selected payment · {getTierCarePeriodLabel(membershipTierId, membershipDurationWeeks)}</span>
         <strong>{formatINRFromPaise(calculateTierCarePeriodTotalPaise(membershipTierId, membershipDurationWeeks))}</strong>
-        <small>One person · one scheduled consultation</small>
+        <small>One person · one scheduled consultation in this period</small>
       </div>
+      <p className={styles.paymentExplanation}>{MEMBERSHIP_ALLOWANCE} Two consecutive 2-week periods cost {formatINRFromPaise((membershipTier.twoWeekRatePaise || 0) * 2)} for 28 days and include two consultations. A calendar month costs {formatINRFromPaise(membershipTier.weeklyRatePaise)} and includes one consultation.</p>
     </div>
   );
   const groupCards = (group: typeof GROUPS[number], presentation = false) => (
@@ -127,41 +117,48 @@ export const CareLevelCard: React.FC<CareLevelCardProps> = ({ selectedTierId, se
       <div className={`${styles.cards} ${group.id === "chronic" ? styles.four : styles.three}`}>
         {group.ids.map(id => {
           const plan = CLINICAL_CARE_TIER_OPTIONS[id];
-          const details = DETAILS[id];
+          const details = CARE_PLAN_DETAILS[id];
           const selected = id === safeId;
-          return <button type="button" key={id} data-tier={id} aria-pressed={selected} onClick={() => { onSelectTier(id); if (plan.family === "membership") onSelectDuration(4); }} className={`${styles.card} ${selected ? styles.selected : ""}`}>
+          return <button type="button" key={id} data-tier={id} aria-pressed={selected} onClick={() => { onSelectTier(id); if (plan.family === "membership" && tier.family !== "membership") onSelectDuration(4); }} className={`${styles.card} ${selected ? styles.selected : ""}`}>
             <span className={styles.planName}>{plan.name}</span>
             <span className={styles.price}>{formatINRFromPaise(plan.weeklyRatePaise)}</span>
             <span className={styles.period}>{plan.family === "chronic" ? "per person / week" : plan.family === "membership" ? "per person / calendar month" : `complete ${getTierCarePeriodLabel(id, 1)} care period`}</span>
             {plan.family === "membership" && plan.twoWeekRatePaise && <span className={styles.paymentOption}>{formatINRFromPaise(plan.twoWeekRatePaise)} for 2 weeks</span>}
             <span className={styles.rows}>
               <span><small>CARE SCOPE</small>{details.scope}</span>
-              <span><small>SCHEDULED REVIEW</small>{details.review}</span>
-              <span><small>SUPPORT</small>{details.support}</span>
+              <span><small>CASE ANALYSIS &amp; CARE</small>{details.casework}</span>
+              <span><small>FOLLOW-UP</small>{details.review}</span>
             </span>
             <span className={styles.select}>{selected ? "Selected plan ✓" : "Select plan"}</span>
           </button>;
         })}
       </div>
-      {group.id === "chronic" && <p className={styles.groupNote}>Organ-system involvement, pathological findings and required review inform the physician’s assessment. The fee follows the agreed care scope; organ count does not automatically multiply the fee. Findings needing referral are assessed separately.</p>}
+      {group.id === "chronic" && <p className={styles.groupNote}>Your doctor agrees the organ systems and concerns covered, considering case history, pathological findings and review needs. Case analysis, repertorisation and constitutional prescribing are used where appropriate at every level. Organ count alone does not determine the fee; referral may be required.</p>}
       {group.id === "chronic" && durationCalculator()}
+      {group.id === "chronic" && <p className={styles.groupNote}>As you improve, your doctor may recommend less frequent follow-up or completing care. Before prepaying, read the <a href="#care-payment-policy" className="font-bold underline underline-offset-4" onClick={() => setPresenting(false)}>unused-fee and family-adjustment policy</a>.</p>}
       {group.id === "membership" && membershipPaymentOptions()}
-      {group.id === "membership" && <p className={styles.groupNote}>Additional acute care is assessed and charged separately under the acute plans. Renewal is optional when follow-up remains appropriate. More frequent care requires reassessment. Membership is not insurance or unlimited care.</p>}
+      {group.id === "membership" && <p className={styles.groupNote}>Membership includes case review, constitutional follow-up where appropriate, routine prescribed medicines and brief clarification of existing instructions during clinic hours. New acute concerns are separately assessed and charged. Renewal is optional; care can finish when follow-up is no longer needed. Membership is not insurance or unlimited care.</p>}
       <p className={styles.included}><CheckCircle2 size={16} aria-hidden="true" /> Routine individually prescribed homeopathic medicines included · additional fees agreed before payment.</p>
     </section>
   );
 
   return <section id="care-pathways-pricing" aria-labelledby="care-pathways-heading" className={styles.root}>
-    <div className={styles.intro}><div><p className={styles.eyebrow}>Care plans & professional fees</p><h2 id="care-pathways-heading">The right level of care, clearly explained.</h2><p>Compare short-term care, weekly chronic care and membership follow-up. Your physician confirms suitability and scope before payment.</p></div><button type="button" className={styles.presentationButton} onClick={() => { setGroupId(GROUPS.find(g => g.ids.includes(safeId))?.id || "acute"); setPresenting(true); }}><Monitor size={18} /> Presentation view</button></div>
+    <div className={styles.intro}><div><p className={styles.eyebrow}>Care plans & professional fees</p><h2 id="care-pathways-heading">The right level of care, clearly explained.</h2><p>Compare the concerns covered, case analysis and follow-up. Your doctor confirms the scope and review schedule before payment.</p></div><button type="button" className={styles.presentationButton} onClick={() => { setGroupId(GROUPS.find(g => g.ids.includes(safeId))?.id || "acute"); setPresenting(true); }}><Monitor size={18} /> Presentation view</button></div>
     <nav className={styles.nav} aria-label="Care plan sections">{GROUPS.map(g => <button type="button" key={g.id} onClick={() => selectGroup(g.id)}>{g.title}</button>)}</nav>
     {blocked && <p role="alert" className={styles.warning}>Urgent or uncertain warning signs require clinical assessment before a plan is requested. These plans are not emergency services.</p>}
     {GROUPS.map(g => groupCards(g))}
     <div className={styles.summary}>
       <div>
         <p className={styles.eyebrow}>Your selected plan</p><h3>{tier.name}</h3><p>{period}{tier.family === "membership" ? " · one person · optional renewal" : " · physician-confirmed scope"}</p>
-        {tier.family === "chronic" ? <details className={styles.duration}><summary>Care period & continuity benefits · {period}</summary><div className={styles.durationButtons}>{ALLOWED_CARE_DURATIONS.map(weeks => <button type="button" key={weeks} aria-pressed={selectedDurationWeeks === weeks} onClick={() => onSelectDuration(weeks)}>{weeks} {weeks === 1 ? "week" : "weeks"}<small>{getTierContinuityBenefit(safeId, weeks) || 0}% benefit</small></button>)}</div></details> : <p className={styles.groupNote}>{tier.family === "membership" ? "One calendar month. Weekly continuity discounts do not apply. Cancellation, delivery and any applicable credit terms are agreed before payment." : "Fixed care period. No continuity discount; reassessment before renewal or extension."}</p>}
+        {tier.family === "chronic" ? <details className={styles.duration}><summary>Care period & continuity benefits · {period}</summary><div className={styles.durationButtons}>{ALLOWED_CARE_DURATIONS.map(weeks => <button type="button" key={weeks} aria-pressed={selectedDurationWeeks === weeks} onClick={() => onSelectDuration(weeks)}>{weeks} {weeks === 1 ? "week" : "weeks"}<small>{getTierContinuityBenefit(safeId, weeks) || 0}% benefit</small></button>)}</div></details> : <p className={styles.groupNote}>{tier.family === "membership" ? `${period} of follow-up for one person, including one scheduled consultation. Renewal is optional. Weekly continuity discounts do not apply.` : "Fixed care period. No continuity discount; reassessment before renewal or extension."}</p>}
       </div>
-      <div className={styles.total}><span>Estimated care fee · {period}</span><strong>{formatINRFromPaise(total)}</strong>{benefit > 0 && <small>{formatINRFromPaise(listTotal)} less {benefit}% continuity benefit</small>}<button type="button" disabled={blocked} onClick={requestReview}>{blocked ? "Urgent assessment required" : "Request physician review"}<ArrowRight size={16} /></button><small>No payment now. No guarantee of suitability or outcome.</small></div>
+      <div className={styles.total}><span>Estimated care fee · {period}</span><strong>{formatINRFromPaise(total)}</strong>{benefit > 0 && <small>{formatINRFromPaise(listTotal)} less {benefit}% continuity benefit</small>}<button type="button" disabled={blocked} onClick={requestReview}>{blocked ? "Urgent assessment required" : "Request physician review"}<ArrowRight size={16} /></button><small>No payment now. Your doctor confirms suitability and the final fee. Outcomes vary.</small></div>
+    </div>
+    <div id="care-payment-policy" className={styles.beforePayment}>
+      <h3>Before choosing a longer care period</h3>
+      <p>Your doctor reviews whether to continue active care, move to membership or complete care. A longer payment period does not mean you need treatment for its entire duration.</p>
+      <p><strong>Unused fees &amp; family adjustment:</strong> {UNUSED_FEES_POLICY}</p>
+      <p><strong>Need help with affordability?</strong> Senior citizens and people facing financial hardship can request an individual concession review. Your care needs still determine the suitable plan.</p>
     </div>
     <dialog ref={dialog} onClose={() => setPresenting(false)} className={styles.presentation} aria-label="Care plan presentation">
       <div className={styles.presentationHeader}><strong>Homeo Healthcare <span>Care plans & fees</span></strong><button type="button" onClick={() => setPresenting(false)} aria-label="Close presentation"><X size={22} /></button></div>

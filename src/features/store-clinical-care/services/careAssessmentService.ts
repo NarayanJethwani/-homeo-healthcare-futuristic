@@ -111,7 +111,7 @@ export function processCareAssessmentSubmission(
     totalEstimatedAmountFormatted: totalFormatted,
     preliminaryRecommendation,
     status: "submitted_for_physician_review",
-    message: "Thank you. Your clinical assessment has been submitted for physician review. Your treating physician will review your submission and prepare your official Clinical Care Quotation.",
+    message: "Your review request is ready. Please send the prepared WhatsApp message to the clinic. Completing this form does not confirm delivery or an appointment; the clinic will confirm receipt and next steps.",
   };
 
   return {

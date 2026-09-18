@@ -36,7 +36,10 @@ export const StoreClinicalCareView: React.FC = () => {
   const [selectedAreaIds, setSelectedAreaIds] = useState<string[]>([]);
   const [selectedAreaTitles, setSelectedAreaTitles] = useState<string[]>([]);
   const [selectedCondition, setSelectedCondition] = useState("");
+  const [guideOpen, setGuideOpen] = useState(false);
+  const guideRef = useRef<HTMLDetailsElement>(null);
   const [assessmentOpen, setAssessmentOpen] = useState(false);
+  const [preparedReviewUrl, setPreparedReviewUrl] = useState<string>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionResponse, setSubmissionResponse] = useState<SanitizedAssessmentResponseDTO | null>(null);
   const assessmentFormRef = useRef<HTMLDivElement>(null);
@@ -92,17 +95,24 @@ export const StoreClinicalCareView: React.FC = () => {
     }
   };
 
+  const openGuide = () => {
+    setActiveDiscoveryTab("pathways");
+    setGuideOpen(true);
+    window.setTimeout(() => guideRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+  };
+
   const showCarePathways = () => {
     setActiveDiscoveryTab("pathways");
     window.setTimeout(() => discoveryTabsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
   };
 
-  const handleSubmitAssessment = async (intakeData: PatientIntakeData) => {
+  const handleSubmitAssessment = async (intakeData: PatientIntakeData, reviewUrl: string) => {
     setIsSubmitting(true);
     try {
       const result = processCareAssessmentSubmission(intakeData);
       if (result.success) {
         trackStoreFunnelEvent("store_assessment_submitted", { pathway: intakeData.selectedTierId, durationWeeks: intakeData.preferredDurationWeeks });
+        setPreparedReviewUrl(reviewUrl);
         setSubmissionResponse(result.data);
       }
     } finally {
@@ -112,6 +122,7 @@ export const StoreClinicalCareView: React.FC = () => {
 
   const handleReset = () => {
     setSubmissionResponse(null);
+    setPreparedReviewUrl(undefined);
     setSelectedTierId("focused");
     setSelectedDurationWeeks(4);
     setPathwayAnswers({});
@@ -129,18 +140,35 @@ export const StoreClinicalCareView: React.FC = () => {
         <ClinicalCareHeader />
 
         {submissionResponse ? (
-          <SubmissionSuccessView response={submissionResponse} onReset={handleReset} />
+          <SubmissionSuccessView response={submissionResponse} preparedReviewUrl={preparedReviewUrl} onReset={handleReset} />
         ) : (
           <>
             <div className="mb-12 grid grid-cols-1 gap-4 md:grid-cols-3">
               {["No payment before physician review", "Routine prescribed medicines included", "Every additional fee requires approval"].map((item) => <div key={item} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-xs font-bold text-slate-700"><CheckCircle2 className="h-4 w-4 shrink-0 text-mint" />{item}</div>)}
             </div>
 
+            <section aria-labelledby="care-start-heading" className="mb-8 rounded-3xl border border-slate-200 bg-white p-6">
+              <h2 id="care-start-heading" className="font-serif text-2xl font-bold text-[#1A2421]">What brings you here?</h2>
+              <p className="mt-2 text-sm text-slate-600">Choose a starting point to compare options. Your doctor confirms what is suitable.</p>
+              <div className="mt-5 grid gap-3 md:grid-cols-3">
+                {[
+                  { id: "acute", title: "A recent concern", note: "Short-term care for a suitable non-emergency problem", label: "Explore acute & subacute care" },
+                  { id: "chronic", title: "An ongoing problem", note: "Case analysis and planned review of one or more organ systems", label: "Explore chronic care" },
+                  { id: "membership", title: "Stable follow-up", note: "Lower-intensity review of agreed mild, stable concerns", label: "Explore membership" },
+                ].map(item => <button key={item.id} type="button" onClick={() => { setActiveDiscoveryTab("pathways"); window.setTimeout(() => document.getElementById(`care-group-${item.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" }), 50); }} className="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-left hover:border-mint focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"><strong className="block text-base text-[#1A2421]">{item.title}</strong><span className="mt-2 block text-sm text-slate-600">{item.note}</span><span className="mt-4 block text-sm font-bold text-mint">{item.label} →</span></button>)}
+              </div>
+              <div className="mt-5 flex flex-wrap items-center gap-4 text-sm">
+                <button type="button" onClick={openGuide} className="rounded-xl bg-[#1A2421] px-5 py-3 font-bold text-white">Help me choose a plan</button>
+                <a href="https://wa.me/918446056789?text=Hello%2C%20I%20would%20like%20help%20choosing%20a%20suitable%20care%20plan." target="_blank" rel="noopener noreferrer" className="font-bold text-mint underline underline-offset-4">Ask the clinic on WhatsApp</a>
+                <span className="text-slate-600">No plan selection or payment needed to ask.</span>
+              </div>
+            </section>
+
             <div ref={discoveryTabsRef} className="mb-8 scroll-mt-28 rounded-[1.75rem] border border-slate-200 bg-white/80 p-2 shadow-sm">
               <div role="tablist" aria-label="Choose how to begin" className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 <button id="care-pathways-tab" type="button" role="tab" aria-selected={activeDiscoveryTab === "pathways"} aria-controls="care-pathways-panel" onClick={() => setActiveDiscoveryTab("pathways")} className={`flex items-center gap-3 rounded-[1.25rem] px-5 py-4 text-left transition-all ${activeDiscoveryTab === "pathways" ? "bg-[#1A2421] text-white shadow-md" : "text-slate-600 hover:bg-slate-50"}`}>
                   <span className={`rounded-xl p-2 ${activeDiscoveryTab === "pathways" ? "bg-white/10 text-mint" : "bg-mint/10 text-mint-dark"}`}><Route className="h-5 w-5" aria-hidden="true" /></span>
-                  <span><strong className="block text-sm">Choose a Care Pathway</strong><span className={`mt-0.5 block text-[10px] font-semibold ${activeDiscoveryTab === "pathways" ? "text-white/70" : "text-slate-500"}`}>Compare care levels, continuity benefits and fees</span></span>
+                  <span><strong className="block text-sm">Compare Plans &amp; Fees</strong><span className={`mt-0.5 block text-[10px] font-semibold ${activeDiscoveryTab === "pathways" ? "text-white/70" : "text-slate-500"}`}>See care scope, payment periods and fees</span></span>
                 </button>
                 <button id="health-concerns-tab" type="button" role="tab" aria-selected={activeDiscoveryTab === "concerns"} aria-controls="health-concerns-panel" onClick={() => setActiveDiscoveryTab("concerns")} className={`flex items-center gap-3 rounded-[1.25rem] px-5 py-4 text-left transition-all ${activeDiscoveryTab === "concerns" ? "bg-[#1A2421] text-white shadow-md" : "text-slate-600 hover:bg-slate-50"}`}>
                   <span className={`rounded-xl p-2 ${activeDiscoveryTab === "concerns" ? "bg-white/10 text-mint" : "bg-mint/10 text-mint-dark"}`}><HeartPulse className="h-5 w-5" aria-hidden="true" /></span>
@@ -159,7 +187,9 @@ export const StoreClinicalCareView: React.FC = () => {
                   onSelectTier={(tierId) => {
                     const nextTier = normalizeStoreTier(tierId);
                     setSelectedTierId(nextTier);
-                    if (CLINICAL_CARE_TIER_OPTIONS[nextTier].family !== "chronic") setSelectedDurationWeeks(1);
+                    const nextFamily = CLINICAL_CARE_TIER_OPTIONS[nextTier].family;
+                    if (nextFamily === "acute" || nextFamily === "subacute") setSelectedDurationWeeks(1);
+                    else if (nextFamily === "membership" && CLINICAL_CARE_TIER_OPTIONS[selectedTierId].family !== "membership") setSelectedDurationWeeks(4);
                     trackStoreFunnelEvent("store_pathway_selected", { pathway: nextTier, durationWeeks: selectedDurationWeeks });
                   }}
                   onSelectDuration={(weeks) => {
@@ -168,7 +198,7 @@ export const StoreClinicalCareView: React.FC = () => {
                   }}
                   onProceedToAssessment={openAssessment}
                 />
-                <details className="mb-8 rounded-2xl border border-slate-200 bg-white p-5"><summary className="cursor-pointer font-bold text-slate-700">Not sure where to begin? Open the pathway guide</summary><div className="mt-5"><CarePathwayCheck answers={pathwayAnswers} recommendation={preliminaryRec} onChange={handlePathwayAnswersChange} /></div></details>
+                <details ref={guideRef} open={guideOpen} onToggle={event => setGuideOpen(event.currentTarget.open)} className="mb-8 scroll-mt-28 rounded-2xl border border-slate-200 bg-white p-5"><summary className="cursor-pointer font-bold text-slate-700">Not sure where to begin? Open the pathway guide</summary><div className="mt-5"><CarePathwayCheck answers={pathwayAnswers} recommendation={preliminaryRec} onChange={handlePathwayAnswersChange} /></div></details>
               </div>
             ) : (
               <div id="health-concerns-panel" role="tabpanel" aria-labelledby="health-concerns-tab">
@@ -195,6 +225,14 @@ export const StoreClinicalCareView: React.FC = () => {
               </div>
             )}
 
+            <section aria-label="Appointments and practical information" className="mb-8 grid gap-4 md:grid-cols-3">
+              {[
+                { title: "Appointments", text: "In-person or online review according to suitability. Some concerns require an examination or referral." },
+                { title: "Clinic support", text: "Brief clarification of existing instructions during clinic hours. Additional concerns or consultations are assessed separately." },
+                { title: "Medicine delivery", text: "Routine prescribed medicines are included. Delivery availability and any courier charges are confirmed before payment." },
+              ].map(item => <div key={item.title} className="rounded-2xl border border-slate-200 bg-white p-5"><h3 className="text-base font-bold text-[#1A2421]">{item.title}</h3><p className="mt-2 text-sm leading-relaxed text-slate-600">{item.text}</p></div>)}
+              <Link href="/contact-us" className="text-sm font-bold text-mint underline underline-offset-4 md:col-span-3">View clinic locations, hours and appointment options →</Link>
+            </section>
             <IncludedServicesList />
             <ClinicalCareFAQ />
             <EmergencyGuidanceBanner />

@@ -16,7 +16,7 @@ export default function WhatsAppButton() {
     }
   }, []);
 
-  if (pathname?.startsWith("/admin") || isPortalHost) return null;
+  if (pathname?.startsWith("/admin") || isPortalHost || isPricingRoute) return null;
 
   const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918446056789";
   const defaultMessage = encodeURIComponent(

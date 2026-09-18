@@ -1,3 +1,4 @@
+import { MEMBERSHIP_ALLOWANCE, UNUSED_FEES_POLICY } from "./carePlanPolicy";
 import {
   CLINICAL_CARE_TIER_OPTIONS,
   EXPLICIT_PHYSICIAN_AUTHORITY_STATEMENT,
@@ -204,6 +205,9 @@ export function buildWhatsAppQuotationPayload(quotation: OfficialClinicalQuotati
   lines.push("");
   lines.push(`Total Amount:\n${bd.finalTotalFormatted}`);
   lines.push("");
+  if (CLINICAL_CARE_TIER_OPTIONS[quotation.tierId as keyof typeof CLINICAL_CARE_TIER_OPTIONS]?.family === "membership") lines.push(MEMBERSHIP_ALLOWANCE);
+  lines.push(UNUSED_FEES_POLICY);
+  lines.push("");
   lines.push("Please complete payment using the UPI ID below or bank transfer:");
   lines.push(`• UPI ID: ${quotation.paymentWorkflow.clinicUpiId || upiId}`);
   lines.push(`• Bank Details: ${quotation.paymentWorkflow.clinicBankDetails || bankDetails}`);
@@ -235,6 +239,7 @@ export function buildWhatsAppQuotationPayload(quotation: OfficialClinicalQuotati
 export function buildPatientWhatsAppReviewLink(data: {
   patientName: string;
   phone?: string;
+  email?: string;
   submissionId?: string;
   selectedTierName: string;
   preferredDurationWeeks: number;
@@ -242,6 +247,12 @@ export function buildPatientWhatsAppReviewLink(data: {
   totalEstimatedAmountFormatted: string;
   mainHealthArea: string;
   concernDescription?: string;
+  age?: string;
+  gender?: string;
+  durationText?: string;
+  relatedHealthAreas?: string[];
+  previousTreatments?: string;
+  recordsSummary?: string;
 }): { whatsappUrl: string; messageText: string } {
   const targetDoctorPhone = "918446056789"; // Integrated Doctor Assistance WhatsApp
   const lines: string[] = [
@@ -261,10 +272,17 @@ export function buildPatientWhatsAppReviewLink(data: {
   ].filter(Boolean);
 
   if (data.concernDescription) {
-    lines.push(`• *Health Concern Details*: ${data.concernDescription.slice(0, 300)}`);
+    lines.push(`• *Health Concern Details*: ${data.concernDescription}`);
   }
 
   lines.push("");
+  for (const [label, value] of [
+    ["Email", data.email], ["Age", data.age], ["Gender", data.gender], ["Symptom duration", data.durationText],
+    ["Related concerns", data.relatedHealthAreas?.filter(Boolean).join(", ")],
+    ["Previous treatment and medicines", data.previousTreatments], ["Relevant reports", data.recordsSummary],
+  ]) {
+    if (value) lines.push(`• *${label}*: ${value}`);
+  }
   lines.push("Please assist with my clinical case review and treatment guidance.");
 
   const messageText = lines.join("\n");

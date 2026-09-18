@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Remedies & Care Programs | Homeo Healthcare",
-  description: "Browse constitutional treatment plans and clinical consultation tiers for chronic, acute, and complex pathological recovery.",
+  title: "Care Plans & Fees | Homeo Healthcare",
+  description: "Compare acute, chronic and membership care fees, individualised homeopathic case analysis, constitutional care and follow-up. Doctor review before payment.",
 };
 
 export default function StoreLayout({

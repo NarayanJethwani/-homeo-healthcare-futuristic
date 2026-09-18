@@ -6,11 +6,13 @@ import { buildPatientWhatsAppReviewLink } from "../services/careRecommendationEn
 interface SubmissionSuccessViewProps {
   response: SanitizedAssessmentResponseDTO;
   onReset: () => void;
+  preparedReviewUrl?: string;
 }
 
 export const SubmissionSuccessView: React.FC<SubmissionSuccessViewProps> = ({
   response,
   onReset,
+  preparedReviewUrl,
 }) => {
   const whatsappPayload = buildPatientWhatsAppReviewLink({
     patientName: response.patientName,
@@ -29,7 +31,7 @@ export const SubmissionSuccessView: React.FC<SubmissionSuccessViewProps> = ({
       </div>
 
       <h2 className="font-serif text-3xl font-bold text-[#1A2421] mb-3">
-        Submission Received for Physician Review
+        Your review request is ready
       </h2>
 
       <p className="text-sm font-semibold text-slate-700 leading-relaxed mb-6">
@@ -51,7 +53,7 @@ export const SubmissionSuccessView: React.FC<SubmissionSuccessViewProps> = ({
         </div>
 
         <a
-          href={whatsappPayload.whatsappUrl}
+          href={preparedReviewUrl || whatsappPayload.whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="w-full mt-2 py-3.5 px-6 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md"
@@ -65,7 +67,7 @@ export const SubmissionSuccessView: React.FC<SubmissionSuccessViewProps> = ({
       {/* Submission Details Card */}
       <div className="rounded-2xl bg-white border border-slate-200 p-6 text-left text-xs font-semibold text-slate-700 space-y-3 mb-6 shadow-sm">
         <div className="flex justify-between border-b border-slate-100 pb-2">
-          <span className="text-slate-500">Submission Reference:</span>
+          <span className="text-slate-500">Request Reference:</span>
           <span className="font-mono font-bold text-[#1A2421]">{response.submissionId}</span>
         </div>
         <div className="flex justify-between border-b border-slate-100 pb-2">
@@ -87,7 +89,7 @@ export const SubmissionSuccessView: React.FC<SubmissionSuccessViewProps> = ({
         <div className="flex justify-between pt-1">
           <span className="text-slate-500">Current Status:</span>
           <span className="font-bold text-mint-dark uppercase tracking-wider text-[10px] bg-mint/10 px-2.5 py-1 rounded-full">
-            Submitted for Physician Review
+            Ready to send on WhatsApp
           </span>
         </div>
       </div>
@@ -96,7 +98,7 @@ export const SubmissionSuccessView: React.FC<SubmissionSuccessViewProps> = ({
         <HeartHandshake className="w-5 h-5 text-mint shrink-0 mt-0.5" />
         <div>
           <span className="font-bold text-[#1A2421] block mb-0.5">What Happens Next?</span>
-          Your assigned classical homeopathic physician will review your clinical history and lab records. Our care team will reach out directly to share your individualized Clinical Care Recommendation.
+          After you send your message, the clinic confirms receipt and arranges any assessment needed. Your doctor confirms the suitable care scope, fee and next steps before payment.
         </div>
       </div>
 
