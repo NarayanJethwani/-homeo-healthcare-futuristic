@@ -927,6 +927,23 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "A closer look at airflow and moisture",
     },
   ],
+  "tinea-versicolor": [
+    {
+      src: "/images/knowledge/tinea-versicolor/understanding-v1.png",
+      alt: "Indian woman viewed from behind with subtle patchy shoulder skin colour changes and a transparent skin-layer cutaway",
+      label: "Understanding tinea versicolor",
+    },
+    {
+      src: "/images/knowledge/tinea-versicolor/lifestyle-v1.png",
+      alt: "Indian woman choosing a breathable cotton shirt in a sunlit textile-design studio",
+      label: "An everyday comfort choice",
+    },
+    {
+      src: "/images/knowledge/tinea-versicolor/learning-v1.png",
+      alt: "Abstract translucent mosaic of varied skin-like tones under a gentle curved lens of light",
+      label: "A closer look at skin colour variation",
+    },
+  ],
 };
 
 export function getKnowledgeVisuals(slug: string): KnowledgeVisual[] {

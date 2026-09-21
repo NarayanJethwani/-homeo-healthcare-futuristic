@@ -78,6 +78,7 @@ import { ContactDermatitisDisease } from "./contact-dermatitis";
 import { RingwormTineaCorporisDisease } from "./ringworm-tinea-corporis";
 import { AthletesFootTineaPedisDisease } from "./athletes-foot-tinea-pedis";
 import { JockItchTineaCrurisDisease } from "./jock-itch-tinea-cruris";
+import { TineaVersicolorDisease } from "./tinea-versicolor";
 
 export const DISEASES = [
   GerdDisease,
@@ -159,6 +160,7 @@ export const DISEASES = [
   RingwormTineaCorporisDisease,
   AthletesFootTineaPedisDisease,
   JockItchTineaCrurisDisease,
+  TineaVersicolorDisease,
 ];
 
 export { GerdDisease, EczemaDisease, MigraineDisease, IbsDisease };

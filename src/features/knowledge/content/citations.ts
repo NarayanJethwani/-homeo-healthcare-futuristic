@@ -1661,6 +1661,40 @@ export const CITATIONS: CitationRecord[] = [
     verificationEvidenceUrl: "https://www.cdc.gov/ringworm/aboutemergingringworm/index.html",
     verificationNotes: "CDC public guidance covering tinea cruris symptoms on groin and inner-thigh folds, ringworm prevention, hygiene, and exercise-related risk factors.",
     scopeTags: ["jock-itch", "tinea-cruris", "fungal-groin-rash", "ringworm-prevention"]
+  },
+  {
+    id: "CIT-0085",
+    title: "Tinea Versicolor: Overview, Diagnosis, and Treatment",
+    authors: ["American Academy of Dermatology"],
+    journal: "American Academy of Dermatology",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.aad.org/public/diseases/a-z/tinea-versicolor-overview",
+    sourceIdentifier: "AAD-TINEA-VERSICOLOR-PATIENT-GUIDANCE",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.aad.org/public/diseases/a-z/tinea-versicolor-treatment",
+    verificationNotes: "AAD public guidance covering yeast overgrowth, diagnostic examination and testing, treatment forms, recurrence, and slow pigment recovery after treatment.",
+    scopeTags: ["tinea-versicolor", "pityriasis-versicolor", "malassezia", "patchy-skin-colour"]
+  },
+  {
+    id: "CIT-0086",
+    title: "Pityriasis Versicolor",
+    authors: ["NHS"],
+    journal: "NHS",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.nhs.uk/conditions/pityriasis-versicolor/",
+    sourceIdentifier: "NHS-PITYRIASIS-VERSICOLOR-PATIENT-GUIDANCE",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.nhs.uk/conditions/pityriasis-versicolor/",
+    verificationNotes: "NHS public guidance covering typical colour changes, scale, non-contagious nature, diagnostic uncertainty, treatment routes, recurrence, and delayed colour recovery.",
+    scopeTags: ["tinea-versicolor", "pityriasis-versicolor", "non-contagious-fungal-skin-condition"]
   }
 ];
 

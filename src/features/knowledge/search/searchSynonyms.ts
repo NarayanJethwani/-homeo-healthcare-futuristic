@@ -62,6 +62,10 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "jock itch": ["jock itch", "tinea cruris", "fungal groin rash", "itchy inner thigh", "groin rash"],
   "tinea cruris": ["jock itch", "tinea cruris", "fungal groin rash", "itchy inner thigh", "groin rash"],
   "fungal groin rash": ["jock itch", "tinea cruris", "fungal groin rash", "itchy inner thigh", "groin rash"],
+  "tinea versicolor": ["tinea versicolor", "pityriasis versicolor", "patchy skin colour", "white patches on back", "discoloured skin patches"],
+  "pityriasis versicolor": ["tinea versicolor", "pityriasis versicolor", "patchy skin colour", "white patches on back", "discoloured skin patches"],
+  "white patches on back": ["tinea versicolor", "pityriasis versicolor", "white patches on back", "patchy skin colour", "discoloured skin patches"],
+  "patchy skin colour": ["tinea versicolor", "pityriasis versicolor", "patchy skin colour", "white patches on back", "discoloured skin patches"],
 
   // Migraine & Headache
   "migraine": ["migraine", "headache", "cephalgia", "throbbing head", "hemicrania", "sick headache"],
@@ -168,6 +172,8 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "is athletes foot contagious": ["athlete's foot", "tinea pedis", "foot fungus"],
   "why is my inner thigh itchy and scaly": ["jock itch", "tinea cruris", "fungal groin rash", "itchy inner thigh"],
   "is jock itch contagious": ["jock itch", "tinea cruris", "fungal groin rash"],
+  "why do i have white patches on my back": ["tinea versicolor", "pityriasis versicolor", "white patches on back", "patchy skin colour"],
+  "patches on my chest that do not tan": ["tinea versicolor", "pityriasis versicolor", "patchy skin colour"],
 };
 
 /**
