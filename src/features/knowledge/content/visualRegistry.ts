@@ -859,6 +859,40 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "A closer look at skin responses",
     },
   ],
+  "contact-dermatitis": [
+    {
+      src: "/images/knowledge/contact-dermatitis/understanding-v1.png",
+      alt: "Indian adult with a mild wrist rash and a transparent skin-layer illustration",
+      label: "Understanding contact dermatitis",
+    },
+    {
+      src: "/images/knowledge/contact-dermatitis/lifestyle-v1.png",
+      alt: "Indian florist using protective gloves while handling flowers in a bright shop",
+      label: "Noticing everyday triggers",
+    },
+    {
+      src: "/images/knowledge/contact-dermatitis/learning-v1.png",
+      alt: "Transparent skin-barrier illustration with leaf, metal clasp, and fragrance-droplet motifs",
+      label: "A closer look at the barrier",
+    },
+  ],
+  "ringworm-tinea-corporis": [
+    {
+      src: "/images/knowledge/ringworm-tinea-corporis/understanding-v1.png",
+      alt: "Indian adult's forearm with a small ring-shaped patch and a transparent skin-layer overlay",
+      label: "Understanding ringworm",
+    },
+    {
+      src: "/images/knowledge/ringworm-tinea-corporis/lifestyle-v1.png",
+      alt: "Indian young adult packing a dry T-shirt, clean towel, and water bottle after badminton",
+      label: "An everyday prevention habit",
+    },
+    {
+      src: "/images/knowledge/ringworm-tinea-corporis/learning-v1.png",
+      alt: "Abstract skin-layer illustration with delicate branching fungal-like forms above the surface",
+      label: "A closer look at the skin surface",
+    },
+  ],
 };
 
 export function getKnowledgeVisuals(slug: string): KnowledgeVisual[] {
