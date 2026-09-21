@@ -1627,6 +1627,23 @@ export const CITATIONS: CitationRecord[] = [
     verificationEvidenceUrl: "https://www.cdc.gov/ringworm/signs-symptoms/index.html",
     verificationNotes: "CDC public guidance covering tinea corporis symptoms, routes of spread, hygiene and prevention, testing, and treatment boundaries.",
     scopeTags: ["ringworm", "tinea-corporis", "dermatophyte", "fungal-skin-infection"]
+  },
+  {
+    id: "CIT-0083",
+    title: "Healthy Habits: Foot Hygiene",
+    authors: ["Centers for Disease Control and Prevention"],
+    journal: "Centers for Disease Control and Prevention",
+    year: 2024,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.cdc.gov/hygiene/about/foot-hygiene.html",
+    sourceIdentifier: "CDC-FOOT-HYGIENE-TINEA-PEDIS",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.cdc.gov/ringworm/about/",
+    verificationNotes: "CDC public guidance covering tinea pedis, the warm-and-moist environment that supports fungal growth, careful drying, footwear, and sock and shoe hygiene.",
+    scopeTags: ["athletes-foot", "tinea-pedis", "foot-hygiene", "fungal-foot-infection"]
   }
 ];
 

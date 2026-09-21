@@ -76,6 +76,7 @@ import { IntertrigoDisease } from "./intertrigo";
 import { HyperacidityDisease } from "./hyperacidity";
 import { ContactDermatitisDisease } from "./contact-dermatitis";
 import { RingwormTineaCorporisDisease } from "./ringworm-tinea-corporis";
+import { AthletesFootTineaPedisDisease } from "./athletes-foot-tinea-pedis";
 
 export const DISEASES = [
   GerdDisease,
@@ -155,6 +156,7 @@ export const DISEASES = [
   HyperacidityDisease,
   ContactDermatitisDisease,
   RingwormTineaCorporisDisease,
+  AthletesFootTineaPedisDisease,
 ];
 
 export { GerdDisease, EczemaDisease, MigraineDisease, IbsDisease };

@@ -893,6 +893,23 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "A closer look at the skin surface",
     },
   ],
+  "athletes-foot-tinea-pedis": [
+    {
+      src: "/images/knowledge/athletes-foot-tinea-pedis/understanding-v1.png",
+      alt: "Transparent foot illustration with skin layers highlighted between the toes",
+      label: "Understanding athlete’s foot",
+    },
+    {
+      src: "/images/knowledge/athletes-foot-tinea-pedis/lifestyle-v1.png",
+      alt: "Indian young adult putting on clean dry socks after exercise at a climbing studio",
+      label: "A practical prevention habit",
+    },
+    {
+      src: "/images/knowledge/athletes-foot-tinea-pedis/learning-v1.png",
+      alt: "Abstract translucent skin-like layers with water droplets lifting into a gentle airflow",
+      label: "A closer look at keeping feet dry",
+    },
+  ],
 };
 
 export function getKnowledgeVisuals(slug: string): KnowledgeVisual[] {

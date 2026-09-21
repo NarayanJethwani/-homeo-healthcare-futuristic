@@ -55,6 +55,10 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "ringworm": ["ringworm", "tinea corporis", "fungal skin infection", "itchy ring rash", "circular rash"],
   "tinea": ["ringworm", "tinea corporis", "fungal skin infection", "itchy ring rash"],
   "fungal skin infection": ["ringworm", "tinea corporis", "fungal skin infection", "itchy ring rash"],
+  "athlete's foot": ["athlete's foot", "athletes foot", "tinea pedis", "foot fungus", "itchy toes", "peeling between toes"],
+  "athletes foot": ["athlete's foot", "athletes foot", "tinea pedis", "foot fungus", "itchy toes", "peeling between toes"],
+  "tinea pedis": ["athlete's foot", "athletes foot", "tinea pedis", "foot fungus", "itchy toes", "peeling between toes"],
+  "foot fungus": ["athlete's foot", "athletes foot", "tinea pedis", "foot fungus", "itchy toes", "peeling between toes"],
 
   // Migraine & Headache
   "migraine": ["migraine", "headache", "cephalgia", "throbbing head", "hemicrania", "sick headache"],
@@ -157,6 +161,8 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "rash from perfume": ["contact dermatitis", "fragrance allergy", "skin allergy"],
   "ring shaped itchy rash": ["ringworm", "tinea corporis", "fungal skin infection"],
   "is ringworm contagious": ["ringworm", "tinea corporis", "fungal skin infection"],
+  "why are my toes itchy and peeling": ["athlete's foot", "tinea pedis", "foot fungus", "peeling between toes"],
+  "is athletes foot contagious": ["athlete's foot", "tinea pedis", "foot fungus"],
 };
 
 /**
