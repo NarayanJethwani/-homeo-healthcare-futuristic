@@ -79,6 +79,7 @@ import { RingwormTineaCorporisDisease } from "./ringworm-tinea-corporis";
 import { AthletesFootTineaPedisDisease } from "./athletes-foot-tinea-pedis";
 import { JockItchTineaCrurisDisease } from "./jock-itch-tinea-cruris";
 import { TineaVersicolorDisease } from "./tinea-versicolor";
+import { OnychomycosisFungalNailInfectionDisease } from "./onychomycosis-fungal-nail-infection";
 
 export const DISEASES = [
   GerdDisease,
@@ -161,6 +162,7 @@ export const DISEASES = [
   AthletesFootTineaPedisDisease,
   JockItchTineaCrurisDisease,
   TineaVersicolorDisease,
+  OnychomycosisFungalNailInfectionDisease,
 ];
 
 export { GerdDisease, EczemaDisease, MigraineDisease, IbsDisease };

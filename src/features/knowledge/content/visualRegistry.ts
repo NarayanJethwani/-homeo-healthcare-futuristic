@@ -944,6 +944,23 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "A closer look at skin colour variation",
     },
   ],
+  "onychomycosis-fungal-nail-infection": [
+    {
+      src: "/images/knowledge/onychomycosis-fungal-nail-infection/understanding-v1.png",
+      alt: "Indian woman’s foot with a subtle fungal nail change and a transparent nail-layer cutaway",
+      label: "Understanding fungal nail infection",
+    },
+    {
+      src: "/images/knowledge/onychomycosis-fungal-nail-infection/lifestyle-v1.png",
+      alt: "Older Indian man putting on a fresh sock and breathable walking shoe at home",
+      label: "An everyday prevention habit",
+    },
+    {
+      src: "/images/knowledge/onychomycosis-fungal-nail-infection/learning-v1.png",
+      alt: "Transparent three-dimensional nail cutaway with layers beneath the nail plate",
+      label: "A closer look at the nail layers",
+    },
+  ],
 };
 
 export function getKnowledgeVisuals(slug: string): KnowledgeVisual[] {

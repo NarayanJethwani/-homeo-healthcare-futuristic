@@ -1695,6 +1695,40 @@ export const CITATIONS: CitationRecord[] = [
     verificationEvidenceUrl: "https://www.nhs.uk/conditions/pityriasis-versicolor/",
     verificationNotes: "NHS public guidance covering typical colour changes, scale, non-contagious nature, diagnostic uncertainty, treatment routes, recurrence, and delayed colour recovery.",
     scopeTags: ["tinea-versicolor", "pityriasis-versicolor", "non-contagious-fungal-skin-condition"]
+  },
+  {
+    id: "CIT-0087",
+    title: "Nail Fungus: Diagnosis and Treatment",
+    authors: ["American Academy of Dermatology"],
+    journal: "American Academy of Dermatology",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.aad.org/public/diseases/a-z/nail-fungus-treatment",
+    sourceIdentifier: "AAD-NAIL-FUNGUS-DIAGNOSIS-TREATMENT",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.aad.org/public/diseases/a-z/nail-fungus-overview",
+    verificationNotes: "AAD public guidance covering common nail-fungus signs, clinical examination, nail sampling, tailored treatment choices, and the slow pace of nail regrowth.",
+    scopeTags: ["onychomycosis", "fungal-nail-infection", "nail-fungus", "nail-clipping-test"]
+  },
+  {
+    id: "CIT-0088",
+    title: "Ringworm: Signs, Symptoms, and Nail Infection",
+    authors: ["Centers for Disease Control and Prevention"],
+    journal: "Centers for Disease Control and Prevention",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.cdc.gov/ringworm/signs-symptoms/index.html",
+    sourceIdentifier: "CDC-RINGWORM-NAIL-SYMPTOMS",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.cdc.gov/ringworm/hcp/clinical-overview/index.html",
+    verificationNotes: "CDC guidance covering thick, discoloured, brittle, or cracked nails, common toenail involvement, and testing of suspected fungal nail infection.",
+    scopeTags: ["onychomycosis", "fungal-nail-infection", "ringworm", "thickened-nail"]
   }
 ];
 

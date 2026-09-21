@@ -124,7 +124,12 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "menstrual irregularity": ["menstrual irregularity", "pcod periods", "irregular periods", "delayed periods"],
   "ana": ["ana", "antinuclear antibodies", "autoimmune screen"],
   "psa": ["psa", "prostate specific antigen", "prostate test"],
-  "anti-tpo": ["anti-tpo", "thyroid antibodies", "anti-tpo antibodies", "hashimotos"]
+  "anti-tpo": ["anti-tpo", "thyroid antibodies", "anti-tpo antibodies", "hashimotos"],
+  "nail fungus": ["nail fungus", "fungal nail infection", "onychomycosis", "yellow toenail", "thick toenail", "crumbly nail"],
+  "fungal nail infection": ["fungal nail infection", "nail fungus", "onychomycosis", "thickened nail", "discoloured nail"],
+  "onychomycosis": ["onychomycosis", "fungal nail infection", "nail fungus", "thick toenail"],
+  "yellow toenail": ["yellow toenail", "nail fungus", "fungal nail infection", "thick toenail"],
+  "thick toenail": ["thick toenail", "nail fungus", "fungal nail infection", "onychomycosis"]
 };
 
 /**
@@ -174,6 +179,9 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "is jock itch contagious": ["jock itch", "tinea cruris", "fungal groin rash"],
   "why do i have white patches on my back": ["tinea versicolor", "pityriasis versicolor", "white patches on back", "patchy skin colour"],
   "patches on my chest that do not tan": ["tinea versicolor", "pityriasis versicolor", "patchy skin colour"],
+  "why is my toenail thick and yellow": ["nail fungus", "fungal nail infection", "onychomycosis", "yellow toenail"],
+  "why is my nail crumbly": ["nail fungus", "fungal nail infection", "onychomycosis", "thick toenail"],
+  "is my yellow toenail a fungal infection": ["nail fungus", "fungal nail infection", "onychomycosis", "yellow toenail"],
 };
 
 /**
