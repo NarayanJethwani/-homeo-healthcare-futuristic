@@ -1763,6 +1763,40 @@ export const CITATIONS: CitationRecord[] = [
     verificationEvidenceUrl: "https://www.nhs.uk/conditions/warts-and-verrucas/",
     verificationNotes: "NHS public guidance covering typical wart and verruca appearance, pressure-related discomfort, conservative management, pharmacist support, and referral boundaries.",
     scopeTags: ["plantar-wart", "verruca", "painful-sole", "wart-vs-corn"]
+  },
+  {
+    id: "CIT-0091",
+    title: "About Scabies",
+    authors: ["Centers for Disease Control and Prevention"],
+    journal: "Centers for Disease Control and Prevention",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.cdc.gov/scabies/about/",
+    sourceIdentifier: "CDC-SCABIES-PATIENT-GUIDANCE",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.cdc.gov/scabies/prevention/index.html",
+    verificationNotes: "CDC guidance covering symptoms, close-contact spread, concurrent contact treatment, linen care, persistent itching after treatment, and the distinction between human scabies and pet mange.",
+    scopeTags: ["scabies", "sarcoptes-scabiei", "night-itch", "household-contact-treatment"]
+  },
+  {
+    id: "CIT-0092",
+    title: "Scabies",
+    authors: ["NHS"],
+    journal: "NHS",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.nhs.uk/conditions/Scabies/",
+    sourceIdentifier: "NHS-SCABIES-PATIENT-GUIDANCE",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.nhs.uk/conditions/Scabies/",
+    verificationNotes: "NHS public guidance covering night itch, rash distribution, colour-change visibility across skin tones, household coordination, reinfection prevention, and referral boundaries.",
+    scopeTags: ["scabies", "itchy-rash", "skin-burrows", "contact-care"]
   }
 ];
 

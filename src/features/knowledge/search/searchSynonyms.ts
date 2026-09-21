@@ -133,7 +133,11 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "plantar wart": ["plantar wart", "verruca", "foot wart", "wart on sole", "painful sole spot"],
   "verruca": ["verruca", "plantar wart", "foot wart", "wart on sole"],
   "foot wart": ["foot wart", "plantar wart", "verruca", "wart on sole"],
-  "wart on sole": ["wart on sole", "plantar wart", "verruca", "foot wart", "wart vs corn"]
+  "wart on sole": ["wart on sole", "plantar wart", "verruca", "foot wart", "wart vs corn"],
+  "scabies": ["scabies", "night itching", "itchy rash at night", "itching between fingers", "skin mites"],
+  "night itching": ["night itching", "scabies", "itchy rash at night", "itching between fingers"],
+  "itching between fingers": ["itching between fingers", "scabies", "night itching", "itchy hand rash"],
+  "itchy rash at night": ["itchy rash at night", "scabies", "night itching", "skin mites"]
 };
 
 /**
@@ -189,6 +193,9 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "what is this painful spot on my sole": ["plantar wart", "verruca", "foot wart", "wart vs corn"],
   "is this a wart or corn": ["plantar wart", "verruca", "wart vs corn", "painful sole spot"],
   "why does it hurt to walk on this spot": ["plantar wart", "verruca", "foot wart", "painful sole spot"],
+  "why am i itching so much at night": ["scabies", "night itching", "itchy rash at night", "itching between fingers"],
+  "itchy rash between my fingers": ["scabies", "itching between fingers", "itchy hand rash", "night itching"],
+  "does everyone at home need scabies treatment": ["scabies", "household contact", "night itching", "itchy rash at night"],
 };
 
 /**

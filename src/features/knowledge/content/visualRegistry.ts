@@ -978,6 +978,23 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "A closer look at the sole skin",
     },
   ],
+  "scabies": [
+    {
+      src: "/images/knowledge/scabies/understanding-v1.png",
+      alt: "Indian woman noticing a mild itchy hand rash with a transparent skin-barrier overlay",
+      label: "Understanding scabies",
+    },
+    {
+      src: "/images/knowledge/scabies/lifestyle-v1.png",
+      alt: "Indian couple working together with linens in a bright home laundry room",
+      label: "A coordinated household step",
+    },
+    {
+      src: "/images/knowledge/scabies/learning-v1.png",
+      alt: "Transparent skin-layer illustration with a delicate conceptual pathway in the outer layer",
+      label: "A closer look at the skin surface",
+    },
+  ],
 };
 
 export function getKnowledgeVisuals(slug: string): KnowledgeVisual[] {
