@@ -59,6 +59,9 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "athletes foot": ["athlete's foot", "athletes foot", "tinea pedis", "foot fungus", "itchy toes", "peeling between toes"],
   "tinea pedis": ["athlete's foot", "athletes foot", "tinea pedis", "foot fungus", "itchy toes", "peeling between toes"],
   "foot fungus": ["athlete's foot", "athletes foot", "tinea pedis", "foot fungus", "itchy toes", "peeling between toes"],
+  "jock itch": ["jock itch", "tinea cruris", "fungal groin rash", "itchy inner thigh", "groin rash"],
+  "tinea cruris": ["jock itch", "tinea cruris", "fungal groin rash", "itchy inner thigh", "groin rash"],
+  "fungal groin rash": ["jock itch", "tinea cruris", "fungal groin rash", "itchy inner thigh", "groin rash"],
 
   // Migraine & Headache
   "migraine": ["migraine", "headache", "cephalgia", "throbbing head", "hemicrania", "sick headache"],
@@ -163,6 +166,8 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "is ringworm contagious": ["ringworm", "tinea corporis", "fungal skin infection"],
   "why are my toes itchy and peeling": ["athlete's foot", "tinea pedis", "foot fungus", "peeling between toes"],
   "is athletes foot contagious": ["athlete's foot", "tinea pedis", "foot fungus"],
+  "why is my inner thigh itchy and scaly": ["jock itch", "tinea cruris", "fungal groin rash", "itchy inner thigh"],
+  "is jock itch contagious": ["jock itch", "tinea cruris", "fungal groin rash"],
 };
 
 /**

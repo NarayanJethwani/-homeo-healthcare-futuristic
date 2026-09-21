@@ -910,6 +910,23 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "A closer look at keeping feet dry",
     },
   ],
+  "jock-itch-tinea-cruris": [
+    {
+      src: "/images/knowledge/jock-itch-tinea-cruris/understanding-v1.png",
+      alt: "Fully clothed side-view lower-torso illustration with a transparent overlay at the inner thigh skin fold",
+      label: "Understanding jock itch",
+    },
+    {
+      src: "/images/knowledge/jock-itch-tinea-cruris/lifestyle-v1.png",
+      alt: "Indian woman packing a clean towel and fresh workout clothing into a gym bag in a bright laundry room",
+      label: "An everyday hygiene habit",
+    },
+    {
+      src: "/images/knowledge/jock-itch-tinea-cruris/learning-v1.png",
+      alt: "Abstract breathable fabric and skin-like layers with moisture droplets lifting into circulating air",
+      label: "A closer look at airflow and moisture",
+    },
+  ],
 };
 
 export function getKnowledgeVisuals(slug: string): KnowledgeVisual[] {

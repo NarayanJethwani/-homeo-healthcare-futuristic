@@ -1644,6 +1644,23 @@ export const CITATIONS: CitationRecord[] = [
     verificationEvidenceUrl: "https://www.cdc.gov/ringworm/about/",
     verificationNotes: "CDC public guidance covering tinea pedis, the warm-and-moist environment that supports fungal growth, careful drying, footwear, and sock and shoe hygiene.",
     scopeTags: ["athletes-foot", "tinea-pedis", "foot-hygiene", "fungal-foot-infection"]
+  },
+  {
+    id: "CIT-0084",
+    title: "Ringworm: Groin Symptoms and Prevention",
+    authors: ["Centers for Disease Control and Prevention"],
+    journal: "Centers for Disease Control and Prevention",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.cdc.gov/ringworm/signs-symptoms/index.html",
+    sourceIdentifier: "CDC-JOCK-ITCH-TINEA-CRURIS",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.cdc.gov/ringworm/aboutemergingringworm/index.html",
+    verificationNotes: "CDC public guidance covering tinea cruris symptoms on groin and inner-thigh folds, ringworm prevention, hygiene, and exercise-related risk factors.",
+    scopeTags: ["jock-itch", "tinea-cruris", "fungal-groin-rash", "ringworm-prevention"]
   }
 ];
 
