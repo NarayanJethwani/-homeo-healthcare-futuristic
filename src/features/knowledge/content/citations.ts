@@ -1593,6 +1593,40 @@ export const CITATIONS: CitationRecord[] = [
     verificationEvidenceUrl: "https://www.rheumatology.org/Portals/0/Files/OA-Guideline-2019.pdf",
     verificationNotes: "ACR 2019 guidelines for joint pain, septic arthritis red flags, osteoarthritis management, inflammatory arthritis referral, and joint aspiration rules.",
     scopeTags: ["joint-pain", "acr-2019", "guideline", "symptom", "rheumatology", "septic-arthritis"]
+  },
+  {
+    id: "CIT-0081",
+    title: "Contact Dermatitis: Overview, Symptoms, and Treatment",
+    authors: ["American Academy of Dermatology"],
+    journal: "American Academy of Dermatology",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.aad.org/public/diseases/eczema/types/contact-dermatitis",
+    sourceIdentifier: "AAD-CONTACT-DERMATITIS-PATIENT-GUIDANCE",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.aad.org/public/diseases/eczema/types/contact-dermatitis/treatment",
+    verificationNotes: "AAD patient guidance covering irritant and allergic contact dermatitis, common symptoms, trigger investigation, avoidance, and dermatologist-led evaluation.",
+    scopeTags: ["contact-dermatitis", "allergic-contact-dermatitis", "irritant-contact-dermatitis", "skin-rash"]
+  },
+  {
+    id: "CIT-0082",
+    title: "Ringworm: Symptoms, Prevention, and Testing",
+    authors: ["Centers for Disease Control and Prevention"],
+    journal: "Centers for Disease Control and Prevention",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.cdc.gov/ringworm/about/",
+    sourceIdentifier: "CDC-RINGWORM-PATIENT-GUIDANCE",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.cdc.gov/ringworm/signs-symptoms/index.html",
+    verificationNotes: "CDC public guidance covering tinea corporis symptoms, routes of spread, hygiene and prevention, testing, and treatment boundaries.",
+    scopeTags: ["ringworm", "tinea-corporis", "dermatophyte", "fungal-skin-infection"]
   }
 ];
 

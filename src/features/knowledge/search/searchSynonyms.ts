@@ -49,6 +49,12 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "xerosis": ["dry skin", "xerosis", "flaky skin", "rough skin", "itchy dry skin"],
   "flaky skin": ["dry skin", "xerosis", "flaky skin", "rough skin", "itchy dry skin"],
   "rough skin": ["dry skin", "xerosis", "flaky skin", "rough skin", "itchy dry skin"],
+  "contact dermatitis": ["contact dermatitis", "skin allergy", "irritant rash", "allergic rash", "fragrance allergy", "nickel allergy"],
+  "skin allergy": ["contact dermatitis", "skin allergy", "allergic rash", "fragrance allergy", "nickel allergy"],
+  "irritant rash": ["contact dermatitis", "irritant rash", "skin allergy", "allergic rash"],
+  "ringworm": ["ringworm", "tinea corporis", "fungal skin infection", "itchy ring rash", "circular rash"],
+  "tinea": ["ringworm", "tinea corporis", "fungal skin infection", "itchy ring rash"],
+  "fungal skin infection": ["ringworm", "tinea corporis", "fungal skin infection", "itchy ring rash"],
 
   // Migraine & Headache
   "migraine": ["migraine", "headache", "cephalgia", "throbbing head", "hemicrania", "sick headache"],
@@ -147,6 +153,10 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "dry itchy skin": ["dry skin", "xerosis", "itchy dry skin", "eczema", "skin rash"],
   "what kind of rash is this": ["skin rash", "eczema", "urticaria", "contact dermatitis"],
   "rash with fever": ["skin rash", "fever"],
+  "rash after using a new product": ["contact dermatitis", "skin allergy", "irritant rash", "skin rash"],
+  "rash from perfume": ["contact dermatitis", "fragrance allergy", "skin allergy"],
+  "ring shaped itchy rash": ["ringworm", "tinea corporis", "fungal skin infection"],
+  "is ringworm contagious": ["ringworm", "tinea corporis", "fungal skin infection"],
 };
 
 /**
