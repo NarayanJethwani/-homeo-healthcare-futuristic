@@ -82,6 +82,7 @@ import { TineaVersicolorDisease } from "./tinea-versicolor";
 import { OnychomycosisFungalNailInfectionDisease } from "./onychomycosis-fungal-nail-infection";
 import { PlantarWartsVerrucasDisease } from "./plantar-warts-verrucas";
 import { ScabiesDisease } from "./scabies";
+import { ImpetigoDisease } from "./impetigo";
 
 export const DISEASES = [
   GerdDisease,
@@ -167,6 +168,7 @@ export const DISEASES = [
   OnychomycosisFungalNailInfectionDisease,
   PlantarWartsVerrucasDisease,
   ScabiesDisease,
+  ImpetigoDisease,
 ];
 
 export { GerdDisease, EczemaDisease, MigraineDisease, IbsDisease };

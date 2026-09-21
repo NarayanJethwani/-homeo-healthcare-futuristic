@@ -1797,6 +1797,40 @@ export const CITATIONS: CitationRecord[] = [
     verificationEvidenceUrl: "https://www.nhs.uk/conditions/Scabies/",
     verificationNotes: "NHS public guidance covering night itch, rash distribution, colour-change visibility across skin tones, household coordination, reinfection prevention, and referral boundaries.",
     scopeTags: ["scabies", "itchy-rash", "skin-burrows", "contact-care"]
+  },
+  {
+    id: "CIT-0093",
+    title: "About Impetigo",
+    authors: ["Centers for Disease Control and Prevention"],
+    journal: "Centers for Disease Control and Prevention",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.cdc.gov/group-a-strep/about/impetigo.html",
+    sourceIdentifier: "CDC-IMPETIGO-PATIENT-GUIDANCE",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.cdc.gov/group-a-strep/hcp/clinical-guidance/impetigo.html",
+    verificationNotes: "CDC guidance covering common bacteria, lesion progression, clinical diagnosis, antibiotic treatment choices, covering lesions, and hygiene to reduce transmission.",
+    scopeTags: ["impetigo", "bacterial-skin-infection", "honey-coloured-crust", "contagious-skin-rash"]
+  },
+  {
+    id: "CIT-0094",
+    title: "Impetigo",
+    authors: ["NHS"],
+    journal: "NHS",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.nhs.uk/conditions/impetigo/",
+    sourceIdentifier: "NHS-IMPETIGO-PATIENT-GUIDANCE",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.nhs.uk/conditions/impetigo/",
+    verificationNotes: "NHS public guidance covering skin-tone-aware signs, pharmacy assessment, infection-control habits, recurrence assessment, and advice for babies and vulnerable people.",
+    scopeTags: ["impetigo", "child-skin-infection", "golden-crust", "skin-hygiene"]
   }
 ];
 

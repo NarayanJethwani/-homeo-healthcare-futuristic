@@ -995,6 +995,23 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "A closer look at the skin surface",
     },
   ],
+  "impetigo": [
+    {
+      src: "/images/knowledge/impetigo/understanding-v1.png",
+      alt: "Indian mother gently checking a child’s mild healing crust near the mouth with a transparent skin-barrier overlay",
+      label: "Understanding impetigo",
+    },
+    {
+      src: "/images/knowledge/impetigo/lifestyle-v1.png",
+      alt: "Indian father helping a child wash hands in a colourful family bathroom",
+      label: "A practical hygiene habit",
+    },
+    {
+      src: "/images/knowledge/impetigo/learning-v1.png",
+      alt: "Transparent skin-layer illustration with a small contained golden surface crust area",
+      label: "A closer look at the skin surface",
+    },
+  ],
 };
 
 export function getKnowledgeVisuals(slug: string): KnowledgeVisual[] {

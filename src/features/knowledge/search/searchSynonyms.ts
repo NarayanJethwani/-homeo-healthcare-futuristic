@@ -137,7 +137,11 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "scabies": ["scabies", "night itching", "itchy rash at night", "itching between fingers", "skin mites"],
   "night itching": ["night itching", "scabies", "itchy rash at night", "itching between fingers"],
   "itching between fingers": ["itching between fingers", "scabies", "night itching", "itchy hand rash"],
-  "itchy rash at night": ["itchy rash at night", "scabies", "night itching", "skin mites"]
+  "itchy rash at night": ["itchy rash at night", "scabies", "night itching", "skin mites"],
+  "impetigo": ["impetigo", "honey coloured crust", "golden crust rash", "child skin infection", "sores around mouth"],
+  "honey coloured crust": ["honey coloured crust", "impetigo", "golden crust rash", "contagious skin rash"],
+  "golden crust rash": ["golden crust rash", "impetigo", "honey coloured crust", "sores around mouth"],
+  "sores around mouth": ["sores around mouth", "impetigo", "golden crust rash", "child skin infection"]
 };
 
 /**
@@ -196,6 +200,9 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "why am i itching so much at night": ["scabies", "night itching", "itchy rash at night", "itching between fingers"],
   "itchy rash between my fingers": ["scabies", "itching between fingers", "itchy hand rash", "night itching"],
   "does everyone at home need scabies treatment": ["scabies", "household contact", "night itching", "itchy rash at night"],
+  "what are these golden crusts on my childs face": ["impetigo", "honey coloured crust", "golden crust rash", "child skin infection"],
+  "are sores around my childs mouth contagious": ["impetigo", "sores around mouth", "contagious skin rash", "golden crust rash"],
+  "is this a skin infection or eczema": ["impetigo", "eczema", "child skin infection", "contagious skin rash"],
 };
 
 /**
