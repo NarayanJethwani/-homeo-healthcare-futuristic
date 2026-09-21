@@ -1012,6 +1012,11 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "A closer look at the skin surface",
     },
   ],
+  "hand-foot-mouth-disease": [
+    { src: "/images/knowledge/hand-foot-mouth-disease/understanding-v1.png", alt: "Indian mother offering a cool drink to a comfortable child with mild hand spots", label: "Understanding hand, foot and mouth disease" },
+    { src: "/images/knowledge/hand-foot-mouth-disease/lifestyle-v1.png", alt: "Indian parent and child washing hands together after school", label: "A practical prevention habit" },
+    { src: "/images/knowledge/hand-foot-mouth-disease/learning-v1.png", alt: "Transparent abstract medical illustration connecting mouth, hand, and foot skin layers", label: "A closer look at the pattern" },
+  ],
 };
 
 export function getKnowledgeVisuals(slug: string): KnowledgeVisual[] {

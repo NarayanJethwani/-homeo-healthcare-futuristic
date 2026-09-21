@@ -1831,6 +1831,12 @@ export const CITATIONS: CitationRecord[] = [
     verificationEvidenceUrl: "https://www.nhs.uk/conditions/impetigo/",
     verificationNotes: "NHS public guidance covering skin-tone-aware signs, pharmacy assessment, infection-control habits, recurrence assessment, and advice for babies and vulnerable people.",
     scopeTags: ["impetigo", "child-skin-infection", "golden-crust", "skin-hygiene"]
+  },
+  {
+    id: "CIT-0095", title: "About Hand, Foot, and Mouth Disease", authors: ["Centers for Disease Control and Prevention"], journal: "Centers for Disease Control and Prevention", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.cdc.gov/hand-foot-mouth/index.html", sourceIdentifier: "CDC-HFMD-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-21", verificationEvidenceUrl: "https://www.cdc.gov/hand-foot-mouth/signs-symptoms/index.html", verificationNotes: "CDC guidance covering HFMD symptoms, dehydration, supportive care, infection control, and return-to-school considerations.", scopeTags: ["hand-foot-mouth-disease", "hfmd", "mouth-ulcers", "child-dehydration"]
+  },
+  {
+    id: "CIT-0096", title: "Hand, Foot and Mouth Disease", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/conditions/hand-foot-mouth-disease/", sourceIdentifier: "NHS-HFMD-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-21", verificationEvidenceUrl: "https://www.nhs.uk/conditions/hand-foot-mouth-disease/", verificationNotes: "NHS public guidance covering mouth sores, skin-tone-aware rash signs, hydration, household prevention, and care-seeking boundaries.", scopeTags: ["hand-foot-mouth-disease", "hfmd", "hand-rash", "mouth-pain"]
   }
 ];
 

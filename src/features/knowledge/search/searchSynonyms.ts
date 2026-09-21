@@ -141,7 +141,10 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "impetigo": ["impetigo", "honey coloured crust", "golden crust rash", "child skin infection", "sores around mouth"],
   "honey coloured crust": ["honey coloured crust", "impetigo", "golden crust rash", "contagious skin rash"],
   "golden crust rash": ["golden crust rash", "impetigo", "honey coloured crust", "sores around mouth"],
-  "sores around mouth": ["sores around mouth", "impetigo", "golden crust rash", "child skin infection"]
+  "sores around mouth": ["sores around mouth", "impetigo", "golden crust rash", "child skin infection"],
+  "hand foot mouth": ["hand foot mouth disease", "hfmd", "mouth ulcers and rash", "blisters on hands and feet"],
+  "hfmd": ["hand foot mouth disease", "hfmd", "mouth ulcers and rash", "child not drinking"],
+  "blisters on hands and feet": ["hand foot mouth disease", "hfmd", "mouth ulcers and rash", "child rash"]
 };
 
 /**
@@ -203,6 +206,8 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "what are these golden crusts on my childs face": ["impetigo", "honey coloured crust", "golden crust rash", "child skin infection"],
   "are sores around my childs mouth contagious": ["impetigo", "sores around mouth", "contagious skin rash", "golden crust rash"],
   "is this a skin infection or eczema": ["impetigo", "eczema", "child skin infection", "contagious skin rash"],
+  "my child has mouth ulcers and spots on hands": ["hand foot mouth disease", "hfmd", "mouth ulcers and rash", "blisters on hands and feet"],
+  "my child is not drinking because of mouth sores": ["hand foot mouth disease", "hfmd", "child not drinking", "dehydration"],
 };
 
 /**

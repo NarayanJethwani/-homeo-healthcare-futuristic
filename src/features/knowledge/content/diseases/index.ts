@@ -83,6 +83,7 @@ import { OnychomycosisFungalNailInfectionDisease } from "./onychomycosis-fungal-
 import { PlantarWartsVerrucasDisease } from "./plantar-warts-verrucas";
 import { ScabiesDisease } from "./scabies";
 import { ImpetigoDisease } from "./impetigo";
+import { HandFootMouthDisease } from "./hand-foot-mouth-disease";
 
 export const DISEASES = [
   GerdDisease,
@@ -169,6 +170,7 @@ export const DISEASES = [
   PlantarWartsVerrucasDisease,
   ScabiesDisease,
   ImpetigoDisease,
+  HandFootMouthDisease,
 ];
 
 export { GerdDisease, EczemaDisease, MigraineDisease, IbsDisease };
