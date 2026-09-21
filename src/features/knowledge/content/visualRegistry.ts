@@ -791,6 +791,40 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "A closer look at a flare",
     },
   ],
+  "seborrheic-dermatitis": [
+    {
+      src: "/images/knowledge/seborrheic-dermatitis/understanding-v1.png",
+      alt: "Transparent facial and scalp skin illustration showing flaky areas around the hairline, brows, and nose",
+      label: "Understanding affected areas",
+    },
+    {
+      src: "/images/knowledge/seborrheic-dermatitis/lifestyle-v1.png",
+      alt: "Indian man using gentle moisturiser along a flaky hairline on a sunlit home balcony",
+      label: "An everyday care moment",
+    },
+    {
+      src: "/images/knowledge/seborrheic-dermatitis/learning-v1.png",
+      alt: "Abstract translucent skin planes with hair filaments, coral flakes, and amber droplets",
+      label: "A closer look at skin balance",
+    },
+  ],
+  intertrigo: [
+    {
+      src: "/images/knowledge/intertrigo/understanding-v1.png",
+      alt: "Transparent skin-fold illustration showing mild irritation and moisture between skin surfaces",
+      label: "Understanding skin-fold irritation",
+    },
+    {
+      src: "/images/knowledge/intertrigo/lifestyle-v1.png",
+      alt: "Indian woman preparing a clean towel and water for a comfortable cooling-and-drying routine at home",
+      label: "A practical everyday routine",
+    },
+    {
+      src: "/images/knowledge/intertrigo/learning-v1.png",
+      alt: "Abstract translucent skin-like planes separated by clear aqua moisture droplets",
+      label: "A closer look at moisture and friction",
+    },
+  ],
 };
 
 export function getKnowledgeVisuals(slug: string): KnowledgeVisual[] {

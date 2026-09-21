@@ -13,7 +13,7 @@ export const SeborrheicDermatitisDisease: KnowledgeEntity = {
     reviewed: "2026-08-14T12:00:00Z"
   },
   title: {
-    en: "Seborrheic Dermatitis (Cradle Cap, Facial Erythema & Greasy Scalp Scaling)",
+    en: "Seborrheic Dermatitis: Flaky Scalp, Brows & Face",
     hi: "सेबोरहाइक डर्मेटाइटिस / चिकनी पपड़ीदार त्वचा रोग (Seborrheic Dermatitis)",
     gu: "સેબોરિક ડર્મેટાઇટિસ / તેલિય ચીકણી પોપડીઓ અને લાલ ચકામા (Seborrheic Dermatitis)",
     mr: "सेबोरिक डर्मेटायटिस / तेलकट खपल्या व त्वचेची जळजळ (Seborrheic Dermatitis)",
@@ -21,7 +21,7 @@ export const SeborrheicDermatitisDisease: KnowledgeEntity = {
     ar: "التهاب الجلد الدهني وغطاء المهد (Seborrheic Dermatitis)"
   },
   summary: {
-    en: "An authoritative clinical and educational profile of Seborrheic Dermatitis, covering Malassezia yeast-mediated cutaneous inflammation, greasy yellowish scaling and erythematous plaques across sebum-rich zones (scalp, nasolabial folds, glabella, pre-sternal chest), infant cradle cap, constitutional homeopathic supportive management, and emergency red flags for exfoliative erythroderma, secondary bacterial superinfections, and severe eczema herpeticum.",
+    en: "Seborrheic dermatitis can cause flaky or greasy scales on the scalp, eyebrows and sides of the nose. Learn the common pattern, gentle care options, and when to seek medical advice.",
     hi: "सेबोरहाइक डर्मेटाइटिस (तैलीय पपड़ीदार त्वचा रोग / क्रैडल कैप) का मैलासेजिया यीस्ट पैथोलॉजी, सीबम-युक्त क्षेत्रों (माथा, भौहें, नाक की सिलवटें, छाती) में लालिमा व चिकनी पीली पपड़ी, पारंपरिक संवैधानिक होम्योपैथिक प्रबंधन, और सेकेंडरी बैक्टीरियल इन्फेक्शन व एरिथ्रोडर्मा की आपातकालीन सुरक्षा सीमाओं सहित प्रामाणिक विवरण.",
     gu: "સેબોરિક ડર્મેટાઇટિસ (ચીકણી પોપડીઓવાળો ચામડીનો સોજો) ની પેથોલોજી, ચહેરા અને માથા પર પીળી તેલિય પોપડીઓ, શિશુઓમાં ક્રેડલ કેપ, પરંપરાગત હોમિયોપેથીક સહાયક સારવાર અને આખા શરીરમાં ફેલાતા ગંભીર એરિથ્રોડર્માની ઇમરજન્સી સીમાઓનું વિવરણ.",
     mr: "सेबोरिक डर्मेटायटिस (Seborrheic Dermatitis), चेहऱ्यावर आणि डोक्यात तेलकट पिवळसर खपल्या व लालसरपणा, नवजात बालकांमधील क्रॅडल कॅप, पारंपरिक होमिओपॅथिक पद्धत आणि गंभीर इन्फेक्शनच्या आणीबाणीच्या मर्यादा.",

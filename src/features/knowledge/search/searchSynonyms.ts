@@ -39,6 +39,12 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "hives": ["urticaria", "hives", "raised itchy rash", "welts", "angioedema", "allergy rash"],
   "urticaria": ["urticaria", "hives", "raised itchy rash", "welts", "angioedema", "allergy rash"],
   "welts": ["urticaria", "hives", "raised itchy rash", "welts", "allergy rash"],
+  "seborrheic dermatitis": ["seborrheic dermatitis", "dandruff", "greasy scalp", "facial flakes", "flaky eyebrows", "scalp dermatitis"],
+  "greasy scalp": ["seborrheic dermatitis", "dandruff", "greasy scalp", "facial flakes", "scalp dermatitis"],
+  "flaky eyebrows": ["seborrheic dermatitis", "facial flakes", "flaky eyebrows", "dandruff"],
+  "intertrigo": ["intertrigo", "skin fold rash", "chafing rash", "sweat rash", "fungal fold rash"],
+  "skin fold rash": ["intertrigo", "skin fold rash", "chafing rash", "sweat rash", "fungal fold rash"],
+  "chafing rash": ["intertrigo", "skin fold rash", "chafing rash", "sweat rash"],
 
   // Migraine & Headache
   "migraine": ["migraine", "headache", "cephalgia", "throbbing head", "hemicrania", "sick headache"],
@@ -129,6 +135,10 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "why is my scalp itchy": ["dandruff", "itchy scalp", "scalp flakes", "seborrheic dermatitis"],
   "why do i get hives": ["urticaria", "hives", "raised itchy rash", "allergy rash"],
   "raised itchy rash": ["urticaria", "hives", "skin rash", "itching"],
+  "why are my eyebrows flaky": ["seborrheic dermatitis", "flaky eyebrows", "dandruff", "facial flakes"],
+  "why is my face flaky": ["seborrheic dermatitis", "facial flakes", "dandruff", "eczema"],
+  "why do i get a rash in skin folds": ["intertrigo", "skin fold rash", "chafing rash", "fungal fold rash"],
+  "rash under skin folds": ["intertrigo", "skin fold rash", "chafing rash", "fungal fold rash"],
 };
 
 /**
