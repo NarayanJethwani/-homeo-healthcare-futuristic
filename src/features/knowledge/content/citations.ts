@@ -1729,6 +1729,40 @@ export const CITATIONS: CitationRecord[] = [
     verificationEvidenceUrl: "https://www.cdc.gov/ringworm/hcp/clinical-overview/index.html",
     verificationNotes: "CDC guidance covering thick, discoloured, brittle, or cracked nails, common toenail involvement, and testing of suspected fungal nail infection.",
     scopeTags: ["onychomycosis", "fungal-nail-infection", "ringworm", "thickened-nail"]
+  },
+  {
+    id: "CIT-0089",
+    title: "Warts: Diagnosis and Treatment",
+    authors: ["American Academy of Dermatology"],
+    journal: "American Academy of Dermatology",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.aad.org/public/diseases/a-z/warts-treatment",
+    sourceIdentifier: "AAD-PLANTAR-WART-DIAGNOSIS-TREATMENT",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.aad.org/public/diseases/a-z/warts-self-care",
+    verificationNotes: "AAD guidance covering clinical diagnosis, reasons to assess a changing or uncertain growth, pharmacist or dermatologist-led treatment choices, and ways to reduce spread.",
+    scopeTags: ["plantar-wart", "verruca", "foot-wart", "wart-treatment"]
+  },
+  {
+    id: "CIT-0090",
+    title: "Warts and Verrucas",
+    authors: ["NHS"],
+    journal: "NHS",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.nhs.uk/conditions/warts-and-verrucas/",
+    sourceIdentifier: "NHS-PLANTAR-WART-PATIENT-GUIDANCE",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.nhs.uk/conditions/warts-and-verrucas/",
+    verificationNotes: "NHS public guidance covering typical wart and verruca appearance, pressure-related discomfort, conservative management, pharmacist support, and referral boundaries.",
+    scopeTags: ["plantar-wart", "verruca", "painful-sole", "wart-vs-corn"]
   }
 ];
 

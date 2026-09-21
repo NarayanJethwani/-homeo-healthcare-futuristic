@@ -129,7 +129,11 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "fungal nail infection": ["fungal nail infection", "nail fungus", "onychomycosis", "thickened nail", "discoloured nail"],
   "onychomycosis": ["onychomycosis", "fungal nail infection", "nail fungus", "thick toenail"],
   "yellow toenail": ["yellow toenail", "nail fungus", "fungal nail infection", "thick toenail"],
-  "thick toenail": ["thick toenail", "nail fungus", "fungal nail infection", "onychomycosis"]
+  "thick toenail": ["thick toenail", "nail fungus", "fungal nail infection", "onychomycosis"],
+  "plantar wart": ["plantar wart", "verruca", "foot wart", "wart on sole", "painful sole spot"],
+  "verruca": ["verruca", "plantar wart", "foot wart", "wart on sole"],
+  "foot wart": ["foot wart", "plantar wart", "verruca", "wart on sole"],
+  "wart on sole": ["wart on sole", "plantar wart", "verruca", "foot wart", "wart vs corn"]
 };
 
 /**
@@ -182,6 +186,9 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "why is my toenail thick and yellow": ["nail fungus", "fungal nail infection", "onychomycosis", "yellow toenail"],
   "why is my nail crumbly": ["nail fungus", "fungal nail infection", "onychomycosis", "thick toenail"],
   "is my yellow toenail a fungal infection": ["nail fungus", "fungal nail infection", "onychomycosis", "yellow toenail"],
+  "what is this painful spot on my sole": ["plantar wart", "verruca", "foot wart", "wart vs corn"],
+  "is this a wart or corn": ["plantar wart", "verruca", "wart vs corn", "painful sole spot"],
+  "why does it hurt to walk on this spot": ["plantar wart", "verruca", "foot wart", "painful sole spot"],
 };
 
 /**

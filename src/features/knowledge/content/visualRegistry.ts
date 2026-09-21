@@ -961,6 +961,23 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "A closer look at the nail layers",
     },
   ],
+  "plantar-warts-verrucas": [
+    {
+      src: "/images/knowledge/plantar-warts-verrucas/understanding-v1.png",
+      alt: "Indian woman inspecting a small sole spot with a transparent pressure-ring overlay",
+      label: "Understanding plantar warts",
+    },
+    {
+      src: "/images/knowledge/plantar-warts-verrucas/lifestyle-v1.png",
+      alt: "Indian swimmer putting on clean sandals in a bright pool changing area",
+      label: "A practical prevention habit",
+    },
+    {
+      src: "/images/knowledge/plantar-warts-verrucas/learning-v1.png",
+      alt: "Transparent three-dimensional sole-skin cutaway with a small contained plantar-wart area",
+      label: "A closer look at the sole skin",
+    },
+  ],
 };
 
 export function getKnowledgeVisuals(slug: string): KnowledgeVisual[] {
