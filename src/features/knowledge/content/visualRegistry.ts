@@ -757,6 +757,40 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "A closer look at the count",
     },
   ],
+  dandruff: [
+    {
+      src: "/images/knowledge/dandruff/understanding-v1.png",
+      alt: "Transparent scalp cross-section with hair follicles, skin layers, and fine dandruff flakes at the surface",
+      label: "Understanding the scalp",
+    },
+    {
+      src: "/images/knowledge/dandruff/lifestyle-v1.png",
+      alt: "Indian man with subtle scalp flaking checking his hair in a bright modern barbershop",
+      label: "A real-world scalp check",
+    },
+    {
+      src: "/images/knowledge/dandruff/learning-v1.png",
+      alt: "Abstract hair strands emerging through luminous skin layers with fine white flakes and golden droplets",
+      label: "A closer look at scalp renewal",
+    },
+  ],
+  urticaria: [
+    {
+      src: "/images/knowledge/urticaria/understanding-v1.png",
+      alt: "Transparent skin cross-section with a raised wheal, fine vessels, and gentle luminous particles",
+      label: "Understanding hives",
+    },
+    {
+      src: "/images/knowledge/urticaria/lifestyle-v1.png",
+      alt: "Indian woman using a cool compress on a mild hives flare on her forearm at home",
+      label: "A calm self-care moment",
+    },
+    {
+      src: "/images/knowledge/urticaria/learning-v1.png",
+      alt: "Abstract transparent skin contours with raised waves and colourful vessel-like pathways",
+      label: "A closer look at a flare",
+    },
+  ],
 };
 
 export function getKnowledgeVisuals(slug: string): KnowledgeVisual[] {

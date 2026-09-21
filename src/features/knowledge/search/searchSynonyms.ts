@@ -32,6 +32,13 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "skin eruption": ["eczema", "atopic dermatitis", "dermatitis", "skin rash", "skin eruption", "itching", "pruritus"],
   "itching": ["eczema", "atopic dermatitis", "dermatitis", "skin rash", "skin eruption", "itching", "pruritus"],
   "pruritus": ["eczema", "atopic dermatitis", "dermatitis", "skin rash", "skin eruption", "itching", "pruritus"],
+  "dandruff": ["dandruff", "scalp flakes", "flaky scalp", "itchy scalp", "pityriasis capitis", "seborrheic dermatitis"],
+  "scalp flakes": ["dandruff", "scalp flakes", "flaky scalp", "itchy scalp", "pityriasis capitis"],
+  "flaky scalp": ["dandruff", "scalp flakes", "flaky scalp", "itchy scalp", "pityriasis capitis"],
+  "itchy scalp": ["dandruff", "scalp flakes", "flaky scalp", "itchy scalp", "seborrheic dermatitis"],
+  "hives": ["urticaria", "hives", "raised itchy rash", "welts", "angioedema", "allergy rash"],
+  "urticaria": ["urticaria", "hives", "raised itchy rash", "welts", "angioedema", "allergy rash"],
+  "welts": ["urticaria", "hives", "raised itchy rash", "welts", "allergy rash"],
 
   // Migraine & Headache
   "migraine": ["migraine", "headache", "cephalgia", "throbbing head", "hemicrania", "sick headache"],
@@ -118,6 +125,10 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "what does my cbc mean": ["cbc", "complete blood count", "blood test"],
   "how do i read a blood test report": ["cbc", "complete blood count", "hemoglobin", "platelets", "white blood cells"],
   "why is my hemoglobin low": ["anemia", "anaemia", "cbc", "ferritin", "iron deficiency"],
+  "why is my scalp flaky": ["dandruff", "scalp flakes", "itchy scalp", "seborrheic dermatitis"],
+  "why is my scalp itchy": ["dandruff", "itchy scalp", "scalp flakes", "seborrheic dermatitis"],
+  "why do i get hives": ["urticaria", "hives", "raised itchy rash", "allergy rash"],
+  "raised itchy rash": ["urticaria", "hives", "skin rash", "itching"],
 };
 
 /**

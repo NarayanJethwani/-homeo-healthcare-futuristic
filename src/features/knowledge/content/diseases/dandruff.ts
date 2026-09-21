@@ -13,7 +13,7 @@ export const DandruffDisease: KnowledgeEntity = {
     reviewed: "2026-08-14T12:00:00Z"
   },
   title: {
-    en: "Dandruff (Pityriasis Capitis / Scalp Flaking & Pruritus)",
+    en: "Dandruff: Scalp Flakes, Itching & What Can Help",
     hi: "डैंड्रफ / रूसी व सिर की त्वचा का छिलना (Dandruff / Pityriasis Capitis)",
     gu: "ખોડો / માથાની ચામડી પર પોપડી વળવી અને ખંજવાળ (Dandruff)",
     mr: "कोंडा / डोक्यातील खाज व पांढरी खपली (Dandruff / Pityriasis Capitis)",
@@ -21,7 +21,7 @@ export const DandruffDisease: KnowledgeEntity = {
     ar: "قشرة الرأس والنخالية الرأسية (Dandruff)"
   },
   summary: {
-    en: "An authoritative clinical and educational profile of Dandruff (Pityriasis Capitis), covering Malassezia globosa and restricta fungal proliferation, stratum corneum epidermal hyperproliferation, sebum lipid peroxidation by-products (oleic acid irritation), constitutional homeopathic supportive management, and emergency red flags for secondary bacterial cellulitis, impetiginization, and exfoliative erythroderma.",
+    en: "Dandruff is common scalp flaking, sometimes with itch or mild irritation. Learn what can trigger it, practical scalp-care steps, and when a clinician should look for another cause.",
     hi: "डैंड्रफ (रूसी / पिटिरियासिस कैपिटिस) का मैलासेजिया फंगल ओवरग्रोथ पैथोलॉजी, सीबम लिपिड मेटाबॉलिज्म, खोपड़ी पर सफेद-धूसर पपड़ी व खुजली, पारंपरिक संवैधानिक होम्योपैथिक प्रबंधन, और सेकेंडरी बैक्टीरियल सेल्युलाइटिस व एरिथ्रोडर्मा की आपातकालीन सुरक्षा सीमाओं सहित प्रामाणिक विवरण.",
     gu: "ખોડો (ડેન્ડ્રફ) ની ફંગલ પેથોલોજી, માથામાં ખંજવાળ અને સફેદ પોપડીઓ ખરવી, ત્વચાની અતિસંવેદનશીલતા, પરંપરાગત હોમિયોપેથીક સહાયક સારવાર અને સ્કેલ્પમાં ગંભીર ઇન્ફેક્શન (સેલ્યુલાઇટિસ) ની ઇમરજન્સી સીમાઓનું વિવરણ.",
     mr: "कोंडा (Dandruff / Pityriasis Capitis), डोक्यात खाज येणे व पांढऱ्या खपल्या पडणे, त्वचेची संवेदनशीलता, पारंपरिक होमिओपॅथिक पद्धत आणि गंभीर बॅक्टेरियल इन्फेक्शनच्या आणीबाणीच्या मर्यादा.",
