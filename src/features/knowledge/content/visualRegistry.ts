@@ -825,6 +825,40 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "A closer look at moisture and friction",
     },
   ],
+  "dry-skin": [
+    {
+      src: "/images/knowledge/dry-skin/understanding-v1.png",
+      alt: "Transparent skin layers with fine surface texture, water droplets, and lipid-like forms beneath the barrier",
+      label: "Understanding the skin barrier",
+    },
+    {
+      src: "/images/knowledge/dry-skin/lifestyle-v1.png",
+      alt: "Older Indian woman applying fragrance-free moisturiser to a mildly dry lower leg in a sunlit bedroom",
+      label: "An everyday moisturising routine",
+    },
+    {
+      src: "/images/knowledge/dry-skin/learning-v1.png",
+      alt: "Abstract pearl and peach skin-like membranes carrying luminous aqua droplets and golden ribbons",
+      label: "A closer look at hydration",
+    },
+  ],
+  "skin-rash": [
+    {
+      src: "/images/knowledge/skin-rash/understanding-v1.png",
+      alt: "Warm-brown forearm with a few mild rash patches beside a transparent skin-layer illustration",
+      label: "Understanding a rash",
+    },
+    {
+      src: "/images/knowledge/skin-rash/lifestyle-v1.png",
+      alt: "Indian young adult noticing a few mild rash patches on her upper arm in a colourful ceramics studio",
+      label: "Noticing a new change",
+    },
+    {
+      src: "/images/knowledge/skin-rash/learning-v1.png",
+      alt: "Abstract coral and violet skin-like contours with teal and gold cellular light forms",
+      label: "A closer look at skin responses",
+    },
+  ],
 };
 
 export function getKnowledgeVisuals(slug: string): KnowledgeVisual[] {

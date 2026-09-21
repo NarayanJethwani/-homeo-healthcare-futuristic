@@ -45,6 +45,10 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "intertrigo": ["intertrigo", "skin fold rash", "chafing rash", "sweat rash", "fungal fold rash"],
   "skin fold rash": ["intertrigo", "skin fold rash", "chafing rash", "sweat rash", "fungal fold rash"],
   "chafing rash": ["intertrigo", "skin fold rash", "chafing rash", "sweat rash"],
+  "dry skin": ["dry skin", "xerosis", "flaky skin", "rough skin", "itchy dry skin", "skin barrier"],
+  "xerosis": ["dry skin", "xerosis", "flaky skin", "rough skin", "itchy dry skin"],
+  "flaky skin": ["dry skin", "xerosis", "flaky skin", "rough skin", "itchy dry skin"],
+  "rough skin": ["dry skin", "xerosis", "flaky skin", "rough skin", "itchy dry skin"],
 
   // Migraine & Headache
   "migraine": ["migraine", "headache", "cephalgia", "throbbing head", "hemicrania", "sick headache"],
@@ -139,6 +143,10 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "why is my face flaky": ["seborrheic dermatitis", "facial flakes", "dandruff", "eczema"],
   "why do i get a rash in skin folds": ["intertrigo", "skin fold rash", "chafing rash", "fungal fold rash"],
   "rash under skin folds": ["intertrigo", "skin fold rash", "chafing rash", "fungal fold rash"],
+  "why is my skin so dry": ["dry skin", "xerosis", "itchy dry skin", "eczema"],
+  "dry itchy skin": ["dry skin", "xerosis", "itchy dry skin", "eczema", "skin rash"],
+  "what kind of rash is this": ["skin rash", "eczema", "urticaria", "contact dermatitis"],
+  "rash with fever": ["skin rash", "fever"],
 };
 
 /**
