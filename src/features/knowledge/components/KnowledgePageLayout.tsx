@@ -5,7 +5,6 @@ import Link from "next/link";
 import { ChevronLeft, Type, Eye } from "lucide-react";
 import ScrollSpyTOC from "./ScrollSpyTOC";
 import { PatientModeProvider } from "../context/PatientModeContext";
-import PatientModeToggle from "./PatientModeToggle";
 import InteractiveSidebar from "./InteractiveSidebar";
 import PrintButton from "./PrintButton";
 
@@ -179,7 +178,6 @@ export default function KnowledgePageLayout({
                  </button>
                </div>
 
-               <PatientModeToggle />
                <PrintButton />
              </div>
           </div>

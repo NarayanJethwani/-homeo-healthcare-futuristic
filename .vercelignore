@@ -10,3 +10,21 @@ node_modules/**
 coverage
 tmp
 *.log
+
+# Local tooling, generated reports, and the archived release checkout are not
+# application source. Keeping them out of deployments makes builds reproducible
+# and prevents their test suite from being type-checked as part of the site.
+_npx
+_npx/**
+_cacache
+_cacache/**
+_logs
+_logs/**
+artifacts
+artifacts/**
+reports
+reports/**
+scratch
+scratch/**
+release-checkout
+release-checkout/**

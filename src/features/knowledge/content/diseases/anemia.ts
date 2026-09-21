@@ -6,9 +6,9 @@ export const AnemiaDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-31T12:00:00Z",
+    updated: "2026-09-21T12:00:00Z",
     reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
@@ -20,7 +20,7 @@ export const AnemiaDisease: KnowledgeEntity = {
     ar: "فقر الدم",
   },
   summary: {
-    en: "An authoritative clinical profile of Anemia covering WHO 2017 hemoglobin threshold criteria, iron deficiency vs megaloblastic etiologies, severe anemia emergency red flags (Hb <7.0 g/dL), and transfusion non-replacement rules.",
+    en: "A clear guide to anaemia: what it means, common causes, the usual blood tests, safe next steps, and when to seek urgent care.",
     hi: "एनीमिया का डब्ल्यूएचओ 2017 मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "એનિમિયાનું WHO 2017 ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "ॲनिमियाचे WHO 2017 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
@@ -29,7 +29,7 @@ export const AnemiaDisease: KnowledgeEntity = {
   },
   content: {
     overview:
-      "Anemia is defined as a reduction in red blood cell (RBC) count, hematocrit, or hemoglobin concentration below WHO age- and sex-adjusted reference values (hemoglobin <12.0 g/dL in adult non-pregnant females, <13.0 g/dL in adult males) [D0051-KEYNOTES, CIT-0042]. It impairs tissue oxygen delivery.",
+      "Anaemia means there are not enough healthy red blood cells or haemoglobin to carry oxygen around the body. It can make people feel tired, weak, breathless, dizzy, or notice paler skin, but mild anaemia may cause few symptoms. It is not one single condition: iron deficiency, vitamin deficiencies, blood loss, inherited blood conditions, kidney disease, inflammation, and other causes need different care.",
     definition:
       "A systemic hematological disorder characterized by inadequate circulating hemoglobin mass to meet cellular oxygenation requirements.",
     causes: [
@@ -49,31 +49,41 @@ export const AnemiaDisease: KnowledgeEntity = {
       "Iron deficiency signs: Koilonychia (spoon nails), angular stomatitis, and pica (craving ice/dirt)",
     ],
     diagnosis:
-      "Diagnosed via Complete Blood Count (CBC) showing reduced Hb/Hct, red cell indices (MCV, MCH, MCHC, RDW), serum ferritin, iron, total iron-binding capacity (TIBC), reticulocyte count, and vitamin B12 / folate levels [CIT-0042].",
+      "A complete blood count (CBC) is usually the starting point. It includes haemoglobin and red-cell measurements that help show the pattern of anaemia. Depending on that pattern and your history, a clinician may add ferritin or other iron tests, B12 or folate tests, kidney tests, or investigations for a source of bleeding.",
     differentialDiagnosis:
       "Differentiate Iron Deficiency Anemia from Anemia of Chronic Disease, Thalassemia Trait, Sideroblastic Anemia, Vitamin B12 / Folate Megaloblastic Anemia, and Aplastic Anemia.",
     conventionalManagement:
-      "Management includes oral elemental iron therapy (ferrous sulfate/fumarate), IV iron infusions for malabsorption, vitamin B12 injections, treatment of underlying bleeding, and packed RBC transfusions for severe hemodynamically unstable anemia [CIT-0042].",
+      "Treatment depends on the cause and severity. It may include treating iron, B12, or folate deficiency; addressing bleeding or another underlying condition; and follow-up blood tests. Iron is not appropriate for every type of anaemia, so avoid starting high-dose supplements without knowing the likely cause. Severe or unstable anaemia may require urgent hospital care.",
     homeopathicApproach:
-      "Homeopathic prescribing acts as supportive constitutional care to optimize digestive absorption, improve iron assimilation dynamics, and alleviate subjective weakness alongside regular CBC monitoring.",
+      "If you use complementary care, discuss it openly with your clinician and pharmacist. It should not replace investigation of anaemia, treatment for a confirmed deficiency or source of bleeding, or repeat blood tests.",
     lifestyleAdvice:
-      "Consume iron-rich foods (dark leafy greens, lentils, beans, poultry) paired with vitamin C (citrus fruits) to enhance non-heme iron absorption, and avoid tea/coffee near meal times.",
+      "A varied diet can support blood health, but food alone may not correct every type of anaemia. Iron-containing foods include lentils, beans, leafy greens, meat, and fortified foods; vitamin C-rich foods can help absorb non-haem iron. Bring a list of medicines, diet changes, menstrual history, and any bleeding symptoms to your appointment.",
     references: ["CIT-0015", "CIT-0016", "CIT-0022", "CIT-0042"],
     faqs: [
       {
-        question: "When is Anemia considered a medical emergency requiring hospitalization or blood transfusion?",
+        question: "What does it mean if I have anaemia?",
         answer:
-          "Severe anemia with hemoglobin <7.0 g/dL, acute active gastrointestinal hemorrhage, hemodynamic instability (hypotension, severe tachycardia), or acute ischemic cardiac angina is a MEDICAL EMERGENCY [D0051-EMERGENCY-LIMITS, CIT-0042]. It requires IMMEDIATE ER transport for blood transfusion and hemodynamic stabilization.",
+          "It means your blood has too little haemoglobin or too few healthy red blood cells to carry oxygen effectively. Anaemia is a finding with many possible causes, so the important next step is understanding the pattern on your CBC and why it occurred.",
       },
       {
-        question: "Can homeopathic remedies replace blood transfusions or prescribed iron therapy in severe anemia?",
+        question: "Does tiredness mean I have anaemia?",
         answer:
-          "NO. Homeopathy MUST NOT be used to replace blood transfusions in acute severe anemia or prescribed iron/B12 replacement in severe nutritional deficiencies [D0051-REGULATORY-LIMITS]. Delaying transfusion in severe hemorrhage risks cardiac arrest.",
+          "Not necessarily. Tiredness is common and can be caused by sleep, stress, infections, thyroid conditions, mood changes, medicines, and many other factors. A CBC can help a clinician find out whether anaemia is contributing.",
       },
       {
-        question: "How does homeopathy integrate with standard hematology monitoring?",
+        question: "What does a CBC or haemoglobin result tell me?",
         answer:
-          "Homeopathy provides complementary constitutional support while patients remain under standard hematology monitoring with regular Hemoglobin and Ferritin blood tests [D0051-REGULATORY-LIMITS].",
+          "Haemoglobin is one part of a CBC and helps show whether anaemia is present. Other red-cell measurements can suggest which additional tests may be useful, such as ferritin, iron studies, B12, folate, kidney tests, or tests for bleeding.",
+      },
+      {
+        question: "Should I take iron if my haemoglobin is low?",
+        answer:
+          "Ask a clinician before starting iron. Iron deficiency is common, but it is not the only cause of anaemia, and too much iron can be harmful. Ferritin and other tests can help determine whether iron replacement is appropriate.",
+      },
+      {
+        question: "When should I seek medical advice urgently?",
+        answer:
+          "Seek urgent care for chest pain, severe shortness of breath, fainting, confusion, a very fast or irregular heartbeat, heavy active bleeding, black or bloody stools, or sudden marked weakness. Seek timely care for persistent fatigue, dizziness, palpitations, heavy periods, or any new bleeding.",
       },
     ],
   },
@@ -99,5 +109,6 @@ export const AnemiaDisease: KnowledgeEntity = {
   changeLog: [
     "1.0.0: Initial release of Anemia profile",
     "1.1.0: Upgraded with WHO 2017 evidence citations (CIT-0042), passage-level claim citations (D0051-KEYNOTES, D0051-EMERGENCY-LIMITS, D0051-REGULATORY-LIMITS), severe anemia red flags (Hb <7.0 g/dL), and transfusion non-replacement rules",
+    "1.2.0: Added a question-first patient layer, cause-led next steps, and clearer safety guidance for supplements and urgent symptoms.",
   ],
 };

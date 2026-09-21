@@ -98,9 +98,9 @@ export default function EntityCard({ entity, locale = "en", highlightQuery = "" 
       </div>
 
       <div className="mt-6 pt-4 border-t border-neutral-500/5 flex items-center justify-between text-xs font-semibold text-neutral-700 dark:text-neutral-300">
-        <span className="opacity-65">Audience: {entity.audience}</span>
+        <span className="opacity-65">Clear overview</span>
         <span className="inline-flex items-center gap-1 text-teal-600 dark:text-teal-400 group-hover:translate-x-0.5 transition-transform duration-200">
-          View Details <ArrowUpRight className="h-4 w-4" />
+          Read topic <ArrowUpRight className="h-4 w-4" />
         </span>
       </div>
     </Link>
