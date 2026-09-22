@@ -89,6 +89,7 @@ import { MeaslesRubeolaDisease } from "./measles-rubeola";
 import { ConjunctivitisPinkEyeDisease } from "./conjunctivitis-pink-eye";
 import { DengueFeverDisease } from "./dengue-fever";
 import { ChikungunyaDisease } from "./chikungunya";
+import { TyphoidFeverDisease } from "./typhoid-fever";
 
 export const DISEASES = [
   GerdDisease,
@@ -181,6 +182,7 @@ export const DISEASES = [
   ConjunctivitisPinkEyeDisease,
   DengueFeverDisease,
   ChikungunyaDisease,
+  TyphoidFeverDisease,
 ];
 
 export { GerdDisease, EczemaDisease, MigraineDisease, IbsDisease };

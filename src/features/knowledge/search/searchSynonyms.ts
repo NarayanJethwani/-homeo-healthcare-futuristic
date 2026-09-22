@@ -160,7 +160,10 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "fever body pain": ["dengue", "dengue fever", "fever body pain", "mosquito fever"],
   "chikungunya": ["chikungunya", "fever joint pain", "joint swelling fever", "mosquito fever", "chikungunya test"],
   "fever joint pain": ["chikungunya", "fever joint pain", "joint swelling fever", "mosquito fever"],
-  "joint swelling fever": ["chikungunya", "fever joint pain", "joint swelling fever", "chikungunya test"]
+  "joint swelling fever": ["chikungunya", "fever joint pain", "joint swelling fever", "chikungunya test"],
+  "typhoid": ["typhoid", "enteric fever", "persistent fever", "typhoid test", "food water infection"],
+  "enteric fever": ["typhoid", "enteric fever", "persistent fever", "typhoid test"],
+  "persistent fever": ["typhoid", "persistent fever", "enteric fever", "typhoid test"]
 };
 
 /**
@@ -237,6 +240,9 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "fever with severe joint pain": ["chikungunya", "fever joint pain", "joint swelling fever", "chikungunya test"],
   "my fever is better but my joints still hurt": ["chikungunya", "fever joint pain", "persistent joint pain", "joint swelling fever"],
   "can i take ibuprofen for mosquito fever": ["chikungunya", "dengue", "fever joint pain", "dengue warning signs"],
+  "i have fever for many days and stomach pain": ["typhoid", "enteric fever", "persistent fever", "typhoid test"],
+  "is this typhoid or dengue": ["typhoid", "dengue", "enteric fever", "persistent fever"],
+  "how is typhoid tested": ["typhoid", "typhoid test", "blood culture", "enteric fever"],
 };
 
 /**

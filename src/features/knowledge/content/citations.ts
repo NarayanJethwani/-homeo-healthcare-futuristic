@@ -1867,6 +1867,12 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0106", title: "Symptoms of Chikungunya", authors: ["Centers for Disease Control and Prevention"], journal: "Centers for Disease Control and Prevention", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.cdc.gov/chikungunya/signs-symptoms/index.html", sourceIdentifier: "CDC-CHIKUNGUNYA-SYMPTOMS", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.cdc.gov/chikungunya/about/index.html", verificationNotes: "CDC guidance covering symptoms, risk groups, testing, recovery, and avoiding NSAIDs until dengue is excluded.", scopeTags: ["chikungunya", "joint-pain", "chikungunya-testing", "dengue-safety"]
+  },
+  {
+    id: "CIT-0107", title: "Typhoid", authors: ["World Health Organization"], journal: "World Health Organization", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.who.int/news-room/fact-sheets/detail/typhoid", sourceIdentifier: "WHO-TYPHOID-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.who.int/news-room/fact-sheets/detail/typhoid", verificationNotes: "WHO guidance covering persistent-fever symptoms, food-and-water transmission, antibiotic completion, hygiene, and vaccination.", scopeTags: ["typhoid", "enteric-fever", "food-water-safety", "antibiotic-completion"]
+  },
+  {
+    id: "CIT-0108", title: "Clinical Guidance for Typhoid Fever and Paratyphoid Fever", authors: ["Centers for Disease Control and Prevention"], journal: "Centers for Disease Control and Prevention", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.cdc.gov/typhoid-fever/hcp/clinical-guidance/index.html", sourceIdentifier: "CDC-TYPHOID-CLINICAL-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.cdc.gov/typhoid-fever/hcp/clinical-guidance/index.html", verificationNotes: "CDC guidance covering diagnosis by blood culture, symptom overlap, antimicrobial resistance, and serious complications.", scopeTags: ["typhoid", "blood-culture", "antibiotic-resistance", "persistent-fever"]
   }
 ];
 
