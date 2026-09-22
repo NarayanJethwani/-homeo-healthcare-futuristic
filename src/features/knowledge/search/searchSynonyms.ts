@@ -163,7 +163,10 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "joint swelling fever": ["chikungunya", "fever joint pain", "joint swelling fever", "chikungunya test"],
   "typhoid": ["typhoid", "enteric fever", "persistent fever", "typhoid test", "food water infection"],
   "enteric fever": ["typhoid", "enteric fever", "persistent fever", "typhoid test"],
-  "persistent fever": ["typhoid", "persistent fever", "enteric fever", "typhoid test"]
+  "persistent fever": ["typhoid", "persistent fever", "enteric fever", "typhoid test"],
+  "malaria": ["malaria", "fever chills", "malaria test", "mosquito fever", "travel fever"],
+  "fever chills": ["malaria", "fever chills", "malaria test", "mosquito fever"],
+  "travel fever": ["malaria", "travel fever", "fever chills", "malaria test"]
 };
 
 /**
@@ -243,6 +246,9 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "i have fever for many days and stomach pain": ["typhoid", "enteric fever", "persistent fever", "typhoid test"],
   "is this typhoid or dengue": ["typhoid", "dengue", "enteric fever", "persistent fever"],
   "how is typhoid tested": ["typhoid", "typhoid test", "blood culture", "enteric fever"],
+  "i have fever and chills after travel": ["malaria", "fever chills", "travel fever", "malaria test"],
+  "how is malaria tested": ["malaria", "malaria test", "blood smear", "rapid diagnostic test"],
+  "fever with dark urine": ["malaria", "fever chills", "malaria test", "urgent fever"],
 };
 
 /**

@@ -1873,6 +1873,12 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0108", title: "Clinical Guidance for Typhoid Fever and Paratyphoid Fever", authors: ["Centers for Disease Control and Prevention"], journal: "Centers for Disease Control and Prevention", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.cdc.gov/typhoid-fever/hcp/clinical-guidance/index.html", sourceIdentifier: "CDC-TYPHOID-CLINICAL-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.cdc.gov/typhoid-fever/hcp/clinical-guidance/index.html", verificationNotes: "CDC guidance covering diagnosis by blood culture, symptom overlap, antimicrobial resistance, and serious complications.", scopeTags: ["typhoid", "blood-culture", "antibiotic-resistance", "persistent-fever"]
+  },
+  {
+    id: "CIT-0109", title: "Malaria", authors: ["World Health Organization"], journal: "World Health Organization", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.who.int/news-room/fact-sheets/detail/malaria", sourceIdentifier: "WHO-MALARIA-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.who.int/news-room/fact-sheets/detail/malaria", verificationNotes: "WHO guidance covering symptoms, severe malaria, parasite-based diagnosis, treatment, pregnancy risk, and prevention.", scopeTags: ["malaria", "severe-malaria", "malaria-testing", "mosquito-prevention"]
+  },
+  {
+    id: "CIT-0110", title: "Testing for Malaria", authors: ["Centers for Disease Control and Prevention"], journal: "Centers for Disease Control and Prevention", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.cdc.gov/malaria/testing/", sourceIdentifier: "CDC-MALARIA-TESTING", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.cdc.gov/malaria/testing/", verificationNotes: "CDC guidance covering prompt evaluation, microscopy, rapid tests, confirmatory testing, and species identification.", scopeTags: ["malaria", "blood-smear", "rapid-diagnostic-test", "travel-fever"]
   }
 ];
 

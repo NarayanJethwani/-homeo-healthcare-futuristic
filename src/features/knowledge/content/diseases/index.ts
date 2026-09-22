@@ -90,6 +90,7 @@ import { ConjunctivitisPinkEyeDisease } from "./conjunctivitis-pink-eye";
 import { DengueFeverDisease } from "./dengue-fever";
 import { ChikungunyaDisease } from "./chikungunya";
 import { TyphoidFeverDisease } from "./typhoid-fever";
+import { MalariaDisease } from "./malaria";
 
 export const DISEASES = [
   GerdDisease,
@@ -183,6 +184,7 @@ export const DISEASES = [
   DengueFeverDisease,
   ChikungunyaDisease,
   TyphoidFeverDisease,
+  MalariaDisease,
 ];
 
 export { GerdDisease, EczemaDisease, MigraineDisease, IbsDisease };
