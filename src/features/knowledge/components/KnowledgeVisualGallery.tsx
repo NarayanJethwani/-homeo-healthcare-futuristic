@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { Expand, ImageIcon, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Expand, ImageIcon, X } from "lucide-react";
 import { getKnowledgeVisuals } from "../content/visualRegistry";
 
 interface KnowledgeVisualGalleryProps {
@@ -16,7 +16,9 @@ export default function KnowledgeVisualGallery({ slug, title }: KnowledgeVisualG
   const openerRef = useRef<HTMLButtonElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  const closePreview = () => setSelectedIndex(null);
+  const closePreview = useCallback(() => setSelectedIndex(null), []);
+  const showPrevious = useCallback(() => setSelectedIndex((index) => index === null ? null : (index + visuals.length - 1) % visuals.length), [visuals.length]);
+  const showNext = useCallback(() => setSelectedIndex((index) => index === null ? null : (index + 1) % visuals.length), [visuals.length]);
 
   useEffect(() => {
     if (selectedIndex === null) return;
@@ -27,6 +29,8 @@ export default function KnowledgeVisualGallery({ slug, title }: KnowledgeVisualG
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") closePreview();
+      if (event.key === "ArrowLeft") showPrevious();
+      if (event.key === "ArrowRight") showNext();
     };
     document.addEventListener("keydown", onKeyDown);
 
@@ -35,7 +39,7 @@ export default function KnowledgeVisualGallery({ slug, title }: KnowledgeVisualG
       document.removeEventListener("keydown", onKeyDown);
       openerRef.current?.focus();
     };
-  }, [selectedIndex]);
+  }, [selectedIndex, closePreview, showNext, showPrevious]);
 
   if (visuals.length === 0) return null;
 
@@ -114,8 +118,31 @@ export default function KnowledgeVisualGallery({ slug, title }: KnowledgeVisualG
                 className="object-contain"
                 priority
               />
+              {visuals.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={showPrevious}
+                    className="absolute left-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white transition hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:left-5"
+                    aria-label="View previous image"
+                  >
+                    <ChevronLeft className="h-6 w-6" aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={showNext}
+                    className="absolute right-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white transition hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:right-5"
+                    aria-label="View next image"
+                  >
+                    <ChevronRight className="h-6 w-6" aria-hidden="true" />
+                  </button>
+                </>
+              )}
             </div>
-            <p className="bg-slate-950 px-5 py-4 text-sm font-semibold text-white">{visuals[selectedIndex].label}</p>
+            <div className="flex items-center justify-between gap-3 bg-slate-950 px-5 py-4 text-sm text-white">
+              <p className="font-semibold">{visuals[selectedIndex].label}</p>
+              <span className="shrink-0 text-xs font-medium text-white/65">{selectedIndex + 1} of {visuals.length}</span>
+            </div>
           </section>
         </div>
       )}
