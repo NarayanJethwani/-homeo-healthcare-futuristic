@@ -13,7 +13,7 @@ export const IntertrigoDisease: KnowledgeEntity = {
     reviewed: "2026-08-14T12:00:00Z"
   },
   title: {
-    en: "Intertrigo & Intertriginous Candidiasis (Skin Fold Friction, Maceration & Satellite Pustulosis)",
+    en: "Intertrigo: Skin-Fold Rash, Friction & Moisture",
     hi: "इंटरट्रिगो / त्वचा की सिलवटों में लालिमा, रगड़ व फंगल इन्फेक्शन (Intertrigo / Skin Fold Rash)",
     gu: "ઇન્ટરટ્રિગો / ચામડીના સળિયામાં થતી બળતરા અને ફૂગનો ચેપ (Intertrigo / Chafing)",
     mr: "इंटरट्रिगो / त्वचेच्या घड्यांमधील जळजळ व फंगल इन्फेक्शन (Intertrigo / Chafing)",
@@ -21,7 +21,7 @@ export const IntertrigoDisease: KnowledgeEntity = {
     ar: "المذح والتسلخات الجلدية في الثنيات الفطرية (Intertrigo)"
   },
   summary: {
-    en: "An authoritative clinical and educational profile of Intertrigo and Intertriginous Candidiasis, covering moisture-associated skin friction damage, stratum corneum maceration, secondary Candida albicans opportunistic overgrowth, pathognomonic satellite pustulosis, bacterial superinfections (Corynebacterium erythrasma), constitutional homeopathic supportive management, and emergency red flags for necrotizing fasciitis, spreading bacterial cellulitis, and invasive candidemia in immunocompromised diabetic patients.",
+    en: "Intertrigo is a sore or itchy rash that can develop where skin rubs together and stays warm or damp. Learn how to reduce friction and moisture, and when a clinician should check for infection.",
     hi: "इंटरट्रिगो (त्वचा की सिलवटों जैसे जांघों, स्तनों के नीचे, बगल में रगड़ व फंगस) का स्किन फ्रिक्शन पैथोलॉजी, मैकरेटेड लाल चकत्ते, कैंडिडा एल्बिकैन्स ओवरग्रोथ, सैटेलाइट फुंसियां (Satellite Pustules), एरिथ्रास्मा (Wood's lamp), पारंपरिक संवैधानिक होम्योपैथिक प्रबंधन, और नेक्रोटाइजिंग फैसियाइटिस (Necrotizing Fasciitis) व सेल्युलाइटिस की आपातकालीन सुरक्षा सीमाओं सहित प्रामाणिक विवरण.",
     gu: "ઇન્ટરટ્રિગો (જાંઘ, બગલ અને સ્તનની નીચે ચામડી ઘસાઈને લાલ થવી) ની પેથોલોજી, પરસેવાને લીધે ચામડી પોચી પડી છોલાઈ જવી, ફૂગનો ચેપ, નાની નાની ફોડલીઓ થવી, પરંપરાગત હોમિયોપેથીક સહાયક સારવાર અને ચામડી સડી જવી (ગેન્ગ્રીન / સેલ્યુલાઇટિસ) તથા ગંભીર ઇન્ફેક્શનની ઇમરજન્સી સીમાઓનું વિવરણ.",
     mr: "इंटरट्रिगो (त्वचेच्या घड्यांमधील चट्टे), घाम व घर्षणामुळे होणारी जळजळ, बुरशीजन्य इन्फेक्शन (Candida), खाज व पुरळ, पारंपरिक होमिओपॅथिक पद्धत आणि गंभीर जिवाणू संसर्ग (Cellulitis / Necrotizing Fasciitis) च्या आणीबाणीच्या मर्यादा.",

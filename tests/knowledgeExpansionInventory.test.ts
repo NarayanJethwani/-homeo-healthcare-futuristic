@@ -33,9 +33,9 @@ export function runKnowledgeExpansionInventoryTests(): void {
   const inventory = generateKnowledgeExpansionInventory(asOfDate);
   const pilot = buildFlagshipPilotManifest(inventory);
 
-  assert.strictEqual(inventory.summary.totalEntities, 343);
+  assert.strictEqual(inventory.summary.totalEntities, 365);
   assert.deepStrictEqual(inventory.summary.byEntityType, {
-    disease: 75,
+    disease: 97,
     remedy: 150,
     faq: 1,
     "lab-test": 40,
@@ -45,11 +45,11 @@ export function runKnowledgeExpansionInventoryTests(): void {
   });
   assert.strictEqual(inventory.summary.withdrawnEntities, 3);
   assert.strictEqual(inventory.summary.flagshipEntities, 8);
-  assert.strictEqual(inventory.summary.legacyBulkGeneratedEntities, 256);
+  assert.strictEqual(inventory.summary.legacyBulkGeneratedEntities, 278);
   assert.strictEqual(inventory.summary.independentlyReviewedEntities, 0);
   assert.strictEqual(inventory.summary.governedEvidenceProfiles, 0);
   assert.strictEqual(inventory.summary.claimCitationCompleteEntities, 0);
-  assert.strictEqual(inventory.summary.isolatedEntities, 210);
+  assert.strictEqual(inventory.summary.isolatedEntities, 232);
   assert.strictEqual(inventory.summary.duplicateRelationshipRows, 178);
   assert.strictEqual(inventory.summary.activeRagEntities, 0);
 

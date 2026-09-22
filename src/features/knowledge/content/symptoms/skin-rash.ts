@@ -12,7 +12,7 @@ export const SkinRashSymptom: KnowledgeEntity = {
     reviewed: "2026-07-08T12:00:00Z"
   },
   title: {
-    en: "Skin Rash",
+    en: "Skin Rash: What It May Mean & When to Get Help",
     hi: "Skin Rash",
     gu: "Skin Rash",
     mr: "Skin Rash",
@@ -20,7 +20,7 @@ export const SkinRashSymptom: KnowledgeEntity = {
     ar: "Skin Rash"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Skin Rash.",
+    en: "A rash is a visible change in the skin, not one single diagnosis. Learn what to notice, safe first steps, and the warning signs that need urgent medical care.",
     hi: "Skin Rash के लक्षण की नैदानिक समझ.",
     gu: "Skin Rash ના લક્ષણ ની સમજણ.",
     mr: "Skin Rash चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const SkinRashSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Skin Rash."
   },
   content: {
-  "definition": "Skin rash: A subjective or visible skin manifestation representing cutaneous inflammation, epidermal barrier damage, or localized histamine release.",
-  "clinicalMeaning": "Reflects localized capillary dilation, dermal infiltration by inflammatory cells, or nerve fiber excitation causing pruritus.",
+  "definition": "A skin rash is a new change in skin colour, texture, or sensation. It may be itchy, sore, raised, scaly, or made up of spots or patches.",
+  "clinicalMeaning": "Rashes have many possible causes, including irritation, allergy, eczema, hives, infection, or a medicine reaction. The pattern, timing, other symptoms, and where it appears all matter.",
   "commonCauses": [
-    "Atopic eczema or contact allergy",
-    "Psoriasis or seborrheic dermatitis",
-    "Urticarial histamine reactions",
-    "Local infections or sweat duct occlusion"
+    "Irritant or allergic contact with a new product, fabric, metal, plant, or medicine",
+    "Eczema, psoriasis, hives, heat rash, or another inflammatory skin condition",
+    "Viral, fungal, or bacterial skin infections",
+    "A reaction to a medicine or a wider illness affecting the body"
   ],
-  "differentialDiagnosis": "Differentiate from scabies infestation, drug eruptions, cutaneous lymphoma, and viral exanthems.",
+  "differentialDiagnosis": "A clinician may consider eczema, hives, contact dermatitis, psoriasis, fungal infection, scabies, a medicine reaction, or a viral rash. A photograph and a timeline of new exposures can be useful.",
   "redFlags": [
-    "Rapidly spreading rash with fever or systemic toxicity",
-    "Signs of secondary bacterial infection (pus, warmth, severe pain)",
-    "Erythroderma involving >90% of the body surface area"
+    "Trouble breathing or swallowing, or swelling of the lips, tongue, eyes, or face — seek emergency care",
+    "A rapidly spreading, painful, blistering, or widespread rash, especially with fever or feeling unwell",
+    "Rash involving the eyes, mouth, or genital skin, or signs of infection such as pus, warmth, severe pain, or rapidly increasing swelling"
   ],
-  "lifestyleAdvice": "Use gentle soap-free cleansers, keep skin moisturized, avoid hot water, and identify and avoid trigger substances.",
+  "lifestyleAdvice": "Avoid scratching, stop a clearly irritating new product if it is safe to do so, and use gentle fragrance-free skin care. Note when the rash started, where it spread, recent medicines or exposures, and take clear photos to show a clinician if it persists.",
   "references": [
     "CIT-0002",
     "CIT-0019",
@@ -51,15 +51,15 @@ export const SkinRashSymptom: KnowledgeEntity = {
   "faqs": [
     {
       "question": "Why do skin conditions worsen with emotional stress?",
-      "answer": "Stress releases cortisol and pro-inflammatory cytokines, which compromise the skin barrier and activate immune pathways, triggering flares of eczema, psoriasis, or acne."
+      "answer": "Stress can make itch feel harder to manage and may coincide with flares of existing skin conditions. It does not identify the cause of a new rash, so look for other changes too."
     },
     {
-      "question": "Are topical steroids the only treatment for eczema?",
-      "answer": "No. While topical steroids manage acute flare inflammation, long-term care requires barrier repair (emollients), trigger identification, and systemic constitutional support."
+      "question": "How can I prepare for a rash consultation?",
+      "answer": "Take photos in good light, note when it began, list new products, foods, activities and medicines, and mention fever, pain, swelling, or breathing symptoms. This helps a clinician narrow down the cause."
     },
     {
-      "question": "How does homeopathy approach skin diseases?",
-      "answer": "Homeopathy views skin eruptions as outward manifestations of internal systemic imbalance. Treatment focuses on systemic immunomodulation and constitutional remedies rather than purely suppressing symptoms."
+      "question": "Can I treat every rash the same way?",
+      "answer": "No. A rash is a symptom with many causes. Avoid trying several strong creams at once or delaying care for warning signs, because the right treatment depends on the cause."
     }
   ]
 },

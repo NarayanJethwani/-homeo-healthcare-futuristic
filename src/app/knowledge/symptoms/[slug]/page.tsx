@@ -10,24 +10,19 @@ import LastReviewedBadge from "@/features/knowledge/components/LastReviewedBadge
 import EvidenceBadge from "@/features/knowledge/components/EvidenceBadge";
 import MedicalDisclaimer from "@/features/knowledge/components/MedicalDisclaimer";
 import ReferencesList from "@/features/knowledge/components/ReferencesList";
-import AICitationBlock from "@/features/knowledge/components/AICitationBlock";
+import FAQBlock from "@/features/knowledge/components/FAQBlock";
 import RelatedEverything from "@/features/knowledge/components/RelatedEverything";
 import Breadcrumbs from "@/features/knowledge/components/Breadcrumbs";
 import AnalyticsTrigger from "@/features/knowledge/components/AnalyticsTrigger";
 import PatientFriendlyText from "@/features/knowledge/components/PatientFriendlyText";
-import TimelineHistory from "@/features/knowledge/components/TimelineHistory";
-import LearningPathStepper from "@/features/knowledge/components/LearningPathStepper";
-import KnowledgeGraphExplorer from "@/features/knowledge/components/KnowledgeGraphExplorer";
 import ContextualCtaBanner from "@/features/knowledge/components/ContextualCtaBanner";
 import QuickFactsCard from "@/features/knowledge/components/QuickFactsCard";
 import ClinicalPearlBox from "@/features/knowledge/components/ClinicalPearlBox";
-import EvidenceSummaryPanel from "@/features/knowledge/components/EvidenceSummaryPanel";
-import VisualBodySystemCard from "@/features/knowledge/components/VisualBodySystemCard";
 import DifferentialDiagnosisTable from "@/features/knowledge/components/DifferentialDiagnosisTable";
 import HomeopathicPerspective from "@/features/knowledge/components/HomeopathicPerspective";
 import RedFlagBox from "@/features/knowledge/components/RedFlagBox";
 import MedicalIllustration from "@/features/knowledge/components/MedicalIllustration";
-import { Info, HelpCircle, AlertTriangle, BookOpen } from "lucide-react";
+import { Info, HelpCircle, BookOpen } from "lucide-react";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -65,11 +60,12 @@ export default async function SymptomDetailPage({ params }: PageProps) {
   ];
 
   const tocItems = [
-    { id: "definition", label: "Definition & Meaning" },
-    { id: "causes", label: "Common Causes" },
-    { id: "differential-diagnosis-table", label: "Differential Diagnosis" },
-    { id: "redflags", label: "Clinical Red Flags" },
-    { id: "lifestyle", label: "Lifestyle & Diet" }
+    { id: "definition", label: "What this can mean" },
+    { id: "causes", label: "Common causes" },
+    { id: "redflags", label: "When to get urgent help" },
+    { id: "lifestyle", label: "Lifestyle support" },
+    { id: "questions", label: "Common questions" },
+    { id: "clinical-detail", label: "Clinical detail" }
   ];
 
   return (
@@ -102,22 +98,17 @@ export default async function SymptomDetailPage({ params }: PageProps) {
         <EditorialConfidenceBadge entity={symptom} reviewedDate={symptom.versionInfo.reviewed} />
 
         <div className="mt-4 space-y-4">
-          <TimelineHistory versionInfo={symptom.versionInfo} reviewer={symptom.reviewer} />
-          <LearningPathStepper currentId={symptom.id} />
           <QuickFactsCard entity={symptom} />
-          <EvidenceSummaryPanel entity={symptom} />
           <ClinicalPearlBox entity={symptom} />
-          <VisualBodySystemCard entity={symptom} />
         </div>
 
         <div className="mt-8 space-y-8 text-neutral-850 dark:text-neutral-200 leading-relaxed">
-          {/* Medical Illustration (Sprint 3) */}
           <MedicalIllustration slug={symptom.slug} />
           
           {/* Section: Definition & Meaning */}
           <section id="definition" className="space-y-3 scroll-mt-24">
             <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 border-b border-neutral-500/5 pb-2">
-              <Info className="h-4.5 w-4.5 text-amber-500" /> Definition
+              <Info className="h-4.5 w-4.5 text-amber-500" /> In simple words
             </h3>
             <PatientFriendlyText className="text-base text-neutral-700 dark:text-neutral-300" as="p">
               {content.definition || "Definition is pending editorial expansion."}
@@ -151,18 +142,10 @@ export default async function SymptomDetailPage({ params }: PageProps) {
             )}
           </section>
 
-          {/* Section: Differential Diagnosis Table */}
-          <DifferentialDiagnosisTable entity={symptom} />
-
-          {/* Section: Homeopathic Perspective */}
-          <HomeopathicPerspective entity={symptom} />
-
-          {/* Section: Red Flags / Alert Box */}
           <section id="redflags" className="scroll-mt-24">
             <RedFlagBox entity={symptom} />
           </section>
 
-          {/* Section: Lifestyle and diet guidance */}
           <section id="lifestyle" className="space-y-3 border-t border-neutral-500/5 pt-6 scroll-mt-24">
             <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
               <BookOpen className="h-4.5 w-4.5 text-teal-600 dark:text-teal-400" /> Lifestyle & Diet Support
@@ -176,24 +159,27 @@ export default async function SymptomDetailPage({ params }: PageProps) {
               </div>
             )}
           </section>
+
+          {content.faqs && content.faqs.length > 0 && (
+            <section id="questions" className="scroll-mt-24">
+              <FAQBlock faqs={content.faqs} />
+            </section>
+          )}
+
+          <details id="clinical-detail" className="group scroll-mt-24 rounded-2xl border border-neutral-500/10 bg-white/[0.03] p-5">
+            <summary className="cursor-pointer list-none text-base font-bold text-neutral-900 dark:text-neutral-100 flex items-center justify-between gap-3">
+              <span>Clinical & academic detail</span>
+              <span className="text-xs font-semibold text-teal-600 dark:text-teal-400 group-open:hidden">Show detail</span>
+              <span className="hidden text-xs font-semibold text-teal-600 dark:text-teal-400 group-open:inline">Hide detail</span>
+            </summary>
+            <div className="mt-6 space-y-8">
+              <DifferentialDiagnosisTable entity={symptom} />
+              <HomeopathicPerspective entity={symptom} />
+              {content.references && <ReferencesList references={content.references} />}
+            </div>
+          </details>
         </div>
 
-        {/* Dynamic Knowledge Graph Explorer */}
-        <div className="mt-8">
-          <KnowledgeGraphExplorer currentId={symptom.id} />
-        </div>
-
-        {/* References */}
-        {content.references && (
-          <div id="references" className="scroll-mt-24">
-            <ReferencesList references={content.references} />
-          </div>
-        )}
-
-        {/* AI Citation */}
-        <AICitationBlock entity={symptom} />
-
-        {/* Related everything navigator */}
         <RelatedEverything entityId={symptom.id} />
 
         <ContextualCtaBanner />

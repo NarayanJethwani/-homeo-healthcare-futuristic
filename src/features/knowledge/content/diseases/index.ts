@@ -74,6 +74,28 @@ import { HypoglycemiaDisease } from "./hypoglycemia";
 import { MastitisDisease } from "./mastitis";
 import { IntertrigoDisease } from "./intertrigo";
 import { HyperacidityDisease } from "./hyperacidity";
+import { ContactDermatitisDisease } from "./contact-dermatitis";
+import { RingwormTineaCorporisDisease } from "./ringworm-tinea-corporis";
+import { AthletesFootTineaPedisDisease } from "./athletes-foot-tinea-pedis";
+import { JockItchTineaCrurisDisease } from "./jock-itch-tinea-cruris";
+import { TineaVersicolorDisease } from "./tinea-versicolor";
+import { OnychomycosisFungalNailInfectionDisease } from "./onychomycosis-fungal-nail-infection";
+import { PlantarWartsVerrucasDisease } from "./plantar-warts-verrucas";
+import { ScabiesDisease } from "./scabies";
+import { ImpetigoDisease } from "./impetigo";
+import { HandFootMouthDisease } from "./hand-foot-mouth-disease";
+import { ChickenpoxVaricellaDisease } from "./chickenpox-varicella";
+import { MeaslesRubeolaDisease } from "./measles-rubeola";
+import { ConjunctivitisPinkEyeDisease } from "./conjunctivitis-pink-eye";
+import { DengueFeverDisease } from "./dengue-fever";
+import { ChikungunyaDisease } from "./chikungunya";
+import { TyphoidFeverDisease } from "./typhoid-fever";
+import { MalariaDisease } from "./malaria";
+import { InfluenzaDisease } from "./influenza";
+import { MouthUlcersDisease } from "./mouth-ulcers";
+import { ToothacheDisease } from "./toothache";
+import { BadBreathDisease } from "./bad-breath";
+import { DryMouthDisease } from "./dry-mouth";
 
 export const DISEASES = [
   GerdDisease,
@@ -151,6 +173,28 @@ export const DISEASES = [
   MastitisDisease,
   IntertrigoDisease,
   HyperacidityDisease,
+  ContactDermatitisDisease,
+  RingwormTineaCorporisDisease,
+  AthletesFootTineaPedisDisease,
+  JockItchTineaCrurisDisease,
+  TineaVersicolorDisease,
+  OnychomycosisFungalNailInfectionDisease,
+  PlantarWartsVerrucasDisease,
+  ScabiesDisease,
+  ImpetigoDisease,
+  HandFootMouthDisease,
+  ChickenpoxVaricellaDisease,
+  MeaslesRubeolaDisease,
+  ConjunctivitisPinkEyeDisease,
+  DengueFeverDisease,
+  ChikungunyaDisease,
+  TyphoidFeverDisease,
+  MalariaDisease,
+  InfluenzaDisease,
+  MouthUlcersDisease,
+  ToothacheDisease,
+  BadBreathDisease,
+  DryMouthDisease,
 ];
 
 export { GerdDisease, EczemaDisease, MigraineDisease, IbsDisease };

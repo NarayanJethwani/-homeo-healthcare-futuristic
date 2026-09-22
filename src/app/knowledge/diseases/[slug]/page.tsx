@@ -10,24 +10,19 @@ import LastReviewedBadge from "@/features/knowledge/components/LastReviewedBadge
 import EvidenceBadge from "@/features/knowledge/components/EvidenceBadge";
 import MedicalDisclaimer from "@/features/knowledge/components/MedicalDisclaimer";
 import ReferencesList from "@/features/knowledge/components/ReferencesList";
-import AICitationBlock from "@/features/knowledge/components/AICitationBlock";
+import FAQBlock from "@/features/knowledge/components/FAQBlock";
 import RelatedEverything from "@/features/knowledge/components/RelatedEverything";
 import Breadcrumbs from "@/features/knowledge/components/Breadcrumbs";
 import AnalyticsTrigger from "@/features/knowledge/components/AnalyticsTrigger";
-import TimelineHistory from "@/features/knowledge/components/TimelineHistory";
 import PatientFriendlyText from "@/features/knowledge/components/PatientFriendlyText";
-import LearningPathStepper from "@/features/knowledge/components/LearningPathStepper";
-import KnowledgeGraphExplorer from "@/features/knowledge/components/KnowledgeGraphExplorer";
 import ContextualCtaBanner from "@/features/knowledge/components/ContextualCtaBanner";
 import QuickFactsCard from "@/features/knowledge/components/QuickFactsCard";
 import ClinicalPearlBox from "@/features/knowledge/components/ClinicalPearlBox";
-import EvidenceSummaryPanel from "@/features/knowledge/components/EvidenceSummaryPanel";
-import VisualBodySystemCard from "@/features/knowledge/components/VisualBodySystemCard";
 import DifferentialDiagnosisTable from "@/features/knowledge/components/DifferentialDiagnosisTable";
 import HomeopathicPerspective from "@/features/knowledge/components/HomeopathicPerspective";
 import RedFlagBox from "@/features/knowledge/components/RedFlagBox";
 import MedicalIllustration from "@/features/knowledge/components/MedicalIllustration";
-import InteractiveTimeline from "@/features/knowledge/components/InteractiveTimeline";
+import KnowledgeVisualGallery from "@/features/knowledge/components/KnowledgeVisualGallery";
 import { ShieldAlert, Info, ListChecks, Stethoscope, Activity } from "lucide-react";
 
 import { evaluatePublicationEligibility } from "@/features/knowledge/governance/publicationGuard";
@@ -100,13 +95,13 @@ export default async function DiseaseDetailPage({ params }: PageProps) {
   }
 
   const tocItems = [
-    { id: "overview", label: "Overview & Definition" },
-    { id: "etiology", label: "Causes & Risk Factors" },
-    { id: "symptoms", label: "Clinical Presentation" },
-    { id: "diagnosis", label: "Diagnostic Evaluation" },
-    { id: "treatment", label: "Treatment Paradigms" },
-    { id: "redflags", label: "Clinical Red Flags" },
-    { id: "lifestyle", label: "Lifestyle Advice" }
+    { id: "overview", label: "What is it?" },
+    { id: "symptoms", label: "Symptoms" },
+    { id: "redflags", label: "When to get urgent help" },
+    { id: "etiology", label: "Causes & triggers" },
+    { id: "lifestyle", label: "Lifestyle support" },
+    { id: "questions", label: "Common questions" },
+    { id: "clinical-detail", label: "Clinical detail" }
   ];
 
   return (
@@ -139,43 +134,34 @@ export default async function DiseaseDetailPage({ params }: PageProps) {
         <EditorialConfidenceBadge entity={disease} reviewedDate={disease.versionInfo.reviewed} />
 
         <div className="mt-4 space-y-4">
-          <TimelineHistory versionInfo={disease.versionInfo} reviewer={disease.reviewer} />
-          <LearningPathStepper currentId={disease.id} />
           <QuickFactsCard entity={disease} />
-          <EvidenceSummaryPanel entity={disease} />
           <ClinicalPearlBox entity={disease} />
-          <VisualBodySystemCard entity={disease} />
         </div>
 
         <div className="mt-8 space-y-10 text-neutral-850 dark:text-neutral-200 leading-relaxed">
-          {/* Medical Illustration (Sprint 3) */}
           <MedicalIllustration slug={disease.slug} />
+          <KnowledgeVisualGallery slug={disease.slug} title={title} />
 
-          {/* Interactive Progression Timeline (Sprint 3) */}
-          <InteractiveTimeline entity={disease} />
-          
-          {/* Section: Overview & Definition */}
           <section id="overview" className="space-y-3 scroll-mt-24">
             <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 border-b border-neutral-500/5 pb-2">
-              <Info className="h-4.5 w-4.5 text-rose-500" /> Clinical Overview
+              <Info className="h-4.5 w-4.5 text-rose-500" /> In simple words
             </h3>
             <PatientFriendlyText className="text-base text-neutral-700 dark:text-neutral-300" as="p">
               {content.overview}
             </PatientFriendlyText>
             <div className="p-4 border-l-4 border-rose-500/50 bg-rose-500/5 rounded-r-xl">
-              <span className="text-[10px] uppercase font-bold text-rose-500 block mb-1">Clinical Definition</span>
+              <span className="text-[10px] uppercase font-bold text-rose-500 block mb-1">What it means</span>
               <PatientFriendlyText className="text-sm italic text-neutral-850 dark:text-neutral-205" as="p">
                 {content.definition}
               </PatientFriendlyText>
             </div>
           </section>
 
-          {/* Section: Etiology (Causes) and Risk Factors */}
           <section id="etiology" className="scroll-mt-24 space-y-4">
             {(!content.causes || content.causes.length === 0) && (!content.riskFactors || content.riskFactors.length === 0) ? (
               <div className="p-5 border border-dashed border-neutral-300 dark:border-neutral-800 rounded-2xl bg-neutral-50/50 dark:bg-neutral-900/50 text-neutral-500 dark:text-neutral-400 text-xs">
-                <p className="font-bold uppercase tracking-wider text-rose-500 mb-1">Etiology & Pathophysiology</p>
-                <p>Pathological causes and risk factors for this disease are pending editorial expansion and clinical review.</p>
+                <p className="font-bold uppercase tracking-wider text-rose-500 mb-1">Causes & triggers</p>
+                <p>Causes and risk factors for this topic are pending editorial expansion and clinical review.</p>
                 {/* TODO: Connect this to the editorial governance workflow for content expansion */}
               </div>
             ) : (
@@ -183,7 +169,7 @@ export default async function DiseaseDetailPage({ params }: PageProps) {
                 {content.causes && content.causes.length > 0 && (
                   <div className="space-y-3 p-5 border border-neutral-500/10 rounded-2xl bg-white/5">
                     <h4 className="text-sm font-bold text-neutral-900 dark:text-neutral-100 border-b border-neutral-500/5 pb-1">
-                      Pathological Causes
+                      Common causes
                     </h4>
                     <ul className="list-disc list-inside space-y-1.5 text-xs text-neutral-750 dark:text-neutral-300">
                       {content.causes.map((cause: string, idx: number) => (
@@ -209,10 +195,9 @@ export default async function DiseaseDetailPage({ params }: PageProps) {
             )}
           </section>
 
-          {/* Section: Symptoms */}
           <section id="symptoms" className="space-y-3 scroll-mt-24">
             <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 border-b border-neutral-500/5 pb-2">
-              <ListChecks className="h-4.5 w-4.5 text-rose-500" /> Clinical Symptom Presentation
+              <ListChecks className="h-4.5 w-4.5 text-rose-500" /> Common symptoms
             </h3>
             {content.symptoms && content.symptoms.length > 0 ? (
               <ul className="list-disc list-inside space-y-2 pl-2 text-neutral-750 dark:text-neutral-300">
@@ -228,10 +213,43 @@ export default async function DiseaseDetailPage({ params }: PageProps) {
             )}
           </section>
 
-          {/* Section: Diagnosis & Differential Diagnosis */}
+          <section id="redflags" className="scroll-mt-24">
+            <RedFlagBox entity={disease} />
+          </section>
+
+          <section id="lifestyle" className="space-y-3 scroll-mt-24">
+            <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 border-b border-neutral-500/5 pb-2">
+              <Activity className="h-4.5 w-4.5 text-rose-500" /> Lifestyle & diet support
+            </h3>
+            {content.lifestyleAdvice ? (
+              <p className="text-sm text-neutral-700 dark:text-neutral-300">{content.lifestyleAdvice}</p>
+            ) : (
+              <div className="p-5 border border-dashed border-neutral-300 dark:border-neutral-800 rounded-2xl bg-neutral-50/50 dark:bg-neutral-900/50 text-neutral-500 dark:text-neutral-400 text-xs">
+                <p>Lifestyle and diet guidelines are pending editorial expansion and clinical review.</p>
+              </div>
+            )}
+          </section>
+
+          <section id="treatment" className="scroll-mt-24">
+            <HomeopathicPerspective entity={disease} />
+          </section>
+
+          {content.faqs && content.faqs.length > 0 && (
+            <section id="questions" className="scroll-mt-24">
+              <FAQBlock faqs={content.faqs} />
+            </section>
+          )}
+
+          <details id="clinical-detail" className="group scroll-mt-24 rounded-2xl border border-neutral-500/10 bg-white/[0.03] p-5">
+            <summary className="cursor-pointer list-none text-base font-bold text-neutral-900 dark:text-neutral-100 flex items-center justify-between gap-3">
+              <span>Clinical & academic detail</span>
+              <span className="text-xs font-semibold text-teal-600 dark:text-teal-400 group-open:hidden">Show detail</span>
+              <span className="hidden text-xs font-semibold text-teal-600 dark:text-teal-400 group-open:inline">Hide detail</span>
+            </summary>
+            <div className="mt-6 space-y-8">
           <section id="diagnosis" className="scroll-mt-24 space-y-6">
             <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 border-b border-neutral-500/5 pb-2">
-              <Stethoscope className="h-4.5 w-4.5 text-rose-500" /> Diagnostic Evaluation
+              <Stethoscope className="h-4.5 w-4.5 text-rose-500" /> Diagnosis & tests
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-1.5">
@@ -267,51 +285,12 @@ export default async function DiseaseDetailPage({ params }: PageProps) {
             </div>
           </section>
 
-          {/* Section: Differential Diagnosis Table */}
           <DifferentialDiagnosisTable entity={disease} />
-
-          {/* Section: Treatment Paradigms */}
-          <section id="treatment" className="scroll-mt-24">
-            <HomeopathicPerspective entity={disease} />
-          </section>
-
-          {/* Section: Red Flags / Alert Box */}
-          <section id="redflags" className="scroll-mt-24">
-            <RedFlagBox entity={disease} />
-          </section>
-
-          {/* Section: Lifestyle Advice */}
-          <section id="lifestyle" className="space-y-3 scroll-mt-24">
-            <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 border-b border-neutral-500/5 pb-2">
-              <Activity className="h-4.5 w-4.5 text-rose-500" /> Lifestyle & Diet Advice
-            </h3>
-            {content.lifestyleAdvice ? (
-              <p className="text-sm text-neutral-700 dark:text-neutral-300">{content.lifestyleAdvice}</p>
-            ) : (
-              <div className="p-5 border border-dashed border-neutral-300 dark:border-neutral-800 rounded-2xl bg-neutral-50/50 dark:bg-neutral-900/50 text-neutral-500 dark:text-neutral-400 text-xs">
-                <p>Lifestyle and diet guidelines are pending editorial expansion and clinical review.</p>
-                {/* TODO: Connect this to the editorial governance workflow for content expansion */}
-              </div>
-            )}
-          </section>
+          {content.references && <ReferencesList references={content.references} />}
+            </div>
+          </details>
         </div>
 
-        {/* Dynamic Knowledge Graph Explorer */}
-        <div className="mt-8">
-          <KnowledgeGraphExplorer currentId={disease.id} />
-        </div>
-
-        {/* References */}
-        {content.references && (
-          <div id="references" className="scroll-mt-24">
-            <ReferencesList references={content.references} />
-          </div>
-        )}
-
-        {/* AI Citation */}
-        <AICitationBlock entity={disease} />
-
-        {/* Related everything navigator */}
         <RelatedEverything entityId={disease.id} />
 
         <ContextualCtaBanner />

@@ -10,7 +10,7 @@ import {
 
 export function runCBCTSHFlagshipPackageTest(): void {
   // 1. Verify entity versions
-  assert.strictEqual(CbcLabTest.versionInfo.version, "1.1.0");
+  assert.strictEqual(CbcLabTest.versionInfo.version, "1.2.0");
   assert.strictEqual(TshLabTest.versionInfo.version, "1.1.0");
 
   // 2. Verify review status and completeness
@@ -83,7 +83,7 @@ export function runCBCTSHFlagshipPackageTest(): void {
   );
 
   console.log(
-    "✅ CBC + TSH flagship package test passed: 2 lab test entities upgraded to v1.1.0, 10 draft graph proposals, 0 production RAG activation."
+    "✅ CBC + TSH flagship package test passed: CBC v1.2.0 and TSH v1.1.0 verified, with 10 draft graph proposals and 0 production RAG activation."
   );
 }
 

@@ -234,7 +234,11 @@ export async function runKnowledgeKEP3CohortPlanningTests() {
     NOW
   );
   assert.strictEqual(workspace.prerequisites.ready, true);
-  assert.strictEqual(workspace.prerequisites.inventoryEntityCount, 343);
+  // The planning workspace reads the current governed inventory rather than a
+  // historical release snapshot. Keep this guard aligned with the expanded
+  // Knowledge corpus so that a legitimate content addition is not treated as
+  // an unsafe planning failure.
+  assert.strictEqual(workspace.prerequisites.inventoryEntityCount, 365);
   assert.strictEqual(workspace.authority.planningOnly, true);
   assert.strictEqual(workspace.authority.publicationAuthorityGranted, false);
   assert.strictEqual(workspace.authority.productionRagAuthorityGranted, false);

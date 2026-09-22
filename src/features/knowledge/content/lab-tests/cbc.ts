@@ -9,9 +9,9 @@ export const CbcLabTest: KnowledgeEntity = {
   citationHealth: "complete",
   contentCompleteness: 100,
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-06-30T12:00:00Z",
-    updated: "2026-07-30T12:00:00Z",
+    updated: "2026-09-21T12:00:00Z",
     reviewed: "2026-07-30T12:00:00Z",
   },
   title: {
@@ -23,7 +23,7 @@ export const CbcLabTest: KnowledgeEntity = {
     ar: "صورة الدم الكاملة (CBC)",
   },
   summary: {
-    en: "A standard screening blood test evaluating red cells, white cells, platelets, and hemoglobin to assess overall health and spot anemia, infection, or hematological disorders.",
+    en: "A practical guide to a CBC blood test: what it measures, how to read the main sections, what an abnormal result may mean, and what to ask next.",
     hi: "रक्त की एक सामान्य जांच जो लाल कोशिकाओं, सफेद कोशिकाओं, प्लेटलेट्स और हीमोग्लोबिन का मूल्यांकन करती है.",
     gu: "લોહીની સામાન્ય તપાસ જે રક્તકણો, શ્વેતકણો, પ્લેટલેટ્સ અને હિમોગ્લોબિનનું પ્રમાણ માપે છે.",
     mr: "रक्ताची एक मूलभूत तपासणी ज्यामध्ये तांबड्या पेशी, पांढऱ्या पेशी, प्लेटलेट्स आणि हिमोग्लोबिन मोजले जाते.",
@@ -32,9 +32,9 @@ export const CbcLabTest: KnowledgeEntity = {
   },
   content: {
     overview:
-      "A Complete Blood Count (CBC) is an automated quantitative analysis of the cellular elements of blood: erythrocytes (red blood cells), leukocytes (white blood cells), and thrombocytes (platelets). It provides crucial baseline diagnostic data regarding oxygen-carrying capacity, immune activation, and hemostatic function.",
+      "A Complete Blood Count, or CBC, is a common blood test that counts the main cells in your blood. It reports red blood cells and haemoglobin, which carry oxygen; white blood cells, which are part of immune defence; and platelets, which help blood clot. A CBC is a useful starting point, but one out-of-range value does not by itself diagnose a condition.",
     normalRange:
-      "Hemoglobin: Male 13.8–17.2 g/dL, Female 12.1–15.1 g/dL; Hematocrit: Male 40.7–50.3%, Female 36.1–44.3%; WBC Count: 4,500–11,000 /µL; Platelet Count: 150,000–450,000 /µL; Absolute Neutrophil Count (ANC): 1,800–7,800 /µL.",
+      "Use the reference range printed on your own report. Ranges can vary by laboratory, age, sex, altitude, medicines, hydration, and other individual factors. A clinician interprets the pattern, your symptoms, and other tests together.",
     highValues: [
       "Erythrocytosis / Polycythemia or hemoconcentration due to dehydration (high RBC/Hgb/Hct)",
       "Leukocytosis (neutrophilia/lymphocytosis) indicating acute bacterial/viral infection, systemic inflammation, or myeloproliferative states (high WBC)",
@@ -46,25 +46,35 @@ export const CbcLabTest: KnowledgeEntity = {
       "Thrombocytopenia posing petechial and mucocutaneous bleeding risks (low platelets)",
     ],
     clinicalInterpretation:
-      "CBC parameters guide differential diagnosis: low MCV indicates microcytic anemia (iron deficiency vs thalassemia trait); high MCV indicates macrocytic anemia (B12/folate deficiency or liver disease). WBC differential shifts (bandemia, atypical lymphocytes) distinguish bacterial from viral infections.",
+      "The pattern can guide the next question. For example, low haemoglobin may prompt iron, ferritin, B12, folate, bleeding, or kidney evaluation; white-cell changes can be affected by infections, inflammation, medicines, and many other factors; platelet changes may need repeat testing or further assessment. The CBC does not replace clinical evaluation.",
     references: ["CIT-0015", "CIT-0016", "CIT-0022", "CIT-0024", "CIT-0025"],
     homeopathyLimits:
       "Laboratory blood counts provide objective clinical data regarding hematological health. Homeopathy does not replace diagnostic blood testing, bone marrow evaluation, or emergency transfusion/hematology interventions.",
     faqs: [
       {
-        question: "How often should a Complete Blood Count (CBC) be monitored?",
+        question: "What are the main parts of a CBC?",
         answer:
-          "For healthy individuals, an annual check is standard. Patients with anemia, active infections, or ongoing hematological treatment require frequent monitoring as directed by a clinician.",
+          "The main sections are red blood cells and haemoglobin, white blood cells, and platelets. Many reports also include haematocrit and red-cell measurements such as MCV, which describes average red-cell size.",
       },
       {
-        question: "What is the link between iron deficiency and anemia?",
+        question: "Does an abnormal CBC result mean I have a disease?",
         answer:
-          "Iron is an essential building block for hemoglobin, the oxygen-binding protein in red blood cells. Lack of iron directly limits hemoglobin synthesis, resulting in microcytic hypochromic anemia.",
+          "Not necessarily. Results can be influenced by hydration, medicines, menstrual periods, recent illness, activity, and laboratory variation. Your clinician considers the whole pattern, symptoms, medical history, and sometimes repeat or additional tests.",
       },
       {
-        question: "Can dietary changes alone correct low hemoglobin?",
+        question: "What does low haemoglobin usually lead to next?",
         answer:
-          "Mild nutritional anemia may improve with iron-rich diet and vitamin C, but moderate-to-severe states require formal clinical investigation and targeted medical supplementation.",
+          "Low haemoglobin can be a sign of anaemia. The next steps may include looking at red-cell size, ferritin or other iron tests, B12 or folate, kidney function, diet, periods, and possible sources of blood loss. The right tests depend on your situation.",
+      },
+      {
+        question: "Do I need to fast before a CBC?",
+        answer:
+          "Usually, no special preparation is needed for a CBC. If other tests were ordered from the same sample, such as glucose or certain lipids, your clinic may give separate instructions.",
+      },
+      {
+        question: "When should I seek medical advice urgently?",
+        answer:
+          "Seek urgent care for chest pain, severe shortness of breath, fainting, confusion, heavy active bleeding, black or bloody stools, a high fever with severe weakness, or rapidly spreading bruising or pinpoint bleeding spots. Ask your clinician how a critical laboratory alert should be handled if you receive one.",
       },
     ],
   },
@@ -137,9 +147,10 @@ export const CbcLabTest: KnowledgeEntity = {
   changeLog: [
     "1.0.0: Initial release of CBC lab test profile",
     "1.1.0: Upgraded with claim-level passage citations, critical value panic thresholds, emergency red flags, and explicit homeopathy safety boundaries.",
+    "1.2.0: Added a question-first result-reading layer, report-range context, and patient-oriented next-step guidance.",
   ],
   clinicalPearl:
-    "Isolated microcytosis without anemia is frequently the first indicator of thalassemia minor. Ferritin levels are crucial to rule out early iron deficiency.",
+    "A CBC is best read as a pattern, not as an isolated abnormal number. The report range, symptoms, and follow-up tests determine what it means for an individual.",
   quickFacts: {
     "Specimen Type": "Whole Blood (EDTA Lavender Tube)",
     "Preparation": "No fasting required",
@@ -148,11 +159,11 @@ export const CbcLabTest: KnowledgeEntity = {
   },
   aiReadiness: {
     retrievalSummary:
-      "Complete Blood Count (CBC) is a standard laboratory panel that measures erythrocytes, leukocytes, thrombocytes, hemoglobin concentration, and hematocrit to screen for hematologic pathology.",
+      "Complete Blood Count (CBC) is a standard blood panel that measures red cells, white cells, platelets, haemoglobin, haematocrit, and red-cell indices. It helps guide, but does not establish, a diagnosis.",
     clinicalSummary:
       "CBC quantifies cellular elements using automated flow cytometry and electrical impedance. Differential leukocyte counts analyze neutrophil, lymphocyte, monocyte, eosinophil, and basophil fractions.",
     patientSummary:
-      "A CBC is a basic blood test that checks your red blood cells, white blood cells, and platelets to screen for anemia, infections, or bleeding problems.",
+      "A CBC is a basic blood test that checks red cells, white cells, and platelets. An unusual result is only one part of the picture; your clinician uses it with your symptoms, history, and other tests.",
     studentSummary:
       "Parameters include MCV (mean corpuscular volume) for classification of microcytic, normocytic, and macrocytic anemia; and RDW (red cell distribution width) to assess anisocytosis.",
     keywords: [

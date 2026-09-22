@@ -1,7 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { trackPatientModeToggle } from "../analytics/knowledgeAnalytics";
+import React, { createContext, useContext } from "react";
 
 export type AudienceMode = "patient" | "student" | "practitioner";
 
@@ -15,22 +14,10 @@ interface PatientModeContextType {
 const PatientModeContext = createContext<PatientModeContextType | undefined>(undefined);
 
 export function PatientModeProvider({ children }: { children: React.ReactNode }) {
-  const [audienceMode, setAudienceModeState] = useState<AudienceMode>("patient");
-
-  // Sync with localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem("audience_mode_selection") as AudienceMode;
-    if (saved === "patient" || saved === "student" || saved === "practitioner") {
-      setAudienceModeState(saved);
-    }
-  }, []);
-
-  const setAudienceMode = (mode: AudienceMode) => {
-    setAudienceModeState(mode);
-    localStorage.setItem("audience_mode_selection", mode);
-    // Track mode changes
-    trackPatientModeToggle(mode === "patient");
-  };
+  // Knowledge now starts with a single, clear reading experience. More detail is
+  // revealed in-page, rather than requiring visitors to identify as an audience.
+  const audienceMode: AudienceMode = "patient";
+  const setAudienceMode: PatientModeContextType["setAudienceMode"] = () => {};
 
   const setIsPatientFriendly = (val: boolean) => {
     setAudienceMode(val ? "patient" : "practitioner");

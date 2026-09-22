@@ -1593,6 +1593,322 @@ export const CITATIONS: CitationRecord[] = [
     verificationEvidenceUrl: "https://www.rheumatology.org/Portals/0/Files/OA-Guideline-2019.pdf",
     verificationNotes: "ACR 2019 guidelines for joint pain, septic arthritis red flags, osteoarthritis management, inflammatory arthritis referral, and joint aspiration rules.",
     scopeTags: ["joint-pain", "acr-2019", "guideline", "symptom", "rheumatology", "septic-arthritis"]
+  },
+  {
+    id: "CIT-0081",
+    title: "Contact Dermatitis: Overview, Symptoms, and Treatment",
+    authors: ["American Academy of Dermatology"],
+    journal: "American Academy of Dermatology",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.aad.org/public/diseases/eczema/types/contact-dermatitis",
+    sourceIdentifier: "AAD-CONTACT-DERMATITIS-PATIENT-GUIDANCE",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.aad.org/public/diseases/eczema/types/contact-dermatitis/treatment",
+    verificationNotes: "AAD patient guidance covering irritant and allergic contact dermatitis, common symptoms, trigger investigation, avoidance, and dermatologist-led evaluation.",
+    scopeTags: ["contact-dermatitis", "allergic-contact-dermatitis", "irritant-contact-dermatitis", "skin-rash"]
+  },
+  {
+    id: "CIT-0082",
+    title: "Ringworm: Symptoms, Prevention, and Testing",
+    authors: ["Centers for Disease Control and Prevention"],
+    journal: "Centers for Disease Control and Prevention",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.cdc.gov/ringworm/about/",
+    sourceIdentifier: "CDC-RINGWORM-PATIENT-GUIDANCE",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.cdc.gov/ringworm/signs-symptoms/index.html",
+    verificationNotes: "CDC public guidance covering tinea corporis symptoms, routes of spread, hygiene and prevention, testing, and treatment boundaries.",
+    scopeTags: ["ringworm", "tinea-corporis", "dermatophyte", "fungal-skin-infection"]
+  },
+  {
+    id: "CIT-0083",
+    title: "Healthy Habits: Foot Hygiene",
+    authors: ["Centers for Disease Control and Prevention"],
+    journal: "Centers for Disease Control and Prevention",
+    year: 2024,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.cdc.gov/hygiene/about/foot-hygiene.html",
+    sourceIdentifier: "CDC-FOOT-HYGIENE-TINEA-PEDIS",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.cdc.gov/ringworm/about/",
+    verificationNotes: "CDC public guidance covering tinea pedis, the warm-and-moist environment that supports fungal growth, careful drying, footwear, and sock and shoe hygiene.",
+    scopeTags: ["athletes-foot", "tinea-pedis", "foot-hygiene", "fungal-foot-infection"]
+  },
+  {
+    id: "CIT-0084",
+    title: "Ringworm: Groin Symptoms and Prevention",
+    authors: ["Centers for Disease Control and Prevention"],
+    journal: "Centers for Disease Control and Prevention",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.cdc.gov/ringworm/aboutemergingringworm/index.html",
+    sourceIdentifier: "CDC-JOCK-ITCH-TINEA-CRURIS",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.cdc.gov/ringworm/aboutemergingringworm/index.html",
+    verificationNotes: "CDC public guidance covering tinea cruris symptoms on groin and inner-thigh folds, ringworm prevention, hygiene, and exercise-related risk factors.",
+    scopeTags: ["jock-itch", "tinea-cruris", "fungal-groin-rash", "ringworm-prevention"]
+  },
+  {
+    id: "CIT-0085",
+    title: "Tinea Versicolor: Overview, Diagnosis, and Treatment",
+    authors: ["American Academy of Dermatology"],
+    journal: "American Academy of Dermatology",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.aad.org/public/diseases/a-z/tinea-versicolor-overview",
+    sourceIdentifier: "AAD-TINEA-VERSICOLOR-PATIENT-GUIDANCE",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.aad.org/public/diseases/a-z/tinea-versicolor-treatment",
+    verificationNotes: "AAD public guidance covering yeast overgrowth, diagnostic examination and testing, treatment forms, recurrence, and slow pigment recovery after treatment.",
+    scopeTags: ["tinea-versicolor", "pityriasis-versicolor", "malassezia", "patchy-skin-colour"]
+  },
+  {
+    id: "CIT-0086",
+    title: "Pityriasis Versicolor",
+    authors: ["NHS"],
+    journal: "NHS",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.nhs.uk/conditions/pityriasis-versicolor/",
+    sourceIdentifier: "NHS-PITYRIASIS-VERSICOLOR-PATIENT-GUIDANCE",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.nhs.uk/conditions/pityriasis-versicolor/",
+    verificationNotes: "NHS public guidance covering typical colour changes, scale, non-contagious nature, diagnostic uncertainty, treatment routes, recurrence, and delayed colour recovery.",
+    scopeTags: ["tinea-versicolor", "pityriasis-versicolor", "non-contagious-fungal-skin-condition"]
+  },
+  {
+    id: "CIT-0087",
+    title: "Nail Fungus: Diagnosis and Treatment",
+    authors: ["American Academy of Dermatology"],
+    journal: "American Academy of Dermatology",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.aad.org/public/diseases/a-z/nail-fungus-treatment",
+    sourceIdentifier: "AAD-NAIL-FUNGUS-DIAGNOSIS-TREATMENT",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.aad.org/public/diseases/a-z/nail-fungus-overview",
+    verificationNotes: "AAD public guidance covering common nail-fungus signs, clinical examination, nail sampling, tailored treatment choices, and the slow pace of nail regrowth.",
+    scopeTags: ["onychomycosis", "fungal-nail-infection", "nail-fungus", "nail-clipping-test"]
+  },
+  {
+    id: "CIT-0088",
+    title: "Ringworm: Signs, Symptoms, and Nail Infection",
+    authors: ["Centers for Disease Control and Prevention"],
+    journal: "Centers for Disease Control and Prevention",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.cdc.gov/ringworm/signs-symptoms/index.html",
+    sourceIdentifier: "CDC-RINGWORM-NAIL-SYMPTOMS",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.cdc.gov/ringworm/hcp/clinical-overview/index.html",
+    verificationNotes: "CDC guidance covering thick, discoloured, brittle, or cracked nails, common toenail involvement, and testing of suspected fungal nail infection.",
+    scopeTags: ["onychomycosis", "fungal-nail-infection", "ringworm", "thickened-nail"]
+  },
+  {
+    id: "CIT-0089",
+    title: "Warts: Diagnosis and Treatment",
+    authors: ["American Academy of Dermatology"],
+    journal: "American Academy of Dermatology",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.aad.org/public/diseases/a-z/warts-treatment",
+    sourceIdentifier: "AAD-PLANTAR-WART-DIAGNOSIS-TREATMENT",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.aad.org/public/diseases/a-z/warts-self-care",
+    verificationNotes: "AAD guidance covering clinical diagnosis, reasons to assess a changing or uncertain growth, pharmacist or dermatologist-led treatment choices, and ways to reduce spread.",
+    scopeTags: ["plantar-wart", "verruca", "foot-wart", "wart-treatment"]
+  },
+  {
+    id: "CIT-0090",
+    title: "Warts and Verrucas",
+    authors: ["NHS"],
+    journal: "NHS",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.nhs.uk/conditions/warts-and-verrucas/",
+    sourceIdentifier: "NHS-PLANTAR-WART-PATIENT-GUIDANCE",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.nhs.uk/conditions/warts-and-verrucas/",
+    verificationNotes: "NHS public guidance covering typical wart and verruca appearance, pressure-related discomfort, conservative management, pharmacist support, and referral boundaries.",
+    scopeTags: ["plantar-wart", "verruca", "painful-sole", "wart-vs-corn"]
+  },
+  {
+    id: "CIT-0091",
+    title: "About Scabies",
+    authors: ["Centers for Disease Control and Prevention"],
+    journal: "Centers for Disease Control and Prevention",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.cdc.gov/scabies/about/",
+    sourceIdentifier: "CDC-SCABIES-PATIENT-GUIDANCE",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.cdc.gov/scabies/prevention/index.html",
+    verificationNotes: "CDC guidance covering symptoms, close-contact spread, concurrent contact treatment, linen care, persistent itching after treatment, and the distinction between human scabies and pet mange.",
+    scopeTags: ["scabies", "sarcoptes-scabiei", "night-itch", "household-contact-treatment"]
+  },
+  {
+    id: "CIT-0092",
+    title: "Scabies",
+    authors: ["NHS"],
+    journal: "NHS",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.nhs.uk/conditions/Scabies/",
+    sourceIdentifier: "NHS-SCABIES-PATIENT-GUIDANCE",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.nhs.uk/conditions/Scabies/",
+    verificationNotes: "NHS public guidance covering night itch, rash distribution, colour-change visibility across skin tones, household coordination, reinfection prevention, and referral boundaries.",
+    scopeTags: ["scabies", "itchy-rash", "skin-burrows", "contact-care"]
+  },
+  {
+    id: "CIT-0093",
+    title: "About Impetigo",
+    authors: ["Centers for Disease Control and Prevention"],
+    journal: "Centers for Disease Control and Prevention",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.cdc.gov/group-a-strep/about/impetigo.html",
+    sourceIdentifier: "CDC-IMPETIGO-PATIENT-GUIDANCE",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.cdc.gov/group-a-strep/hcp/clinical-guidance/impetigo.html",
+    verificationNotes: "CDC guidance covering common bacteria, lesion progression, clinical diagnosis, antibiotic treatment choices, covering lesions, and hygiene to reduce transmission.",
+    scopeTags: ["impetigo", "bacterial-skin-infection", "honey-coloured-crust", "contagious-skin-rash"]
+  },
+  {
+    id: "CIT-0094",
+    title: "Impetigo",
+    authors: ["NHS"],
+    journal: "NHS",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://www.nhs.uk/conditions/impetigo/",
+    sourceIdentifier: "NHS-IMPETIGO-PATIENT-GUIDANCE",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-09-21",
+    verificationEvidenceUrl: "https://www.nhs.uk/conditions/impetigo/",
+    verificationNotes: "NHS public guidance covering skin-tone-aware signs, pharmacy assessment, infection-control habits, recurrence assessment, and advice for babies and vulnerable people.",
+    scopeTags: ["impetigo", "child-skin-infection", "golden-crust", "skin-hygiene"]
+  },
+  {
+    id: "CIT-0095", title: "About Hand, Foot, and Mouth Disease", authors: ["Centers for Disease Control and Prevention"], journal: "Centers for Disease Control and Prevention", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.cdc.gov/hand-foot-mouth/index.html", sourceIdentifier: "CDC-HFMD-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-21", verificationEvidenceUrl: "https://www.cdc.gov/hand-foot-mouth/signs-symptoms/index.html", verificationNotes: "CDC guidance covering HFMD symptoms, dehydration, supportive care, infection control, and return-to-school considerations.", scopeTags: ["hand-foot-mouth-disease", "hfmd", "mouth-ulcers", "child-dehydration"]
+  },
+  {
+    id: "CIT-0096", title: "Hand, Foot and Mouth Disease", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/conditions/hand-foot-mouth-disease/", sourceIdentifier: "NHS-HFMD-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-21", verificationEvidenceUrl: "https://www.nhs.uk/conditions/hand-foot-mouth-disease/", verificationNotes: "NHS public guidance covering mouth sores, skin-tone-aware rash signs, hydration, household prevention, and care-seeking boundaries.", scopeTags: ["hand-foot-mouth-disease", "hfmd", "hand-rash", "mouth-pain"]
+  },
+  {
+    id: "CIT-0097", title: "Chickenpox Symptoms and Complications", authors: ["Centers for Disease Control and Prevention"], journal: "Centers for Disease Control and Prevention", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.cdc.gov/chickenpox/signs-symptoms/index.html", sourceIdentifier: "CDC-CHICKENPOX-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.cdc.gov/chickenpox/treatment/index.html", verificationNotes: "CDC guidance covering chickenpox rash progression, risk groups, prevention, comfort care, and symptoms that require medical assessment.", scopeTags: ["chickenpox", "varicella", "itchy-blisters", "varicella-risk"]
+  },
+  {
+    id: "CIT-0098", title: "Chickenpox", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/conditions/chickenpox/", sourceIdentifier: "NHS-CHICKENPOX-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nhs.uk/conditions/chickenpox/", verificationNotes: "NHS public guidance covering symptoms across skin tones, home care, contagiousness, pregnancy, and urgent care boundaries.", scopeTags: ["chickenpox", "varicella", "child-rash", "pregnancy-exposure"]
+  },
+  {
+    id: "CIT-0099", title: "Measles", authors: ["World Health Organization"], journal: "World Health Organization", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.who.int/news-room/fact-sheets/detail/measles", sourceIdentifier: "WHO-MEASLES-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.who.int/news-room/fact-sheets/detail/measles", verificationNotes: "WHO guidance covering symptom sequence, serious complications, pregnancy risk, and the role of vaccination.", scopeTags: ["measles", "rubeola", "measles-vaccine", "febrile-rash"]
+  },
+  {
+    id: "CIT-0100", title: "Measles: What to Do If You Get Sick or Exposed", authors: ["Centers for Disease Control and Prevention"], journal: "Centers for Disease Control and Prevention", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.cdc.gov/measles/if-sick-exposed/index.html", sourceIdentifier: "CDC-MEASLES-SICK-EXPOSED", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.cdc.gov/measles/if-sick-exposed/index.html", verificationNotes: "CDC guidance covering call-ahead care, exposure advice, home isolation, and emergency warning signs.", scopeTags: ["measles", "rubeola", "measles-exposure", "call-ahead"]
+  },
+  {
+    id: "CIT-0101", title: "Symptoms of Pink Eye", authors: ["Centers for Disease Control and Prevention"], journal: "Centers for Disease Control and Prevention", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.cdc.gov/conjunctivitis/signs-symptoms/index.html", sourceIdentifier: "CDC-CONJUNCTIVITIS-SYMPTOMS", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.cdc.gov/conjunctivitis/treatment/index.html", verificationNotes: "CDC patient guidance covering symptoms by cause, safety boundaries, contact-lens advice, diagnosis, treatment, and prevention.", scopeTags: ["conjunctivitis", "pink-eye", "red-eye", "eye-discharge"]
+  },
+  {
+    id: "CIT-0102", title: "Conjunctivitis", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/conditions/conjunctivitis/", sourceIdentifier: "NHS-CONJUNCTIVITIS-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nhs.uk/conditions/conjunctivitis/", verificationNotes: "NHS public guidance covering contagiousness, self-care, contact-lens considerations, newborn advice, and urgent red-eye symptoms.", scopeTags: ["conjunctivitis", "pink-eye", "eye-pain", "contact-lenses"]
+  },
+  {
+    id: "CIT-0103", title: "Symptoms of Dengue and Testing", authors: ["Centers for Disease Control and Prevention"], journal: "Centers for Disease Control and Prevention", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.cdc.gov/dengue/signs-symptoms/index.html", sourceIdentifier: "CDC-DENGUE-SYMPTOMS-TESTING", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.cdc.gov/dengue/signs-symptoms/index.html", verificationNotes: "CDC guidance covering dengue symptoms, laboratory confirmation, warning signs, the post-fever critical period, and urgent-care boundaries.", scopeTags: ["dengue", "dengue-warning-signs", "dengue-testing", "fever-body-aches"]
+  },
+  {
+    id: "CIT-0104", title: "Dengue", authors: ["World Health Organization"], journal: "World Health Organization", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.who.int/news-room/fact-sheets/detail/dengue-and-severe-dengue", sourceIdentifier: "WHO-DENGUE-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.who.int/news-room/fact-sheets/detail/dengue-and-severe-dengue", verificationNotes: "WHO guidance covering transmission, symptom course, severe-dengue warning signs, prevention, and the importance of early medical care.", scopeTags: ["dengue", "mosquito-borne", "severe-dengue", "mosquito-prevention"]
+  },
+  {
+    id: "CIT-0105", title: "Chikungunya", authors: ["World Health Organization"], journal: "World Health Organization", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.who.int/en/news-room/fact-sheets/detail/chikungunya", sourceIdentifier: "WHO-CHIKUNGUNYA-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.who.int/en/news-room/fact-sheets/detail/chikungunya", verificationNotes: "WHO guidance covering symptom overlap with dengue, testing by illness phase, pain-relief safety, prolonged joint symptoms, and mosquito prevention.", scopeTags: ["chikungunya", "fever-joint-pain", "dengue-differential", "mosquito-prevention"]
+  },
+  {
+    id: "CIT-0106", title: "Symptoms of Chikungunya", authors: ["Centers for Disease Control and Prevention"], journal: "Centers for Disease Control and Prevention", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.cdc.gov/chikungunya/signs-symptoms/index.html", sourceIdentifier: "CDC-CHIKUNGUNYA-SYMPTOMS", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.cdc.gov/chikungunya/about/index.html", verificationNotes: "CDC guidance covering symptoms, risk groups, testing, recovery, and avoiding NSAIDs until dengue is excluded.", scopeTags: ["chikungunya", "joint-pain", "chikungunya-testing", "dengue-safety"]
+  },
+  {
+    id: "CIT-0107", title: "Typhoid", authors: ["World Health Organization"], journal: "World Health Organization", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.who.int/news-room/fact-sheets/detail/typhoid", sourceIdentifier: "WHO-TYPHOID-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.who.int/news-room/fact-sheets/detail/typhoid", verificationNotes: "WHO guidance covering persistent-fever symptoms, food-and-water transmission, antibiotic completion, hygiene, and vaccination.", scopeTags: ["typhoid", "enteric-fever", "food-water-safety", "antibiotic-completion"]
+  },
+  {
+    id: "CIT-0108", title: "Clinical Guidance for Typhoid Fever and Paratyphoid Fever", authors: ["Centers for Disease Control and Prevention"], journal: "Centers for Disease Control and Prevention", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.cdc.gov/typhoid-fever/hcp/clinical-guidance/index.html", sourceIdentifier: "CDC-TYPHOID-CLINICAL-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.cdc.gov/typhoid-fever/hcp/clinical-guidance/index.html", verificationNotes: "CDC guidance covering diagnosis by blood culture, symptom overlap, antimicrobial resistance, and serious complications.", scopeTags: ["typhoid", "blood-culture", "antibiotic-resistance", "persistent-fever"]
+  },
+  {
+    id: "CIT-0109", title: "Malaria", authors: ["World Health Organization"], journal: "World Health Organization", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.who.int/news-room/fact-sheets/detail/malaria", sourceIdentifier: "WHO-MALARIA-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.who.int/news-room/fact-sheets/detail/malaria", verificationNotes: "WHO guidance covering symptoms, severe malaria, parasite-based diagnosis, treatment, pregnancy risk, and prevention.", scopeTags: ["malaria", "severe-malaria", "malaria-testing", "mosquito-prevention"]
+  },
+  {
+    id: "CIT-0110", title: "Testing for Malaria", authors: ["Centers for Disease Control and Prevention"], journal: "Centers for Disease Control and Prevention", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.cdc.gov/malaria/testing/", sourceIdentifier: "CDC-MALARIA-TESTING", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.cdc.gov/malaria/testing/", verificationNotes: "CDC guidance covering prompt evaluation, microscopy, rapid tests, confirmatory testing, and species identification.", scopeTags: ["malaria", "blood-smear", "rapid-diagnostic-test", "travel-fever"]
+  },
+  {
+    id: "CIT-0111", title: "Influenza (seasonal)", authors: ["World Health Organization"], journal: "World Health Organization", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.who.int/news-room/fact-sheets/detail/influenza-%28seasonal%29", sourceIdentifier: "WHO-INFLUENZA-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.who.int/news-room/fact-sheets/detail/influenza-%28seasonal%29", verificationNotes: "WHO guidance covering symptoms, risk groups, treatment, transmission, and annual vaccination.", scopeTags: ["influenza", "flu", "respiratory-infection", "flu-vaccine"]
+  },
+  {
+    id: "CIT-0112", title: "Signs and Symptoms of Flu", authors: ["Centers for Disease Control and Prevention"], journal: "Centers for Disease Control and Prevention", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.cdc.gov/flu/signs-symptoms/", sourceIdentifier: "CDC-FLU-SYMPTOMS", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.cdc.gov/flu/treatment/index.html", verificationNotes: "CDC guidance covering sudden flu symptoms, high-risk groups, emergency warning signs, testing, and prescription antivirals.", scopeTags: ["influenza", "flu-warning-signs", "antiviral-treatment", "flu-cough"]
+  },
+  {
+    id: "CIT-0113", title: "Fever Blisters & Canker Sores", authors: ["National Institute of Dental and Craniofacial Research"], journal: "National Institute of Dental and Craniofacial Research", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nidcr.nih.gov/health-info/fever-blisters-canker-sores", sourceIdentifier: "NIDCR-CANKER-SORES", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nidcr.nih.gov/health-info/fever-blisters-canker-sores", verificationNotes: "NIDCR guidance covering canker-sore appearance, inside-mouth location, difference from contagious cold sores, common triggers, assessment, and self-care.", scopeTags: ["mouth-ulcers", "canker-sores", "aphthous-ulcers", "cold-sore-difference"]
+  },
+  {
+    id: "CIT-0114", title: "Mouth ulcers", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/conditions/mouth-ulcers/", sourceIdentifier: "NHS-MOUTH-ULCERS", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nhs.uk/conditions/mouth-ulcers/", verificationNotes: "NHS guidance covering usual recovery, common irritants, gentle self-care, pharmacist support, and when to see a dentist or GP.", scopeTags: ["mouth-ulcers", "oral-ulcer-self-care", "mouth-ulcer-warning-signs", "dental-advice"]
+  },
+  {
+    id: "CIT-0115", title: "Toothache", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/symptoms/toothache/", sourceIdentifier: "NHS-TOOTHACHE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nhs.uk/symptoms/toothache/", verificationNotes: "NHS guidance covering when toothache needs dental assessment, interim self-care, urgent dental symptoms, and emergency swelling signs.", scopeTags: ["toothache", "tooth-pain", "urgent-dentist", "dental-emergency"]
+  },
+  {
+    id: "CIT-0116", title: "Tooth Decay", authors: ["National Institute of Dental and Craniofacial Research"], journal: "National Institute of Dental and Craniofacial Research", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nidcr.nih.gov/health-info/tooth-decay", sourceIdentifier: "NIDCR-TOOTH-DECAY", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nidcr.nih.gov/health-info/tooth-decay", verificationNotes: "NIDCR guidance covering advanced tooth-decay symptoms, sensitivity, dental abscess, facial swelling, fever, and prevention.", scopeTags: ["toothache", "tooth-decay", "dental-abscess", "tooth-sensitivity"]
+  },
+  {
+    id: "CIT-0117", title: "Bad breath", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/symptoms/bad-breath/", sourceIdentifier: "NHS-BAD-BREATH", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nhs.uk/symptoms/bad-breath/", verificationNotes: "NHS guidance covering common causes, daily oral-care measures, and signs that need dental review.", scopeTags: ["bad-breath", "halitosis", "oral-hygiene", "dentist-review"]
+  },
+  {
+    id: "CIT-0118", title: "Periodontal (Gum) Disease", authors: ["National Institute of Dental and Craniofacial Research"], journal: "National Institute of Dental and Craniofacial Research", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nidcr.nih.gov/health-info/gum-disease", sourceIdentifier: "NIDCR-GUM-DISEASE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nidcr.nih.gov/health-info/gum-disease", verificationNotes: "NIDCR guidance covering gum-disease symptoms, including persistent bad breath, and dental assessment and treatment.", scopeTags: ["bad-breath", "gum-disease", "periodontal-disease", "bleeding-gums"]
+  },
+  {
+    id: "CIT-0119", title: "Dry Mouth", authors: ["National Institute of Dental and Craniofacial Research"], journal: "National Institute of Dental and Craniofacial Research", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nidcr.nih.gov/health-info/dry-mouth", sourceIdentifier: "NIDCR-DRY-MOUTH", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nidcr.nih.gov/health-info/dry-mouth", verificationNotes: "NIDCR guidance covering saliva function, symptoms, medicine and disease causes, dental risks, assessment, and symptom relief.", scopeTags: ["dry-mouth", "xerostomia", "salivary-glands", "medication-side-effects"]
+  },
+  {
+    id: "CIT-0120", title: "Dry mouth", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/symptoms/dry-mouth/", sourceIdentifier: "NHS-DRY-MOUTH", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nhs.uk/symptoms/dry-mouth/", verificationNotes: "NHS guidance covering common causes, self-care, pharmacy options, medication safety, and when to see a GP.", scopeTags: ["dry-mouth", "xerostomia-self-care", "dry-mouth-warning-signs", "oral-health"]
   }
 ];
 

@@ -21,6 +21,7 @@ export function generateMedicalMetadata(entity: KnowledgeEntity): Metadata {
   const reviewerSpecialty = typeof entity.reviewer === "object" && entity.reviewer?.specialty
     ? entity.reviewer.specialty
     : entity.reviewerRole || "Clinical Reviewer";
+  const socialImage = `https://www.homeo.healthcare/knowledge/social-card?title=${encodeURIComponent(title)}`;
 
   return {
     title: fullTitle,
@@ -48,12 +49,14 @@ export function generateMedicalMetadata(entity: KnowledgeEntity): Metadata {
       modifiedTime: entity.versionInfo.updated,
       authors: [entity.author?.name || "Homeo Healthcare"],
       tags: entity.tags,
+      images: [{ url: socialImage, width: 1200, height: 630, alt: `${title} | Homeo Healthcare` }],
     },
     twitter: {
       card: "summary_large_image",
       title: fullTitle,
       description: summary,
       creator: entity.author?.name || "Homeo Healthcare",
+      images: [socialImage],
     },
     other: {
       "medical-reviewer": reviewerName,

@@ -12,7 +12,7 @@ export const UrticariaDisease: KnowledgeEntity = {
     reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
-    en: "Urticaria (Hives) & Angioedema",
+    en: "Hives (Urticaria): Raised Itchy Rash & When to Get Help",
     hi: "पित्ती / आर्टिकेरिया (Urticaria)",
     gu: "શીતપિત્ત / અર્ટિકેરિયા (Urticaria)",
     mr: "शीतपित्त / आर्टिकेरिया (Urticaria)",
@@ -20,7 +20,7 @@ export const UrticariaDisease: KnowledgeEntity = {
     ar: "الشري وتورم وعائي",
   },
   summary: {
-    en: "An authoritative clinical profile of Urticaria covering EAACI 2022 guidelines, mast cell histamine degranulation, acute angioedema emergency red flags, and epinephrine non-replacement rules.",
+    en: "Hives are raised, itchy patches that can appear and fade quickly. Learn common triggers, safe next steps, and the swelling symptoms that need urgent medical care.",
     hi: "आर्टिकेरिया (Urticaria) का EAACI 2022 मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "અર્ટિકેરિયાનું EAACI 2022 ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "आर्टिकेरियाचे EAACI 2022 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
