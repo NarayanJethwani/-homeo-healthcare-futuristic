@@ -183,7 +183,12 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "halitosis": ["bad breath", "halitosis", "bad taste in mouth", "oral hygiene routine"],
   "smelly breath": ["bad breath", "halitosis", "smelly breath", "bad taste in mouth"],
   "bad taste in mouth": ["bad breath", "halitosis", "bad taste in mouth", "gum disease bad breath"],
-  "persistent bad breath": ["bad breath", "halitosis", "persistent bad breath", "halitosis dentist"]
+  "persistent bad breath": ["bad breath", "halitosis", "persistent bad breath", "halitosis dentist"],
+  "dry mouth": ["dry mouth", "xerostomia", "sticky mouth", "dry mouth at night"],
+  "xerostomia": ["dry mouth", "xerostomia", "not enough saliva", "salivary glands"],
+  "sticky mouth": ["dry mouth", "sticky mouth", "not enough saliva", "dry mouth at night"],
+  "dry mouth at night": ["dry mouth", "dry mouth at night", "mouth breathing dry mouth", "sticky mouth"],
+  "not enough saliva": ["dry mouth", "xerostomia", "not enough saliva", "salivary glands"]
 };
 
 /**
@@ -281,6 +286,10 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "bad breath even after brushing": ["bad breath", "persistent bad breath", "gum disease bad breath", "halitosis dentist"],
   "bad breath with dry mouth": ["bad breath", "dry mouth breath", "persistent bad breath", "halitosis"],
   "bad breath with bleeding gums": ["bad breath", "gum disease bad breath", "bleeding gums", "halitosis dentist"],
+  "why is my mouth always dry": ["dry mouth", "xerostomia", "sticky mouth", "not enough saliva"],
+  "dry mouth at night": ["dry mouth", "dry mouth at night", "mouth breathing dry mouth", "salivary glands"],
+  "can medicine cause dry mouth": ["dry mouth", "medication dry mouth", "xerostomia", "salivary glands"],
+  "dry mouth and dry eyes": ["dry mouth", "xerostomia", "sjogren dry mouth", "salivary glands"],
 };
 
 /**

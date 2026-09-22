@@ -1072,6 +1072,11 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
     { src: "/images/knowledge/bad-breath/confidence-v1.png", alt: "Indian friends having a relaxed, confident conversation outdoors", label: "Everyday confidence" },
     { src: "/images/knowledge/bad-breath/learning-v1.png", alt: "Transparent medical illustration of the tongue and salivary glands", label: "A closer look at the mouth" },
   ],
+  "dry-mouth": [
+    { src: "/images/knowledge/dry-mouth/understanding-v1.png", alt: "Indian woman calmly sipping water on a sunrise balcony", label: "Understanding dry mouth" },
+    { src: "/images/knowledge/dry-mouth/night-routine-v1.png", alt: "Indian older man preparing a calm bedroom with water and a humidifier", label: "A night-time comfort routine" },
+    { src: "/images/knowledge/dry-mouth/learning-v1.png", alt: "Transparent medical illustration of salivary glands and saliva flow", label: "A closer look at saliva flow" },
+  ],
 };
 
 export function getKnowledgeVisuals(slug: string): KnowledgeVisual[] {

@@ -1903,6 +1903,12 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0118", title: "Periodontal (Gum) Disease", authors: ["National Institute of Dental and Craniofacial Research"], journal: "National Institute of Dental and Craniofacial Research", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nidcr.nih.gov/health-info/gum-disease", sourceIdentifier: "NIDCR-GUM-DISEASE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nidcr.nih.gov/health-info/gum-disease", verificationNotes: "NIDCR guidance covering gum-disease symptoms, including persistent bad breath, and dental assessment and treatment.", scopeTags: ["bad-breath", "gum-disease", "periodontal-disease", "bleeding-gums"]
+  },
+  {
+    id: "CIT-0119", title: "Dry Mouth", authors: ["National Institute of Dental and Craniofacial Research"], journal: "National Institute of Dental and Craniofacial Research", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nidcr.nih.gov/health-info/dry-mouth", sourceIdentifier: "NIDCR-DRY-MOUTH", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nidcr.nih.gov/health-info/dry-mouth", verificationNotes: "NIDCR guidance covering saliva function, symptoms, medicine and disease causes, dental risks, assessment, and symptom relief.", scopeTags: ["dry-mouth", "xerostomia", "salivary-glands", "medication-side-effects"]
+  },
+  {
+    id: "CIT-0120", title: "Dry mouth", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/symptoms/dry-mouth/", sourceIdentifier: "NHS-DRY-MOUTH", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nhs.uk/symptoms/dry-mouth/", verificationNotes: "NHS guidance covering common causes, self-care, pharmacy options, medication safety, and when to see a GP.", scopeTags: ["dry-mouth", "xerostomia-self-care", "dry-mouth-warning-signs", "oral-health"]
   }
 ];
 

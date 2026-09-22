@@ -95,6 +95,7 @@ import { InfluenzaDisease } from "./influenza";
 import { MouthUlcersDisease } from "./mouth-ulcers";
 import { ToothacheDisease } from "./toothache";
 import { BadBreathDisease } from "./bad-breath";
+import { DryMouthDisease } from "./dry-mouth";
 
 export const DISEASES = [
   GerdDisease,
@@ -193,6 +194,7 @@ export const DISEASES = [
   MouthUlcersDisease,
   ToothacheDisease,
   BadBreathDisease,
+  DryMouthDisease,
 ];
 
 export { GerdDisease, EczemaDisease, MigraineDisease, IbsDisease };
