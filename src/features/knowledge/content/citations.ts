@@ -1843,6 +1843,12 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0098", title: "Chickenpox", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/conditions/chickenpox/", sourceIdentifier: "NHS-CHICKENPOX-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nhs.uk/conditions/chickenpox/", verificationNotes: "NHS public guidance covering symptoms across skin tones, home care, contagiousness, pregnancy, and urgent care boundaries.", scopeTags: ["chickenpox", "varicella", "child-rash", "pregnancy-exposure"]
+  },
+  {
+    id: "CIT-0099", title: "Measles", authors: ["World Health Organization"], journal: "World Health Organization", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.who.int/news-room/fact-sheets/detail/measles", sourceIdentifier: "WHO-MEASLES-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.who.int/news-room/fact-sheets/detail/measles", verificationNotes: "WHO guidance covering symptom sequence, serious complications, pregnancy risk, and the role of vaccination.", scopeTags: ["measles", "rubeola", "measles-vaccine", "febrile-rash"]
+  },
+  {
+    id: "CIT-0100", title: "Measles: What to Do If You Get Sick or Exposed", authors: ["Centers for Disease Control and Prevention"], journal: "Centers for Disease Control and Prevention", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.cdc.gov/measles/if-sick-exposed/index.html", sourceIdentifier: "CDC-MEASLES-SICK-EXPOSED", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.cdc.gov/measles/if-sick-exposed/index.html", verificationNotes: "CDC guidance covering call-ahead care, exposure advice, home isolation, and emergency warning signs.", scopeTags: ["measles", "rubeola", "measles-exposure", "call-ahead"]
   }
 ];
 

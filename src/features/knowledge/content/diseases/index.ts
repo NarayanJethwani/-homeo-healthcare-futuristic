@@ -85,6 +85,7 @@ import { ScabiesDisease } from "./scabies";
 import { ImpetigoDisease } from "./impetigo";
 import { HandFootMouthDisease } from "./hand-foot-mouth-disease";
 import { ChickenpoxVaricellaDisease } from "./chickenpox-varicella";
+import { MeaslesRubeolaDisease } from "./measles-rubeola";
 
 export const DISEASES = [
   GerdDisease,
@@ -173,6 +174,7 @@ export const DISEASES = [
   ImpetigoDisease,
   HandFootMouthDisease,
   ChickenpoxVaricellaDisease,
+  MeaslesRubeolaDisease,
 ];
 
 export { GerdDisease, EczemaDisease, MigraineDisease, IbsDisease };
