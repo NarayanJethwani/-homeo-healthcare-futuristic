@@ -1849,6 +1849,12 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0100", title: "Measles: What to Do If You Get Sick or Exposed", authors: ["Centers for Disease Control and Prevention"], journal: "Centers for Disease Control and Prevention", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.cdc.gov/measles/if-sick-exposed/index.html", sourceIdentifier: "CDC-MEASLES-SICK-EXPOSED", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.cdc.gov/measles/if-sick-exposed/index.html", verificationNotes: "CDC guidance covering call-ahead care, exposure advice, home isolation, and emergency warning signs.", scopeTags: ["measles", "rubeola", "measles-exposure", "call-ahead"]
+  },
+  {
+    id: "CIT-0101", title: "Symptoms of Pink Eye", authors: ["Centers for Disease Control and Prevention"], journal: "Centers for Disease Control and Prevention", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.cdc.gov/conjunctivitis/signs-symptoms/index.html", sourceIdentifier: "CDC-CONJUNCTIVITIS-SYMPTOMS", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.cdc.gov/conjunctivitis/treatment/index.html", verificationNotes: "CDC patient guidance covering symptoms by cause, safety boundaries, contact-lens advice, diagnosis, treatment, and prevention.", scopeTags: ["conjunctivitis", "pink-eye", "red-eye", "eye-discharge"]
+  },
+  {
+    id: "CIT-0102", title: "Conjunctivitis", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/conditions/conjunctivitis/", sourceIdentifier: "NHS-CONJUNCTIVITIS-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nhs.uk/conditions/conjunctivitis/", verificationNotes: "NHS public guidance covering contagiousness, self-care, contact-lens considerations, newborn advice, and urgent red-eye symptoms.", scopeTags: ["conjunctivitis", "pink-eye", "eye-pain", "contact-lenses"]
   }
 ];
 

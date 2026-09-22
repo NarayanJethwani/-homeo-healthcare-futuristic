@@ -1027,6 +1027,11 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
     { src: "/images/knowledge/measles-rubeola/lifestyle-v1.png", alt: "Indian family reviewing a child vaccination record with a clinician at a calm well-child visit", label: "A prevention conversation" },
     { src: "/images/knowledge/measles-rubeola/learning-v1.png", alt: "Transparent medical illustration of a face and neck with a downward-spreading rash pattern", label: "A closer look at rash progression" },
   ],
+  "conjunctivitis-pink-eye": [
+    { src: "/images/knowledge/conjunctivitis-pink-eye/understanding-v1.png", alt: "Indian woman near a window noticing a mildly irritated, watery eye", label: "Understanding pink eye" },
+    { src: "/images/knowledge/conjunctivitis-pink-eye/lifestyle-v1.png", alt: "Indian student in a calm optometry consultation with an eye model", label: "A practical eye-care conversation" },
+    { src: "/images/knowledge/conjunctivitis-pink-eye/learning-v1.png", alt: "Transparent medical illustration of the eye surface and conjunctiva", label: "A closer look at the eye surface" },
+  ],
 };
 
 export function getKnowledgeVisuals(slug: string): KnowledgeVisual[] {

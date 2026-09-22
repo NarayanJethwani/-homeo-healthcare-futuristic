@@ -150,6 +150,10 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "varicella": ["chickenpox", "varicella", "chickenpox rash", "itchy blisters"],
   "measles": ["measles", "rubeola", "measles rash", "fever cough red eyes", "mmr vaccine"],
   "rubeola": ["measles", "rubeola", "measles rash", "fever cough red eyes"]
+  ,"conjunctivitis": ["conjunctivitis", "pink eye", "red watery eye", "sticky eye discharge", "itchy red eyes"],
+  "pink eye": ["conjunctivitis", "pink eye", "red watery eye", "sticky eye discharge"],
+  "red watery eye": ["conjunctivitis", "pink eye", "red watery eye", "itchy red eyes"],
+  "sticky eyes in morning": ["conjunctivitis", "pink eye", "sticky eye discharge", "red watery eye"]
 };
 
 /**
@@ -217,6 +221,9 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "are chickenpox spots contagious": ["chickenpox", "varicella", "chickenpox rash", "spots turning to scabs"],
   "fever cough red eyes and rash": ["measles", "rubeola", "measles rash", "fever cough red eyes"],
   "i think my child has measles": ["measles", "rubeola", "measles rash", "mmr vaccine"],
+  "why is my eye red and watery": ["conjunctivitis", "pink eye", "red watery eye", "itchy red eyes"],
+  "my eye is sticky in the morning": ["conjunctivitis", "pink eye", "sticky eye discharge", "red watery eye"],
+  "red eye with contact lenses": ["conjunctivitis", "pink eye", "contact lens red eye", "eye pain"],
 };
 
 /**
