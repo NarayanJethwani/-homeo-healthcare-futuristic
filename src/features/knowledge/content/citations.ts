@@ -1653,7 +1653,7 @@ export const CITATIONS: CitationRecord[] = [
     year: 2026,
     citationStyle: "AMA",
     category: "Clinical-Review",
-    canonicalUrl: "https://www.cdc.gov/ringworm/signs-symptoms/index.html",
+    canonicalUrl: "https://www.cdc.gov/ringworm/aboutemergingringworm/index.html",
     sourceIdentifier: "CDC-JOCK-ITCH-TINEA-CRURIS",
     sourceAuthority: "external-authoritative",
     verificationStatus: "verified",
