@@ -149,11 +149,15 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "chicken pox": ["chickenpox", "chicken pox", "varicella", "itchy blisters"],
   "varicella": ["chickenpox", "varicella", "chickenpox rash", "itchy blisters"],
   "measles": ["measles", "rubeola", "measles rash", "fever cough red eyes", "mmr vaccine"],
-  "rubeola": ["measles", "rubeola", "measles rash", "fever cough red eyes"]
-  ,"conjunctivitis": ["conjunctivitis", "pink eye", "red watery eye", "sticky eye discharge", "itchy red eyes"],
+  "rubeola": ["measles", "rubeola", "measles rash", "fever cough red eyes"],
+  "conjunctivitis": ["conjunctivitis", "pink eye", "red watery eye", "sticky eye discharge", "itchy red eyes"],
   "pink eye": ["conjunctivitis", "pink eye", "red watery eye", "sticky eye discharge"],
   "red watery eye": ["conjunctivitis", "pink eye", "red watery eye", "itchy red eyes"],
-  "sticky eyes in morning": ["conjunctivitis", "pink eye", "sticky eye discharge", "red watery eye"]
+  "sticky eyes in morning": ["conjunctivitis", "pink eye", "sticky eye discharge", "red watery eye"],
+  "dengue": ["dengue", "dengue fever", "mosquito fever", "fever body pain", "dengue warning signs"],
+  "dengue fever": ["dengue", "dengue fever", "mosquito fever", "fever body pain", "dengue test"],
+  "mosquito fever": ["dengue", "dengue fever", "mosquito fever", "dengue warning signs"],
+  "fever body pain": ["dengue", "dengue fever", "fever body pain", "mosquito fever"]
 };
 
 /**
@@ -224,6 +228,9 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "why is my eye red and watery": ["conjunctivitis", "pink eye", "red watery eye", "itchy red eyes"],
   "my eye is sticky in the morning": ["conjunctivitis", "pink eye", "sticky eye discharge", "red watery eye"],
   "red eye with contact lenses": ["conjunctivitis", "pink eye", "contact lens red eye", "eye pain"],
+  "fever and pain behind my eyes": ["dengue", "dengue fever", "fever body pain", "dengue test"],
+  "my fever is gone but i am vomiting": ["dengue", "dengue warning signs", "persistent vomiting", "severe abdominal pain"],
+  "when should i test for dengue": ["dengue", "dengue test", "dengue fever", "mosquito fever"],
 };
 
 /**

@@ -1855,6 +1855,12 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0102", title: "Conjunctivitis", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/conditions/conjunctivitis/", sourceIdentifier: "NHS-CONJUNCTIVITIS-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nhs.uk/conditions/conjunctivitis/", verificationNotes: "NHS public guidance covering contagiousness, self-care, contact-lens considerations, newborn advice, and urgent red-eye symptoms.", scopeTags: ["conjunctivitis", "pink-eye", "eye-pain", "contact-lenses"]
+  },
+  {
+    id: "CIT-0103", title: "Symptoms of Dengue and Testing", authors: ["Centers for Disease Control and Prevention"], journal: "Centers for Disease Control and Prevention", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.cdc.gov/dengue/signs-symptoms/index.html", sourceIdentifier: "CDC-DENGUE-SYMPTOMS-TESTING", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.cdc.gov/dengue/signs-symptoms/index.html", verificationNotes: "CDC guidance covering dengue symptoms, laboratory confirmation, warning signs, the post-fever critical period, and urgent-care boundaries.", scopeTags: ["dengue", "dengue-warning-signs", "dengue-testing", "fever-body-aches"]
+  },
+  {
+    id: "CIT-0104", title: "Dengue", authors: ["World Health Organization"], journal: "World Health Organization", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.who.int/news-room/fact-sheets/detail/dengue-and-severe-dengue", sourceIdentifier: "WHO-DENGUE-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.who.int/news-room/fact-sheets/detail/dengue-and-severe-dengue", verificationNotes: "WHO guidance covering transmission, symptom course, severe-dengue warning signs, prevention, and the importance of early medical care.", scopeTags: ["dengue", "mosquito-borne", "severe-dengue", "mosquito-prevention"]
   }
 ];
 
