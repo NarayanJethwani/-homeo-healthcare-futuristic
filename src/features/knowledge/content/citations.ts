@@ -1891,6 +1891,12 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0114", title: "Mouth ulcers", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/conditions/mouth-ulcers/", sourceIdentifier: "NHS-MOUTH-ULCERS", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nhs.uk/conditions/mouth-ulcers/", verificationNotes: "NHS guidance covering usual recovery, common irritants, gentle self-care, pharmacist support, and when to see a dentist or GP.", scopeTags: ["mouth-ulcers", "oral-ulcer-self-care", "mouth-ulcer-warning-signs", "dental-advice"]
+  },
+  {
+    id: "CIT-0115", title: "Toothache", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/symptoms/toothache/", sourceIdentifier: "NHS-TOOTHACHE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nhs.uk/symptoms/toothache/", verificationNotes: "NHS guidance covering when toothache needs dental assessment, interim self-care, urgent dental symptoms, and emergency swelling signs.", scopeTags: ["toothache", "tooth-pain", "urgent-dentist", "dental-emergency"]
+  },
+  {
+    id: "CIT-0116", title: "Tooth Decay", authors: ["National Institute of Dental and Craniofacial Research"], journal: "National Institute of Dental and Craniofacial Research", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nidcr.nih.gov/health-info/tooth-decay", sourceIdentifier: "NIDCR-TOOTH-DECAY", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nidcr.nih.gov/health-info/tooth-decay", verificationNotes: "NIDCR guidance covering advanced tooth-decay symptoms, sensitivity, dental abscess, facial swelling, fever, and prevention.", scopeTags: ["toothache", "tooth-decay", "dental-abscess", "tooth-sensitivity"]
   }
 ];
 

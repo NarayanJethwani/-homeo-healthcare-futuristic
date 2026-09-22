@@ -173,7 +173,12 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "mouth ulcer": ["mouth ulcers", "canker sore", "aphthous ulcer", "painful sore inside mouth"],
   "mouth ulcers": ["mouth ulcers", "canker sore", "aphthous ulcer", "mouth ulcer not healing"],
   "canker sore": ["mouth ulcers", "canker sore", "aphthous ulcer", "painful sore inside mouth"],
-  "aphthous ulcer": ["mouth ulcers", "canker sore", "aphthous ulcer", "mouth ulcer not healing"]
+  "aphthous ulcer": ["mouth ulcers", "canker sore", "aphthous ulcer", "mouth ulcer not healing"],
+  "toothache": ["toothache", "tooth pain", "dental abscess", "urgent dentist"],
+  "tooth pain": ["toothache", "tooth pain", "pain when biting", "tooth sensitivity"],
+  "dental abscess": ["toothache", "dental abscess", "swollen cheek tooth pain", "urgent dentist"],
+  "pain when biting": ["toothache", "tooth pain", "pain when biting", "cracked tooth"],
+  "swollen cheek tooth pain": ["toothache", "dental abscess", "swollen cheek tooth pain", "dental emergency"]
 };
 
 /**
@@ -263,6 +268,10 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "is this a mouth ulcer or cold sore": ["mouth ulcers", "canker sore", "cold sore difference", "aphthous ulcer"],
   "mouth ulcer not healing": ["mouth ulcers", "mouth ulcer not healing", "oral ulcer red flags", "dental advice"],
   "why do i keep getting mouth ulcers": ["mouth ulcers", "recurrent mouth ulcers", "canker sore", "aphthous ulcer"],
+  "my tooth hurts when i bite": ["toothache", "tooth pain", "pain when biting", "cracked tooth"],
+  "toothache with swollen cheek": ["toothache", "dental abscess", "swollen cheek tooth pain", "urgent dentist"],
+  "tooth pain keeping me awake": ["toothache", "tooth pain", "urgent dentist", "dental emergency"],
+  "is a toothache an emergency": ["toothache", "dental emergency", "dental abscess", "urgent dentist"],
 };
 
 /**
