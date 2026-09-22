@@ -1837,6 +1837,12 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0096", title: "Hand, Foot and Mouth Disease", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/conditions/hand-foot-mouth-disease/", sourceIdentifier: "NHS-HFMD-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-21", verificationEvidenceUrl: "https://www.nhs.uk/conditions/hand-foot-mouth-disease/", verificationNotes: "NHS public guidance covering mouth sores, skin-tone-aware rash signs, hydration, household prevention, and care-seeking boundaries.", scopeTags: ["hand-foot-mouth-disease", "hfmd", "hand-rash", "mouth-pain"]
+  },
+  {
+    id: "CIT-0097", title: "Chickenpox Symptoms and Complications", authors: ["Centers for Disease Control and Prevention"], journal: "Centers for Disease Control and Prevention", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.cdc.gov/chickenpox/signs-symptoms/index.html", sourceIdentifier: "CDC-CHICKENPOX-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.cdc.gov/chickenpox/treatment/index.html", verificationNotes: "CDC guidance covering chickenpox rash progression, risk groups, prevention, comfort care, and symptoms that require medical assessment.", scopeTags: ["chickenpox", "varicella", "itchy-blisters", "varicella-risk"]
+  },
+  {
+    id: "CIT-0098", title: "Chickenpox", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/conditions/chickenpox/", sourceIdentifier: "NHS-CHICKENPOX-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nhs.uk/conditions/chickenpox/", verificationNotes: "NHS public guidance covering symptoms across skin tones, home care, contagiousness, pregnancy, and urgent care boundaries.", scopeTags: ["chickenpox", "varicella", "child-rash", "pregnancy-exposure"]
   }
 ];
 

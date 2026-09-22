@@ -144,7 +144,10 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "sores around mouth": ["sores around mouth", "impetigo", "golden crust rash", "child skin infection"],
   "hand foot mouth": ["hand foot mouth disease", "hfmd", "mouth ulcers and rash", "blisters on hands and feet"],
   "hfmd": ["hand foot mouth disease", "hfmd", "mouth ulcers and rash", "child not drinking"],
-  "blisters on hands and feet": ["hand foot mouth disease", "hfmd", "mouth ulcers and rash", "child rash"]
+  "blisters on hands and feet": ["hand foot mouth disease", "hfmd", "mouth ulcers and rash", "child rash"],
+  "chickenpox": ["chickenpox", "chicken pox", "varicella", "itchy blisters", "spots turning to scabs"],
+  "chicken pox": ["chickenpox", "chicken pox", "varicella", "itchy blisters"],
+  "varicella": ["chickenpox", "varicella", "chickenpox rash", "itchy blisters"]
 };
 
 /**
@@ -208,6 +211,8 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "is this a skin infection or eczema": ["impetigo", "eczema", "child skin infection", "contagious skin rash"],
   "my child has mouth ulcers and spots on hands": ["hand foot mouth disease", "hfmd", "mouth ulcers and rash", "blisters on hands and feet"],
   "my child is not drinking because of mouth sores": ["hand foot mouth disease", "hfmd", "child not drinking", "dehydration"],
+  "my child has itchy blisters": ["chickenpox", "varicella", "itchy blisters", "chickenpox rash"],
+  "are chickenpox spots contagious": ["chickenpox", "varicella", "chickenpox rash", "spots turning to scabs"],
 };
 
 /**
