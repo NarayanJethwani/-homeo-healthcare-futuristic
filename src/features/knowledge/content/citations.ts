@@ -1879,6 +1879,12 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0110", title: "Testing for Malaria", authors: ["Centers for Disease Control and Prevention"], journal: "Centers for Disease Control and Prevention", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.cdc.gov/malaria/testing/", sourceIdentifier: "CDC-MALARIA-TESTING", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.cdc.gov/malaria/testing/", verificationNotes: "CDC guidance covering prompt evaluation, microscopy, rapid tests, confirmatory testing, and species identification.", scopeTags: ["malaria", "blood-smear", "rapid-diagnostic-test", "travel-fever"]
+  },
+  {
+    id: "CIT-0111", title: "Influenza (seasonal)", authors: ["World Health Organization"], journal: "World Health Organization", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.who.int/news-room/fact-sheets/detail/influenza-%28seasonal%29", sourceIdentifier: "WHO-INFLUENZA-PATIENT-GUIDANCE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.who.int/news-room/fact-sheets/detail/influenza-%28seasonal%29", verificationNotes: "WHO guidance covering symptoms, risk groups, treatment, transmission, and annual vaccination.", scopeTags: ["influenza", "flu", "respiratory-infection", "flu-vaccine"]
+  },
+  {
+    id: "CIT-0112", title: "Signs and Symptoms of Flu", authors: ["Centers for Disease Control and Prevention"], journal: "Centers for Disease Control and Prevention", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.cdc.gov/flu/signs-symptoms/", sourceIdentifier: "CDC-FLU-SYMPTOMS", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.cdc.gov/flu/treatment/index.html", verificationNotes: "CDC guidance covering sudden flu symptoms, high-risk groups, emergency warning signs, testing, and prescription antivirals.", scopeTags: ["influenza", "flu-warning-signs", "antiviral-treatment", "flu-cough"]
   }
 ];
 

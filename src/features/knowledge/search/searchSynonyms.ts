@@ -166,7 +166,10 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "persistent fever": ["typhoid", "persistent fever", "enteric fever", "typhoid test"],
   "malaria": ["malaria", "fever chills", "malaria test", "mosquito fever", "travel fever"],
   "fever chills": ["malaria", "fever chills", "malaria test", "mosquito fever"],
-  "travel fever": ["malaria", "travel fever", "fever chills", "malaria test"]
+  "travel fever": ["malaria", "travel fever", "fever chills", "malaria test"],
+  "flu": ["influenza", "flu", "sudden fever body aches", "flu cough", "flu vaccine"],
+  "influenza": ["influenza", "flu", "sudden fever body aches", "flu cough"],
+  "sudden fever body aches": ["influenza", "flu", "sudden fever body aches", "flu cough"]
 };
 
 /**
@@ -249,6 +252,9 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "i have fever and chills after travel": ["malaria", "fever chills", "travel fever", "malaria test"],
   "how is malaria tested": ["malaria", "malaria test", "blood smear", "rapid diagnostic test"],
   "fever with dark urine": ["malaria", "fever chills", "malaria test", "urgent fever"],
+  "sudden fever and body aches": ["influenza", "flu", "sudden fever body aches", "flu cough"],
+  "is this a cold or flu": ["influenza", "flu", "cold versus flu", "sudden fever body aches"],
+  "when should i seek help for flu": ["influenza", "flu", "flu emergency signs", "difficulty breathing"],
 };
 
 /**

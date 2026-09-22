@@ -1052,6 +1052,11 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
     { src: "/images/knowledge/malaria/lifestyle-v1.png", alt: "Indian family preparing a mosquito net around a bed at blue-hour evening", label: "A practical night-time prevention habit" },
     { src: "/images/knowledge/malaria/learning-v1.png", alt: "Transparent medical illustration of malaria parasite forms within red blood cells", label: "A closer look at blood-stage infection" },
   ],
+  influenza: [
+    { src: "/images/knowledge/influenza/understanding-v1.png", alt: "Indian woman resting warmly at home during rainy weather", label: "Understanding flu" },
+    { src: "/images/knowledge/influenza/lifestyle-v1.png", alt: "Indian clinician discussing flu prevention with an older couple", label: "A prevention conversation" },
+    { src: "/images/knowledge/influenza/learning-v1.png", alt: "Transparent medical illustration of upper airways and lungs", label: "A closer look at the respiratory tract" },
+  ],
 };
 
 export function getKnowledgeVisuals(slug: string): KnowledgeVisual[] {
