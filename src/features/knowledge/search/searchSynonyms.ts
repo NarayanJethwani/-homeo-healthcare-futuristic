@@ -157,7 +157,10 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "dengue": ["dengue", "dengue fever", "mosquito fever", "fever body pain", "dengue warning signs"],
   "dengue fever": ["dengue", "dengue fever", "mosquito fever", "fever body pain", "dengue test"],
   "mosquito fever": ["dengue", "dengue fever", "mosquito fever", "dengue warning signs"],
-  "fever body pain": ["dengue", "dengue fever", "fever body pain", "mosquito fever"]
+  "fever body pain": ["dengue", "dengue fever", "fever body pain", "mosquito fever"],
+  "chikungunya": ["chikungunya", "fever joint pain", "joint swelling fever", "mosquito fever", "chikungunya test"],
+  "fever joint pain": ["chikungunya", "fever joint pain", "joint swelling fever", "mosquito fever"],
+  "joint swelling fever": ["chikungunya", "fever joint pain", "joint swelling fever", "chikungunya test"]
 };
 
 /**
@@ -231,6 +234,9 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "fever and pain behind my eyes": ["dengue", "dengue fever", "fever body pain", "dengue test"],
   "my fever is gone but i am vomiting": ["dengue", "dengue warning signs", "persistent vomiting", "severe abdominal pain"],
   "when should i test for dengue": ["dengue", "dengue test", "dengue fever", "mosquito fever"],
+  "fever with severe joint pain": ["chikungunya", "fever joint pain", "joint swelling fever", "chikungunya test"],
+  "my fever is better but my joints still hurt": ["chikungunya", "fever joint pain", "persistent joint pain", "joint swelling fever"],
+  "can i take ibuprofen for mosquito fever": ["chikungunya", "dengue", "fever joint pain", "dengue warning signs"],
 };
 
 /**

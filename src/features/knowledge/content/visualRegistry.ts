@@ -1037,6 +1037,11 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
     { src: "/images/knowledge/dengue-fever/lifestyle-v1.png", alt: "Indian father and daughter fitting a window screen and keeping a balcony planter saucer dry", label: "A practical prevention habit" },
     { src: "/images/knowledge/dengue-fever/learning-v1.png", alt: "Transparent medical illustration of an Aedes-style mosquito with vascular and blood-cell patterns", label: "A closer look at mosquito transmission" },
   ],
+  chikungunya: [
+    { src: "/images/knowledge/chikungunya/understanding-v1.png", alt: "Indian man on a rainy veranda gently supporting a sore wrist", label: "Understanding chikungunya" },
+    { src: "/images/knowledge/chikungunya/lifestyle-v1.png", alt: "Indian woman practising a gentle seated knee movement with a physiotherapist", label: "A paced recovery conversation" },
+    { src: "/images/knowledge/chikungunya/learning-v1.png", alt: "Transparent medical illustration of knee and wrist joints with gentle inflammation glow", label: "A closer look at joint symptoms" },
+  ],
 };
 
 export function getKnowledgeVisuals(slug: string): KnowledgeVisual[] {
