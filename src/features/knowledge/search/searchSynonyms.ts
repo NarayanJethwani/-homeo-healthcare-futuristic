@@ -66,8 +66,8 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "thuja": ["thuja occidentalis", "arbor vitae"],
 
   // Common Lab Investigation Abbreviations
-  "cbc": ["cbc", "complete blood count", "blood test", "hemoglobin", "platelets", "white blood cells", "red blood cells"],
-  "complete blood count": ["cbc", "complete blood count", "blood test", "hemoglobin"],
+  "cbc": ["cbc", "complete blood count", "full blood count", "blood test", "hemoglobin", "haemoglobin", "platelets", "white blood cells", "red blood cells"],
+  "complete blood count": ["cbc", "complete blood count", "full blood count", "blood test", "hemoglobin", "haemoglobin"],
   "esr": ["esr", "erythrocyte sedimentation rate", "inflammation", "blood test"],
   "crp": ["crp", "c-reactive protein", "inflammation test", "blood test"],
   "hba1c": ["hba1c", "glycated hemoglobin", "average blood glucose", "diabetes test"],
@@ -78,9 +78,12 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "renal function test": ["kft", "kidney function test", "creatinine", "renal panel"],
 
   // Scale-up additions
-  "anemia": ["anemia", "blood deficiency", "low hemoglobin", "iron deficiency", "weak blood"],
-  "vitamin d": ["vitamin d", "sunshine vitamin", "cholecalciferol", "vit d"],
-  "vitamin b12": ["vitamin b12", "cobalamin", "vit b12", "methylcobalamin"],
+  "anemia": ["anemia", "anaemia", "blood deficiency", "low hemoglobin", "low haemoglobin", "iron deficiency", "weak blood"],
+  "anaemia": ["anemia", "anaemia", "blood deficiency", "low hemoglobin", "low haemoglobin", "iron deficiency", "weak blood"],
+  "vitamin d": ["vitamin d", "vitamin d deficiency", "low vitamin d", "sunshine vitamin", "cholecalciferol", "vit d"],
+  "low vitamin d": ["vitamin d", "vitamin d deficiency", "low vitamin d", "low d", "25 oh d", "25 hydroxyvitamin d"],
+  "vitamin b12": ["vitamin b12", "vitamin b12 deficiency", "low b12", "cobalamin", "vit b12", "methylcobalamin"],
+  "low b12": ["vitamin b12", "vitamin b12 deficiency", "low b12", "cobalamin", "methylcobalamin", "b12 test"],
   "low back pain": ["low back pain", "lumbago", "back ache", "lumbar strain"],
   "recurrent cold": ["recurrent cold", "frequent cold", "susceptible to cold", "chronic runny nose"],
   "burning urination": ["burning urination", "dysuria", "painful urine", "urine burn"],
@@ -88,6 +91,33 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "ana": ["ana", "antinuclear antibodies", "autoimmune screen"],
   "psa": ["psa", "prostate specific antigen", "prostate test"],
   "anti-tpo": ["anti-tpo", "thyroid antibodies", "anti-tpo antibodies", "hashimotos"]
+};
+
+/**
+ * Intent phrases make symptom-first, natural-language questions useful without
+ * requiring a visitor to know the medical name of a condition.
+ */
+const PHRASE_SYNONYMS: Record<string, string[]> = {
+  "burning in chest after food": ["heartburn", "acid reflux", "gerd"],
+  "burning in chest after eating": ["heartburn", "acid reflux", "gerd"],
+  "why is my tsh high": ["tsh", "thyroid", "hypothyroidism"],
+  "hair is falling": ["hair fall", "alopecia", "thyroid"],
+  "hair loss": ["hair fall", "alopecia", "thyroid"],
+  "why am i dizzy": ["dizziness", "vertigo"],
+  "headache with nausea": ["migraine", "headache"],
+  "stomach pain after eating": ["indigestion", "acid reflux", "gastritis"],
+  "what does low vitamin d mean": ["vitamin d", "vitamin d deficiency", "25 hydroxyvitamin d"],
+  "do i need a vitamin d test": ["vitamin d", "vitamin d deficiency", "25 hydroxyvitamin d"],
+  "why am i tired and low vitamin d": ["vitamin d", "vitamin d deficiency", "fatigue", "anemia", "thyroid"],
+  "what does low b12 mean": ["vitamin b12", "vitamin b12 deficiency", "cobalamin", "b12 test"],
+  "why are my hands and feet tingling": ["vitamin b12", "peripheral neuropathy", "diabetes", "thyroid"],
+  "do i need a b12 test": ["vitamin b12", "vitamin b12 deficiency", "cobalamin"],
+  "what does low hemoglobin mean": ["anemia", "anaemia", "cbc", "ferritin", "iron deficiency"],
+  "why am i tired and dizzy": ["anemia", "anaemia", "fatigue", "dizziness", "thyroid"],
+  "should i take iron tablets": ["anemia", "anaemia", "iron deficiency", "ferritin"],
+  "what does my cbc mean": ["cbc", "complete blood count", "blood test"],
+  "how do i read a blood test report": ["cbc", "complete blood count", "hemoglobin", "platelets", "white blood cells"],
+  "why is my hemoglobin low": ["anemia", "anaemia", "cbc", "ferritin", "iron deficiency"],
 };
 
 /**
@@ -117,6 +147,7 @@ export const MISSSPELLINGS_MAP: Record<string, string> = {
  * Expands query text into an array of related search terms using synonyms and misspelling corrections.
  */
 export const expandQuery = (query: string): string[] => {
+  const normalizedQuery = query.toLowerCase().replace(/[^\w\s]/g, " ").replace(/\s+/g, " ").trim();
   const words = query
     .toLowerCase()
     .replace(/[^\w\s-]/g, "")
@@ -124,6 +155,10 @@ export const expandQuery = (query: string): string[] => {
     .filter(w => w.length > 1);
 
   const expanded: string[] = [];
+
+  Object.entries(PHRASE_SYNONYMS).forEach(([phrase, synonyms]) => {
+    if (normalizedQuery.includes(phrase)) expanded.push(...synonyms);
+  });
 
   for (const word of words) {
     // Add original word

@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Link2, Stethoscope, HelpCircle, Activity, Heart, Calendar, GitCompare, FileText } from "lucide-react";
+import { Link2, Stethoscope, HelpCircle, Activity, Heart, GitCompare, FileText } from "lucide-react";
 import { getRelatedEntities } from "../graph/knowledgeGraph";
 import { getEntityUrl } from "../index";
 import { COMPARISONS } from "../comparisons/comparisonRegistry";
@@ -122,23 +122,6 @@ export default function RelatedEverything({ entityId }: RelatedEverythingProps) 
         )}
       </div>
 
-      {/* Appointment CTA Box */}
-      <div className="rounded-2xl border border-teal-500/20 bg-gradient-to-r from-teal-500/10 via-emerald-500/5 to-teal-500/10 p-6 flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="space-y-1 text-center md:text-left">
-          <h4 className="font-bold text-neutral-800 dark:text-neutral-200">
-            Need Individualized Medical Advice?
-          </h4>
-          <p className="text-xs text-neutral-600 dark:text-neutral-300">
-            Schedule a constitutional consult with Dr. Narayan Jethwani for a personalized treatment plan.
-          </p>
-        </div>
-        <Link
-          href="/#booking"
-          className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2.5 px-5 rounded-full text-sm shadow-md transition-colors"
-        >
-          <Calendar className="h-4 w-4" /> Book Clinical Consultation
-        </Link>
-      </div>
     </div>
   );
 }

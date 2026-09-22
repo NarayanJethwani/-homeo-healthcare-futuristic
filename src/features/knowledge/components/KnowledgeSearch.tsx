@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Search, Filter, Stethoscope, Activity, Heart, Beaker, HelpCircle, FileText, Clock, X, Sparkles, TrendingUp } from "lucide-react";
+import { Search, Filter, Stethoscope, Activity, Heart, Beaker, FileText, Clock, X, Sparkles, TrendingUp } from "lucide-react";
 import { searchKnowledgeBase } from "../search/knowledgeIndex";
 import { EntityType } from "../types";
 import EntityCard from "./EntityCard";
@@ -13,6 +13,13 @@ interface KnowledgeSearchProps {
 }
 
 const POPULAR_SEARCHES = ["GERD", "Sulphur", "IBS", "Arnica", "Eczema", "Headache", "CBC", "TSH"];
+
+const QUESTION_PROMPTS = [
+  "Burning in chest after food",
+  "Why is my TSH high?",
+  "Why am I dizzy?",
+  "Hair loss",
+];
 
 const EMPTY_SUGGESTIONS = [
   { term: "Acid Reflux", type: "symptom" },
@@ -142,7 +149,7 @@ export default function KnowledgeSearch({
           value={query}
           onFocus={() => setIsFocused(true)}
           onChange={e => setQuery(e.target.value)}
-          placeholder="Search symptoms, remedies, diseases, or lab tests..."
+          placeholder="Describe what you want to understand — e.g. burning in chest after food"
           className="w-full pl-11 pr-10 py-3.5 bg-white/5 border border-neutral-500/10 focus:border-teal-500/30 rounded-2xl text-neutral-800 dark:text-neutral-100 placeholder-neutral-400 outline-none backdrop-blur-md shadow-lg transition-all duration-300"
         />
         {query && (
@@ -232,6 +239,24 @@ export default function KnowledgeSearch({
         ))}
       </div>
 
+      {/* Symptom-first and question-based entry points */}
+      <div className="max-w-2xl mx-auto rounded-2xl border border-teal-500/15 bg-teal-500/[0.03] px-4 py-3">
+        <p className="text-center text-[10px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-2">
+          Start with a question or symptom
+        </p>
+        <div className="flex flex-wrap justify-center gap-2">
+          {QUESTION_PROMPTS.map(prompt => (
+            <button
+              key={prompt}
+              onClick={() => setQuery(prompt)}
+              className="rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-3 py-1.5 text-xs text-neutral-700 dark:text-neutral-300 hover:border-teal-500/35 hover:bg-teal-500/5 transition-colors"
+            >
+              {prompt}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Filter Tabs */}
       <div className="flex flex-wrap items-center justify-center gap-2">
         <span className="text-xs text-neutral-500 dark:text-neutral-400 font-bold uppercase mr-2 flex items-center gap-1">
@@ -256,18 +281,23 @@ export default function KnowledgeSearch({
         })}
       </div>
 
-      {/* Results Count & Visual feedback */}
-      <div className="text-xs text-neutral-400 text-center font-medium">
-        Found {results.length} clinical platform {results.length === 1 ? "entity" : "entities"}
-      </div>
-
-      {/* Results Grid */}
-      {results.length > 0 ? (
+      {/* Results are shown only after a visitor asks for a topic, avoiding an overwhelming directory wall. */}
+      {query.trim().length === 0 ? (
+        <div className="text-center py-8 px-6 rounded-3xl border border-dashed border-neutral-500/15 bg-white/[0.02]">
+          <p className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">Start with what you feel, a diagnosis, a test, or a remedy.</p>
+          <p className="mt-1 text-xs text-neutral-500">We will bring the most relevant topics together in one place.</p>
+        </div>
+      ) : results.length > 0 ? (
+        <>
+          <div className="text-xs text-neutral-400 text-center font-medium">
+            {results.length} relevant {results.length === 1 ? "topic" : "topics"}
+          </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {results.map(res => (
             <EntityCard key={res.entity.id} entity={res.entity} highlightQuery={query} />
           ))}
         </div>
+        </>
       ) : (
         <div className="text-center py-12 px-6 rounded-3xl border border-dashed border-neutral-500/10 bg-white/5">
           <p className="text-neutral-500 max-w-sm mx-auto text-sm">
