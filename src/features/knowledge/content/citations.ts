@@ -1897,6 +1897,12 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0116", title: "Tooth Decay", authors: ["National Institute of Dental and Craniofacial Research"], journal: "National Institute of Dental and Craniofacial Research", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nidcr.nih.gov/health-info/tooth-decay", sourceIdentifier: "NIDCR-TOOTH-DECAY", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nidcr.nih.gov/health-info/tooth-decay", verificationNotes: "NIDCR guidance covering advanced tooth-decay symptoms, sensitivity, dental abscess, facial swelling, fever, and prevention.", scopeTags: ["toothache", "tooth-decay", "dental-abscess", "tooth-sensitivity"]
+  },
+  {
+    id: "CIT-0117", title: "Bad breath", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/symptoms/bad-breath/", sourceIdentifier: "NHS-BAD-BREATH", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nhs.uk/symptoms/bad-breath/", verificationNotes: "NHS guidance covering common causes, daily oral-care measures, and signs that need dental review.", scopeTags: ["bad-breath", "halitosis", "oral-hygiene", "dentist-review"]
+  },
+  {
+    id: "CIT-0118", title: "Periodontal (Gum) Disease", authors: ["National Institute of Dental and Craniofacial Research"], journal: "National Institute of Dental and Craniofacial Research", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nidcr.nih.gov/health-info/gum-disease", sourceIdentifier: "NIDCR-GUM-DISEASE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nidcr.nih.gov/health-info/gum-disease", verificationNotes: "NIDCR guidance covering gum-disease symptoms, including persistent bad breath, and dental assessment and treatment.", scopeTags: ["bad-breath", "gum-disease", "periodontal-disease", "bleeding-gums"]
   }
 ];
 

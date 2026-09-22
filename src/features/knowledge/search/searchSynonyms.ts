@@ -178,7 +178,12 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "tooth pain": ["toothache", "tooth pain", "pain when biting", "tooth sensitivity"],
   "dental abscess": ["toothache", "dental abscess", "swollen cheek tooth pain", "urgent dentist"],
   "pain when biting": ["toothache", "tooth pain", "pain when biting", "cracked tooth"],
-  "swollen cheek tooth pain": ["toothache", "dental abscess", "swollen cheek tooth pain", "dental emergency"]
+  "swollen cheek tooth pain": ["toothache", "dental abscess", "swollen cheek tooth pain", "dental emergency"],
+  "bad breath": ["bad breath", "halitosis", "smelly breath", "persistent bad breath"],
+  "halitosis": ["bad breath", "halitosis", "bad taste in mouth", "oral hygiene routine"],
+  "smelly breath": ["bad breath", "halitosis", "smelly breath", "bad taste in mouth"],
+  "bad taste in mouth": ["bad breath", "halitosis", "bad taste in mouth", "gum disease bad breath"],
+  "persistent bad breath": ["bad breath", "halitosis", "persistent bad breath", "halitosis dentist"]
 };
 
 /**
@@ -272,6 +277,10 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "toothache with swollen cheek": ["toothache", "dental abscess", "swollen cheek tooth pain", "urgent dentist"],
   "tooth pain keeping me awake": ["toothache", "tooth pain", "urgent dentist", "dental emergency"],
   "is a toothache an emergency": ["toothache", "dental emergency", "dental abscess", "urgent dentist"],
+  "why does my breath smell bad": ["bad breath", "halitosis", "smelly breath", "oral hygiene routine"],
+  "bad breath even after brushing": ["bad breath", "persistent bad breath", "gum disease bad breath", "halitosis dentist"],
+  "bad breath with dry mouth": ["bad breath", "dry mouth breath", "persistent bad breath", "halitosis"],
+  "bad breath with bleeding gums": ["bad breath", "gum disease bad breath", "bleeding gums", "halitosis dentist"],
 };
 
 /**
