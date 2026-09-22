@@ -1057,6 +1057,11 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
     { src: "/images/knowledge/influenza/lifestyle-v1.png", alt: "Indian clinician discussing flu prevention with an older couple", label: "A prevention conversation" },
     { src: "/images/knowledge/influenza/learning-v1.png", alt: "Transparent medical illustration of upper airways and lungs", label: "A closer look at the respiratory tract" },
   ],
+  "mouth-ulcers": [
+    { src: "/images/knowledge/mouth-ulcers/understanding-v1.png", alt: "Indian woman calmly checking a small mirror while noticing mild mouth discomfort", label: "Understanding mouth ulcers" },
+    { src: "/images/knowledge/mouth-ulcers/lifestyle-v1.png", alt: "Indian man choosing soft foods and water at a colourful dining table", label: "Making meals easier" },
+    { src: "/images/knowledge/mouth-ulcers/learning-v1.png", alt: "Transparent medical illustration of the mouth lining with a contained small ulcer", label: "A closer look at the mouth lining" },
+  ],
 };
 
 export function getKnowledgeVisuals(slug: string): KnowledgeVisual[] {

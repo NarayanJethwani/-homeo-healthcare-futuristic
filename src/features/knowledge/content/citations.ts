@@ -1885,6 +1885,12 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0112", title: "Signs and Symptoms of Flu", authors: ["Centers for Disease Control and Prevention"], journal: "Centers for Disease Control and Prevention", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.cdc.gov/flu/signs-symptoms/", sourceIdentifier: "CDC-FLU-SYMPTOMS", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.cdc.gov/flu/treatment/index.html", verificationNotes: "CDC guidance covering sudden flu symptoms, high-risk groups, emergency warning signs, testing, and prescription antivirals.", scopeTags: ["influenza", "flu-warning-signs", "antiviral-treatment", "flu-cough"]
+  },
+  {
+    id: "CIT-0113", title: "Fever Blisters & Canker Sores", authors: ["National Institute of Dental and Craniofacial Research"], journal: "National Institute of Dental and Craniofacial Research", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nidcr.nih.gov/health-info/fever-blisters-canker-sores", sourceIdentifier: "NIDCR-CANKER-SORES", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nidcr.nih.gov/health-info/fever-blisters-canker-sores", verificationNotes: "NIDCR guidance covering canker-sore appearance, inside-mouth location, difference from contagious cold sores, common triggers, assessment, and self-care.", scopeTags: ["mouth-ulcers", "canker-sores", "aphthous-ulcers", "cold-sore-difference"]
+  },
+  {
+    id: "CIT-0114", title: "Mouth ulcers", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/conditions/mouth-ulcers/", sourceIdentifier: "NHS-MOUTH-ULCERS", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nhs.uk/conditions/mouth-ulcers/", verificationNotes: "NHS guidance covering usual recovery, common irritants, gentle self-care, pharmacist support, and when to see a dentist or GP.", scopeTags: ["mouth-ulcers", "oral-ulcer-self-care", "mouth-ulcer-warning-signs", "dental-advice"]
   }
 ];
 

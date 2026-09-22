@@ -169,7 +169,11 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "travel fever": ["malaria", "travel fever", "fever chills", "malaria test"],
   "flu": ["influenza", "flu", "sudden fever body aches", "flu cough", "flu vaccine"],
   "influenza": ["influenza", "flu", "sudden fever body aches", "flu cough"],
-  "sudden fever body aches": ["influenza", "flu", "sudden fever body aches", "flu cough"]
+  "sudden fever body aches": ["influenza", "flu", "sudden fever body aches", "flu cough"],
+  "mouth ulcer": ["mouth ulcers", "canker sore", "aphthous ulcer", "painful sore inside mouth"],
+  "mouth ulcers": ["mouth ulcers", "canker sore", "aphthous ulcer", "mouth ulcer not healing"],
+  "canker sore": ["mouth ulcers", "canker sore", "aphthous ulcer", "painful sore inside mouth"],
+  "aphthous ulcer": ["mouth ulcers", "canker sore", "aphthous ulcer", "mouth ulcer not healing"]
 };
 
 /**
@@ -255,6 +259,10 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
   "sudden fever and body aches": ["influenza", "flu", "sudden fever body aches", "flu cough"],
   "is this a cold or flu": ["influenza", "flu", "cold versus flu", "sudden fever body aches"],
   "when should i seek help for flu": ["influenza", "flu", "flu emergency signs", "difficulty breathing"],
+  "painful sore inside my mouth": ["mouth ulcers", "canker sore", "aphthous ulcer", "painful sore inside mouth"],
+  "is this a mouth ulcer or cold sore": ["mouth ulcers", "canker sore", "cold sore difference", "aphthous ulcer"],
+  "mouth ulcer not healing": ["mouth ulcers", "mouth ulcer not healing", "oral ulcer red flags", "dental advice"],
+  "why do i keep getting mouth ulcers": ["mouth ulcers", "recurrent mouth ulcers", "canker sore", "aphthous ulcer"],
 };
 
 /**
