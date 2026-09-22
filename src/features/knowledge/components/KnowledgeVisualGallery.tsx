@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Expand, ImageIcon, X } from "lucide-react";
 import { getKnowledgeVisuals } from "../content/visualRegistry";
@@ -15,6 +16,7 @@ export default function KnowledgeVisualGallery({ slug, title }: KnowledgeVisualG
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const openerRef = useRef<HTMLButtonElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const scrollPositionRef = useRef(0);
 
   const closePreview = useCallback(() => setSelectedIndex(null), []);
   const showPrevious = useCallback(() => setSelectedIndex((index) => index === null ? null : (index + visuals.length - 1) % visuals.length), [visuals.length]);
@@ -23,9 +25,24 @@ export default function KnowledgeVisualGallery({ slug, title }: KnowledgeVisualG
   useEffect(() => {
     if (selectedIndex === null) return;
 
+    const body = document.body;
+    const root = document.documentElement;
+    scrollPositionRef.current = window.scrollY;
     const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    closeButtonRef.current?.focus();
+    const previousPosition = body.style.position;
+    const previousTop = body.style.top;
+    const previousWidth = body.style.width;
+    const previousRootOverflow = root.style.overflow;
+
+    // Keep the article exactly where the reader was when the full-screen
+    // viewer opens. This also prevents focus from moving the page to the
+    // gallery's DOM position on long topic pages.
+    body.style.overflow = "hidden";
+    body.style.position = "fixed";
+    body.style.top = `-${scrollPositionRef.current}px`;
+    body.style.width = "100%";
+    root.style.overflow = "hidden";
+    closeButtonRef.current?.focus({ preventScroll: true });
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") closePreview();
@@ -35,9 +52,14 @@ export default function KnowledgeVisualGallery({ slug, title }: KnowledgeVisualG
     document.addEventListener("keydown", onKeyDown);
 
     return () => {
-      document.body.style.overflow = previousOverflow;
+      body.style.overflow = previousOverflow;
+      body.style.position = previousPosition;
+      body.style.top = previousTop;
+      body.style.width = previousWidth;
+      root.style.overflow = previousRootOverflow;
+      window.scrollTo({ top: scrollPositionRef.current, behavior: "instant" });
       document.removeEventListener("keydown", onKeyDown);
-      openerRef.current?.focus();
+      openerRef.current?.focus({ preventScroll: true });
     };
   }, [selectedIndex, closePreview, showNext, showPrevious]);
 
@@ -82,7 +104,7 @@ export default function KnowledgeVisualGallery({ slug, title }: KnowledgeVisualG
           </figure>
         ))}
       </div>
-      {selectedIndex !== null && (
+      {selectedIndex !== null && createPortal(
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/85 p-4 backdrop-blur-md md:p-8"
           role="presentation"
@@ -144,7 +166,8 @@ export default function KnowledgeVisualGallery({ slug, title }: KnowledgeVisualG
               <span className="shrink-0 text-xs font-medium text-white/65">{selectedIndex + 1} of {visuals.length}</span>
             </div>
           </section>
-        </div>
+        </div>,
+        document.body
       )}
     </section>
   );
