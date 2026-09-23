@@ -1927,6 +1927,12 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0126", title: "Headaches", authors: ["National Health Service"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/symptoms/headaches/", sourceIdentifier: "NHS-HEADACHES", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://www.nhs.uk/symptoms/headaches/", verificationNotes: "NHS public guidance covering common contributors, headache diaries, urgent and emergency warning signs, and when to seek clinical advice.", scopeTags: ["headache", "headache-diary", "headache-triggers", "headache-red-flags", "urgent-care"]
+  },
+  {
+    id: "CIT-0137", title: "Polyendocrine metabolic ovarian syndrome (PMOS)", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/conditions/polyendocrine-metabolic-ovarian-syndrome-pmos/", sourceIdentifier: "NHS-PCOS-PMOS", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://www.nhs.uk/conditions/polyendocrine-metabolic-ovarian-syndrome-pmos/", verificationNotes: "NHS guidance, published under the newer PMOS terminology, covering symptoms, assessment, treatment options, metabolic risk and self-management for the condition previously called PCOS.", scopeTags: ["pcos", "pmos", "irregular-periods", "androgen-symptoms", "metabolic-screening"]
+  },
+  {
+    id: "CIT-0138", title: "PCOS Guideline / PMOS Guideline", authors: ["Monash Centre for Health Research and Implementation"], journal: "Monash University", year: 2026, citationStyle: "AMA", category: "Clinical-Guidelines", canonicalUrl: "https://www.monash.edu/medicine/mchri/pcos/guideline", sourceIdentifier: "MONASH-PCOS-PMOS-GUIDELINE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://www.monash.edu/medicine/mchri/pcos/guideline", verificationNotes: "International evidence-based guideline and consumer resources for shared decision-making, assessment and management of the condition previously known as PCOS.", scopeTags: ["pcos", "pmos", "international-guideline", "shared-decision-making", "reproductive-health"]
   }
 ];
 
