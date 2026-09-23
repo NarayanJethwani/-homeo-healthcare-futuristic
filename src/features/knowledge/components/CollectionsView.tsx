@@ -25,13 +25,13 @@ export default function CollectionsView() {
     <div className="space-y-8">
       <div className="text-center max-w-2xl mx-auto space-y-2">
         <span className="text-xs font-bold text-teal-600 dark:text-teal-400 uppercase tracking-widest px-2.5 py-1 rounded-full bg-teal-500/10 border border-teal-500/20">
-          Curated Portals
+          Browse by health topic
         </span>
         <h2 className="text-2xl font-extrabold text-neutral-900 dark:text-neutral-50 tracking-tight">
-          Clinical Specialty Hubs
+          Conditions and related topics
         </h2>
         <p className="text-sm text-neutral-550 dark:text-neutral-400">
-          Explore specialized guides combining symptoms, remedies, diseases, and diagnostics into unified health collections.
+          Start with a condition, then explore its relevant symptoms and common tests without unrelated detours.
         </p>
       </div>
 
@@ -74,7 +74,7 @@ export default function CollectionsView() {
               {isSelected && (
                 <div className="mt-4 pt-4 border-t border-neutral-200 dark:border-neutral-800 space-y-2 animate-fadeIn">
                   <span className="text-[9px] uppercase tracking-wider text-teal-600 dark:text-teal-400 font-bold block mb-1">
-                    Related Knowledge Nodes:
+                    Related topics:
                   </span>
                   <div className="grid grid-cols-2 gap-2 text-[11px]">
                     {members.map(ent => {
