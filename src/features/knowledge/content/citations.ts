@@ -1927,6 +1927,12 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0126", title: "Headaches", authors: ["National Health Service"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/symptoms/headaches/", sourceIdentifier: "NHS-HEADACHES", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://www.nhs.uk/symptoms/headaches/", verificationNotes: "NHS public guidance covering common contributors, headache diaries, urgent and emergency warning signs, and when to seek clinical advice.", scopeTags: ["headache", "headache-diary", "headache-triggers", "headache-red-flags", "urgent-care"]
+  },
+  {
+    id: "CIT-0139", title: "Irregular periods", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/symptoms/irregular-periods/", sourceIdentifier: "NHS-IRREGULAR-PERIODS", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://www.nhs.uk/symptoms/irregular-periods/", verificationNotes: "NHS guidance covering cycle patterns, common causes, tracking, assessment and fertility support for irregular periods.", scopeTags: ["menstrual-irregularity", "irregular-periods", "cycle-tracking", "pcos", "thyroid"]
+  },
+  {
+    id: "CIT-0140", title: "Periods", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/conditions/periods/", sourceIdentifier: "NHS-PERIODS", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://www.nhs.uk/conditions/periods/", verificationNotes: "NHS guidance covering expected period variation, bleeding patterns and when bleeding changes require medical assessment.", scopeTags: ["menstrual-cycle", "periods", "abnormal-bleeding", "period-tracking", "reproductive-health"]
   }
 ];
 
