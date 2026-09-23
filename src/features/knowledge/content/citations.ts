@@ -1927,6 +1927,12 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0126", title: "Headaches", authors: ["National Health Service"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/symptoms/headaches/", sourceIdentifier: "NHS-HEADACHES", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://www.nhs.uk/symptoms/headaches/", verificationNotes: "NHS public guidance covering common contributors, headache diaries, urgent and emergency warning signs, and when to seek clinical advice.", scopeTags: ["headache", "headache-diary", "headache-triggers", "headache-red-flags", "urgent-care"]
+  },
+  {
+    id: "CIT-0133", title: "Abdominal pain", authors: ["MedlinePlus"], journal: "U.S. National Library of Medicine", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://medlineplus.gov/ency/article/003120.htm", sourceIdentifier: "MEDLINEPLUS-ABDOMINAL-PAIN", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://medlineplus.gov/ency/article/003120.htm", verificationNotes: "NIH MedlinePlus guidance covering common causes, home-care limits, urgent warning signs, and clinical assessment of abdominal pain.", scopeTags: ["abdominal-pain", "stomach-pain", "abdominal-pain-warning-signs", "digestive-symptoms", "emergency-care"]
+  },
+  {
+    id: "CIT-0134", title: "Stomach ache", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/symptoms/stomach-ache/", sourceIdentifier: "NHS-STOMACH-ACHE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://www.nhs.uk/symptoms/stomach-ache/", verificationNotes: "NHS public guidance covering common stomach-pain patterns, pharmacy support, urgent assessment boundaries, and emergency symptoms.", scopeTags: ["abdominal-pain", "stomach-ache", "stomach-pain-warning-signs", "pharmacy-advice", "emergency-care"]
   }
 ];
 
