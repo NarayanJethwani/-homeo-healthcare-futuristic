@@ -1915,6 +1915,12 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0122", title: "Tiredness and fatigue", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/symptoms/tiredness-and-fatigue/", sourceIdentifier: "NHS-TIREDNESS-FATIGUE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://www.nhs.uk/symptoms/tiredness-and-fatigue/", verificationNotes: "NHS guidance covering common causes, everyday support, symptoms that suggest a cause, when to seek assessment, and possible investigations.", scopeTags: ["fatigue", "tiredness", "fatigue-self-care", "fatigue-warning-signs", "fatigue-tests"]
+  },
+  {
+    id: "CIT-0123", title: "Insomnia", authors: ["MedlinePlus"], journal: "U.S. National Library of Medicine", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://medlineplus.gov/insomnia.html", sourceIdentifier: "MEDLINEPLUS-INSOMNIA", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://medlineplus.gov/insomnia.html", verificationNotes: "NIH MedlinePlus guidance covering insomnia symptoms, short- and longer-term patterns, common contributors, daytime effects, assessment, and treatments.", scopeTags: ["sleeplessness", "insomnia", "sleep-problems", "sleep-apnoea", "sleep-diary"]
+  },
+  {
+    id: "CIT-0124", title: "Insomnia Treatment", authors: ["National Heart, Lung, and Blood Institute"], journal: "National Institutes of Health", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhlbi.nih.gov/health/insomnia/treatment", sourceIdentifier: "NHLBI-INSOMNIA-TREATMENT", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://www.nhlbi.nih.gov/health/insomnia/treatment", verificationNotes: "NIH NHLBI guidance covering healthy sleep habits, CBT-I, medication and supplement cautions, and clinical support for persistent insomnia.", scopeTags: ["sleeplessness", "insomnia-treatment", "sleep-habits", "cbt-i", "sleep-medicines"]
   }
 ];
 
