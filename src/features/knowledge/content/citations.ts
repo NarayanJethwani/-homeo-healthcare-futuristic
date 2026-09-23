@@ -1927,6 +1927,12 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0126", title: "Headaches", authors: ["National Health Service"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/symptoms/headaches/", sourceIdentifier: "NHS-HEADACHES", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://www.nhs.uk/symptoms/headaches/", verificationNotes: "NHS public guidance covering common contributors, headache diaries, urgent and emergency warning signs, and when to seek clinical advice.", scopeTags: ["headache", "headache-diary", "headache-triggers", "headache-red-flags", "urgent-care"]
+  },
+  {
+    id: "CIT-0131", title: "Nausea and vomiting – adults", authors: ["MedlinePlus"], journal: "U.S. National Library of Medicine", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.medlineplus.gov/ency/article/003117.htm", sourceIdentifier: "MEDLINEPLUS-NAUSEA-VOMITING-ADULTS", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://www.medlineplus.gov/ency/article/003117.htm", verificationNotes: "NIH MedlinePlus guidance covering likely causes, hydration, and emergency or prompt-care warning signs for vomiting in adults.", scopeTags: ["vomiting", "emesis", "vomiting-warning-signs", "dehydration", "gastrointestinal-symptoms"]
+  },
+  {
+    id: "CIT-0132", title: "When you have nausea and vomiting", authors: ["MedlinePlus"], journal: "U.S. National Library of Medicine", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://medlineplus.gov/ency/patientinstructions/000122.htm", sourceIdentifier: "MEDLINEPLUS-NAUSEA-VOMITING-SELF-CARE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://medlineplus.gov/ency/patientinstructions/000122.htm", verificationNotes: "NIH MedlinePlus patient instructions covering small frequent fluids, food choices, and care-seeking when vomiting persists or fluids cannot be kept down.", scopeTags: ["vomiting", "nausea", "oral-rehydration", "small-sips", "dehydration"]
   }
 ];
 
