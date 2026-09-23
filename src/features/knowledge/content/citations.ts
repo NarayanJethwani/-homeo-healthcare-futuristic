@@ -1927,6 +1927,12 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0126", title: "Headaches", authors: ["National Health Service"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/symptoms/headaches/", sourceIdentifier: "NHS-HEADACHES", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://www.nhs.uk/symptoms/headaches/", verificationNotes: "NHS public guidance covering common contributors, headache diaries, urgent and emergency warning signs, and when to seek clinical advice.", scopeTags: ["headache", "headache-diary", "headache-triggers", "headache-red-flags", "urgent-care"]
+  },
+  {
+    id: "CIT-0135", title: "Diarrhea", authors: ["MedlinePlus"], journal: "U.S. National Library of Medicine", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://medlineplus.gov/diarrhea.html", sourceIdentifier: "MEDLINEPLUS-DIARRHEA", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://medlineplus.gov/diarrhea.html", verificationNotes: "NIH MedlinePlus guidance covering common causes, dehydration, duration, care-seeking boundaries, and oral fluid replacement for diarrhoea.", scopeTags: ["diarrhea", "diarrhoea", "dehydration", "oral-rehydration", "digestive-symptoms"]
+  },
+  {
+    id: "CIT-0136", title: "Diarrhoea and vomiting", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/symptoms/diarrhoea-and-vomiting/", sourceIdentifier: "NHS-DIARRHOEA-VOMITING", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://www.nhs.uk/symptoms/diarrhoea-and-vomiting/", verificationNotes: "NHS public guidance covering fluids, food, infection control, medicine boundaries, dehydration, and urgent or emergency symptoms in adults and children.", scopeTags: ["diarrhea", "diarrhoea", "vomiting", "dehydration", "infection-control"]
   }
 ];
 
