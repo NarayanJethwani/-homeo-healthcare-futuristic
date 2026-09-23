@@ -111,6 +111,23 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "Understanding the sleep-wake rhythm",
     },
   ],
+  headache: [
+    {
+      src: "/images/knowledge/headache/patterns-v2.png",
+      alt: "Indian woman calmly noting a headache diary in a bright home workspace",
+      label: "Noticing your pattern",
+    },
+    {
+      src: "/images/knowledge/headache/triggers-v2.png",
+      alt: "Older Indian man calmly tracking everyday headache triggers outdoors",
+      label: "Tracking everyday triggers",
+    },
+    {
+      src: "/images/knowledge/headache/pathways-v2.png",
+      alt: "Transparent multi-colour illustration of head and neck pathways related to headache",
+      label: "Headache can have many contributors",
+    },
+  ],
   indigestion: [
     {
       src: "/images/knowledge/indigestion/understanding-v1.png",

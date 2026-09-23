@@ -1921,6 +1921,12 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0124", title: "Insomnia Treatment", authors: ["National Heart, Lung, and Blood Institute"], journal: "National Institutes of Health", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhlbi.nih.gov/health/insomnia/treatment", sourceIdentifier: "NHLBI-INSOMNIA-TREATMENT", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://www.nhlbi.nih.gov/health/insomnia/treatment", verificationNotes: "NIH NHLBI guidance covering healthy sleep habits, CBT-I, medication and supplement cautions, and clinical support for persistent insomnia.", scopeTags: ["sleeplessness", "insomnia-treatment", "sleep-habits", "cbt-i", "sleep-medicines"]
+  },
+  {
+    id: "CIT-0125", title: "Headache", authors: ["MedlinePlus"], journal: "U.S. National Library of Medicine", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.medlineplus.gov/headache.html", sourceIdentifier: "MEDLINEPLUS-HEADACHE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://www.medlineplus.gov/headache.html", verificationNotes: "NIH MedlinePlus overview covering common headache patterns, general contributors, and safety signs requiring urgent medical help.", scopeTags: ["headache", "headache-red-flags", "migraine", "tension-headache", "neurology"]
+  },
+  {
+    id: "CIT-0126", title: "Headaches", authors: ["National Health Service"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/symptoms/headaches/", sourceIdentifier: "NHS-HEADACHES", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://www.nhs.uk/symptoms/headaches/", verificationNotes: "NHS public guidance covering common contributors, headache diaries, urgent and emergency warning signs, and when to seek clinical advice.", scopeTags: ["headache", "headache-diary", "headache-triggers", "headache-red-flags", "urgent-care"]
   }
 ];
 
