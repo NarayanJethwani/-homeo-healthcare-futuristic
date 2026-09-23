@@ -77,6 +77,23 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "A calm next step",
     },
   ],
+  fatigue: [
+    {
+      src: "/images/knowledge/fatigue/understanding-v1.png",
+      alt: "Indian woman taking a thoughtful, calm pause in a sunlit bookshop café",
+      label: "Understanding fatigue",
+    },
+    {
+      src: "/images/knowledge/fatigue/causes-v1.png",
+      alt: "Transparent medical illustration showing multiple body systems that can relate to fatigue",
+      label: "Fatigue can have many contributors",
+    },
+    {
+      src: "/images/knowledge/fatigue/patterns-v1.png",
+      alt: "Older Indian man noting everyday energy patterns in a colourful home veranda",
+      label: "Noticing your pattern",
+    },
+  ],
   indigestion: [
     {
       src: "/images/knowledge/indigestion/understanding-v1.png",

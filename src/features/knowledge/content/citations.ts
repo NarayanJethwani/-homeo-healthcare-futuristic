@@ -1909,6 +1909,12 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0120", title: "Dry mouth", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/symptoms/dry-mouth/", sourceIdentifier: "NHS-DRY-MOUTH", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-22", verificationEvidenceUrl: "https://www.nhs.uk/symptoms/dry-mouth/", verificationNotes: "NHS guidance covering common causes, self-care, pharmacy options, medication safety, and when to see a GP.", scopeTags: ["dry-mouth", "xerostomia-self-care", "dry-mouth-warning-signs", "oral-health"]
+  },
+  {
+    id: "CIT-0121", title: "Fatigue", authors: ["MedlinePlus"], journal: "U.S. National Library of Medicine", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://medlineplus.gov/fatigue.html", sourceIdentifier: "MEDLINEPLUS-FATIGUE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://medlineplus.gov/fatigue.html", verificationNotes: "NIH MedlinePlus guidance covering fatigue as a symptom, common medical, lifestyle, and treatment contributors, persistent-fatigue assessment, and self-care context.", scopeTags: ["fatigue", "tiredness", "persistent-fatigue", "sleep", "fatigue-causes"]
+  },
+  {
+    id: "CIT-0122", title: "Tiredness and fatigue", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/symptoms/tiredness-and-fatigue/", sourceIdentifier: "NHS-TIREDNESS-FATIGUE", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://www.nhs.uk/symptoms/tiredness-and-fatigue/", verificationNotes: "NHS guidance covering common causes, everyday support, symptoms that suggest a cause, when to seek assessment, and possible investigations.", scopeTags: ["fatigue", "tiredness", "fatigue-self-care", "fatigue-warning-signs", "fatigue-tests"]
   }
 ];
 
