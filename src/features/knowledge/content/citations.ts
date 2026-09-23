@@ -1927,6 +1927,12 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0126", title: "Headaches", authors: ["National Health Service"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/symptoms/headaches/", sourceIdentifier: "NHS-HEADACHES", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://www.nhs.uk/symptoms/headaches/", verificationNotes: "NHS public guidance covering common contributors, headache diaries, urgent and emergency warning signs, and when to seek clinical advice.", scopeTags: ["headache", "headache-diary", "headache-triggers", "headache-red-flags", "urgent-care"]
+  },
+  {
+    id: "CIT-0141", title: "Anxiety Disorders", authors: ["National Institute of Mental Health"], journal: "National Institutes of Health", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nimh.nih.gov/health/topics/anxiety-disorders", sourceIdentifier: "NIMH-ANXIETY-DISORDERS", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-24", verificationEvidenceUrl: "https://www.nimh.nih.gov/health/topics/anxiety-disorders", verificationNotes: "NIMH overview covering ordinary anxiety, anxiety disorders, functional impact, treatment options and how to find support.", scopeTags: ["anxiety", "anxiety-disorders", "mental-health", "panic", "anxiety-treatment"]
+  },
+  {
+    id: "CIT-0142", title: "Anxiety, fear and panic", authors: ["NHS"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/mental-health/feelings-symptoms-behaviours/feelings-and-symptoms/anxiety-fear-panic/", sourceIdentifier: "NHS-ANXIETY-FEAR-PANIC", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-24", verificationEvidenceUrl: "https://www.nhs.uk/mental-health/feelings-symptoms-behaviours/feelings-and-symptoms/anxiety-fear-panic/", verificationNotes: "NHS patient guidance covering physical and emotional anxiety symptoms, practical support and when to seek medical or urgent mental-health care.", scopeTags: ["anxiety", "panic", "anxiety-symptoms", "anxiety-self-care", "mental-health-crisis"]
   }
 ];
 
