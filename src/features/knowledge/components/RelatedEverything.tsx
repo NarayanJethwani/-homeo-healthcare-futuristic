@@ -13,6 +13,12 @@ interface RelatedEverythingProps {
 
 export default function RelatedEverything({ entityId }: RelatedEverythingProps) {
   const related = getRelatedEntities(entityId);
+  // Older relationship imports can contain the same connection more than once.
+  // Keep a single, useful link per topic so readers are not asked to process
+  // duplicate chips and React retains stable keys.
+  const uniqueRelated = related.filter(
+    (item, index, items) => items.findIndex((candidate) => candidate.entity.id === item.entity.id) === index
+  );
 
   // Find related comparisons from registry
   const relatedComparisons = COMPARISONS.filter(
@@ -20,15 +26,15 @@ export default function RelatedEverything({ entityId }: RelatedEverythingProps) 
   );
 
   // Group by entityType
-  const grouped = related.reduce((acc, curr) => {
+  const grouped = uniqueRelated.reduce((acc, curr) => {
     const type = curr.entity.entityType;
     if (!acc[type]) acc[type] = [];
     acc[type].push(curr);
     return acc;
-  }, {} as Record<string, typeof related>);
+  }, {} as Record<string, typeof uniqueRelated>);
 
   // Check if we have any data to render
-  const hasRelated = related.length > 0 || relatedComparisons.length > 0;
+  const hasRelated = uniqueRelated.length > 0 || relatedComparisons.length > 0;
 
   if (!hasRelated) {
     return (
