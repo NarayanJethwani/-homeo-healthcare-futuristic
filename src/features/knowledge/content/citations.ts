@@ -1927,6 +1927,12 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0126", title: "Headaches", authors: ["National Health Service"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/symptoms/headaches/", sourceIdentifier: "NHS-HEADACHES", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://www.nhs.uk/symptoms/headaches/", verificationNotes: "NHS public guidance covering common contributors, headache diaries, urgent and emergency warning signs, and when to seek clinical advice.", scopeTags: ["headache", "headache-diary", "headache-triggers", "headache-red-flags", "urgent-care"]
+  },
+  {
+    id: "CIT-0127", title: "Fever", authors: ["MedlinePlus"], journal: "U.S. National Library of Medicine", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://medlineplus.gov/ency/article/003090.htm", sourceIdentifier: "MEDLINEPLUS-FEVER", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://medlineplus.gov/ency/article/003090.htm", verificationNotes: "NIH MedlinePlus public guidance covering fever patterns, common causes, supportive care, high-risk groups, and emergency warning signs for adults and children.", scopeTags: ["fever", "pyrexia", "fever-warning-signs", "child-fever", "hydration"]
+  },
+  {
+    id: "CIT-0128", title: "High temperature (fever) in adults", authors: ["National Health Service"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/symptoms/fever-in-adults/", sourceIdentifier: "NHS-FEVER-ADULTS", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://www.nhs.uk/symptoms/fever-in-adults/", verificationNotes: "NHS public guidance covering common fever symptoms, fluids and rest, and when a fever needs urgent clinical advice.", scopeTags: ["fever", "high-temperature", "fever-self-care", "fever-warning-signs", "urgent-care"]
   }
 ];
 
