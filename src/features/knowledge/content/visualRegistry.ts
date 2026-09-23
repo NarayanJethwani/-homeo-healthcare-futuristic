@@ -94,6 +94,23 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "Noticing your pattern",
     },
   ],
+  sleeplessness: [
+    {
+      src: "/images/knowledge/sleeplessness/sleep-diary-v1.png",
+      alt: "Indian woman calmly noting a sleep diary in a warmly lit bedroom",
+      label: "Noticing your sleep pattern",
+    },
+    {
+      src: "/images/knowledge/sleeplessness/routine-v1.png",
+      alt: "Indian man creating a calm evening routine in a softly lit home",
+      label: "Preparing for sleep",
+    },
+    {
+      src: "/images/knowledge/sleeplessness/circadian-v1.png",
+      alt: "Transparent illustration of a person with a gentle sleep-wake rhythm motif",
+      label: "Understanding the sleep-wake rhythm",
+    },
+  ],
   indigestion: [
     {
       src: "/images/knowledge/indigestion/understanding-v1.png",
@@ -551,23 +568,6 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       src: "/images/knowledge/laryngitis/learning-v1.png",
       alt: "Abstract glass vocal-fold-inspired sculpture with flowing violet and gold resonance ribbons",
       label: "A closer look at voice",
-    },
-  ],
-  sleeplessness: [
-    {
-      src: "/images/knowledge/sleeplessness/understanding-v1.png",
-      alt: "Transparent side-profile head anatomy with a softly illuminated brain and neural pathways",
-      label: "Understanding sleep regulation",
-    },
-    {
-      src: "/images/knowledge/sleeplessness/lifestyle-v1.png",
-      alt: "Indian woman writing in a notebook on a softly lit apartment balcony at twilight",
-      label: "An evening reflection moment",
-    },
-    {
-      src: "/images/knowledge/sleeplessness/learning-v1.png",
-      alt: "Abstract translucent indigo and mint arcs orbiting a softly glowing amber core",
-      label: "A closer look at rhythms",
     },
   ],
   hypothyroidism: [
