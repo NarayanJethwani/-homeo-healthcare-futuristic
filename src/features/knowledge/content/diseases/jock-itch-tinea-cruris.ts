@@ -7,13 +7,13 @@ export const JockItchTineaCrurisDisease: KnowledgeEntity = {
   editorialStatus: "published",
   reviewStatus: "owner-authorization-required",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-09-21T00:00:00Z",
-    updated: "2026-09-21T00:00:00Z",
+    updated: "2026-09-24T00:00:00Z",
     reviewed: "2026-09-21T00:00:00Z",
   },
   title: {
-    en: "Jock Itch (Tinea Cruris): An Itchy, Scaly Groin Rash",
+    en: "Jock Itch",
     hi: "जॉक इच: जांघ की त्वचा में खुजली और पपड़ी वाला फंगल रैश",
     gu: "જોક ઇચ: જાંઘના વળાંકમાં ખંજવાળ અને છાલ ઉતરતો ફંગલ ચકામો",
     mr: "जॉक इच: मांडीच्या त्वचेत खाज आणि खवले असलेला फंगल पुरळ",
@@ -68,7 +68,7 @@ export const JockItchTineaCrurisDisease: KnowledgeEntity = {
   readingTimeMinutes: 4,
   audience: "patient",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.0.0: Added patient-first jock itch guide with symptom boundaries and moisture-reduction habits."],
+  changeLog: ["1.0.0: Added patient-first jock itch guide with symptom boundaries and moisture-reduction habits.", "1.1.0: Simplified the title and added focused condition and symptom connections."],
   quickFacts: { "Cause": "A fungal infection of groin and inner-thigh skin", "Often looks like": "Itchy, scaly patches in skin folds", "Helpful habit": "Change out of sweaty clothing promptly", "When to seek advice": "If it is painful, genital, blistering, spreading, persistent, or recurrent" },
   aiReadiness: {
     retrievalSummary: "Jock itch, or tinea cruris, is a fungal infection of groin and inner-thigh skin folds that can cause itchy, scaly patches and needs appropriate antifungal assessment or treatment.",

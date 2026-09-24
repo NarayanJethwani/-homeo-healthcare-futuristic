@@ -7,13 +7,13 @@ export const ContactDermatitisDisease: KnowledgeEntity = {
   editorialStatus: "published",
   reviewStatus: "owner-authorization-required",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-09-21T00:00:00Z",
-    updated: "2026-09-21T00:00:00Z",
+    updated: "2026-09-24T00:00:00Z",
     reviewed: "2026-09-21T00:00:00Z",
   },
   title: {
-    en: "Contact Dermatitis: Is Something Touching Your Skin?",
+    en: "Contact Dermatitis",
     hi: "कॉन्टैक्ट डर्मेटाइटिस: त्वचा को छूने वाली किसी चीज़ से रैश",
     gu: "કોન્ટેક્ટ ડર્મેટાઇટિસ: ત્વચાને અડતી વસ્તુથી થતો ચકામો",
     mr: "कॉन्टॅक्ट डर्मेटायटिस: त्वचेला लागणाऱ्या वस्तूमुळे पुरळ",
@@ -68,7 +68,7 @@ export const ContactDermatitisDisease: KnowledgeEntity = {
   readingTimeMinutes: 4,
   audience: "patient",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.0.0: Added patient-first contact dermatitis guide with trigger-based discovery and safety boundaries."],
+  changeLog: ["1.0.0: Added patient-first contact dermatitis guide with trigger-based discovery and safety boundaries.", "1.1.0: Simplified the title and added focused condition and symptom connections."],
   quickFacts: { "Main question": "What newly touched this part of the skin?", "Not contagious": "Yes", "Common pattern": "Itch or burning where an irritant or allergen made contact", "When to seek urgent care": "Breathing symptoms, facial swelling, widespread blistering, fever, or severe pain" },
   aiReadiness: {
     retrievalSummary: "Contact dermatitis is a non-contagious rash caused by direct contact with an irritant or allergen; review new exposures and seek care for severe or persistent symptoms.",

@@ -7,18 +7,15 @@ export const KNOWLEDGE_RELATIONSHIPS: KnowledgeRelationship[] = [
   { source: "D0003", relation: "hasSymptom", target: "S0003" }, // Migraine has Headache
   { source: "D0004", relation: "hasSymptom", target: "S0001" }, // IBS has Heartburn/Bloating
 
-  // Common infections: surface the symptom pages that help readers interpret
-  // a fever safely without implying that symptoms can confirm a diagnosis.
-  { source: "D0089", relation: "hasSymptom", target: "S0004" }, // Dengue has fever
-  { source: "D0089", relation: "hasSymptom", target: "S0003" }, // Dengue has headache
-  { source: "D0090", relation: "hasSymptom", target: "S0004" }, // Chikungunya has fever
-  { source: "D0090", relation: "hasSymptom", target: "S0015" }, // Chikungunya has joint pain
-  { source: "D0091", relation: "hasSymptom", target: "S0004" }, // Typhoid has fever
-  { source: "D0091", relation: "hasSymptom", target: "S0012" }, // Typhoid has abdominal pain
-  { source: "D0092", relation: "hasSymptom", target: "S0004" }, // Malaria has fever
-  { source: "D0092", relation: "hasSymptom", target: "S0063" }, // Malaria has chills
-  { source: "D0093", relation: "hasSymptom", target: "S0004" }, // Influenza has fever
-  { source: "D0093", relation: "hasSymptom", target: "S0008" }, // Influenza has sore throat
+  // Skin changes & fungal infections: connect patients to the closest
+  // relevant symptom or condition, not unrelated knowledge nodes.
+  { source: "D0036", relation: "relatedTo", target: "D0011" }, // Vitiligo and thyroid context
+  { source: "D0076", relation: "hasSymptom", target: "S0018" }, // Contact dermatitis has Skin Rash
+  { source: "D0076", relation: "relatedTo", target: "D0002" }, // Contact dermatitis and Eczema
+  { source: "D0077", relation: "hasSymptom", target: "S0018" }, // Ringworm has Skin Rash
+  { source: "D0077", relation: "relatedTo", target: "D0078" }, // Ringworm and Athlete's Foot
+  { source: "D0078", relation: "relatedTo", target: "D0079" }, // Athlete's Foot and Jock Itch
+  { source: "D0079", relation: "relatedTo", target: "D0077" }, // Jock Itch and Ringworm
 
   // Diseases to Remedies
   { source: "D0001", relation: "treatedWith", target: "R0002" }, // GERD - Nux Vomica
