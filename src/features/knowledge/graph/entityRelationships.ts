@@ -7,13 +7,14 @@ export const KNOWLEDGE_RELATIONSHIPS: KnowledgeRelationship[] = [
   { source: "D0003", relation: "hasSymptom", target: "S0003" }, // Migraine has Headache
   { source: "D0004", relation: "hasSymptom", target: "S0001" }, // IBS has Heartburn/Bloating
 
-  // Airway and upper-respiratory guides: link readers to closely related
-  // concerns rather than broad, unrelated nodes.
-  { source: "D0005", relation: "hasSymptom", target: "S0037" }, // Allergic Rhinitis has Nasal Congestion
-  { source: "D0005", relation: "relatedTo", target: "D0006" }, // Allergic Rhinitis and Sinusitis
-  { source: "D0006", relation: "relatedTo", target: "D0054" }, // Sinusitis and Chronic Cough
-  { source: "D0054", relation: "relatedTo", target: "D0061" }, // Chronic Cough and Laryngitis
-  { source: "D0055", relation: "relatedTo", target: "D0006" }, // Frequent Colds and Sinusitis
+  // Mouth and eye care: surface the closest associated symptom or cause.
+  { source: "D0094", relation: "hasSymptom", target: "S0042" }, // Mouth Ulcers has Mouth Ulcers symptom
+  { source: "D0094", relation: "relatedTo", target: "D0097" }, // Mouth Ulcers and Dry Mouth
+  { source: "D0097", relation: "hasSymptom", target: "S0056" }, // Dry Mouth has Dry Mouth symptom
+  { source: "D0097", relation: "relatedTo", target: "D0096" }, // Dry Mouth and Bad Breath
+  { source: "D0095", relation: "relatedTo", target: "D0096" }, // Toothache and Bad Breath
+  { source: "D0096", relation: "relatedTo", target: "D0095" }, // Bad Breath and Toothache
+  { source: "D0088", relation: "relatedTo", target: "D0005" }, // Conjunctivitis and Allergic Rhinitis
 
   // Diseases to Remedies
   { source: "D0001", relation: "treatedWith", target: "R0002" }, // GERD - Nux Vomica
