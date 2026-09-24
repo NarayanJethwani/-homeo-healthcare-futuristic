@@ -6,9 +6,9 @@ export const AllergicRhinitisDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-31T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
     reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
@@ -20,7 +20,7 @@ export const AllergicRhinitisDisease: KnowledgeEntity = {
     ar: "التهاب الأنف التحسسي",
   },
   summary: {
-    en: "An authoritative clinical profile of Allergic Rhinitis covering IgE-mediated upper mucosal inflammation, ARIA 2020 diagnostic criteria, emergency upper airway red flags, and non-replacement safety rules.",
+    en: "Allergic rhinitis is a nose allergy that can cause sneezing, an itchy or blocked nose, and watery eyes. Learn how to spot likely triggers, reduce exposure, and choose when to get advice.",
     hi: "एलर्जिक राइनाइटिस का प्रामाणिक नैदानिक विवरण, एआरआईए 2020 दिशानिर्देश और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "એલર્જિક રાઇનાઇટિસનું ARIA 2020 માર્ગદર્શિકા મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "ॲलર્જિક राहिनायटिसचे ARIA 2020 मार्गदर्शक तत्त्वांचे वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
@@ -29,7 +29,7 @@ export const AllergicRhinitisDisease: KnowledgeEntity = {
   },
   content: {
     overview:
-      "Allergic rhinitis is an IgE-mediated symptomatic inflammation of the nasal mucosa triggered by allergen exposure [D0005-KEYNOTES, CIT-0038]. It presents with paroxysmal sneezing, watery rhinorrhea, nasal congestion, and conjunctival itching.",
+      "Allergic rhinitis happens when the nose reacts to an allergen such as pollen, dust mites, mould, or animal dander. It is not an infection. Symptoms can be seasonal or happen throughout the year, and may overlap with asthma or eczema in some people.",
     definition:
       "An IgE-mediated type-I hypersensitivity disorder of the upper respiratory tract characterized by eosinophilic infiltration, histamine release, and mucosal hyper-reactivity.",
     causes: [
@@ -55,7 +55,7 @@ export const AllergicRhinitisDisease: KnowledgeEntity = {
     conventionalManagement:
       "Standard therapy includes allergen avoidance, second-generation non-sedating oral H1-antihistamines, intranasal corticosteroid sprays, leukotriene receptor antagonists, and allergen immunotherapy [CIT-0038].",
     homeopathicApproach:
-      "Homeopathic prescribing focuses on acute symptom palliation during seasonal flares and constitutional therapy aimed at desensitizing allergic diathesis.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for allergic rhinitis. It should not replace trigger management, evidence-based allergy treatment, or emergency care for breathing or swelling symptoms.",
     lifestyleAdvice:
       "Implement allergen barrier controls, utilize HEPA air filters, perform daily isotonic saline nasal irrigations, and keep windows closed during high pollen counts.",
     references: ["CIT-0020", "CIT-0021", "CIT-0022", "CIT-0038"],
@@ -71,9 +71,9 @@ export const AllergicRhinitisDisease: KnowledgeEntity = {
           "Allergic rhinitis is an IgE-mediated non-infectious allergic response with clear discharge, nasal/eye itching, and absence of fever [D0005-KEYNOTES, CIT-0038]. A common cold is a viral infection presenting with thick discolored mucus, throat pain, body aches, and low-grade fever.",
       },
       {
-        question: "How does homeopathy complement allergic rhinitis management?",
+        question: "Can homeopathy replace allergy treatment?",
         answer:
-          "Micro-diluted homeopathic remedies aim to reduce mucosal hyper-reactivity without causing drowsiness or rebound congestion, used alongside standard environmental controls [D0005-REGULATORY-LIMITS].",
+          "No. Reliable clinical evidence has not established homeopathy as a treatment for allergic rhinitis. It should not replace trigger management, allergy medicines advised by a clinician or pharmacist, or emergency care for a severe allergic reaction.",
       },
     ],
   },
@@ -99,5 +99,6 @@ export const AllergicRhinitisDisease: KnowledgeEntity = {
   changeLog: [
     "1.0.0: Initial release of Allergic Rhinitis profile",
     "1.1.0: Upgraded with ARIA 2020 guideline citations (CIT-0038), passage-level claim citations (D0005-KEYNOTES, D0005-EMERGENCY-LIMITS, D0005-REGULATORY-LIMITS), anaphylaxis/laryngeal edema red flags, and safety boundaries",
+    "1.2.0: Reframed the opening for patient-first allergy discovery and evidence-based care boundaries.",
   ],
 };

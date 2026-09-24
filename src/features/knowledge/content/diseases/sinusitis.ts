@@ -6,13 +6,13 @@ export const SinusitisDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-31T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
     reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
-    en: "Sinusitis (Rhinosinusitis)",
+    en: "Sinusitis",
     hi: "साइनसाइटिस / नाक का पोलिप (Sinusitis)",
     gu: "સાઇનસાઇટિસ (Sinusitis)",
     mr: "सायनसायटिस (Sinusitis)",
@@ -20,7 +20,7 @@ export const SinusitisDisease: KnowledgeEntity = {
     ar: "التهاب الجيوب الأنفية",
   },
   summary: {
-    en: "An authoritative clinical profile of Sinusitis covering EPOS 2020 diagnostic criteria, acute viral vs bacterial differentiation, orbital cellulitis emergency red flags, and non-replacement safety boundaries.",
+    en: "Sinusitis is swelling of the sinuses, often after a cold or flu. It can cause a blocked nose, facial pressure, reduced smell, and discoloured mucus. Learn what usually helps and when symptoms need review.",
     hi: "साइनसाइटिस का EPOS 2020 मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "સાઇનસાઇટિસનું EPOS 2020 ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "सायनसायटिसचे EPOS 2020 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
@@ -29,7 +29,7 @@ export const SinusitisDisease: KnowledgeEntity = {
   },
   content: {
     overview:
-      "Sinusitis (Rhinosinusitis) is defined as inflammation of the paranasal sinuses and nasal mucosa characterized by nasal blockage/discharge, facial pressure/pain, and reduction of smell [D0006-KEYNOTES, CIT-0043]. EPOS 2020 categorizes symptoms lasting <12 weeks as acute and ≥12 weeks as chronic rhinosinusitis.",
+      "Sinusitis is swelling in the small air spaces around the nose. It commonly follows a viral illness and usually improves without antibiotics. Allergies, nasal swelling, or other factors can contribute when symptoms keep returning or last longer than expected.",
     definition:
       "An inflammatory disorder of the paranasal sinus lining caused by viral or bacterial infection, allergic sensitization, or anatomical obstruction of the ostiomeatal complex.",
     causes: [
@@ -54,7 +54,7 @@ export const SinusitisDisease: KnowledgeEntity = {
     conventionalManagement:
       "Management includes hypertonic saline nasal lavage, topical intranasal corticosteroids, analgesics, short-course oral antibiotics for severe bacterial superinfections, or functional endoscopic sinus surgery (FESS) for anatomical ostial blockages [CIT-0043].",
     homeopathicApproach:
-      "Homeopathic remedies (such as Kali Bichromicum, Silicea, Pulsatilla, Hydrastis) serve as supportive constitutional therapy to relieve ostial congestion, thin tenacious secretions, and reduce sinus recurrence alongside standard medical evaluation.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for sinusitis. It should not delay assessment of severe, worsening, persistent, or eye-related symptoms, or treatment advised by a clinician.",
     lifestyleAdvice:
       "Perform daily warm saline nasal rinses, maintain adequate hydration, utilize facial steam inhalation, avoid tobacco smoke, and treat underlying allergic rhinitis promptly.",
     references: ["CIT-0020", "CIT-0021", "CIT-0022", "CIT-0043"],
@@ -98,5 +98,6 @@ export const SinusitisDisease: KnowledgeEntity = {
   changeLog: [
     "1.0.0: Initial release of Sinusitis profile",
     "1.1.0: Upgraded with EPOS 2020 evidence citations (CIT-0043), passage-level claim citations (D0006-KEYNOTES, D0006-EMERGENCY-LIMITS, D0006-REGULATORY-LIMITS), orbital cellulitis red flags, and emergency ENT non-replacement rules",
+    "1.2.0: Reframed the opening around symptoms, expected recovery, and evidence-based care boundaries.",
   ],
 };
