@@ -88,11 +88,11 @@ export default function Navbar() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${
-          scrolled ? "py-2 sm:py-3" : "py-3 sm:py-4"
+          scrolled ? "py-2 sm:py-3 md:py-2 xl:py-3" : "py-3 sm:py-4 md:py-2 xl:py-4"
         }`}
       >
         <div className="mx-auto max-w-[1440px] px-4 sm:px-6">
-          <div className="glass-panel flex min-h-[68px] items-center justify-between gap-4 rounded-full border-white/30 px-4 py-2.5 shadow-[0_8px_30px_rgb(20,184,166,0.06)] sm:px-5 xl:gap-5">
+          <div className="glass-panel flex min-h-[68px] flex-wrap items-center justify-between gap-x-4 gap-y-0 rounded-[28px] border-white/30 px-4 py-2.5 shadow-[0_8px_30px_rgb(20,184,166,0.06)] sm:px-5 md:py-2 xl:flex-nowrap xl:gap-5 xl:rounded-full xl:py-2.5">
             
             {/* Logo */}
             <Magnetic>
@@ -133,7 +133,7 @@ export default function Navbar() {
             </div>
 
             {/* Desktop actions */}
-            <div className="hidden shrink-0 items-center gap-2 xl:flex">
+            <div className="hidden shrink-0 items-center gap-2 md:flex">
               <Magnetic>
                 <button
                   onClick={toggleTheme}
@@ -157,13 +157,12 @@ export default function Navbar() {
             </div>
 
             {/* Mobile Controls */}
-            <div className="flex shrink-0 items-center gap-2 xl:hidden">
+            <div className="flex shrink-0 items-center gap-2 md:hidden">
               <Link
                 href="/#booking"
                 className="hidden h-10 items-center gap-1 rounded-full bg-mint-dark px-4 text-xs font-bold text-white transition-colors hover:bg-[#0B5F59] sm:inline-flex"
               >
-                <span className="md:hidden">Book</span>
-                <span className="hidden md:inline">Book Consultation</span>
+                <span>Book</span>
                 <ArrowUpRight className="h-3.5 w-3.5" />
               </Link>
               <button
@@ -184,6 +183,24 @@ export default function Navbar() {
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             </div>
+
+            {/* Keep all sections visible when the single-row layout has less room. */}
+            <div className="order-last hidden basis-full items-center justify-center gap-4 border-t border-slate-200/60 pt-1.5 dark:border-white/10 md:flex xl:hidden">
+              {menuItems.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  data-cursor="explore"
+                  aria-current={pathname === item.href ? "page" : undefined}
+                  className={`group relative cursor-pointer whitespace-nowrap py-1.5 text-xs font-semibold transition-colors duration-300 lg:text-[13px] ${
+                    pathname === item.href ? "text-mint-dark dark:text-mint" : "text-slate-700 hover:text-mint-dark dark:hover:text-mint"
+                  }`}
+                >
+                  {item.name}
+                  <span className={`absolute bottom-0 left-1/2 h-0.5 bg-mint transition-all duration-300 group-hover:left-0 group-hover:w-full ${pathname === item.href ? "left-0 w-full" : "w-0"}`} />
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </motion.nav>
@@ -197,7 +214,7 @@ export default function Navbar() {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
             id="mobile-navigation"
-            className="fixed inset-x-0 top-20 z-[60] mx-4 xl:hidden sm:top-24 sm:mx-6"
+            className="fixed inset-x-0 top-20 z-[60] mx-4 md:hidden sm:top-24 sm:mx-6"
           >
             <div className="bg-white dark:bg-[#0B0F19] border border-white/40 dark:border-slate-800/40 rounded-3xl p-5 shadow-[0_20px_50px_rgba(20,184,166,0.15)] max-h-[calc(100vh-120px)] overflow-y-auto">
               <div className="flex flex-col gap-4">
