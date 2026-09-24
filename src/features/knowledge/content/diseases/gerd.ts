@@ -9,10 +9,10 @@ export const GerdDisease: KnowledgeEntity = {
   editorialStatus: "published",
   legacyVerificationStatus: "verified-published",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-06-30T12:00:00Z",
-    updated: "2026-07-30T12:00:00Z",
-    reviewed: "2026-07-30T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
+    reviewed: "2026-09-24T12:00:00Z",
   },
   title: {
     en: "Gastroesophageal Reflux Disease (GERD)",
@@ -23,7 +23,7 @@ export const GerdDisease: KnowledgeEntity = {
     ar: "مرض الارتجاع المعدي المريئي (GERD)",
   },
   summary: {
-    en: "A condition in which reflux of stomach contents causes repeated troublesome symptoms such as heartburn or regurgitation, or leads to complications.",
+    en: "GERD is recurring acid reflux that causes troublesome heartburn or food and fluid coming back up. Learn which everyday steps can help and when symptoms need medical assessment.",
     hi: "एक स्थिति जिसमें पेट की सामग्री बार-बार भोजन नली में लौटकर सीने में जलन, खट्टा पानी आने या जटिलताओं का कारण बनती है।",
     gu: "એવી સ્થિતિ જેમાં પેટની સામગ્રી વારંવાર અન્નનળીમાં પાછી આવી છાતીમાં બળતરા, ખાટું પાણી અથવા જટિલતાઓ સર્જે છે.",
     mr: "पोटातील घटक वारंवार अन्ननलिकेत परत आल्याने छातीत जळजळ, आंबट पाणी येणे किंवा गुंतागुंत होणारी स्थिती.",
@@ -32,25 +32,24 @@ export const GerdDisease: KnowledgeEntity = {
   },
   content: {
     overview:
-      "Gastroesophageal reflux (GER) is the movement of stomach contents into the esophagus. Gastroesophageal reflux disease (GERD) is present when reflux is persistent or troublesome, or causes complications. Heartburn and regurgitation are the most common symptoms, but symptoms alone do not establish every atypical presentation.",
+      "GERD (gastroesophageal reflux disease) is recurring reflux of stomach contents into the food pipe. It often feels like burning in the chest or a sour taste, especially after meals or when lying down. It is common and treatable, but chest pain and swallowing problems must not be assumed to be reflux.",
     definition:
-      "GERD is a chronic or recurrent reflux disorder in which gastric contents enter the esophagus and cause troublesome symptoms, esophageal injury, or other complications.",
+      "A small amount of reflux can happen occasionally. GERD is the term used when reflux is frequent or troublesome, damages the food pipe, or causes complications.",
     causes: [
-      "Transient inappropriate relaxation or reduced competence of the lower esophageal sphincter",
-      "Anatomic factors such as hiatal hernia",
-      "Impaired esophageal clearance or other factors that prolong contact with refluxed gastric contents",
+      "The valve between the food pipe and stomach relaxing when it should stay closed",
+      "A hiatus hernia in some people",
+      "Meals, body position and individual factors that make reflux more likely",
     ],
     riskFactors: [
-      "Overweight or obesity",
-      "Pregnancy",
-      "Smoking",
-      "Medicines that can worsen reflux in some people; medication review should be individualized",
+      "Higher body weight, pregnancy or smoking",
+      "Late or large meals, lying down soon after eating, and personal food or drink triggers",
+      "Some medicines; ask a clinician or pharmacist before changing prescribed treatment",
     ],
     symptoms: [
-      "Burning discomfort behind the breastbone (heartburn), often after meals or when lying down",
-      "Regurgitation of sour or bitter-tasting stomach contents",
-      "Chest discomfort, which must not automatically be attributed to reflux",
-      "Difficulty swallowing, painful swallowing, chronic cough, or throat symptoms may occur but require assessment for other causes",
+      "Burning behind the breastbone, often after meals or when lying down",
+      "A sour or bitter taste, or food and fluid coming back into the mouth",
+      "Bloating, nausea, cough or throat symptoms in some people",
+      "Chest discomfort, swallowing pain or food sticking need assessment instead of self-diagnosis",
     ],
     diagnosis:
       "Typical heartburn and regurgitation without alarm features may be assessed from the clinical history and an appropriate treatment trial. Upper endoscopy is used when alarm features, complications, or alternative diagnoses are concerns. Ambulatory reflux monitoring can document abnormal reflux when the diagnosis remains uncertain, and manometry is used for selected motility or pre-procedure questions rather than as a stand-alone GERD test.",
@@ -70,7 +69,7 @@ export const GerdDisease: KnowledgeEntity = {
     homeopathicApproach:
       "Reliable evidence has not established homeopathy as a treatment for GERD or its complications. It must not replace diagnostic evaluation, emergency care, proven acid-suppressive treatment, surveillance, or a clinician-directed procedure. Patients choosing complementary products should tell their healthcare professional because some products may contain active ingredients or interact with care.",
     lifestyleAdvice:
-      "If overweight or obese, weight reduction can improve symptoms. Avoid meals for about 2–3 hours before lying down, stop smoking, and identify personal food or drink triggers rather than applying a universal exclusion list. Head-of-bed elevation can be considered for troublesome nighttime symptoms.",
+      "If relevant, gradual weight reduction can improve symptoms. Avoid eating for about 2–3 hours before lying down, stop smoking, identify personal triggers rather than excluding every food, and consider raising the head of the bed for troublesome night symptoms.",
     references: GERD_CITATIONS,
     claimCitations: [
       {
@@ -118,7 +117,7 @@ export const GerdDisease: KnowledgeEntity = {
       {
         question: "Is occasional acid reflux the same as GERD?",
         answer:
-          "No. Occasional reflux can occur without GERD. GERD involves repeated troublesome symptoms, esophageal injury, or other complications and should be assessed in context.",
+          "No. An occasional episode can happen. GERD means reflux is repeated or troublesome, causes injury, or leads to complications. A clinician can help distinguish it from other causes of symptoms.",
       },
       {
         question: "When does heartburn need urgent assessment?",
@@ -143,9 +142,9 @@ export const GerdDisease: KnowledgeEntity = {
     institution: "Homeo Healthcare Clinical Board",
   },
   reviewerRole: "Program-owner final authorization",
-  lastClinicalReview: "2026-07-30",
-  nextClinicalReview: "2027-07-30",
-  referencesUpdated: "2026-07-30",
+  lastClinicalReview: "2026-09-24",
+  nextClinicalReview: "2027-09-24",
+  referencesUpdated: "2026-09-24",
   clinicalChangesSinceLastRevision:
     "Removed generic digestive-template material, mismatched IBS and internal citations, and unsupported treatment claims; added GERD-specific diagnosis, management, emergency boundaries, and claim-level provenance.",
   reviewStatus: "owner-authorized-source-bound",
@@ -178,6 +177,7 @@ export const GerdDisease: KnowledgeEntity = {
   changeLog: [
     "1.0.0: Initial release of GERD disease profile",
     "1.1.0: Source-bound rewrite with claim citations, emergency boundaries, and unsupported-claim removal",
+    "1.2.0: Patient-first rewrite with clearer symptom, lifestyle and safety guidance",
   ],
   clinicalPearl:
     "Do not diagnose reflux from chest pain alone; potentially cardiac symptoms take priority over an empiric reflux explanation.",

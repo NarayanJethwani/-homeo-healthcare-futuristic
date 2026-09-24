@@ -6,10 +6,10 @@ export const HypothyroidismDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-31T12:00:00Z",
-    reviewed: "2026-07-31T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
+    reviewed: "2026-09-24T12:00:00Z",
   },
   title: {
     en: "Hypothyroidism",
@@ -20,7 +20,7 @@ export const HypothyroidismDisease: KnowledgeEntity = {
     ar: "قصور الغدة الدرقية",
   },
   summary: {
-    en: "An authoritative clinical profile of Hypothyroidism covering ATA 2014 diagnostic criteria, autoimmune Hashimoto etiology, serum TSH/Free T4 monitoring, myxedema coma emergency red flags, and levothyroxine non-discontinuation boundaries.",
+    en: "An underactive thyroid can slow many body functions. Learn the common symptoms, how blood tests confirm the cause, and why prescribed thyroid hormone needs regular follow-up.",
     hi: "हाइपोथायरायडिज्म का एटीए 2014 मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "હાઇપોથાઇરોઇડિઝમનું ATA 2014 ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "हायपोथायरॉईडिझमचे ATA 2014 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
@@ -29,51 +29,50 @@ export const HypothyroidismDisease: KnowledgeEntity = {
   },
   content: {
     overview:
-      "Hypothyroidism is a clinical syndrome resulting from deficient thyroid hormone production or action [D0011-KEYNOTES, CIT-0041]. Primary hypothyroidism is characterized by serum TSH elevation above reference limits (>4.5 mIU/L) and decreased Free T4 levels.",
+      "Hypothyroidism, often called an underactive thyroid, happens when the thyroid does not make enough hormone for the body’s needs. It can develop slowly and symptoms overlap with many other conditions, so blood tests—not symptoms alone—are needed to confirm it.",
     definition:
-      "A systemic metabolic state of thyroid hormone deficiency caused most commonly by autoimmune thyroiditis (Hashimoto's disease), radioactive iodine ablation, thyroidectomy, or severe iodine deficiency.",
+      "Thyroid hormones help regulate how the body uses energy. When levels are low, many body functions slow down. Hashimoto’s disease is a common cause, but previous thyroid treatment, some medicines and other causes are also possible.",
     causes: [
-      "Autoimmune thyroiditis (Hashimoto's disease): Chronic lymphocytic infiltration and anti-TPO / anti-Tg autoantibody destruction of thyroid follicles [D0011-KEYNOTES, CIT-0041]",
-      "Iatrogenic causes: Post-surgical thyroidectomy, radioactive iodine therapy, or external beam neck radiation",
-      "Central (secondary/tertiary) hypothyroidism: Pituitary TSH or hypothalamic TRH deficiency",
+      "Hashimoto’s disease, in which the immune system attacks the thyroid",
+      "Thyroid surgery, radioactive iodine or radiation treatment to the neck",
+      "Some medicines, thyroid inflammation, or less commonly a pituitary problem",
     ],
     riskFactors: [
-      "Female sex (5-10 times higher prevalence) and age >60 years",
-      "Personal or family history of autoimmune disorders (Type 1 Diabetes, Celiac disease, Vitiligo)",
-      "Postpartum period and history of neck radiation or thyroid surgery",
+      "A personal or family history of thyroid or autoimmune disease",
+      "Previous thyroid treatment, neck radiation or thyroid surgery",
+      "Pregnancy, the postpartum period, or certain medicines—when monitoring may need adjusting",
     ],
     symptoms: [
-      "Persistent physical lethargy, generalized weakness, and severe cold intolerance [D0011-KEYNOTES, CIT-0041]",
-      "Unexplained weight gain despite reduced appetite and constipation",
-      "Dry coarse skin, brittle hair, facial periorbital edema (myxedema), and hoarse voice",
-      "Bradycardia, delayed relaxation phase of deep tendon reflexes, and menorrhagia",
+      "Tiredness, feeling cold, weight change, constipation, dry skin or dry thinning hair",
+      "Low mood, slower thinking, muscle or joint aches, or a slower heart rate",
+      "Heavy or irregular periods, fertility concerns, or symptoms that develop gradually over months",
     ],
     diagnosis:
-      "Diagnosed via serum TSH (elevated >4.5 mIU/L in primary hypothyroidism), Free T4 (decreased in overt hypothyroidism), and anti-TPO / anti-thyroglobulin antibody titers [CIT-0041].",
+      "A clinician uses thyroid blood tests—usually TSH and free T4—to confirm hypothyroidism and guide treatment. Antibody tests can help identify Hashimoto’s disease. Your result needs interpretation in context, including pregnancy, illness and medicines.",
     differentialDiagnosis:
       "Differentiate from Major Depressive Disorder, Chronic Fatigue Syndrome, Iron Deficiency Anemia, Polycystic Ovary Syndrome (PCOS), and Non-Thyroidal Illness Syndrome (Euthyroid Sick Syndrome).",
     conventionalManagement:
-      "Standard medical treatment consists of oral levothyroxine (synthetic L-T4) monotherapy titrated to normalize serum TSH levels [CIT-0041].",
+      "Treatment commonly replaces the thyroid hormone the body is not making with prescribed levothyroxine. Blood tests are repeated after starting or changing the dose, and then at intervals agreed with the clinician.",
     homeopathicApproach:
-      "Homeopathic care provides constitutional supportive therapy to address chronic fatigue, cold intolerance, and emotional symptoms alongside routine serum TSH monitoring.",
+      "Reliable clinical evidence has not established homeopathy as a replacement for thyroid hormone treatment. It must not replace prescribed levothyroxine, blood-test monitoring or urgent medical care. Tell the clinician about all complementary products you use.",
     lifestyleAdvice:
-      "Ensure adequate dietary iodine and selenium intake, avoid excessive consumption of raw goitrogenic vegetables, engage in regular physical activity, and track annual TSH levels.",
+      "Take thyroid medicine exactly as prescribed and ask your pharmacist or clinician about timing with food, supplements and other medicines. Avoid starting iodine or “thyroid support” supplements unless your clinician recommends them; excess iodine can be harmful for some people.",
     references: ["CIT-0012", "CIT-0013", "CIT-0014", "CIT-0041"],
     faqs: [
       {
-        question: "What is Myxedema Coma and what emergency signs require ER care?",
+        question: "When does hypothyroidism need urgent care?",
         answer:
-          "Myxedema Coma is a severe, life-threatening crisis of extreme hypothyroidism [D0011-EMERGENCY-LIMITS, CIT-0041]. Key red flags include hypothermia (<35°C / 95°F), severe bradycardia, hypotension, respiratory depression, and altered sensorium or coma. It requires IMMEDIATE emergency medical transport to an intensive care unit for IV levothyroxine, hydrocortisone, and mechanical ventilation.",
+          "Severe untreated hypothyroidism is rarely life-threatening, but confusion, extreme sleepiness, fainting, severe breathlessness, very low body temperature or an unusually slow heartbeat need emergency assessment. Contact your clinician promptly if symptoms are worsening or you are pregnant.",
       },
       {
-        question: "Can levothyroxine replacement therapy be stopped when taking homeopathic remedies?",
+        question: "Can I stop levothyroxine if I feel better?",
         answer:
-          "NO. Prescribed levothyroxine hormone replacement therapy MUST NEVER be discontinued without direct medical supervision and repeat TSH testing [D0011-REGULATORY-LIMITS]. Abrupt cessation causes severe metabolic decline and increases risk of myxedema coma.",
+          "No. Do not stop, skip or change the dose without medical advice and follow-up blood tests. Feeling better often means the prescribed dose is working.",
       },
       {
-        question: "How does homeopathy integrate with thyroid lab monitoring?",
+        question: "Can symptoms alone diagnose an underactive thyroid?",
         answer:
-          "Homeopathy serves as a constitutional supportive care modality while thyroid hormone replacement is managed under medical direction with regular TSH and Free T4 blood testing [D0011-REGULATORY-LIMITS].",
+          "No. Tiredness, weight change and feeling cold have many possible causes. Thyroid blood tests are needed to confirm the diagnosis and guide safe treatment.",
       },
     ],
   },
@@ -88,8 +87,8 @@ export const HypothyroidismDisease: KnowledgeEntity = {
     institution: "Homeo Healthcare Clinical Board",
   },
   reviewerRole: "Program-owner final clinical authorization",
-  lastClinicalReview: "2026-07-31",
-  nextClinicalReview: "2027-07-31",
+  lastClinicalReview: "2026-09-24",
+  nextClinicalReview: "2027-09-24",
   evidenceLevel: "Consensus-Guidance",
   tags: ["Hypothyroidism", "Disease", "ATA-2014", "Endocrinology", "Thyroid-TSH", "Emergency-Safety"],
   canonicalUrl: "https://homeo.healthcare/knowledge/diseases/hypothyroidism",
@@ -99,6 +98,7 @@ export const HypothyroidismDisease: KnowledgeEntity = {
   changeLog: [
     "1.0.0: Initial release of Hypothyroidism profile",
     "1.1.0: Upgraded with ATA 2014 guideline citations (CIT-0041), passage-level claim citations (D0011-KEYNOTES, D0011-EMERGENCY-LIMITS, D0011-REGULATORY-LIMITS), myxedema coma red flags, and levothyroxine non-discontinuation safety rules",
+    "1.2.0: Patient-first rewrite with clearer diagnosis, medicine and supplement boundaries",
   ],
   clinicalPearl:
     "Hypothyroidism can cause secondary hyperprolactinemia due to TRH cross-stimulation. Always screen thyroid status in cases of unexplained galactorrhea or oligomenorrhea.",
