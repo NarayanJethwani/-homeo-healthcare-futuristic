@@ -7,6 +7,12 @@ export const KNOWLEDGE_RELATIONSHIPS: KnowledgeRelationship[] = [
   { source: "D0003", relation: "hasSymptom", target: "S0003" }, // Migraine has Headache
   { source: "D0004", relation: "hasSymptom", target: "S0001" }, // IBS has Heartburn/Bloating
 
+  // Respiratory guides: start from the symptom a patient notices, then lead to the relevant condition.
+  { source: "D0007", relation: "hasSymptom", target: "S0034" }, // Asthma has Shortness of Breath
+  { source: "D0027", relation: "hasSymptom", target: "S0009" }, // Bronchitis has Wet Cough
+  { source: "D0055", relation: "hasSymptom", target: "S0009" }, // Frequent Colds can have Wet Cough
+  { source: "D0027", relation: "relatedTo", target: "D0007" }, // Bronchitis and asthma can both cause wheeze and breathlessness
+
   // Diseases to Remedies
   { source: "D0001", relation: "treatedWith", target: "R0002" }, // GERD - Nux Vomica
   { source: "D0001", relation: "treatedWith", target: "R0003" }, // GERD - Lycopodium

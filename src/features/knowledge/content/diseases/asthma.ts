@@ -20,7 +20,7 @@ export const AsthmaDisease: KnowledgeEntity = {
     ar: "الربو (Asthma)",
   },
   summary: {
-    en: "An evidence-based clinical guide to Asthma, emphasizing GINA 2023 guidelines, emergency status asthmaticus red flags, and strict non-replacement safety boundaries.",
+    en: "Asthma can cause wheezing, cough, chest tightness, and shortness of breath that vary over time. Learn how an action plan and prescribed inhalers help, and when an asthma attack needs emergency care.",
     hi: "अस्थमा का साक्ष्य-आधारित नैदानिक विवरण, जिसमें GINA 2023 दिशानिर्देश एवं आपातकालीन सीमाएं शामिल हैं।",
     gu: "અસ્થમાનું પુરાવા-આધારિત તબીબી માર્ગદર્શન અને ઈમરજન્સી લાલ નિશાનો.",
     mr: "दम्याचे वैद्यकीय मार्गदर्शन आणि आणीबाणीच्या सुरक्षिततेच्या मर्यादा.",
@@ -57,7 +57,7 @@ export const AsthmaDisease: KnowledgeEntity = {
     conventionalManagement:
       "First-line management follows GINA 2023 guidelines: inhaled corticosteroid (ICS)-formoterol track for maintenance and reliever therapy, SABA bronchodilators for acute symptoms, leukotriene receptor antagonists, and biologic therapies (anti-IgE, anti-IL5) for severe refractory asthma [CIT-0037].",
     homeopathicApproach:
-      "Homeopathic prescribing aims to complement overall patient presprescribings and reduce constitutional sensitivity in chronic stable phases. Homeopathy does NOT replace acute pharmaceutical bronchodilators [D0007-HOMEOPATHY-LIMITS, CIT-0023].",
+      "Reliable clinical evidence has not established homeopathy as a treatment for asthma. It must not replace an asthma action plan, prescribed inhalers, or emergency care during an asthma attack [D0007-HOMEOPATHY-LIMITS, CIT-0023].",
     lifestyleAdvice:
       "Use peak flow meters to monitor diurnal PEFR variability, avoid known environmental triggers, utilize HEPA air filtration, maintain up-to-date influenza/pneumococcal vaccinations, and follow an individualized Asthma Action Plan.",
     emergencyRedFlags: [

@@ -13,7 +13,7 @@ export const RecurrentColdDisease: KnowledgeEntity = {
     reviewed: "2026-08-14T12:00:00Z"
   },
   title: {
-    en: "Recurrent Common Cold (Frequent Viral Upper Respiratory Tract Infections)",
+    en: "Frequent Colds",
     hi: "बार-बार सर्दी-जुकाम होना / आवर्तक श्वसन संक्रमण (Recurrent Common Cold)",
     gu: "વારંવાર શરદી-સળેખમ થવું / વાયરલ શ્વસન ચેપ (Recurrent Cold)",
     mr: "वारंवार होणारी सर्दी-पडसे / वारंवार होणारे श्वसन संसर्ग (Recurrent Cold)",
@@ -21,7 +21,7 @@ export const RecurrentColdDisease: KnowledgeEntity = {
     ar: "الزكام المتكرر وإنتانات الجهاز التنفسي العلوي الفيروسية (Recurrent Cold)"
   },
   summary: {
-    en: "An authoritative clinical and educational profile of Recurrent Common Cold (Frequent Viral URTIs), covering viral antigenic diversity (Rhinovirus ICAM-1 entry, Coronaviruses, Adenoviruses), respiratory mucosal epithelial barrier integrity, humoral immune maturation, constitutional homeopathic supportive management, and emergency red flags for acute bacterial pneumonia, peritonsillar abscess (quinsy), severe respiratory distress, and primary immunodeficiency disorders.",
+    en: "Frequent colds are common, especially in young children who meet many new viruses. Learn what a usual cold looks like, simple ways to reduce spread, and when repeated or worsening infections need medical advice.",
     hi: "बार-बार होने वाले सर्दी-जुकाम (रिकरेंट कॉमन कोल्ड) का राइनोवायरस पैथोलॉजी, म्यूकोसल बैरियर इम्युनिटी, नाक बहना, छींकें व गले की खराश, पारंपरिक संवैधानिक होम्योपैथिक प्रबंधन, और बैक्टीरियल निमोनिया, क्विन्सी (Peritonsillar Abscess) व इम्यूनोडेफिशिएंसी की आपातकालीन सुरक्षा सीमाओं सहित प्रामाणिक विवरण.",
     gu: "વારંવાર થતી શરદી-સળેખમ (વાયરલ ઇન્ફેક્શન) ની પેથોલોજી, રોગપ્રતિકારક શક્તિની નબળાઈ, નાકમાંથી પાણી વહેવું અને ગળામાં દુખાવો, પરંપરાગત હોમિયોપેથીક સહાયક સારવાર અને ફેફસામાં ન્યુમોનિયા તથા શ્વાસ ચડવાની ઇમરજન્સી સીમાઓનું વિવરણ.",
     mr: "वारंवार होणारी सर्दी-पडसे (Recurrent Common Cold), नाकातून पाणी वाहणे, शिंका व घशातील खवखव, रोगप्रतिकारशक्ती, पारंपरिक होमिओपॅथिक पद्धत आणि न्यूमोनिया व श्वसनाच्या गंभीर त्रासाच्या आणीबाणीच्या मर्यादा.",
@@ -61,7 +61,7 @@ export const RecurrentColdDisease: KnowledgeEntity = {
     conventionalManagement:
       "Symptomatic, supportive, and non-antibiotic evidence-based care: (1) Absolute avoidance of routine systemic antibiotics (antibiotics have zero efficacy against viral pathogens and drive antimicrobial resistance and Clostridioides difficile colitis). (2) Nasal symptom relief: isotonic or hypertonic nasal saline sprays/irrigations (clears mucus and reduces mucosal edema), short-term topical decongestants (oxymetazoline 0.05% spray; strictly limited to \u22643–5 days to prevent rhinitis medicamentosa rebound congestion), and first-generation antihistamine/decongestant combinations for adults. (3) Analgesics/Antipyretics: oral acetaminophen (paracetamol) or ibuprofen for sore throat, headache, and fever. (4) Humidification and hydration: cool mist humidifiers and adequate oral fluids. (5) Zinc lozenges (>75 mg/day elemental zinc started within 24 hours of onset reduces cold duration by ~30%).",
     homeopathicApproach:
-      "Homeopathic constitutional and acute coryzal remedies (such as Aconitum Napellus, Allium Cepa, Arsenicum Album, Gelsemium Sempervirens, Nux Vomica, Pulsatilla Nigricans, Hepar Sulphuris, Dulcamara, Silicea, Calcarea Carbonica) serve as supportive care to ease nasal congestion, soothe sneezing fits, and support constitutional immune vitality alongside saline nasal sprays, hydration, and rest.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for colds or for preventing repeated infections. It must not replace assessment for worsening symptoms, breathing problems, or possible immune concerns.",
     lifestyleAdvice:
       "Practice meticulous hand hygiene (wash hands thoroughly with soap and water for 20 seconds or use alcohol-based hand rub after public transit or coughing), completely eliminate indoor tobacco smoke exposure, get 7 to 9 hours of quality sleep nightly to optimize natural killer cell activity, maintain a nutrient-dense diet rich in Vitamin C, Zinc, and bioflavonoids, use a clean cool mist room humidifier during dry winter months, and stay home during the first 48 hours of an acute cold to prevent transmitting the virus to coworkers or classmates.",
     references: [

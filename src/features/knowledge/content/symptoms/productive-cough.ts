@@ -12,7 +12,7 @@ export const ProductiveCoughSymptom: KnowledgeEntity = {
     reviewed: "2026-07-31T19:50:00Z"
   },
   title: {
-    en: "Productive Cough (Wet Cough)",
+    en: "Wet Cough (Productive Cough)",
     hi: "कफ वाली खांसी (Productive Cough)",
     gu: "કફવાળી ખાંસી (Productive Cough)",
     mr: "कफ असणारा खोकला (Productive Cough)",
@@ -20,7 +20,7 @@ export const ProductiveCoughSymptom: KnowledgeEntity = {
     ar: "السعال المنتجة (Productive Cough)"
   },
   summary: {
-    en: "Clinical triage, sputum evaluation, and respiratory management of Productive Cough under ERS 2020 standards.",
+    en: "A wet cough brings up mucus or phlegm and is often linked to a respiratory infection. Learn simple supportive measures and the signs—such as blood in phlegm or severe breathlessness—that need prompt care.",
     hi: "कफ वाली खांसी की नैदानिक समझ और आपातकालीन खतरे के संकेत.",
     gu: "કફવાળી ખાંસીના લક્ષણ ની સમજણ અને ઇમરજન્સી ફ્લેગ્સ.",
     mr: "कफ असणाऱ्या खोकल्याचे लक्षण आणि तातडीचे रेड फ्लॅग्स.",
@@ -71,16 +71,16 @@ export const ProductiveCoughSymptom: KnowledgeEntity = {
     ],
   "faqs": [
     {
-      "question": "What is the difference between allergic rhinitis and a common cold?",
-      "answer": "Allergic rhinitis is an IgE-mediated immune response triggered by allergens (pollen, dust), presenting with itchy eyes, sneezing, and clear watery discharge. A cold is a viral infection, usually presenting with thicker discharge, throat irritation, and sometimes a low-grade fever."
+      "question": "What can help a wet cough at home?",
+      "answer": "Rest, fluids, and avoiding smoke can help. A warm drink with honey may soothe a cough for people over 1 year old. Ask a pharmacist before using cough medicines, especially for children, pregnancy, or long-term conditions."
     },
     {
-      "question": "Can untreated allergies lead to asthma?",
-      "answer": "Yes. The 'atopic march' describes how upper airway allergic inflammation (allergic rhinitis) can progress to involve the lower airways, triggering asthma in susceptible individuals."
+      "question": "Does green or yellow phlegm always mean I need antibiotics?",
+      "answer": "No. Mucus colour alone cannot tell whether an infection is bacterial or whether antibiotics are needed. A clinician considers the full pattern of symptoms, examination, and sometimes tests."
     },
     {
-      "question": "How does homeopathy support respiratory allergies?",
-      "answer": "Homeopathic remedies aim to reduce the body's hyper-reactivity to environmental allergens and strengthen mucosal defenses, using acute and deep-acting constitutional remedies."
+      "question": "When should I get urgent help?",
+      "answer": "Seek urgent help if you cough up blood, have chest pain, severe or worsening breathlessness, confusion, blue or grey lips or skin, or feel too unwell to manage usual activities."
     }
   ]
 },

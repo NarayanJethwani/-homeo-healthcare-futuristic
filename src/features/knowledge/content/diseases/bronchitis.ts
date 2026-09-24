@@ -12,7 +12,7 @@ export const BronchitisDisease: KnowledgeEntity = {
     reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
-    en: "Acute & Chronic Bronchitis",
+    en: "Bronchitis",
     hi: "ब्रोंकाइटिस / श्वासप्रणाली शोध (Bronchitis)",
     gu: "બ્રોન્કાઇટિસ / શ્વાસનળીનો સોજો (Bronchitis)",
     mr: "ब्रॉन्कायटिस / श्वासनलिका दाह (Bronchitis)",
@@ -20,7 +20,7 @@ export const BronchitisDisease: KnowledgeEntity = {
     ar: "التهاب الشعب الهوائية",
   },
   summary: {
-    en: "An authoritative clinical profile of Acute and Chronic Bronchitis covering ERS 2020 guidelines, bronchial mucosal inflammatory mechanics, pneumonia/hemoptysis emergency red flags, and antibiotic stewardship boundaries.",
+    en: "Bronchitis is inflammation of the airways that commonly causes a cough, sometimes with mucus. Learn what can ease symptoms, when a cough needs medical advice, and why antibiotics are not usually needed for viral bronchitis.",
     hi: "ब्रोंकाइटिस का ERS 2020 मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "બ્રોન્કાઇટિસનું ERS 2020 ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "ब्रॉन्कायटिसचे ERS 2020 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
@@ -54,7 +54,7 @@ export const BronchitisDisease: KnowledgeEntity = {
     conventionalManagement:
       "Management of acute viral bronchitis focuses on symptomatic care (hydration, humidification, antitussives/expectorants, short-acting beta-agonists if wheezing). Routine antibiotics are strongly discouraged by ERS guidelines due to lack of efficacy and resistance risks [CIT-0055].",
     homeopathicApproach:
-      "Homeopathic remedies (such as Antimonium Tartaricum, Bryonia Alba, Hepar Sulphuris, Drosera, Pulsatilla) act as supportive care to loosen tenacious mucus, soothe cough spasms, and ease chest soreness alongside rest and hydration.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for bronchitis. It must not replace medical assessment, prescribed treatment, or urgent care for breathlessness, chest pain, or coughing up blood.",
     lifestyleAdvice:
       "Avoid cigarette smoke and air pollutants, use cool-mist humidifiers, drink warm fluids, and rest. Wash hands frequently to prevent respiratory pathogen transmission.",
     references: ["CIT-0020", "CIT-0021", "CIT-0022", "CIT-0055"],

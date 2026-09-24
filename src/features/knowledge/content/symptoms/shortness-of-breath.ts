@@ -12,7 +12,7 @@ export const ShortnessofBreathSymptom: KnowledgeEntity = {
     reviewed: "2026-07-31T19:50:00Z"
   },
   title: {
-    en: "Shortness of Breath (Dyspnea)",
+    en: "Shortness of Breath",
     hi: "सांस फूलना (Shortness of Breath)",
     gu: "શ્વાસ ચડવો (Shortness of Breath)",
     mr: "श्वास घेण्यास त्रास (Shortness of Breath)",
@@ -20,7 +20,7 @@ export const ShortnessofBreathSymptom: KnowledgeEntity = {
     ar: "ضيق التنفس (Shortness of Breath)"
   },
   summary: {
-    en: "Clinical triage, emergency differentiation, and supportive management of Shortness of Breath (Dyspnea) under ATS/ERS 2020 standards.",
+    en: "Shortness of breath can have many causes, from asthma and infection to heart or lung conditions. New, severe, or worsening breathing difficulty needs urgent medical assessment.",
     hi: "सांस फूलने के लक्षण की नैदानिक समझ और आपातकालीन खतरे के संकेत.",
     gu: "શ્વાસ ચડવાના લક્ષણ ની સમજણ અને ઇમરજન્સી ફ્લેગ્સ.",
     mr: "श्वास घेण्यास त्रासाचे लक्षण आणि तातडीचे रेड फ्लॅग्स.",
@@ -71,16 +71,16 @@ export const ShortnessofBreathSymptom: KnowledgeEntity = {
     ],
   "faqs": [
     {
-      "question": "What is the difference between allergic rhinitis and a common cold?",
-      "answer": "Allergic rhinitis is an IgE-mediated immune response triggered by allergens (pollen, dust), presenting with itchy eyes, sneezing, and clear watery discharge. A cold is a viral infection, usually presenting with thicker discharge, throat irritation, and sometimes a low-grade fever."
+      "question": "When is shortness of breath an emergency?",
+      "answer": "Call emergency services for severe difficulty breathing, blue or grey lips or skin, chest pain, fainting, confusion, or if you cannot speak in full sentences. Do not drive yourself if you are severely breathless."
     },
     {
-      "question": "Can untreated allergies lead to asthma?",
-      "answer": "Yes. The 'atopic march' describes how upper airway allergic inflammation (allergic rhinitis) can progress to involve the lower airways, triggering asthma in susceptible individuals."
+      "question": "Can a cold or asthma cause shortness of breath?",
+      "answer": "Yes. Respiratory infections and asthma can both affect breathing, but symptoms alone cannot confirm the cause. Seek prompt advice if breathlessness is new, worsening, occurs at rest, or comes with chest pain or fever."
     },
     {
-      "question": "How does homeopathy support respiratory allergies?",
-      "answer": "Homeopathic remedies aim to reduce the body's hyper-reactivity to environmental allergens and strengthen mucosal defenses, using acute and deep-acting constitutional remedies."
+      "question": "What should I do while waiting for help?",
+      "answer": "Sit upright, loosen tight clothing, and follow your clinician-provided action plan if you have one, such as an asthma plan. Do not delay emergency care or use someone else's medicines."
     }
   ]
 },
