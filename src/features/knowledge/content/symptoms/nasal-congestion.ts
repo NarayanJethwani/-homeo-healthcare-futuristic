@@ -20,7 +20,7 @@ export const NasalCongestionSymptom: KnowledgeEntity = {
     ar: "Nasal Congestion"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Nasal Congestion.",
+    en: "Nasal congestion is a blocked or stuffy nose caused by swelling inside the nose. Colds and allergies are common causes, but persistent one-sided blockage should be assessed.",
     hi: "Nasal Congestion के लक्षण की नैदानिक समझ.",
     gu: "Nasal Congestion ના લક્ષણ ની સમજણ.",
     mr: "Nasal Congestion चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const NasalCongestionSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Nasal Congestion."
   },
   content: {
-  "definition": "Nasal congestion: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Nasal congestion is the feeling that airflow through one or both nostrils is reduced because the lining inside the nose is swollen or mucus is present.",
+  "clinicalMeaning": "It is usually short-lived with a cold or allergy. The pattern—seasonal, sudden, one-sided, or persistent—helps distinguish likely causes and when assessment is useful.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "A viral cold or another upper respiratory infection",
+    "Allergy to pollen, dust mites, animals, mould, or an irritant",
+    "Non-allergic rhinitis triggered by temperature changes, smoke, or strong smells",
+    "Sinus inflammation, a medicine effect, or a structural nasal problem"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "A clinician may consider allergy, infection, sinus disease, medication overuse, nasal polyps, or a structural cause. A blocked nose caused by decongestant overuse needs a different approach.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Seek urgent help for severe breathing difficulty, swelling of the face or throat, severe headache with neck stiffness, or eye swelling or vision changes.",
+    "Arrange a review for one-sided blockage that persists, repeated nosebleeds, reduced sense of smell that does not recover, facial pain or swelling, or symptoms lasting several weeks.",
+    "Get advice before using a decongestant if you are pregnant, have heart disease, high blood pressure, glaucoma, or take regular medicines."
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "Rest, drink fluids, avoid smoke and known triggers, and consider saline spray or rinse. A pharmacist can advise on allergy treatments or a short course of nasal decongestant; do not use decongestant sprays for longer than the product guidance because they can make blockage worse.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const NasalCongestionSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "Is a blocked nose always a cold?",
+      "answer": "No. Allergy, irritants, sinus inflammation, medicines, and structural nasal problems can also cause congestion."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "Can I use a nasal decongestant spray?",
+      "answer": "A pharmacist can advise whether it is suitable. These sprays should only be used for the short period in the product instructions because longer use can worsen congestion."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "When should a blocked nose be checked?",
+      "answer": "Seek advice for persistent one-sided blockage, recurring nosebleeds, facial pain or swelling, or symptoms that do not settle."
     }
   ]
 },

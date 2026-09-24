@@ -20,7 +20,7 @@ export const DryCoughSymptom: KnowledgeEntity = {
     ar: "السعال الجاف (Dry Cough)"
   },
   summary: {
-    en: "Clinical evaluation, differential diagnosis, red flag alarm features, and supportive management for Dry Cough under CHEST 2021 guidelines.",
+    en: "A dry cough brings up little or no mucus. It is often short-lived after a cold or irritation, but a persistent, worsening, or breathless cough needs assessment.",
     hi: "सूखी खांसी के लक्षण की नैदानिक समझ और चेतावनी लक्षण.",
     gu: "સૂકી ઉધરસના લક્ષણની તબીબી સમજણ અને ઈમરજન્સી ચેતવણી લક્ષણો.",
     mr: "कोरड्या खोकल्याच्या लक्षणांची वैद्यकीय माहिती आणि इशारे.",
@@ -28,22 +28,21 @@ export const DryCoughSymptom: KnowledgeEntity = {
     ar: "التقييم السريري وعلامات الخطر للسعال الجاف."
   },
   content: {
-    definition: "Dry Cough: A non-productive cough lacking sputum production, resulting from mechanical, chemical, or inflammatory irritation of vagal afferent cough receptors in the upper or lower respiratory tract.",
-    clinicalMeaning: "Reflects upper airway cough syndrome (UACS/post-nasal drip), cough-variant asthma, GERD micro-aspiration, drug-induced bronchospasm, or early interstitial lung disease.",
+    definition: "A dry cough is a cough that produces little or no mucus. It may feel tickly or irritating in the throat or chest.",
+    clinicalMeaning: "Most new coughs improve within three to four weeks. A dry cough can follow a viral infection or be linked to allergy, asthma, reflux, smoking, an irritant, or a medicine.",
     commonCauses: [
-      "Upper Airway Cough Syndrome (UACS), Post-Viral Airway Hyper-responsiveness",
-      "Cough-Variant Asthma (CVA), Gastroesophageal Reflux Disease (GERD)",
-      "ACE-Inhibitor Induced Cough (Bradykinin/Substance P Accumulation)",
-      "Environmental Irritants (Tobacco smoke, pollution, occupational dusts)"
+      "A cold, flu, COVID-19, or a cough that lingers after an infection",
+      "Allergy, post-nasal drip, asthma, or reflux",
+      "Smoking, vaping, air pollution, cold air, or strong-smelling irritants",
+      "Some medicines, including ACE inhibitors used for blood pressure or heart conditions"
     ],
-    differentialDiagnosis: "Differentiate uncomplicated dry cough from acute pulmonary embolism, pertussis, interstitial lung disease (ILD/pulmonary fibrosis), bronchogenic carcinoma, and left-sided heart failure (cardiac asthma).",
+    differentialDiagnosis: "A clinician may consider the duration, smoking history, medicines, reflux, allergies, asthma symptoms, and infection signs. Persistent cough needs assessment rather than self-diagnosis.",
     redFlags: [
-      "Hemoptysis (blood-streaked or frank bloody sputum)",
-      "Unexplained dyspnea, hypoxia (SpO2 <90%), or stridor",
-      "Unintentional weight loss, drenching night sweats, or hoarseness >3 weeks",
-      "High fever with pleuritic chest pain or crackles on auscultation"
+      "Get urgent help for severe or worsening breathing difficulty, chest pain, coughing blood, or feeling very unwell.",
+      "Arrange a review for a cough lasting more than three weeks, unexplained weight loss, persistent fever, night sweats, or a hoarse voice that does not settle.",
+      "Seek urgent advice sooner if you have a weakened immune system or a significant heart or lung condition."
     ],
-    lifestyleAdvice: "Maintain indoor humidity, eliminate tobacco smoke and airborne irritants, try warm honey or saline gargles, review medications with prescribing physician, and stay well hydrated.",
+    lifestyleAdvice: "Rest, drink fluids, avoid smoke and vaping, and speak to a pharmacist about suitable symptom relief. Honey and warm drinks may soothe adults and children over one year; do not give honey to babies. Do not stop a prescribed medicine without speaking to the prescriber.",
     references: [
       "CIT-0075",
       "CIT-0023"
@@ -72,16 +71,16 @@ export const DryCoughSymptom: KnowledgeEntity = {
     ],
   "faqs": [
     {
-      "question": "What is the difference between allergic rhinitis and a common cold?",
-      "answer": "Allergic rhinitis is an IgE-mediated immune response triggered by allergens (pollen, dust), presenting with itchy eyes, sneezing, and clear watery discharge. A cold is a viral infection, usually presenting with thicker discharge, throat irritation, and sometimes a low-grade fever."
+      "question": "How long should a dry cough last?",
+      "answer": "Most new coughs improve within three to four weeks. See a clinician if it lasts longer, is getting worse, or has warning symptoms."
     },
     {
-      "question": "Can untreated allergies lead to asthma?",
-      "answer": "Yes. The 'atopic march' describes how upper airway allergic inflammation (allergic rhinitis) can progress to involve the lower airways, triggering asthma in susceptible individuals."
+      "question": "Could a medicine cause my cough?",
+      "answer": "Some medicines, including ACE inhibitors, can cause a dry cough. Speak to the prescriber; do not stop a prescribed medicine by yourself."
     },
     {
-      "question": "How does homeopathy support respiratory allergies?",
-      "answer": "Homeopathic remedies aim to reduce the body's hyper-reactivity to environmental allergens and strengthen mucosal defenses, using acute and deep-acting constitutional remedies."
+      "question": "When is a dry cough urgent?",
+      "answer": "Severe breathing difficulty, chest pain, coughing blood, or feeling very unwell needs urgent medical help."
     }
   ]
 },

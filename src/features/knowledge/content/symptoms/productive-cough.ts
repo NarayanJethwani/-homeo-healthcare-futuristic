@@ -20,7 +20,7 @@ export const ProductiveCoughSymptom: KnowledgeEntity = {
     ar: "السعال المنتجة (Productive Cough)"
   },
   summary: {
-    en: "A wet cough brings up mucus or phlegm and is often linked to a respiratory infection. Learn simple supportive measures and the signs—such as blood in phlegm or severe breathlessness—that need prompt care.",
+    en: "A productive or wet cough brings up mucus. It often accompanies a respiratory infection, but blood, chest pain, breathlessness, or a persistent cough needs medical assessment.",
     hi: "कफ वाली खांसी की नैदानिक समझ और आपातकालीन खतरे के संकेत.",
     gu: "કફવાળી ખાંસીના લક્ષણ ની સમજણ અને ઇમરજન્સી ફ્લેગ્સ.",
     mr: "कफ असणाऱ्या खोकल्याचे लक्षण आणि तातडीचे रेड फ्लॅग्स.",
@@ -28,21 +28,21 @@ export const ProductiveCoughSymptom: KnowledgeEntity = {
     ar: "التفرقة السريرية والعلامات التحذيرية للسعال المنتج."
   },
   content: {
-    definition: "Productive Cough: A respiratory defense reflex characterized by the expulsion of tracheobronchial mucus or purulent secretions from the lower respiratory tract.",
-    clinicalMeaning: "Reflects bronchial mucosal hypersecretion, bacterial lower respiratory tract infection, bronchiectasis, or chronic bronchitis requiring sputum evaluation and chest imaging.",
+    definition: "A productive cough is a cough that brings up mucus, also called phlegm or sputum. Coughing helps clear mucus and irritants from the airways.",
+    clinicalMeaning: "Mucus can occur with a cold or chest infection, but the duration, amount, colour, blood, fever, chest pain, and breathing symptoms determine whether you need assessment.",
     commonCauses: [
-      "Acute Bacterial Bronchitis or Community-Acquired Pneumonia",
-      "Chronic Obstructive Pulmonary Disease (COPD) Exacerbation",
-      "Bronchiectasis or Pulmonary Tuberculosis",
-      "Congestive Heart Failure (Pink Frothy Sputum / Pulmonary Edema)"
+      "A cold, flu, COVID-19, or other respiratory infection",
+      "Bronchitis, pneumonia, asthma, COPD, or another lung condition",
+      "Mucus dripping from the nose or sinuses into the throat",
+      "Smoking or long-term airway disease"
     ],
-    differentialDiagnosis: "Differentiate acute bronchitis from pneumonia, COPD exacerbation, bronchiectasis, pulmonary tuberculosis, and lung malignancy.",
+    differentialDiagnosis: "A clinician may listen to the chest, review symptoms and health history, and arrange a mucus sample, chest X-ray, or breathing test if needed.",
     redFlags: [
-      "Hemoptysis (coughing up frank blood or rust-colored sputum)",
-      "High fever with chest pain, tachypnea, and bronchial breath sounds (Pneumonia)",
-      "Night sweats, unremitting weight loss, and chronic productive cough >3 weeks (Tuberculosis)"
+      "Get urgent advice for yellow or green mucus with chest pain, shortness of breath, high fever, or a rapidly worsening cough.",
+      "Any blood in phlegm should be checked urgently; more than a few streaks, or blood with breathing difficulty or chest pain, is an emergency.",
+      "Arrange a review for a cough lasting more than three weeks, repeated daily phlegm, weight loss, night sweats, or worsening symptoms with an existing lung condition."
     ],
-    lifestyleAdvice: "Maintain oral hydration to thin secretions, use steam inhalation; seek immediate chest X-ray and medical care for hemoptysis, persistent high fever, or dyspnea.",
+    lifestyleAdvice: "Rest, drink fluids to help loosen mucus, avoid smoke and vaping, and raise your head slightly when resting if this makes breathing easier. A pharmacist can advise on symptom relief; antibiotics are not needed for every cough and should only be used when prescribed.",
     references: [
       "CIT-0055",
       "CIT-0023"
@@ -71,16 +71,16 @@ export const ProductiveCoughSymptom: KnowledgeEntity = {
     ],
   "faqs": [
     {
-      "question": "What can help a wet cough at home?",
-      "answer": "Rest, fluids, and avoiding smoke can help. A warm drink with honey may soothe a cough for people over 1 year old. Ask a pharmacist before using cough medicines, especially for children, pregnancy, or long-term conditions."
+      "question": "Does coloured phlegm always mean I need antibiotics?",
+      "answer": "No. Mucus colour alone cannot tell whether antibiotics are needed. A clinician considers the full pattern of symptoms and examination."
     },
     {
-      "question": "Does green or yellow phlegm always mean I need antibiotics?",
-      "answer": "No. Mucus colour alone cannot tell whether an infection is bacterial or whether antibiotics are needed. A clinician considers the full pattern of symptoms, examination, and sometimes tests."
+      "question": "What should I do if I see blood in phlegm?",
+      "answer": "Even small streaks of blood should be assessed urgently. Call emergency services for more than a few streaks, or blood with chest pain, rapid heartbeat, or breathing difficulty."
     },
     {
-      "question": "When should I get urgent help?",
-      "answer": "Seek urgent help if you cough up blood, have chest pain, severe or worsening breathlessness, confusion, blue or grey lips or skin, or feel too unwell to manage usual activities."
+      "question": "When should a wet cough be checked?",
+      "answer": "Seek advice for chest pain, breathlessness, high fever, blood, a cough lasting more than three weeks, or symptoms that are getting worse."
     }
   ]
 },
