@@ -7,6 +7,19 @@ export const KNOWLEDGE_RELATIONSHIPS: KnowledgeRelationship[] = [
   { source: "D0003", relation: "hasSymptom", target: "S0003" }, // Migraine has Headache
   { source: "D0004", relation: "hasSymptom", target: "S0001" }, // IBS has Heartburn/Bloating
 
+  // Common infections: surface the symptom pages that help readers interpret
+  // a fever safely without implying that symptoms can confirm a diagnosis.
+  { source: "D0089", relation: "hasSymptom", target: "S0004" }, // Dengue has fever
+  { source: "D0089", relation: "hasSymptom", target: "S0003" }, // Dengue has headache
+  { source: "D0090", relation: "hasSymptom", target: "S0004" }, // Chikungunya has fever
+  { source: "D0090", relation: "hasSymptom", target: "S0015" }, // Chikungunya has joint pain
+  { source: "D0091", relation: "hasSymptom", target: "S0004" }, // Typhoid has fever
+  { source: "D0091", relation: "hasSymptom", target: "S0012" }, // Typhoid has abdominal pain
+  { source: "D0092", relation: "hasSymptom", target: "S0004" }, // Malaria has fever
+  { source: "D0092", relation: "hasSymptom", target: "S0063" }, // Malaria has chills
+  { source: "D0093", relation: "hasSymptom", target: "S0004" }, // Influenza has fever
+  { source: "D0093", relation: "hasSymptom", target: "S0008" }, // Influenza has sore throat
+
   // Diseases to Remedies
   { source: "D0001", relation: "treatedWith", target: "R0002" }, // GERD - Nux Vomica
   { source: "D0001", relation: "treatedWith", target: "R0003" }, // GERD - Lycopodium
