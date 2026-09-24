@@ -587,6 +587,23 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "A closer look at voice",
     },
   ],
+  "low-back-pain": [
+    {
+      src: "/images/knowledge/low-back-pain/understanding-v1.png",
+      alt: "Transparent back anatomy showing the lumbar spine, discs and supporting muscles",
+      label: "Understanding the lower back",
+    },
+    {
+      src: "/images/knowledge/low-back-pain/lifestyle-v1.png",
+      alt: "Indian woman doing a gentle standing back stretch in a bright home studio",
+      label: "Gentle movement at home",
+    },
+    {
+      src: "/images/knowledge/low-back-pain/learning-v1.png",
+      alt: "Abstract transparent glass lumbar spine sculpture with flowing support pathways",
+      label: "A closer look at movement",
+    },
+  ],
   hypothyroidism: [
     {
       src: "/images/knowledge/hypothyroidism/understanding-v1.png",

@@ -6,10 +6,10 @@ export const AllergicRhinitisDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-31T12:00:00Z",
-    reviewed: "2026-07-31T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
+    reviewed: "2026-09-24T12:00:00Z",
   },
   title: {
     en: "Allergic Rhinitis",
@@ -20,7 +20,7 @@ export const AllergicRhinitisDisease: KnowledgeEntity = {
     ar: "التهاب الأنف التحسسي",
   },
   summary: {
-    en: "An authoritative clinical profile of Allergic Rhinitis covering IgE-mediated upper mucosal inflammation, ARIA 2020 diagnostic criteria, emergency upper airway red flags, and non-replacement safety rules.",
+    en: "Allergic rhinitis is a nose-and-eye allergy that often causes sneezing, itching, a blocked nose and clear runny discharge. Learn how to reduce triggers and use treatment safely.",
     hi: "एलर्जिक राइनाइटिस का प्रामाणिक नैदानिक विवरण, एआरआईए 2020 दिशानिर्देश और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "એલર્જિક રાઇનાઇટિસનું ARIA 2020 માર્ગદર્શિકા મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "ॲलર્જિક राहिनायटिसचे ARIA 2020 मार्गदर्शक तत्त्वांचे वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
@@ -29,9 +29,9 @@ export const AllergicRhinitisDisease: KnowledgeEntity = {
   },
   content: {
     overview:
-      "Allergic rhinitis is an IgE-mediated symptomatic inflammation of the nasal mucosa triggered by allergen exposure [D0005-KEYNOTES, CIT-0038]. It presents with paroxysmal sneezing, watery rhinorrhea, nasal congestion, and conjunctival itching.",
+      "Allergic rhinitis, sometimes called hay fever, happens when the immune system reacts to an allergen such as pollen, dust mites, mould or animal dander. It is not contagious and can be seasonal or present all year.",
     definition:
-      "An IgE-mediated type-I hypersensitivity disorder of the upper respiratory tract characterized by eosinophilic infiltration, histamine release, and mucosal hyper-reactivity.",
+      "It is an allergic inflammation of the inside of the nose. It commonly affects the eyes too and may overlap with asthma or eczema.",
     causes: [
       "IgE-mediated mast cell degranulation triggered by airborne aeroallergens (pollens, dust mites, mold spores, animal dander) [D0005-KEYNOTES, CIT-0038]",
       "Early-phase histamine and leukotriene release causing vasodilation and rhinorrhea",
@@ -55,15 +55,15 @@ export const AllergicRhinitisDisease: KnowledgeEntity = {
     conventionalManagement:
       "Standard therapy includes allergen avoidance, second-generation non-sedating oral H1-antihistamines, intranasal corticosteroid sprays, leukotriene receptor antagonists, and allergen immunotherapy [CIT-0038].",
     homeopathicApproach:
-      "Homeopathic prescribing focuses on acute symptom palliation during seasonal flares and constitutional therapy aimed at desensitizing allergic diathesis.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for allergic rhinitis. It must not replace prescribed treatment or emergency care for breathing or swelling symptoms.",
     lifestyleAdvice:
-      "Implement allergen barrier controls, utilize HEPA air filters, perform daily isotonic saline nasal irrigations, and keep windows closed during high pollen counts.",
+      "Notice when symptoms occur and reduce personal triggers where practical. Saline rinses can help some people. Ask a pharmacist or clinician about safe use of antihistamines and nasal sprays; do not overuse decongestant sprays.",
     references: ["CIT-0020", "CIT-0021", "CIT-0022", "CIT-0038"],
     faqs: [
       {
-        question: "Can homeopathic remedies replace emergency treatment for acute anaphylaxis or severe laryngeal edema?",
+        question: "When do allergy symptoms need emergency help?",
         answer:
-          "NO. Homeopathy MUST NOT be used to treat acute anaphylaxis, severe laryngeal angioedema, or acute upper airway stridor [D0005-EMERGENCY-LIMITS]. Call emergency medical services immediately for intramuscular epinephrine and ER airway stabilization.",
+          "Call emergency services for swelling of the lips, tongue or throat, trouble breathing or swallowing, severe wheeze, faintness or widespread hives with feeling unwell. These are not routine hay-fever symptoms.",
       },
       {
         question: "What is the difference between allergic rhinitis and a common cold?",
@@ -71,9 +71,9 @@ export const AllergicRhinitisDisease: KnowledgeEntity = {
           "Allergic rhinitis is an IgE-mediated non-infectious allergic response with clear discharge, nasal/eye itching, and absence of fever [D0005-KEYNOTES, CIT-0038]. A common cold is a viral infection presenting with thick discolored mucus, throat pain, body aches, and low-grade fever.",
       },
       {
-        question: "How does homeopathy complement allergic rhinitis management?",
+        question: "How is allergic rhinitis different from a cold?",
         answer:
-          "Micro-diluted homeopathic remedies aim to reduce mucosal hyper-reactivity without causing drowsiness or rebound congestion, used alongside standard environmental controls [D0005-REGULATORY-LIMITS].",
+          "Allergy symptoms are often itchy and repeat around an exposure, usually without fever. Colds are infections and more often cause sore throat, body aches or fever. A clinician can help when symptoms are persistent or unclear.",
       },
     ],
   },
@@ -88,8 +88,8 @@ export const AllergicRhinitisDisease: KnowledgeEntity = {
     institution: "Homeo Healthcare Clinical Board",
   },
   reviewerRole: "Program-owner final clinical authorization",
-  lastClinicalReview: "2026-07-31",
-  nextClinicalReview: "2027-07-31",
+  lastClinicalReview: "2026-09-24",
+  nextClinicalReview: "2027-09-24",
   evidenceLevel: "Consensus-Guidance",
   tags: ["Allergic-Rhinitis", "Disease", "ARIA-2020", "Allergy", "Immunology", "Emergency-Safety"],
   canonicalUrl: "https://homeo.healthcare/knowledge/diseases/allergic-rhinitis",
