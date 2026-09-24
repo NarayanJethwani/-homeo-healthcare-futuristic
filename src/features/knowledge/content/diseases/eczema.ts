@@ -1,6 +1,6 @@
 import { KnowledgeEntity } from "../../types";
 
-const ECZEMA_CITATIONS = ["CIT-0019", "CIT-0022", "CIT-0023", "CIT-0024"];
+const ECZEMA_CITATIONS = ["CIT-0149", "CIT-0150", "CIT-0023"];
 
 export const EczemaDisease: KnowledgeEntity = {
   id: "D0002",
@@ -9,10 +9,10 @@ export const EczemaDisease: KnowledgeEntity = {
   editorialStatus: "published",
   legacyVerificationStatus: "verified-published",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-06-30T12:00:00Z",
-    updated: "2026-07-30T12:00:00Z",
-    reviewed: "2026-07-30T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
+    reviewed: "2026-09-24T12:00:00Z",
   },
   title: {
     en: "Atopic Dermatitis (Eczema)",
@@ -23,7 +23,7 @@ export const EczemaDisease: KnowledgeEntity = {
     ar: "الأكزيما (Eczema)",
   },
   summary: {
-    en: "A chronic, inflammatory skin condition characterized by dry, red, intensely itchy patches, resulting from skin barrier dysfunction and immune dysregulation.",
+    en: "Eczema is a common, non-contagious condition that makes skin dry, itchy and inflamed. Learn how to care for the skin barrier, manage flares and recognise signs of infection.",
     hi: "त्वचा की एक पुरानी सूजन संबंधी बीमारी जिसमें त्वचा पर लाल, सूखी और तीव्र खुजलीदार पपड़ीदार परतें बन जाती हैं।",
     gu: "લાંબા ગાળાનો ત્વચાનો સોજો, જેનાથી ત્વચા લાલ, સુકી અને તીવ્ર ખંજવાળવાળી થાય છે. આ અન્નનળી અને એલર્જી સાથે જોડાયેલ હોય છે.",
     mr: "त्वचेचा एक जुनाट दाहयुक्त आजार, ज्यामध्ये त्वचा कोरडी पडते, लाल डाग आणि तीव्र खाज निर्माण होते.",
@@ -32,78 +32,78 @@ export const EczemaDisease: KnowledgeEntity = {
   },
   content: {
     overview:
-      "Atopic dermatitis (eczema) is a non-contagious, relapsing inflammatory skin disorder driven by epidermal barrier dysfunction (such as filaggrin deficiencies) and immune dysregulation. It presents with pruritus, xerosis, and erythematous lesions, significantly impacting quality of life.",
+      "Atopic dermatitis, usually called eczema, is a common, non-contagious condition that causes dry, itchy and inflamed skin. It tends to come and go. Daily skin-barrier care and a plan for flares can make a meaningful difference, while severe or infected-looking skin needs medical review.",
     definition:
-      "Atopic dermatitis is a chronic, relapsing, pruritic inflammatory skin disease characterized by epidermal barrier dysfunction, immune hyperreactivity, and recurrent eczematous papules, plaques, and lichenification.",
+      "Eczema is a long-term inflammatory skin condition. It can cause itch, dryness, rough or scaly patches, changes in colour, weeping or crusting. It can look different on different skin tones, so warmth, swelling, texture, pain and itch are also important clues.",
     causes: [
-      "Epidermal barrier failure due to genetic defects (e.g., filaggrin gene mutations) leading to transepidermal water loss",
-      "Immune system dysregulation with T-helper-2 (Th2) cytokine pathway dominance",
-      "Environmental triggers including harsh cleansers, wool, airborne allergens, climate extremes, and emotional stress",
+      "A skin barrier that loses moisture easily and reacts more strongly to everyday irritants",
+      "A family or personal history of eczema, asthma, hay fever or sensitive skin",
+      "Individual triggers such as fragranced products, harsh cleansers, dry air, overheating, sweat, rough fabrics, infection or stress",
     ],
     riskFactors: [
-      "Personal or family history of atopic conditions (asthma, allergic rhinitis, atopic dermatitis)",
-      "Frequent exposure to irritants, dry cold weather, or low humidity",
-      "Cutaneous colonization by Staphylococcus aureus impairing skin microbial diversity",
+      "A personal or family history of eczema, asthma, hay fever or sensitive skin",
+      "Frequent exposure to irritants, dry air, heat, sweat or rough fabrics",
+      "Repeated scratching and cracks in the skin, which can make infection more likely",
     ],
     symptoms: [
-      "Intense pruritus (itching) that often worsens at night and impairs sleep",
-      "Erythematous, dry, scaling plaques and papules",
-      "Exudative weeping and crusting in acute flares; lichenification (thickened skin) in chronic stages",
-      "Typical age-dependent distribution: flexural creases in older children/adults, facial and extensor surfaces in infants",
+      "Itch that can be worse at night and interrupt sleep",
+      "Dry, rough, scaly or cracked areas; redness may be less visible on darker skin tones",
+      "Small bumps, colour changes, warmth, swelling, weeping, crusting or thickened skin after repeated scratching",
+      "Patches often affect the face, hands, neck, elbows, knees or skin folds, but can occur elsewhere",
     ],
     diagnosis:
-      "Diagnosis is clinical, based on history, lesion morphology, and disease chronicity (e.g., UK Working Party criteria). Patch testing may be used if allergic contact dermatitis is suspected. Routine allergy blood or skin-prick testing is not indicated without specific clinical trigger history.",
+      "A clinician usually diagnoses eczema from the story and skin examination. They may consider other causes—such as contact dermatitis, psoriasis, scabies or a fungal infection—when the pattern is unusual, severe or not improving. Testing is tailored to the history rather than done routinely.",
     differentialDiagnosis:
       "Important alternatives include allergic contact dermatitis, seborrheic dermatitis, psoriasis, scabies infestation, cutaneous fungal infections, and severe immunodeficiency syndromes.",
     labTests: [],
     imaging: "Imaging is not indicated for uncomplicated atopic dermatitis.",
     redFlags: [
-      "Rapidly spreading painful vesicular rash or punched-out erosions with fever (suspect eczema herpeticum; immediate emergency review)",
-      "Erythroderma involving >90% body surface area with fever, chills, or metabolic instability",
-      "Signs of severe secondary bacterial infection (extensive purulent discharge, spreading cellulitis, high fever)",
+      "Rapidly spreading painful blisters or punched-out sores, especially with fever or feeling very unwell: seek emergency care promptly",
+      "Widespread redness or peeling, severe pain, fever or chills: seek urgent medical care",
+      "Yellow or honey-coloured crusts, pus, increasing warmth, swelling, red streaks, pain or fever: arrange prompt medical review for possible infection",
     ],
     conventionalManagement:
-      "Management centers on skin barrier repair with liberal emollient therapy applied frequently. Topical anti-inflammatory agents—topical corticosteroids (TCS) and topical calcineurin inhibitors (TCI)—are first-line for active flares. Phototherapy, systemic immunosuppressants, or biologic agents (e.g., dupilumab) are prescribed for severe, refractory cases under dermatological care.",
+      "A treatment plan is individual. It commonly includes frequent fragrance-free cream or ointment to protect the skin barrier, plus prescribed anti-inflammatory treatment for flares when needed. Dermatology care may include other treatments for eczema that is severe, widespread or not responding to first steps.",
     homeopathicApproach:
       "Reliable clinical evidence has not established homeopathy as a treatment for atopic dermatitis or its complications. It must not replace diagnostic evaluation, emergency care, proven barrier emollients, or prescription topical anti-inflammatory therapy. Patients considering complementary care should inform their dermatologist.",
     lifestyleAdvice:
-      "Apply unfragranced, thick emollients immediately after bathing while skin is damp ('soak and seal'). Take brief lukewarm baths or showers using soap-free mild cleansers. Avoid known individual irritants, wear soft breathable cotton clothing, and maintain short fingernails to prevent excoriation trauma.",
+      "Use a thick, fragrance-free cream or ointment after a short warm—not hot—bath or shower and whenever the skin feels dry. Choose gentle cleanser only where needed, avoid known irritants, wear soft breathable clothing and keep fingernails short. Introduce one new skin product at a time and stop it if it clearly worsens the skin.",
     references: ECZEMA_CITATIONS,
     claimCitations: [
       {
         claimId: "D0002-DEFINITION",
         passage: "overview; definition",
-        citationIds: ["CIT-0019", "CIT-0022"],
+        citationIds: ["CIT-0149", "CIT-0150"],
       },
       {
         claimId: "D0002-PATHOPHYSIOLOGY",
         passage: "causes; riskFactors",
-        citationIds: ["CIT-0019", "CIT-0022"],
+        citationIds: ["CIT-0149", "CIT-0150"],
       },
       {
         claimId: "D0002-SYMPTOMS",
         passage: "symptoms",
-        citationIds: ["CIT-0019"],
+        citationIds: ["CIT-0150"],
       },
       {
         claimId: "D0002-DIAGNOSIS",
         passage: "diagnosis; differentialDiagnosis",
-        citationIds: ["CIT-0019", "CIT-0022"],
+        citationIds: ["CIT-0149", "CIT-0150"],
       },
       {
         claimId: "D0002-EMERGENCY-BOUNDARY",
         passage: "redFlags",
-        citationIds: ["CIT-0019"],
+        citationIds: ["CIT-0150"],
       },
       {
         claimId: "D0002-CONVENTIONAL-MANAGEMENT",
         passage: "conventionalManagement",
-        citationIds: ["CIT-0019", "CIT-0024"],
+        citationIds: ["CIT-0149", "CIT-0150"],
       },
       {
         claimId: "D0002-LIFESTYLE",
         passage: "lifestyleAdvice",
-        citationIds: ["CIT-0019"],
+        citationIds: ["CIT-0149"],
       },
       {
         claimId: "D0002-HOMEOPATHY-BOUNDARY",
@@ -113,14 +113,19 @@ export const EczemaDisease: KnowledgeEntity = {
     ],
     faqs: [
       {
-        question: "Can emollients and moisturizers replace topical prescription steroids during a severe eczema flare?",
+        question: "Is eczema contagious?",
         answer:
-          "No. Emollients maintain the skin barrier, but acute inflammatory flares typically require prescribed topical anti-inflammatory treatment (such as topical steroids or calcineurin inhibitors) under medical guidance.",
+          "No. Eczema itself does not spread from person to person. However, cracked or scratched skin can become infected, so increasing pain, warmth, swelling, pus, fever or rapidly spreading crusts need medical advice.",
       },
       {
-        question: "When does an eczema flare require urgent emergency evaluation?",
+        question: "What is the simplest daily eczema routine?",
         answer:
-          "Urgent emergency review is required if a rapid, painful rash with blisters, punched-out sores, fever, or extensive pus develops (suspected eczema herpeticum or severe bacterial infection), or if redness covers over 90% of the body.",
+          "Keep it simple: use a thick fragrance-free cream or ointment after a short warm bath or shower and again whenever skin feels dry; use gentle cleanser only where needed; avoid personal irritants; and follow any prescribed flare treatment exactly as directed.",
+      },
+      {
+        question: "When does an eczema flare need urgent care?",
+        answer:
+          "Get urgent help for rapidly spreading painful blisters or punched-out sores, especially with fever or feeling very unwell. Prompt medical advice is also important for yellow crusts, pus, increasing warmth, swelling, red streaks, pain or fever.",
       },
       {
         question: "Can homeopathy cure atopic dermatitis or replace dermatological care?",
@@ -140,11 +145,11 @@ export const EczemaDisease: KnowledgeEntity = {
     institution: "Homeo Healthcare Clinical Board",
   },
   reviewerRole: "Program-owner final authorization",
-  lastClinicalReview: "2026-07-30",
-  nextClinicalReview: "2027-07-30",
-  referencesUpdated: "2026-07-30",
+  lastClinicalReview: "2026-09-24",
+  nextClinicalReview: "2027-09-24",
+  referencesUpdated: "2026-09-24",
   clinicalChangesSinceLastRevision:
-    "Source-bound rewrite to v1.1.0; removed generic template findings; added NICE CG57 guideline alignment, claim-level provenance, emergency boundaries (eczema herpeticum, erythroderma), and explicit homeopathy boundaries.",
+    "Reframed the article for a patient-first reading path; refreshed source provenance, daily skin-care guidance, infection warnings and evidence boundaries.",
   reviewStatus: "owner-authorized-source-bound",
   citationHealth: "complete",
   contentCompleteness: 100,
@@ -158,12 +163,12 @@ export const EczemaDisease: KnowledgeEntity = {
     clinicalConfidence: 0.94,
     editorialConfidence: 0.96,
     citationCompleteness: 1,
-    lastReviewedAt: "2026-07-30",
+    lastReviewedAt: "2026-09-24",
     reviewIntervalDays: 365,
-    nextReviewDueAt: "2027-07-30",
+    nextReviewDueAt: "2027-09-24",
     reviewExpiryPolicy: "flag-only",
     rationale:
-      "Definition, diagnosis, flare management, and red flag passages are mapped to NICE CG57 clinical guideline standards and FDA product safety policies.",
+      "Definition, flare care, infection warnings and escalation boundaries are mapped to American Academy of Dermatology patient guidance.",
     methodologyVersion: "knowledge-authority-led-v1",
   },
   tags: ["Eczema", "Atopic Dermatitis", "Pruritus", "Skin Barrier", "Dermatology"],
@@ -174,12 +179,13 @@ export const EczemaDisease: KnowledgeEntity = {
   changeLog: [
     "1.0.0: Initial release of Eczema disease profile",
     "1.1.0: Source-bound rewrite with claim provenance, emergency boundaries, and NICE CG57 alignment",
+    "1.2.0: Patient-first rewrite with clearer daily care, infection warnings and updated authoritative sources",
   ],
   clinicalPearl:
-    "Effective eczema management requires daily barrier repair ('soak and seal') combined with targeted flare suppression; rapid blistering or severe systemic signs require emergency viral/bacterial ruling out.",
+    "A simple daily routine is often more useful than many products: moisturise, use prescribed flare treatment as directed, and seek help quickly if the skin becomes painful, blistered, feverish or infected-looking.",
   quickFacts: {
-    "Disease Type": "Inflammatory Dermatosis",
-    "Core Mechanism": "Skin barrier dysfunction & Th2 immune hyperreactivity",
-    "First-line Therapy": "Daily emollient repair + topical anti-inflammatories for flares",
+    "Disease Type": "Inflammatory skin condition",
+    "Core Mechanism": "A sensitive skin barrier that loses moisture easily",
+    "First useful step": "Fragrance-free cream or ointment every day",
   },
 };
