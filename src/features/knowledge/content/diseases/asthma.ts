@@ -20,7 +20,7 @@ export const AsthmaDisease: KnowledgeEntity = {
     ar: "الربو (Asthma)",
   },
   summary: {
-    en: "Asthma can cause wheeze, cough, chest tightness and breathlessness that come and go. Learn how to use an asthma action plan and when breathing symptoms need emergency help.",
+    en: "Asthma can cause wheezing, cough, chest tightness, and shortness of breath that vary over time. Learn how an action plan and prescribed inhalers help, and when an asthma attack needs emergency care.",
     hi: "अस्थमा का साक्ष्य-आधारित नैदानिक विवरण, जिसमें GINA 2023 दिशानिर्देश एवं आपातकालीन सीमाएं शामिल हैं।",
     gu: "અસ્થમાનું પુરાવા-આધારિત તબીબી માર્ગદર્શન અને ઈમરજન્સી લાલ નિશાનો.",
     mr: "दम्याचे वैद्यकीय मार्गदर्शन आणि आणीबाणीच्या सुरक्षिततेच्या मर्यादा.",
@@ -57,7 +57,7 @@ export const AsthmaDisease: KnowledgeEntity = {
     conventionalManagement:
       "First-line management follows GINA 2023 guidelines: inhaled corticosteroid (ICS)-formoterol track for maintenance and reliever therapy, SABA bronchodilators for acute symptoms, leukotriene receptor antagonists, and biologic therapies (anti-IgE, anti-IL5) for severe refractory asthma [CIT-0037].",
     homeopathicApproach:
-      "Reliable clinical evidence has not established homeopathy as a treatment for asthma. It must not replace a reliever inhaler, preventer inhaler, prescribed action plan or emergency care. Never delay help during an asthma attack.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for asthma. It must not replace an asthma action plan, prescribed inhalers, or emergency care during an asthma attack [D0007-HOMEOPATHY-LIMITS, CIT-0023].",
     lifestyleAdvice:
       "Keep an up-to-date written asthma action plan, check inhaler technique regularly and carry your reliever as advised. Avoid smoke and known triggers where possible, but do not avoid normal activity—ask the asthma team how to exercise safely.",
     emergencyRedFlags: [
