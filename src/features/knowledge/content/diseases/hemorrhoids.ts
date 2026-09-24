@@ -12,7 +12,7 @@ export const HemorrhoidsDisease: KnowledgeEntity = {
     reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
-    en: "Internal & External Hemorrhoids (Piles)",
+    en: "Piles (Haemorrhoids)",
     hi: "बवासीर / अर्श (Hemorrhoids / Piles)",
     gu: "હરસ અને મસા (Hemorrhoids / Piles)",
     mr: "मूळव्याध / मोड (Hemorrhoids / Piles)",
@@ -20,7 +20,7 @@ export const HemorrhoidsDisease: KnowledgeEntity = {
     ar: "البواسير",
   },
   summary: {
-    en: "An authoritative clinical profile of Internal and External Hemorrhoids covering ASCRS 2018 guidelines, vascular cushion engorgement mechanics, acute thrombosis and colorectal bleeding red flags, and colonoscopy safety boundaries.",
+    en: "Piles are swollen blood vessels in or around the anus that can cause itching, discomfort, lumps, or bright-red bleeding. Learn what may help and when bleeding or severe pain needs urgent medical advice.",
     hi: "बवासीर (Hemorrhoids) का ASCRS 2018 मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "હરસ-મસાનું ASCRS 2018 ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "मूळव्याधीचे ASCRS 2018 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
@@ -54,7 +54,7 @@ export const HemorrhoidsDisease: KnowledgeEntity = {
     conventionalManagement:
       "Management includes high-fiber diet (25-30g/day), increased water intake, sitz baths, topical hydrocortisone/phlebotonics, rubber band ligation (RBL for Grades I-III internal hemorrhoids), infrared coagulation, and surgical hemorrhoidectomy for Grade IV prolapsed or thrombosed hemorrhoids [CIT-0061].",
     homeopathicApproach:
-      "Homeopathic remedies (such as Aesculus Hippocastanum, Aloe Socotrina, Nux Vomica, Hamamelis Virginiana, Nitricum Acidum) serve as supportive constitutional care to relieve venous congestion, soothe perianal soreness, and ease constipation alongside high-fiber dietary measures.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for piles. It must not replace medical assessment of rectal bleeding, prescribed treatment, or urgent care for severe pain or heavy bleeding.",
     lifestyleAdvice:
       "Increase dietary fiber gradually, drink 2-3 liters of water daily, avoid sitting on the toilet for longer than 3-5 minutes, avoid straining during bowel movements, and take warm sitz baths.",
     references: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0061"],
