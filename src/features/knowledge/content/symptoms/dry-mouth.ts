@@ -20,7 +20,7 @@ export const DryMouthSymptom: KnowledgeEntity = {
     ar: "Dry Mouth"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Dry Mouth.",
+    en: "Dry mouth is a lack of saliva or a dry feeling in the mouth. It is often manageable, but persistent symptoms can affect teeth, eating, and taste.",
     hi: "Dry Mouth के लक्षण की नैदानिक समझ.",
     gu: "Dry Mouth ના લક્ષણ ની સમજણ.",
     mr: "Dry Mouth चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const DryMouthSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Dry Mouth."
   },
   content: {
-  "definition": "Dry mouth: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Dry mouth, also called xerostomia, is a dry or sticky mouth caused by reduced saliva or a change in saliva.",
+  "clinicalMeaning": "Saliva protects teeth and helps with speech, eating, swallowing, and taste. Persistent dryness can cause discomfort, tooth decay, thrush, and difficulty eating.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "Dehydration, anxiety, or breathing through the mouth at night",
+    "Medicines, including some antidepressants, antihistamines, and water tablets",
+    "Cancer treatment, oral thrush, or a blocked nose",
+    "Conditions such as diabetes or Sjögren's syndrome"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "A clinician or dentist may review medicines, hydration, mouth breathing, dry eyes, urinary symptoms, mouth changes, and dental health to identify a cause.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Arrange a review if dryness makes talking or eating difficult, persists after several weeks, or comes with dry eyes, frequent urination, mouth pain, swelling, bleeding, or white patches.",
+    "Seek urgent help for inability to swallow fluids, severe dehydration, confusion, or severe allergic swelling of the mouth or throat.",
+    "Do not stop a prescribed medicine without advice, even if you think it is causing dryness."
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "Sip water regularly, use sugar-free gum or sweets if suitable, protect lips, brush twice daily with fluoride toothpaste, and use alcohol-free mouthwash. A pharmacist can advise on gels, sprays, or lozenges that keep the mouth moist.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const DryMouthSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "Can a medicine cause dry mouth?",
+      "answer": "Yes. Many medicines can contribute. Ask the prescriber or pharmacist for advice rather than stopping it yourself."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "Why does dry mouth matter for teeth?",
+      "answer": "Saliva helps protect teeth. Persistent dryness increases the risk of tooth decay and oral infections, so dental care is important."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "When should I seek advice?",
+      "answer": "Seek advice if it persists, affects eating or speaking, or is associated with dry eyes, mouth pain, swelling, bleeding, white patches, or increased urination."
     }
   ]
 },
