@@ -12,7 +12,7 @@ export const MentalBrainFogSymptom: KnowledgeEntity = {
     reviewed: "2026-07-08T12:00:00Z"
   },
   title: {
-    en: "Mental Brain Fog",
+    en: "Brain Fog",
     hi: "Mental Brain Fog",
     gu: "Mental Brain Fog",
     mr: "Mental Brain Fog",
@@ -20,7 +20,7 @@ export const MentalBrainFogSymptom: KnowledgeEntity = {
     ar: "Mental Brain Fog"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Mental Brain Fog.",
+    en: "Brain fog is a non-medical term for difficulty concentrating, remembering, finding words, or thinking clearly. New or sudden confusion needs urgent assessment.",
     hi: "Mental Brain Fog के लक्षण की नैदानिक समझ.",
     gu: "Mental Brain Fog ના લક્ષણ ની સમજણ.",
     mr: "Mental Brain Fog चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const MentalBrainFogSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Mental Brain Fog."
   },
   content: {
-  "definition": "Mental brain fog: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Brain fog describes cognitive symptoms such as slowed thinking, poor attention, forgetfulness, difficulty finding words, or feeling mentally overloaded. It is a symptom, not a diagnosis.",
+  "clinicalMeaning": "It can occur with poor sleep, fatigue, stress, pain, medicines, mood problems, infection recovery, or other health conditions. The timing, severity, and effect on daily life help guide assessment.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "Poor or disrupted sleep, fatigue, pain, stress, anxiety, or low mood",
+    "Recovery from an illness, including a post-viral illness",
+    "Medicines, alcohol or other substances, dehydration, or low food intake",
+    "Conditions such as anaemia, thyroid disease, diabetes, or vitamin deficiency that need proper assessment"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "A clinician may review sleep, mood, stress, illness, medicines, nutrition, and associated symptoms. New confusion, delirium, or sudden neurological symptoms are different from gradual brain fog and need urgent care.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Seek emergency care for sudden confusion, trouble speaking or understanding, facial droop, new weakness or numbness, a seizure, or a sudden severe headache.",
+    "Seek urgent help for brain fog with chest pain, severe breathlessness, fainting, or a high fever with marked drowsiness or confusion.",
+    "Arrange a clinical review if it is persistent, worsening, new after a medicine change, or affecting work, study, driving, or safety."
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "Reduce mental overload where possible: use short lists, single-task, take regular breaks, rest after demanding activity, and keep a consistent sleep and meal routine. Note patterns with symptoms, sleep, medicines, and activity to make an assessment more useful.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const MentalBrainFogSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "Is brain fog the same as dementia?",
+      "answer": "No. Brain fog is a broad term for temporary or fluctuating concentration and memory difficulties. Persistent or progressive memory changes should still be discussed with a clinician."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "What should I record before an appointment?",
+      "answer": "Note when symptoms started, what makes them better or worse, sleep, recent illness, medicines or supplements, mood, diet, and any associated symptoms such as fatigue, dizziness, palpitations, or headache."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "When is brain fog urgent?",
+      "answer": "Sudden confusion or cognitive change with speech difficulty, weakness, facial droop, seizure, severe headache, chest pain, or severe breathlessness is an emergency."
     }
   ]
 },

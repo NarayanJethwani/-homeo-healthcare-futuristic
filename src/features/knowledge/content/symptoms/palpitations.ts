@@ -20,7 +20,7 @@ export const PalpitationsSymptom: KnowledgeEntity = {
     ar: "Palpitations"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Palpitations.",
+    en: "Palpitations are a noticeable heartbeat—fast, fluttering, pounding, or irregular. They are often harmless but require urgent care with chest pain, breathlessness, or fainting.",
     hi: "Palpitations के लक्षण की नैदानिक समझ.",
     gu: "Palpitations ના લક્ષણ ની સમજણ.",
     mr: "Palpitations चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const PalpitationsSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Palpitations."
   },
   content: {
-  "definition": "Palpitations: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Palpitations are the sensation of noticing your heartbeat. It may feel fast, hard, fluttering, skipping, pounding, or irregular in the chest, neck, or throat.",
+  "clinicalMeaning": "They are common and can be triggered by stress or stimulants, but recurrent or prolonged episodes may need an ECG or other assessment to look for a heart rhythm or other medical cause.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "Stress, anxiety, panic, lack of sleep, fever, dehydration, or strenuous activity",
+    "Caffeine, nicotine, alcohol, recreational drugs, and some medicines",
+    "Hormonal changes, low iron, or an overactive thyroid",
+    "A heart rhythm problem or other heart condition"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "A clinician may ask about the pattern, triggers, medicines, family history, and associated symptoms, then examine you and arrange an ECG or blood tests when indicated.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Call emergency services if palpitations do not settle or occur with chest pain, shortness of breath, feeling faint, or fainting.",
+    "Seek urgent assessment if there is a new irregular heartbeat with severe dizziness, new weakness, or you feel very unwell.",
+    "Book a clinical review if they keep returning, happen more often, last more than a few minutes, or you have a heart condition or family history of heart problems."
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "If you feel otherwise well, note the time, duration, pulse if you can check it safely, triggers, medicines, and accompanying symptoms. Avoid known triggers such as excess caffeine, smoking, alcohol, or recreational drugs, but do not use lifestyle changes to delay urgent assessment.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const PalpitationsSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "What do palpitations feel like?",
+      "answer": "They can feel like racing, fluttering, pounding, skipping, or an irregular heartbeat. The sensation can be felt in the chest, neck, or throat."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "Can caffeine cause palpitations?",
+      "answer": "Caffeine and other stimulants can trigger palpitations in some people. However, recurring or concerning palpitations still need appropriate clinical assessment."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "When are palpitations an emergency?",
+      "answer": "Call emergency services if they do not go away or happen with chest pain, shortness of breath, faintness, or fainting."
     }
   ]
 },

@@ -20,7 +20,7 @@ export const NightSweatsSymptom: KnowledgeEntity = {
     ar: "Night Sweats"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Night Sweats.",
+    en: "Night sweats are episodes that soak nightclothes or bedding despite a cool room. Frequent episodes or sweats with other symptoms should be checked.",
     hi: "Night Sweats के लक्षण की नैदानिक समझ.",
     gu: "Night Sweats ના લક્ષણ ની સમજણ.",
     mr: "Night Sweats चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const NightSweatsSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Night Sweats."
   },
   content: {
-  "definition": "Night sweats: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Night sweats are sweating episodes that make nightclothes or bedding soaking wet even though the room and bedding are not overly warm. They are different from simply feeling warm in bed.",
+  "clinicalMeaning": "They can have a simple explanation, but regular or drenching episodes deserve a review—especially alongside fever, cough, diarrhoea, weight loss, or a new medicine.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "Menopausal symptoms or hot flushes",
+    "Anxiety, alcohol or recreational drug use, and some medicines",
+    "Low blood sugar, especially in people using glucose-lowering medicines",
+    "Infection or another health condition that needs clinical assessment"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "A clinician will ask how often this happens, whether the room is cool, and about fever, weight change, cough, bowel symptoms, menopause, medicines, alcohol, glucose medicines, and other health changes.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Arrange prompt medical advice for regular night sweats, unexplained weight loss, fever or chills, persistent cough, diarrhoea, a new lump, or persistent fatigue.",
+    "Seek urgent help for chest pain, severe breathlessness, fainting, confusion, or signs of severe dehydration.",
+    "If you use insulin or another glucose-lowering medicine and suspect low blood sugar, follow your agreed hypo plan and seek advice about recurrent episodes."
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "Keep the room cool, use light breathable bedding, reduce alcohol close to bedtime, and note the timing, severity, temperature, medicines, periods or menopause symptoms, and associated symptoms. Do not stop prescribed medicine without speaking to the prescriber.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const NightSweatsSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "Are night sweats the same as feeling hot in bed?",
+      "answer": "No. Night sweats are enough sweating to soak nightclothes or bedding despite a cool sleeping environment."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "What information is useful to track?",
+      "answer": "Record when episodes happen, room temperature, how much bedding is damp, fever or cough, weight change, medicines, alcohol, menstrual or menopause symptoms, and any low-blood-sugar symptoms."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "When should I see a clinician?",
+      "answer": "Seek advice if night sweats are regular, wake you, worry you, or occur with fever, cough, diarrhoea, fatigue, or unexplained weight loss."
     }
   ]
 },
