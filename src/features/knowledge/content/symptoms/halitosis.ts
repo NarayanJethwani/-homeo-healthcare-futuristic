@@ -20,7 +20,7 @@ export const HalitosisSymptom: KnowledgeEntity = {
     ar: "Halitosis"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Halitosis.",
+    en: "Bad breath, also called halitosis, is common and usually comes from the mouth. Persistent bad breath may need a dental check.",
     hi: "Halitosis के लक्षण की नैदानिक समझ.",
     gu: "Halitosis ના લક્ષણ ની સમજણ.",
     mr: "Halitosis चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const HalitosisSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Halitosis."
   },
   content: {
-  "definition": "Halitosis: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Halitosis is an unpleasant smell on the breath. It is usually related to bacteria and food debris in the mouth, teeth, gums, or tongue.",
+  "clinicalMeaning": "Persistent bad breath can be a sign of gum disease, tooth decay, dry mouth, tonsillitis, reflux, or another issue needing dental or medical care.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "Plaque on teeth or tongue, gum disease, tooth decay, or a dental infection",
+    "Dry mouth, smoking, alcohol, fasting, or strong-smelling foods and drinks",
+    "Tonsillitis, acid reflux, or another nose, throat, or digestive condition",
+    "Poorly cleaned dentures"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "A dentist can check teeth, gums, tongue, and dentures. If oral causes are excluded or there are other symptoms, medical assessment may be appropriate.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "See a dentist for bad breath that persists after several weeks of good oral care, or for toothache, painful or bleeding gums, swollen gums, loose adult teeth, or denture problems.",
+    "Seek urgent dental or medical advice for facial swelling, fever, severe mouth pain, trouble swallowing, or breathing difficulty.",
+    "A mouth ulcer, lump, or red or white patch lasting more than three weeks should be checked."
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "Brush teeth and gums twice daily with fluoride toothpaste, clean between teeth daily, gently clean the tongue, keep dentures clean and out at night, drink water, and avoid smoking. Regular dental check-ups help prevent oral causes.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const HalitosisSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "Is bad breath usually from the stomach?",
+      "answer": "Usually not. Most bad breath starts in the mouth, from teeth, gums, tongue coating, dry mouth, or dentures."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "What oral care helps?",
+      "answer": "Brush teeth and gums twice daily, clean between teeth daily, clean the tongue gently, and attend regular dental checks."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "When should I see a dentist?",
+      "answer": "See a dentist if bad breath does not improve after a few weeks of good oral care or you have tooth, gum, or denture symptoms."
     }
   ]
 },
