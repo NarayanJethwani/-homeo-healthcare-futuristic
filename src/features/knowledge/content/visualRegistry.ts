@@ -128,21 +128,21 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "Headache can have many contributors",
     },
   ],
-  fever: [
+  nausea: [
     {
-      src: "/images/knowledge/fever/understanding-v1.png",
-      alt: "Indian mother checking a thermometer while supporting her child resting at home",
-      label: "Understanding fever",
+      src: "/images/knowledge/nausea/understanding-v1.png",
+      alt: "Young Indian man taking a calm pause with mild nausea in a sunlit creative studio",
+      label: "Understanding nausea",
     },
     {
-      src: "/images/knowledge/fever/response-v1.png",
-      alt: "Transparent medical illustration of temperature regulation in the brain and body",
-      label: "Fever is a body response",
+      src: "/images/knowledge/nausea/pathways-v1.png",
+      alt: "Transparent medical illustration connecting the stomach, brain and inner-ear balance system",
+      label: "Nausea can have several contributors",
     },
     {
-      src: "/images/knowledge/fever/clinical-conversation-v1.png",
-      alt: "Indian family having a calm conversation with a doctor about a fever pattern",
-      label: "Knowing when to ask",
+      src: "/images/knowledge/nausea/patterns-v1.png",
+      alt: "Older Indian woman noting a food and symptom pattern on a leafy rooftop terrace",
+      label: "Noticing your pattern",
     },
   ],
   indigestion: [
