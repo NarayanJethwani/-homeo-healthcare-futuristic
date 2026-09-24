@@ -128,21 +128,21 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "Headache can have many contributors",
     },
   ],
-  vomiting: [
+  "abdominal-pain": [
     {
-      src: "/images/knowledge/vomiting/understanding-v1.png",
-      alt: "Indian man taking small sips of water during a quiet train journey",
-      label: "Understanding vomiting",
+      src: "/images/knowledge/abdominal-pain/understanding-v1.png",
+      alt: "Indian woman calmly noticing lower abdominal discomfort at a colourful café",
+      label: "Understanding the pattern",
     },
     {
-      src: "/images/knowledge/vomiting/hydration-v1.png",
-      alt: "Transparent medical illustration of the stomach with flowing water and fluid-balance motifs",
-      label: "Fluids matter",
+      src: "/images/knowledge/abdominal-pain/sources-v1.png",
+      alt: "Transparent medical illustration showing several abdominal organs in distinct colour zones",
+      label: "Pain can have many sources",
     },
     {
-      src: "/images/knowledge/vomiting/patterns-v1.png",
-      alt: "Indian woman calmly noting symptoms beside a glass of water in a daylight library",
-      label: "Knowing when to ask",
+      src: "/images/knowledge/abdominal-pain/next-step-v1.png",
+      alt: "Indian man having a calm conversation with a pharmacist in an open-air community setting",
+      label: "Choosing the right next step",
     },
   ],
   indigestion: [
