@@ -6,10 +6,10 @@ export const IbsDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-06-30T12:00:00Z",
-    updated: "2026-07-31T12:00:00Z",
-    reviewed: "2026-07-31T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
+    reviewed: "2026-09-24T12:00:00Z",
   },
   title: {
     en: "Irritable Bowel Syndrome (IBS)",
@@ -20,7 +20,7 @@ export const IbsDisease: KnowledgeEntity = {
     ar: "متلازمة القولون العصبي (IBS)",
   },
   summary: {
-    en: "An authoritative clinical profile of Irritable Bowel Syndrome covering ACG 2021 Rome IV guidelines, gut-brain axis motility mechanisms, nocturnal diarrhea red flags, and organic GI disease safety boundaries.",
+    en: "IBS can cause recurring tummy pain with constipation, diarrhoea, or both. Learn how to notice patterns, support day-to-day symptoms, and recognise signs that need medical review.",
     hi: "इरिटेबल बॉवेल सिंड्रोम (IBS) का ACG 2021 रोम IV मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "IBS નું ACG 2021 રોમ IV ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "आय.बी.एस. चे ACG 2021 रोम IV निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
@@ -29,50 +29,50 @@ export const IbsDisease: KnowledgeEntity = {
   },
   content: {
     overview:
-      "Irritable Bowel Syndrome (IBS) is a functional gastrointestinal disorder characterized by recurrent abdominal pain related to defecation or changes in stool frequency/form, without structural mucosal abnormalities [D0004-KEYNOTES, CIT-0054]. ACG 2021 guidelines emphasize Rome IV diagnostic criteria.",
+      "Irritable bowel syndrome (IBS) is a common condition that affects how the gut works. It can cause recurring tummy pain with a change in bowel habits, such as constipation, diarrhoea, or both. IBS is real and can be disruptive, but it does not damage the bowel; new warning signs still need assessment.",
     definition:
-      "A disorder of gut-brain interaction involving altered intestinal motility, visceral hypersensitivity, low-grade mucosal immune activation, and dysregulated stool transit (IBS-C, IBS-D, IBS-M).",
+      "IBS is a disorder of gut–brain interaction: the bowel can be more sensitive and its movement can change. People may describe IBS with constipation, diarrhoea, or a mixed pattern.",
     causes: [
-      "Visceral hypersensitivity and altered central processing of gut stimuli along the brain-gut axis [D0004-KEYNOTES, CIT-0054]",
-      "Post-infectious GI changes following acute gastroenteritis (Post-Infectious IBS)",
-      "Intestinal dysbiosis, altered bile acid metabolism, and dietary FODMAP intolerance",
+      "A sensitive gut–brain connection and changes in bowel movement",
+      "A past stomach or bowel infection in some people",
+      "Individual food patterns, stress, sleep disruption or hormonal changes that can trigger symptoms",
     ],
     riskFactors: [
-      "Young age (<50 years), female sex, and personal history of acute bacterial gastroenteritis",
-      "Chronic psychosocial stress, generalized anxiety disorder, and childhood adverse events",
-      "Frequent broad-spectrum antibiotic usage altering gut microbiome architecture",
+      "A previous bowel infection or a family history of IBS",
+      "Stress, anxiety, poor sleep or ongoing life disruption",
+      "A change in routine, diet, medicines or hormonal cycle that clearly tracks with symptoms",
     ],
     symptoms: [
-      "Recurrent abdominal pain occurring on average at least 1 day per week in the last 3 months [D0004-KEYNOTES, CIT-0054]",
-      "Pain associated with defecation, change in frequency of stool, or change in appearance of stool",
-      "Abdominal distension, bloating, passage of mucus, and feeling of incomplete bowel evacuation",
+      "Recurring tummy pain or cramps that may improve or worsen after opening the bowels",
+      "Constipation, diarrhoea, or switching between the two",
+      "Bloating, wind, mucus, urgency or the feeling that the bowel has not fully emptied",
     ],
     diagnosis:
-      "Diagnosed via Rome IV criteria without invasive testing in young patients (<50 years) lacking alarm features. Screening includes CBC, serologic testing for Celiac Disease (tTG IgA), and fecal calprotectin/CRP to exclude IBD [CIT-0054].",
+      "A clinician can often diagnose IBS from the symptom pattern and examination. They may arrange targeted tests to rule out conditions such as coeliac disease or inflammatory bowel disease when symptoms, age, family history or warning signs make that appropriate.",
     differentialDiagnosis:
       "Differentiate IBS from Inflammatory Bowel Disease (Crohn's Disease, Ulcerative Colitis), Celiac Disease, Microscopic Colitis, Endometriosis, Chronic Pancreatitis, and Colorectal Cancer.",
     conventionalManagement:
-      "Management includes a low-FODMAP dietary plan, soluble fiber (psyllium), antispasmodics (dicyclomine, hyoscyamine), gut-targeted antibiotics (rifaximin for IBS-D), secretagogues (linaclotide for IBS-C), and gut-brain neuromodulators (tricyclics/SSRIs) [CIT-0054].",
+      "Treatment is tailored to the main pattern—pain, constipation, diarrhoea or bloating. It may include practical food changes, soluble fibre, medicines for specific symptoms, and gut-directed psychological therapies. A structured low-FODMAP trial should be supported by an experienced clinician or dietitian rather than becoming a long-term restrictive diet.",
     homeopathicApproach:
-      "Homeopathic remedies (such as Nux Vomica, Lycopodium, Colocynthis, Argentum Nitricum, Aloe Socotrina) serve as supportive constitutional care to ease abdominal cramping, regulate bowel habits, and soothe stress-triggered digestive spasms alongside dietary modification.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for IBS. It must not replace assessment of bleeding, weight loss, fever, severe pain or persistent change in bowel habits. Anyone considering complementary care should keep their clinician informed.",
     lifestyleAdvice:
-      "Follow a structured low-FODMAP diet under dietitian guidance, engage in regular aerobic exercise, practice gut-directed hypnotherapy or CBT, and maintain consistent meal schedules.",
+      "Keep a simple symptom-and-food diary for a few weeks to spot personal patterns without blaming every food. Eat regular meals, drink enough fluid, build activity and sleep into the routine, and seek dietitian support before making a restrictive diet change.",
     references: ["CIT-0017", "CIT-0018", "CIT-0022", "CIT-0054"],
     faqs: [
       {
-        question: "When do bowel symptoms in suspected IBS require urgent diagnostic evaluation or emergency care?",
+        question: "When do bowel symptoms need prompt medical review?",
         answer:
-          "Nocturnal diarrhea that wakes you from sleep, visible rectal bleeding (hematochezia/melena), unexplained weight loss, fever, or severe acute abdominal pain is an ALARM SIGNAL [D0004-EMERGENCY-LIMITS, CIT-0054]. These symptoms rule out simple IBS and require PROMPT GASTROENTEROLOGY EVALUATION / COLONOSCOPY.",
+          "Blood in the stool or black stools, unexplained weight loss, fever, vomiting, severe or worsening pain, dehydration, or diarrhoea that wakes you from sleep need prompt clinical advice. Sudden severe pain, fainting or signs of serious illness need urgent emergency assessment.",
       },
       {
-        question: "Can homeopathic remedies replace diagnostic testing for celiac disease or colon cancer?",
+        question: "Can homeopathy replace tests or prescribed IBS treatment?",
         answer:
-          "NO. Homeopathy MUST NOT be used to replace essential celiac screening, fecal inflammatory markers, or diagnostic colonoscopy [D0004-REGULATORY-LIMITS]. Delaying evaluation in patients with alarm features risks missing inflammatory bowel disease or colorectal malignancy.",
+          "No. Complementary products should never delay tests or treatment recommended to rule out another cause of bowel symptoms. Discuss them with your clinician, especially if you use regular medicines.",
       },
       {
-        question: "How does homeopathy integrate with standard low-FODMAP dietary therapy for IBS?",
+        question: "What is a useful first step for IBS?",
         answer:
-          "Homeopathy serves as complementary constitutional care while patients remain under standard dietary guidance, gastroenterological supervision, and routine screening [D0004-REGULATORY-LIMITS].",
+          "Track symptoms, food, sleep and stress briefly, then review the pattern with a clinician or dietitian. This is more useful than starting several restrictive diets or supplements at once.",
       },
     ],
   },
@@ -87,8 +87,8 @@ export const IbsDisease: KnowledgeEntity = {
     institution: "Homeo Healthcare Clinical Board",
   },
   reviewerRole: "Program-owner final clinical authorization",
-  lastClinicalReview: "2026-07-31",
-  nextClinicalReview: "2027-07-31",
+  lastClinicalReview: "2026-09-24",
+  nextClinicalReview: "2027-09-24",
   evidenceLevel: "Consensus-Guidance",
   tags: ["IBS", "Disease", "ACG-2021", "Rome-IV", "Gastroenterology", "Low-FODMAP", "Emergency-Safety"],
   canonicalUrl: "https://homeo.healthcare/knowledge/diseases/ibs",
@@ -98,5 +98,6 @@ export const IbsDisease: KnowledgeEntity = {
   changeLog: [
     "1.0.0: Initial release of IBS profile",
     "1.1.0: Upgraded with ACG 2021 Rome IV evidence citations (CIT-0054), passage-level claim citations (D0004-KEYNOTES, D0004-EMERGENCY-LIMITS, D0004-REGULATORY-LIMITS), nocturnal diarrhea / hematochezia red flags, and celiac/IBD diagnostic boundaries",
+    "1.2.0: Patient-first rewrite with clearer self-management and investigation boundaries",
   ],
 };
