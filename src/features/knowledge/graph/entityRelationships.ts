@@ -7,6 +7,16 @@ export const KNOWLEDGE_RELATIONSHIPS: KnowledgeRelationship[] = [
   { source: "D0003", relation: "hasSymptom", target: "S0003" }, // Migraine has Headache
   { source: "D0004", relation: "hasSymptom", target: "S0001" }, // IBS has Heartburn/Bloating
 
+  // Skin changes & fungal infections: connect patients to the closest
+  // relevant symptom or condition, not unrelated knowledge nodes.
+  { source: "D0036", relation: "relatedTo", target: "D0011" }, // Vitiligo and thyroid context
+  { source: "D0076", relation: "hasSymptom", target: "S0018" }, // Contact dermatitis has Skin Rash
+  { source: "D0076", relation: "relatedTo", target: "D0002" }, // Contact dermatitis and Eczema
+  { source: "D0077", relation: "hasSymptom", target: "S0018" }, // Ringworm has Skin Rash
+  { source: "D0077", relation: "relatedTo", target: "D0078" }, // Ringworm and Athlete's Foot
+  { source: "D0078", relation: "relatedTo", target: "D0079" }, // Athlete's Foot and Jock Itch
+  { source: "D0079", relation: "relatedTo", target: "D0077" }, // Jock Itch and Ringworm
+
   // Diseases to Remedies
   { source: "D0001", relation: "treatedWith", target: "R0002" }, // GERD - Nux Vomica
   { source: "D0001", relation: "treatedWith", target: "R0003" }, // GERD - Lycopodium
