@@ -6,13 +6,13 @@ export const DiabetesMellitusDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-31T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
     reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
-    en: "Diabetes Mellitus",
+    en: "Diabetes",
     hi: "मधुमेह (Diabetes Mellitus)",
     gu: "ડાયાબિટીસ મેલીટસ (Diabetes Mellitus)",
     mr: "मधुमेह (Diabetes Mellitus)",
@@ -20,7 +20,7 @@ export const DiabetesMellitusDisease: KnowledgeEntity = {
     ar: "داء السكري",
   },
   summary: {
-    en: "An authoritative clinical profile of Diabetes Mellitus covering ADA 2024 diagnostic criteria (HbA1c ≥6.5%), microvascular and macrovascular complications, DKA/HHS and severe hypoglycemia emergency red flags, and insulin non-discontinuation boundaries.",
+    en: "Diabetes affects how the body uses glucose (blood sugar). Learn common symptoms, why regular monitoring and prescribed treatment matter, and when high or low blood sugar needs urgent help.",
     hi: "मधुमेह का एडीए 2024 मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "ડાયાબિટીસનું ADA 2024 ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "मधुमेहाचे ADA 2024 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
@@ -54,7 +54,7 @@ export const DiabetesMellitusDisease: KnowledgeEntity = {
     conventionalManagement:
       "Therapy involves medical nutrition therapy, physical activity, glucose self-monitoring, metformin as first-line pharmacotherapy, SGLT2 inhibitors / GLP-1 receptor agonists for cardiorenal protection, and basal-bolus insulin regimens [CIT-0040].",
     homeopathicApproach:
-      "Homeopathic care serves as a complementary lifestyle and constitutional approach to improve metabolic wellness, reduce neuropathic discomforts, and support vitality under continuous blood glucose monitoring.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for diabetes or its complications. It must not replace insulin, prescribed medicines, glucose monitoring, foot care, or urgent treatment for very high or low blood sugar.",
     lifestyleAdvice:
       "Adhere to a low glycemic index diet, engage in 150 minutes/week of moderate aerobic exercise, perform daily foot self-inspections, and keep glucose logbooks.",
     references: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0040"],

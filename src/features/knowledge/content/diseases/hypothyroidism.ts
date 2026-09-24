@@ -6,9 +6,9 @@ export const HypothyroidismDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-31T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
     reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
@@ -20,7 +20,7 @@ export const HypothyroidismDisease: KnowledgeEntity = {
     ar: "قصور الغدة الدرقية",
   },
   summary: {
-    en: "An authoritative clinical profile of Hypothyroidism covering ATA 2014 diagnostic criteria, autoimmune Hashimoto etiology, serum TSH/Free T4 monitoring, myxedema coma emergency red flags, and levothyroxine non-discontinuation boundaries.",
+    en: "Hypothyroidism means the thyroid is not making enough hormone. It can contribute to tiredness, feeling cold, constipation, and other changes; diagnosis and treatment rely on clinical review and blood tests.",
     hi: "हाइपोथायरायडिज्म का एटीए 2014 मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "હાઇપોથાઇરોઇડિઝમનું ATA 2014 ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "हायपोथायरॉईडिझमचे ATA 2014 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
@@ -55,7 +55,7 @@ export const HypothyroidismDisease: KnowledgeEntity = {
     conventionalManagement:
       "Standard medical treatment consists of oral levothyroxine (synthetic L-T4) monotherapy titrated to normalize serum TSH levels [CIT-0041].",
     homeopathicApproach:
-      "Homeopathic care provides constitutional supportive therapy to address chronic fatigue, cold intolerance, and emotional symptoms alongside routine serum TSH monitoring.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for hypothyroidism. It must not replace thyroid hormone prescribed for you, blood-test monitoring, or assessment of new or worsening symptoms.",
     lifestyleAdvice:
       "Ensure adequate dietary iodine and selenium intake, avoid excessive consumption of raw goitrogenic vegetables, engage in regular physical activity, and track annual TSH levels.",
     references: ["CIT-0012", "CIT-0013", "CIT-0014", "CIT-0041"],

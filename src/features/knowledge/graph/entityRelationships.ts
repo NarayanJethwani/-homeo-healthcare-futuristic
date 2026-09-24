@@ -7,6 +7,12 @@ export const KNOWLEDGE_RELATIONSHIPS: KnowledgeRelationship[] = [
   { source: "D0003", relation: "hasSymptom", target: "S0003" }, // Migraine has Headache
   { source: "D0004", relation: "hasSymptom", target: "S0001" }, // IBS has Heartburn/Bloating
 
+  // Metabolic health: connect closely related conditions for practical next reading.
+  { source: "D0010", relation: "relatedTo", target: "D0009" }, // Diabetes and High Blood Pressure
+  { source: "D0010", relation: "relatedTo", target: "D0048" }, // Diabetes and Fatty Liver Disease
+  { source: "D0048", relation: "relatedTo", target: "D0009" }, // Fatty Liver Disease and High Blood Pressure
+  { source: "D0011", relation: "relatedTo", target: "D0012" }, // Underactive and Overactive Thyroid
+
   // Diseases to Remedies
   { source: "D0001", relation: "treatedWith", target: "R0002" }, // GERD - Nux Vomica
   { source: "D0001", relation: "treatedWith", target: "R0003" }, // GERD - Lycopodium

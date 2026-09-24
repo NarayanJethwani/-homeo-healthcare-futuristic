@@ -6,13 +6,13 @@ export const HypertensionDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-31T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
     reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
-    en: "Hypertension (High Blood Pressure)",
+    en: "High Blood Pressure",
     hi: "उच्च रक्तचाप (Hypertension)",
     gu: "હાઇ બ્લડ પ્રેશર (Hypertension)",
     mr: "उच्च रक्तदाब (Hypertension)",
@@ -20,7 +20,7 @@ export const HypertensionDisease: KnowledgeEntity = {
     ar: "ارتفاع ضغط الدم",
   },
   summary: {
-    en: "An authoritative clinical profile of Systemic Arterial Hypertension covering ACC/AHA 2017 staging criteria, end-organ vascular risk, hypertensive crisis emergency red flags, and anti-hypertensive non-discontinuation rules.",
+    en: "High blood pressure often has no symptoms but can raise the risk of heart, brain, and kidney problems over time. Learn why accurate checks, prescribed treatment, and urgent warning signs matter.",
     hi: "उच्च रक्तचाप का एसीसी/एएचए 2017 मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "હાઇ બ્લડ પ્રેશરનું ACC/AHA 2017 ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "उच्च रक्तदाबाचे ACC/AHA 2017 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
@@ -53,7 +53,7 @@ export const HypertensionDisease: KnowledgeEntity = {
     conventionalManagement:
       "Therapy combines DASH dietary modifications, sodium restriction (<1,500 mg/day), aerobic exercise, and guideline-directed anti-hypertensive pharmacotherapy (ACE inhibitors/ARBs, CCBs, thiazide diuretics) [CIT-0039].",
     homeopathicApproach:
-      "Homeopathic management serves as a supportive constitutional therapy to address anxiety, stress-induced vascular tone, and lifestyle factors alongside regular blood pressure monitoring.",
+      "Reliable clinical evidence has not established homeopathy as a treatment that controls high blood pressure. It must not replace prescribed medicines, regular blood-pressure checks, or urgent assessment of possible emergency symptoms.",
     lifestyleAdvice:
       "Adopt the DASH diet, restrict daily sodium intake, engage in 150 minutes/week of moderate aerobic activity, limit alcohol, and maintain daily home BP logs.",
     references: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0039"],
