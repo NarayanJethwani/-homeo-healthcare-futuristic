@@ -49,8 +49,8 @@ export function runKnowledgeExpansionInventoryTests(): void {
   assert.strictEqual(inventory.summary.independentlyReviewedEntities, 0);
   assert.strictEqual(inventory.summary.governedEvidenceProfiles, 0);
   assert.strictEqual(inventory.summary.claimCitationCompleteEntities, 0);
-  assert.strictEqual(inventory.summary.isolatedEntities, 232);
-  assert.strictEqual(inventory.summary.duplicateRelationshipRows, 178);
+  assert.strictEqual(inventory.summary.isolatedEntities, 228);
+  assert.strictEqual(inventory.summary.duplicateRelationshipRows, 177);
   assert.strictEqual(inventory.summary.activeRagEntities, 0);
 
   assert.strictEqual(TRANSITIONAL_PUBLICATION_FREEZE, true);

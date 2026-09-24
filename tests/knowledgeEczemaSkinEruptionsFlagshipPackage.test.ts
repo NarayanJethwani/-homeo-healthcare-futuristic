@@ -21,6 +21,17 @@ export function runKnowledgeEczemaSkinEruptionsFlagshipPackageTests(): void {
   const entities = [EczemaDisease, SkinEruptionsSymptom];
   const citationById = new Map(CITATIONS.map((c) => [c.id, c]));
   const packet = buildEczemaSkinEruptionsAuthorizationPacket();
+  const committedPacket = JSON.parse(
+    fs.readFileSync(
+      path.resolve(
+        __dirname,
+        "../reports/knowledge-m2-eczema-skin-eruptions-authorization.json"
+      ),
+      "utf8"
+    )
+  );
+
+  assert.deepStrictEqual(committedPacket, packet);
 
   assert.strictEqual(packet.status, "authorized");
   assert.strictEqual(packet.releaseDecision.approved, true);
@@ -32,8 +43,12 @@ export function runKnowledgeEczemaSkinEruptionsFlagshipPackageTests(): void {
   assert.strictEqual(packet.invariants.frozenDomainMutationCount, 0);
   assert.match(packet.packageHash, /^[a-f0-9]{64}$/);
 
+  assert.deepStrictEqual(
+    Object.fromEntries(entities.map((entity) => [entity.id, entity.versionInfo.version])),
+    { D0002: "1.2.0", S0002: "1.1.0" }
+  );
+
   for (const entity of entities) {
-    assert.strictEqual(entity.versionInfo.version, "1.1.0");
     assert.strictEqual(entity.contentCompleteness, 100);
     assert.strictEqual(entity.citationHealth, "complete");
     assert.strictEqual(entity.editorialStatus, "published");
@@ -84,23 +99,16 @@ export function runKnowledgeEczemaSkinEruptionsFlagshipPackageTests(): void {
     assert.strictEqual(proposal.status, "draft");
     assert.strictEqual(proposal.publicationEligible, false);
     assert.strictEqual(proposal.ragEligible, false);
-    assert.strictEqual(proposal.sourceRevision, "1.1.0");
+    assert.strictEqual(
+      proposal.sourceRevision,
+      entities.find((entity) => entity.id === proposal.sourceEntityId)
+        ?.versionInfo.version
+    );
     assert.ok(
       proposal.citationIds.every((id) => citationById.has(id)),
       `Proposal ${proposal.proposalId} has invalid citation`
     );
   }
-
-  const reportsDir = path.resolve(__dirname, "../reports");
-  if (!fs.existsSync(reportsDir)) {
-    fs.mkdirSync(reportsDir, { recursive: true });
-  }
-
-  fs.writeFileSync(
-    path.join(reportsDir, "knowledge-m2-eczema-skin-eruptions-authorization.json"),
-    JSON.stringify(packet, null, 2),
-    "utf8"
-  );
 
   console.log(
     "✅ Eczema + Skin Eruptions source-bound content, claim provenance, governed graph proposals, and human final-authorization boundary verified."
