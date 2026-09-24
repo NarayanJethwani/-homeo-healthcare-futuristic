@@ -12,7 +12,7 @@ export const SoreThroatSymptom: KnowledgeEntity = {
     reviewed: "2026-07-31T20:30:00Z"
   },
   title: {
-    en: "Sore Throat (Pharyngitis)",
+    en: "Sore Throat",
     hi: "गले में खराश / दर्द (Sore Throat)",
     gu: "ગળામાં દુખાવો / ખરાશ (Sore Throat)",
     mr: "घसा दुखी / खवखव (Sore Throat)",
@@ -20,7 +20,7 @@ export const SoreThroatSymptom: KnowledgeEntity = {
     ar: "ألم الحلق (Sore Throat)"
   },
   summary: {
-    en: "Clinical evaluation, Centor scoring, airway emergency red flags, and supportive management for Sore Throat under AAO-HNS 2020 guidelines.",
+    en: "A sore throat is usually caused by a viral infection and often improves within a week. Find simple relief options, possible causes, and the warning signs that need urgent assessment.",
     hi: "गले की खराश के लक्षण की नैदानिक समझ और आपातकालीन एयरवे चेतावनी लक्षण.",
     gu: "ગળામાં દુખાવાની તબીબી સમજણ અને ઈમરજન્સી એરવે રેડ ફ્લેગ્સ.",
     mr: "घसा दुखीच्या लक्षणांची वैद्यकीय माहिती आणि आपत्कालीन इशारे.",
@@ -72,16 +72,16 @@ export const SoreThroatSymptom: KnowledgeEntity = {
     ],
   "faqs": [
     {
-      "question": "What is the difference between allergic rhinitis and a common cold?",
-      "answer": "Allergic rhinitis is an IgE-mediated immune response triggered by allergens (pollen, dust), presenting with itchy eyes, sneezing, and clear watery discharge. A cold is a viral infection, usually presenting with thicker discharge, throat irritation, and sometimes a low-grade fever."
+      "question": "What can I do for a sore throat at home?",
+      "answer": "Rest, fluids, and simple pain relief that is safe for you may help. Adults can try warm salt-water gargles. Avoid smoking and smoky environments. Ask a pharmacist if you are unsure what is suitable for you or your child."
     },
     {
-      "question": "Can untreated allergies lead to asthma?",
-      "answer": "Yes. The 'atopic march' describes how upper airway allergic inflammation (allergic rhinitis) can progress to involve the lower airways, triggering asthma in susceptible individuals."
+      "question": "When should I get urgent help for a sore throat?",
+      "answer": "Get urgent medical help for trouble breathing, drooling or being unable to swallow saliva, a high-pitched sound when breathing, severe symptoms that worsen quickly, or trouble drinking enough fluids."
     },
     {
-      "question": "How does homeopathy support respiratory allergies?",
-      "answer": "Homeopathic remedies aim to reduce the body's hyper-reactivity to environmental allergens and strengthen mucosal defenses, using acute and deep-acting constitutional remedies."
+      "question": "Do I need antibiotics?",
+      "answer": "Most sore throats are caused by viruses, so antibiotics will not help. A clinician may examine you or arrange testing when a bacterial infection is possible. Take antibiotics only when prescribed and as directed."
     }
   ]
 },

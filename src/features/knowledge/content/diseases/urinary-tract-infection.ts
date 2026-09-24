@@ -13,7 +13,7 @@ export const UrinaryTractInfectionDisease: KnowledgeEntity = {
     reviewed: "2026-08-14T12:00:00Z"
   },
   title: {
-    en: "Urinary Tract Infection (UTI / Acute Cystitis & Pyelonephritis)",
+    en: "Urinary Tract Infection (UTI)",
     hi: "मूत्र मार्ग संक्रमण (यूटीआई / सिस्टाइटिस / UTI)",
     gu: "પેશાબનો ચેપ / યુટીઆઈ (Urinary Tract Infection)",
     mr: "मूत्रमार्गाचा संसर्ग (Urinary Tract Infection / UTI)",
@@ -21,7 +21,7 @@ export const UrinaryTractInfectionDisease: KnowledgeEntity = {
     ar: "التهاب المسالك البولية (Urinary Tract Infection)"
   },
   summary: {
-    en: "An authoritative clinical and educational profile of Urinary Tract Infections (UTI), covering uropathogenic E. coli colonization, acute cystitis, recurrent UTI pathophysiology, constitutional homeopathic supportive management, and emergency red flags for acute ascending pyelonephritis and uroseptic bacteremia.",
+    en: "A UTI can cause burning when passing urine, needing to go more often, urgency, or lower tummy pain. Learn when self-care may help, when to contact a clinician, and symptoms that may mean a kidney infection.",
     hi: "मूत्र मार्ग संक्रमण (यूटीआई/सिस्टाइटिस) का यूरोपैथोजेनिक ई. कोलाई पैथोलॉजी, बार-बार होने वाले मूत्र संक्रमण, पारंपरिक संवैधानिक होम्योपैथिक प्रबंधन, और तीव्र पायलोनेफ्राइटिस (गुर्दे का संक्रमण) व सेप्सिस की आपातकालीन सुरक्षा सीमाओं सहित प्रामाणिक विवरण.",
     gu: "પેશાબનો ચેપ (યુટીઆઈ) ની બેક્ટેરિયલ પેથોલોજી, પેશાબમાં બળતરા અને વારંવાર પેશાબ થવાની લાગણી, પરંપરાગત હોમિયોપેથીક સહાયક સારવાર અને પાયલોનેફ્રાઇટિસ (કિડની ઇન્ફેક્શન) ની ઇમરજન્સી સીમાઓનું વિવરણ.",
     mr: "मूत्रमार्गाचा जंतुसंसर्ग (UTI), लघवीची तीव्र जळजळ व कळ, वारंवार लघवीची भावना, पारंपरिक होमिओपॅथिक पद्धत आणि किडनी इन्फेक्शनच्या आणीबाणीच्या मर्यादा.",
@@ -60,7 +60,7 @@ export const UrinaryTractInfectionDisease: KnowledgeEntity = {
     conventionalManagement:
       "First-line empirical antibiotic regimens for uncomplicated acute cystitis include nitrofurantoin monohydrate/macrocrystals (5 days), trimethoprim-sulfamethoxazole (TMP-SMX; 3 days where local resistance <20%), or fosfomycin trometamol (single dose). Acute pyelonephritis requires fluoroquinolones (ciprofloxacin) or parenteral cephalosporins (ceftriaxone) based on culture sensitivity. Prophylaxis includes non-antimicrobial options like D-mannose, cranberry proanthocyanidins, and vaginal estrogen in postmenopausal women.",
     homeopathicApproach:
-      "Homeopathic constitutional and urinary tract remedies (such as Cantharis Vesicatoria, Staphysagria, Sarsaparilla, Equisetum Hyemale, Apis Mellifica, Berberis Vulgaris, Chimaphila Umbellata) serve as supportive care to ease burning dysuria, soothe post-coital urethral spasms, and assist recurring bladder irritability alongside adequate fluid intake and conventional antibiotic treatment where indicated.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for urinary tract infections. It must not replace a urine assessment, prescribed antibiotics when indicated, or urgent care for fever, flank pain, vomiting, confusion, pregnancy, or other high-risk symptoms.",
     lifestyleAdvice:
       "Drink plenty of water throughout the day to flush bacteria from the urinary tract, void promptly following sexual intercourse, wipe from front to back after bowel movements, avoid irritating feminine hygiene sprays, douches, and scented bath products, take showers rather than bubble baths, and avoid delaying urination when the urge arises.",
     references: [
@@ -73,8 +73,8 @@ export const UrinaryTractInfectionDisease: KnowledgeEntity = {
     ],
     faqs: [
       {
-        question: "How does D-mannose help prevent recurrent urinary tract infections?",
-        answer: "D-mannose is a natural sugar that binds to the type 1 fimbriae of E. coli bacteria, preventing them from adhering to the bladder wall receptors and allowing them to be flushed out naturally in the urine stream."
+        question: "Can cranberry products or cystitis sachets treat a UTI?",
+        answer: "They have not been shown to treat a UTI once symptoms have started. Speak with a clinician or pharmacist about treatment that is right for you, especially if symptoms are severe, recurrent, or you are pregnant."
       },
       {
         question: "When does a simple bladder infection become a kidney infection (pyelonephritis)?",
