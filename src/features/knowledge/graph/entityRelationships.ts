@@ -44,7 +44,6 @@ export const KNOWLEDGE_RELATIONSHIPS: KnowledgeRelationship[] = [
 
   // Scale-Up Sprint Mappings
   { source: "D0051", relation: "hasSymptom", target: "S0006" },
-  { source: "D0051", relation: "hasSymptom", target: "S0018" },
   { source: "D0051", relation: "treatedWith", target: "R0005" },
   { source: "D0051", relation: "treatedWith", target: "R0020" },
   { source: "D0051", relation: "investigatedBy", target: "L0001" },
@@ -224,7 +223,6 @@ export const KNOWLEDGE_RELATIONSHIPS: KnowledgeRelationship[] = [
 
   // Scale-Up Sprint Mappings
   { source: "D0051", relation: "hasSymptom", target: "S0006" },
-  { source: "D0051", relation: "hasSymptom", target: "S0018" },
   { source: "D0051", relation: "treatedWith", target: "R0005" },
   { source: "D0051", relation: "treatedWith", target: "R0020" },
   { source: "D0051", relation: "investigatedBy", target: "L0001" },
