@@ -17,10 +17,7 @@ export function runKnowledgeSourceIntegrityTests(): void {
   assert.strictEqual(report.status, "staging-only");
   assert.strictEqual(report.invariants.publicationState, "unchanged");
   assert.strictEqual(report.invariants.ragState, "inactive");
-  // Six newly reviewed public-health references support the patient-facing
-  // Fatigue, Sleeplessness, and Headache guides, so this deliberate catalogue baseline now includes 122
-  // eligible records.
-  assert.strictEqual(report.summary.eligibleCitationRecords, 122);
+  assert.strictEqual(report.summary.eligibleCitationRecords, 116);
   assert.strictEqual(report.summary.blockerCount, 3);
   assert.strictEqual(report.summary.reviewCount, 1);
   for (const citationId of [

@@ -757,6 +757,326 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "A closer look at the count",
     },
   ],
+  dandruff: [
+    {
+      src: "/images/knowledge/dandruff/understanding-v1.png",
+      alt: "Transparent scalp cross-section with hair follicles, skin layers, and fine dandruff flakes at the surface",
+      label: "Understanding the scalp",
+    },
+    {
+      src: "/images/knowledge/dandruff/lifestyle-v1.png",
+      alt: "Indian man with subtle scalp flaking checking his hair in a bright modern barbershop",
+      label: "A real-world scalp check",
+    },
+    {
+      src: "/images/knowledge/dandruff/learning-v1.png",
+      alt: "Abstract hair strands emerging through luminous skin layers with fine white flakes and golden droplets",
+      label: "A closer look at scalp renewal",
+    },
+  ],
+  urticaria: [
+    {
+      src: "/images/knowledge/urticaria/understanding-v1.png",
+      alt: "Transparent skin cross-section with a raised wheal, fine vessels, and gentle luminous particles",
+      label: "Understanding hives",
+    },
+    {
+      src: "/images/knowledge/urticaria/lifestyle-v1.png",
+      alt: "Indian woman using a cool compress on a mild hives flare on her forearm at home",
+      label: "A calm self-care moment",
+    },
+    {
+      src: "/images/knowledge/urticaria/learning-v1.png",
+      alt: "Abstract transparent skin contours with raised waves and colourful vessel-like pathways",
+      label: "A closer look at a flare",
+    },
+  ],
+  "seborrheic-dermatitis": [
+    {
+      src: "/images/knowledge/seborrheic-dermatitis/understanding-v1.png",
+      alt: "Transparent facial and scalp skin illustration showing flaky areas around the hairline, brows, and nose",
+      label: "Understanding affected areas",
+    },
+    {
+      src: "/images/knowledge/seborrheic-dermatitis/lifestyle-v1.png",
+      alt: "Indian man using gentle moisturiser along a flaky hairline on a sunlit home balcony",
+      label: "An everyday care moment",
+    },
+    {
+      src: "/images/knowledge/seborrheic-dermatitis/learning-v1.png",
+      alt: "Abstract translucent skin planes with hair filaments, coral flakes, and amber droplets",
+      label: "A closer look at skin balance",
+    },
+  ],
+  intertrigo: [
+    {
+      src: "/images/knowledge/intertrigo/understanding-v1.png",
+      alt: "Transparent skin-fold illustration showing mild irritation and moisture between skin surfaces",
+      label: "Understanding skin-fold irritation",
+    },
+    {
+      src: "/images/knowledge/intertrigo/lifestyle-v1.png",
+      alt: "Indian woman preparing a clean towel and water for a comfortable cooling-and-drying routine at home",
+      label: "A practical everyday routine",
+    },
+    {
+      src: "/images/knowledge/intertrigo/learning-v1.png",
+      alt: "Abstract translucent skin-like planes separated by clear aqua moisture droplets",
+      label: "A closer look at moisture and friction",
+    },
+  ],
+  "dry-skin": [
+    {
+      src: "/images/knowledge/dry-skin/understanding-v1.png",
+      alt: "Transparent skin layers with fine surface texture, water droplets, and lipid-like forms beneath the barrier",
+      label: "Understanding the skin barrier",
+    },
+    {
+      src: "/images/knowledge/dry-skin/lifestyle-v1.png",
+      alt: "Older Indian woman applying fragrance-free moisturiser to a mildly dry lower leg in a sunlit bedroom",
+      label: "An everyday moisturising routine",
+    },
+    {
+      src: "/images/knowledge/dry-skin/learning-v1.png",
+      alt: "Abstract pearl and peach skin-like membranes carrying luminous aqua droplets and golden ribbons",
+      label: "A closer look at hydration",
+    },
+  ],
+  "skin-rash": [
+    {
+      src: "/images/knowledge/skin-rash/understanding-v1.png",
+      alt: "Warm-brown forearm with a few mild rash patches beside a transparent skin-layer illustration",
+      label: "Understanding a rash",
+    },
+    {
+      src: "/images/knowledge/skin-rash/lifestyle-v1.png",
+      alt: "Indian young adult noticing a few mild rash patches on her upper arm in a colourful ceramics studio",
+      label: "Noticing a new change",
+    },
+    {
+      src: "/images/knowledge/skin-rash/learning-v1.png",
+      alt: "Abstract coral and violet skin-like contours with teal and gold cellular light forms",
+      label: "A closer look at skin responses",
+    },
+  ],
+  "contact-dermatitis": [
+    {
+      src: "/images/knowledge/contact-dermatitis/understanding-v1.png",
+      alt: "Indian adult with a mild wrist rash and a transparent skin-layer illustration",
+      label: "Understanding contact dermatitis",
+    },
+    {
+      src: "/images/knowledge/contact-dermatitis/lifestyle-v1.png",
+      alt: "Indian florist using protective gloves while handling flowers in a bright shop",
+      label: "Noticing everyday triggers",
+    },
+    {
+      src: "/images/knowledge/contact-dermatitis/learning-v1.png",
+      alt: "Transparent skin-barrier illustration with leaf, metal clasp, and fragrance-droplet motifs",
+      label: "A closer look at the barrier",
+    },
+  ],
+  "ringworm-tinea-corporis": [
+    {
+      src: "/images/knowledge/ringworm-tinea-corporis/understanding-v1.png",
+      alt: "Indian adult's forearm with a small ring-shaped patch and a transparent skin-layer overlay",
+      label: "Understanding ringworm",
+    },
+    {
+      src: "/images/knowledge/ringworm-tinea-corporis/lifestyle-v1.png",
+      alt: "Indian young adult packing a dry T-shirt, clean towel, and water bottle after badminton",
+      label: "An everyday prevention habit",
+    },
+    {
+      src: "/images/knowledge/ringworm-tinea-corporis/learning-v1.png",
+      alt: "Abstract skin-layer illustration with delicate branching fungal-like forms above the surface",
+      label: "A closer look at the skin surface",
+    },
+  ],
+  "athletes-foot-tinea-pedis": [
+    {
+      src: "/images/knowledge/athletes-foot-tinea-pedis/understanding-v1.png",
+      alt: "Transparent foot illustration with skin layers highlighted between the toes",
+      label: "Understanding athlete’s foot",
+    },
+    {
+      src: "/images/knowledge/athletes-foot-tinea-pedis/lifestyle-v1.png",
+      alt: "Indian young adult putting on clean dry socks after exercise at a climbing studio",
+      label: "A practical prevention habit",
+    },
+    {
+      src: "/images/knowledge/athletes-foot-tinea-pedis/learning-v1.png",
+      alt: "Abstract translucent skin-like layers with water droplets lifting into a gentle airflow",
+      label: "A closer look at keeping feet dry",
+    },
+  ],
+  "jock-itch-tinea-cruris": [
+    {
+      src: "/images/knowledge/jock-itch-tinea-cruris/understanding-v1.png",
+      alt: "Fully clothed side-view lower-torso illustration with a transparent overlay at the inner thigh skin fold",
+      label: "Understanding jock itch",
+    },
+    {
+      src: "/images/knowledge/jock-itch-tinea-cruris/lifestyle-v1.png",
+      alt: "Indian woman packing a clean towel and fresh workout clothing into a gym bag in a bright laundry room",
+      label: "An everyday hygiene habit",
+    },
+    {
+      src: "/images/knowledge/jock-itch-tinea-cruris/learning-v1.png",
+      alt: "Abstract breathable fabric and skin-like layers with moisture droplets lifting into circulating air",
+      label: "A closer look at airflow and moisture",
+    },
+  ],
+  "tinea-versicolor": [
+    {
+      src: "/images/knowledge/tinea-versicolor/understanding-v1.png",
+      alt: "Indian woman viewed from behind with subtle patchy shoulder skin colour changes and a transparent skin-layer cutaway",
+      label: "Understanding tinea versicolor",
+    },
+    {
+      src: "/images/knowledge/tinea-versicolor/lifestyle-v1.png",
+      alt: "Indian woman choosing a breathable cotton shirt in a sunlit textile-design studio",
+      label: "An everyday comfort choice",
+    },
+    {
+      src: "/images/knowledge/tinea-versicolor/learning-v1.png",
+      alt: "Abstract translucent mosaic of varied skin-like tones under a gentle curved lens of light",
+      label: "A closer look at skin colour variation",
+    },
+  ],
+  "onychomycosis-fungal-nail-infection": [
+    {
+      src: "/images/knowledge/onychomycosis-fungal-nail-infection/understanding-v1.png",
+      alt: "Indian woman’s foot with a subtle fungal nail change and a transparent nail-layer cutaway",
+      label: "Understanding fungal nail infection",
+    },
+    {
+      src: "/images/knowledge/onychomycosis-fungal-nail-infection/lifestyle-v1.png",
+      alt: "Older Indian man putting on a fresh sock and breathable walking shoe at home",
+      label: "An everyday prevention habit",
+    },
+    {
+      src: "/images/knowledge/onychomycosis-fungal-nail-infection/learning-v1.png",
+      alt: "Transparent three-dimensional nail cutaway with layers beneath the nail plate",
+      label: "A closer look at the nail layers",
+    },
+  ],
+  "plantar-warts-verrucas": [
+    {
+      src: "/images/knowledge/plantar-warts-verrucas/understanding-v1.png",
+      alt: "Indian woman inspecting a small sole spot with a transparent pressure-ring overlay",
+      label: "Understanding plantar warts",
+    },
+    {
+      src: "/images/knowledge/plantar-warts-verrucas/lifestyle-v1.png",
+      alt: "Indian swimmer putting on clean sandals in a bright pool changing area",
+      label: "A practical prevention habit",
+    },
+    {
+      src: "/images/knowledge/plantar-warts-verrucas/learning-v1.png",
+      alt: "Transparent three-dimensional sole-skin cutaway with a small contained plantar-wart area",
+      label: "A closer look at the sole skin",
+    },
+  ],
+  "scabies": [
+    {
+      src: "/images/knowledge/scabies/understanding-v1.png",
+      alt: "Indian woman noticing a mild itchy hand rash with a transparent skin-barrier overlay",
+      label: "Understanding scabies",
+    },
+    {
+      src: "/images/knowledge/scabies/lifestyle-v1.png",
+      alt: "Indian couple working together with linens in a bright home laundry room",
+      label: "A coordinated household step",
+    },
+    {
+      src: "/images/knowledge/scabies/learning-v1.png",
+      alt: "Transparent skin-layer illustration with a delicate conceptual pathway in the outer layer",
+      label: "A closer look at the skin surface",
+    },
+  ],
+  "impetigo": [
+    {
+      src: "/images/knowledge/impetigo/understanding-v1.png",
+      alt: "Indian mother gently checking a child’s mild healing crust near the mouth with a transparent skin-barrier overlay",
+      label: "Understanding impetigo",
+    },
+    {
+      src: "/images/knowledge/impetigo/lifestyle-v1.png",
+      alt: "Indian father helping a child wash hands in a colourful family bathroom",
+      label: "A practical hygiene habit",
+    },
+    {
+      src: "/images/knowledge/impetigo/learning-v1.png",
+      alt: "Transparent skin-layer illustration with a small contained golden surface crust area",
+      label: "A closer look at the skin surface",
+    },
+  ],
+  "hand-foot-mouth-disease": [
+    { src: "/images/knowledge/hand-foot-mouth-disease/understanding-v1.png", alt: "Indian mother offering a cool drink to a comfortable child with mild hand spots", label: "Understanding hand, foot and mouth disease" },
+    { src: "/images/knowledge/hand-foot-mouth-disease/lifestyle-v1.png", alt: "Indian parent and child washing hands together after school", label: "A practical prevention habit" },
+    { src: "/images/knowledge/hand-foot-mouth-disease/learning-v1.png", alt: "Transparent abstract medical illustration connecting mouth, hand, and foot skin layers", label: "A closer look at the pattern" },
+  ],
+  "chickenpox-varicella": [
+    { src: "/images/knowledge/chickenpox-varicella/understanding-v1.png", alt: "Indian mother comforting a school-age child with a few mild healing upper-arm spots", label: "Understanding chickenpox" },
+    { src: "/images/knowledge/chickenpox-varicella/lifestyle-v1.png", alt: "Indian father preparing a calm child bedroom with fresh sleepwear, water, and a storybook", label: "A comfort-care routine" },
+    { src: "/images/knowledge/chickenpox-varicella/learning-v1.png", alt: "Transparent skin-layer illustration showing a spot, a small blister, and a dry crust stage", label: "A closer look at rash stages" },
+  ],
+  "measles-rubeola": [
+    { src: "/images/knowledge/measles-rubeola/understanding-v1.png", alt: "Indian mother gently noticing a few subtle flat rash spots near a child’s hairline", label: "Understanding measles" },
+    { src: "/images/knowledge/measles-rubeola/lifestyle-v1.png", alt: "Indian family reviewing a child vaccination record with a clinician at a calm well-child visit", label: "A prevention conversation" },
+    { src: "/images/knowledge/measles-rubeola/learning-v1.png", alt: "Transparent medical illustration of a face and neck with a downward-spreading rash pattern", label: "A closer look at rash progression" },
+  ],
+  "conjunctivitis-pink-eye": [
+    { src: "/images/knowledge/conjunctivitis-pink-eye/understanding-v1.png", alt: "Indian woman near a window noticing a mildly irritated, watery eye", label: "Understanding pink eye" },
+    { src: "/images/knowledge/conjunctivitis-pink-eye/lifestyle-v1.png", alt: "Indian student in a calm optometry consultation with an eye model", label: "A practical eye-care conversation" },
+    { src: "/images/knowledge/conjunctivitis-pink-eye/learning-v1.png", alt: "Transparent medical illustration of the eye surface and conjunctiva", label: "A closer look at the eye surface" },
+  ],
+  "dengue-fever": [
+    { src: "/images/knowledge/dengue-fever/understanding-v1.png", alt: "Indian woman resting at home with water while a family member provides calm support", label: "Understanding dengue" },
+    { src: "/images/knowledge/dengue-fever/lifestyle-v1.png", alt: "Indian father and daughter fitting a window screen and keeping a balcony planter saucer dry", label: "A practical prevention habit" },
+    { src: "/images/knowledge/dengue-fever/learning-v1.png", alt: "Transparent medical illustration of an Aedes-style mosquito with vascular and blood-cell patterns", label: "A closer look at mosquito transmission" },
+  ],
+  chikungunya: [
+    { src: "/images/knowledge/chikungunya/understanding-v1.png", alt: "Indian man on a rainy veranda gently supporting a sore wrist", label: "Understanding chikungunya" },
+    { src: "/images/knowledge/chikungunya/lifestyle-v1.png", alt: "Indian woman practising a gentle seated knee movement with a physiotherapist", label: "A paced recovery conversation" },
+    { src: "/images/knowledge/chikungunya/learning-v1.png", alt: "Transparent medical illustration of knee and wrist joints with gentle inflammation glow", label: "A closer look at joint symptoms" },
+  ],
+  "typhoid-fever": [
+    { src: "/images/knowledge/typhoid-fever/understanding-v1.png", alt: "Indian student resting at home with water and a notebook", label: "Understanding typhoid" },
+    { src: "/images/knowledge/typhoid-fever/lifestyle-v1.png", alt: "Indian grandmother and teenager safely washing fresh vegetables in a bright kitchen", label: "A practical food-safety habit" },
+    { src: "/images/knowledge/typhoid-fever/learning-v1.png", alt: "Transparent medical illustration of the intestinal wall and bloodstream pathway", label: "A closer look at infection spread" },
+  ],
+  malaria: [
+    { src: "/images/knowledge/malaria/understanding-v1.png", alt: "Indian woman discussing malaria testing with a clinician", label: "Understanding malaria" },
+    { src: "/images/knowledge/malaria/lifestyle-v1.png", alt: "Indian family preparing a mosquito net around a bed at blue-hour evening", label: "A practical night-time prevention habit" },
+    { src: "/images/knowledge/malaria/learning-v1.png", alt: "Transparent medical illustration of malaria parasite forms within red blood cells", label: "A closer look at blood-stage infection" },
+  ],
+  influenza: [
+    { src: "/images/knowledge/influenza/understanding-v1.png", alt: "Indian woman resting warmly at home during rainy weather", label: "Understanding flu" },
+    { src: "/images/knowledge/influenza/lifestyle-v1.png", alt: "Indian clinician discussing flu prevention with an older couple", label: "A prevention conversation" },
+    { src: "/images/knowledge/influenza/learning-v1.png", alt: "Transparent medical illustration of upper airways and lungs", label: "A closer look at the respiratory tract" },
+  ],
+  "mouth-ulcers": [
+    { src: "/images/knowledge/mouth-ulcers/understanding-v1.png", alt: "Indian woman calmly checking a small mirror while noticing mild mouth discomfort", label: "Understanding mouth ulcers" },
+    { src: "/images/knowledge/mouth-ulcers/lifestyle-v1.png", alt: "Indian man choosing soft foods and water at a colourful dining table", label: "Making meals easier" },
+    { src: "/images/knowledge/mouth-ulcers/learning-v1.png", alt: "Transparent medical illustration of the mouth lining with a contained small ulcer", label: "A closer look at the mouth lining" },
+  ],
+  toothache: [
+    { src: "/images/knowledge/toothache/understanding-v1.png", alt: "Indian man at a desk gently holding his cheek during a toothache", label: "Understanding tooth pain" },
+    { src: "/images/knowledge/toothache/care-v1.png", alt: "Indian woman discussing a tooth model with a dentist", label: "A dentist conversation" },
+    { src: "/images/knowledge/toothache/learning-v1.png", alt: "Transparent medical cross-section of a molar with a sensitivity pathway", label: "A closer look inside a tooth" },
+  ],
+  "bad-breath": [
+    { src: "/images/knowledge/bad-breath/understanding-v1.png", alt: "Indian woman completing a calm oral-care routine with a tongue cleaner and water", label: "Understanding bad breath" },
+    { src: "/images/knowledge/bad-breath/confidence-v1.png", alt: "Indian friends having a relaxed, confident conversation outdoors", label: "Everyday confidence" },
+    { src: "/images/knowledge/bad-breath/learning-v1.png", alt: "Transparent medical illustration of the tongue and salivary glands", label: "A closer look at the mouth" },
+  ],
+  "dry-mouth": [
+    { src: "/images/knowledge/dry-mouth/understanding-v1.png", alt: "Indian woman calmly sipping water on a sunrise balcony", label: "Understanding dry mouth" },
+    { src: "/images/knowledge/dry-mouth/night-routine-v1.png", alt: "Indian older man preparing a calm bedroom with water and a humidifier", label: "A night-time comfort routine" },
+    { src: "/images/knowledge/dry-mouth/learning-v1.png", alt: "Transparent medical illustration of salivary glands and saliva flow", label: "A closer look at saliva flow" },
+  ],
 };
 
 export function getKnowledgeVisuals(slug: string): KnowledgeVisual[] {
