@@ -6,10 +6,10 @@ export const AsthmaDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-31T12:00:00Z",
-    reviewed: "2026-07-31T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
+    reviewed: "2026-09-24T12:00:00Z",
   },
   title: {
     en: "Asthma",
@@ -20,7 +20,7 @@ export const AsthmaDisease: KnowledgeEntity = {
     ar: "الربو (Asthma)",
   },
   summary: {
-    en: "An evidence-based clinical guide to Asthma, emphasizing GINA 2023 guidelines, emergency status asthmaticus red flags, and strict non-replacement safety boundaries.",
+    en: "Asthma can cause wheeze, cough, chest tightness and breathlessness that come and go. Learn how to use an asthma action plan and when breathing symptoms need emergency help.",
     hi: "अस्थमा का साक्ष्य-आधारित नैदानिक विवरण, जिसमें GINA 2023 दिशानिर्देश एवं आपातकालीन सीमाएं शामिल हैं।",
     gu: "અસ્થમાનું પુરાવા-આધારિત તબીબી માર્ગદર્શન અને ઈમરજન્સી લાલ નિશાનો.",
     mr: "दम्याचे वैद्यकीय मार्गदर्शन आणि आणीबाणीच्या सुरक्षिततेच्या मर्यादा.",
@@ -29,9 +29,9 @@ export const AsthmaDisease: KnowledgeEntity = {
   },
   content: {
     overview:
-      "Asthma is a chronic inflammatory disorder of the lower airways characterized by variable airflow limitation, bronchial hyper-responsiveness, mucosal edema, and bronchospasm. Global clinical management is guided by GINA 2023 evidence standards [CIT-0037].",
+      "Asthma is a long-term condition in which the airways become sensitive and narrow at times, making breathing harder. Symptoms can change from day to day. With the right action plan and inhaler technique, most people can keep asthma well controlled.",
     definition:
-      "A heterogenous lower respiratory disease marked by recurrent wheezing, shortness of breath, chest tightness, and cough that vary over time and in intensity, alongside variable expiratory airflow limitation.",
+      "Asthma causes episodes of wheeze, cough, chest tightness or breathlessness. These can be triggered by infections, allergies, exercise, cold air, smoke or other individual factors.",
     causes: [
       "IgE-mediated bronchial smooth muscle hyper-responsiveness to environmental triggers (dust mites, pollen, pet dander)",
       "Airway inflammation and remodeling driven by Type 2 helper T-cell (Th2) cytokine cascades (IL-4, IL-5, IL-13)",
@@ -57,9 +57,9 @@ export const AsthmaDisease: KnowledgeEntity = {
     conventionalManagement:
       "First-line management follows GINA 2023 guidelines: inhaled corticosteroid (ICS)-formoterol track for maintenance and reliever therapy, SABA bronchodilators for acute symptoms, leukotriene receptor antagonists, and biologic therapies (anti-IgE, anti-IL5) for severe refractory asthma [CIT-0037].",
     homeopathicApproach:
-      "Homeopathic prescribing aims to complement overall patient presprescribings and reduce constitutional sensitivity in chronic stable phases. Homeopathy does NOT replace acute pharmaceutical bronchodilators [D0007-HOMEOPATHY-LIMITS, CIT-0023].",
+      "Reliable clinical evidence has not established homeopathy as a treatment for asthma. It must not replace a reliever inhaler, preventer inhaler, prescribed action plan or emergency care. Never delay help during an asthma attack.",
     lifestyleAdvice:
-      "Use peak flow meters to monitor diurnal PEFR variability, avoid known environmental triggers, utilize HEPA air filtration, maintain up-to-date influenza/pneumococcal vaccinations, and follow an individualized Asthma Action Plan.",
+      "Keep an up-to-date written asthma action plan, check inhaler technique regularly and carry your reliever as advised. Avoid smoke and known triggers where possible, but do not avoid normal activity—ask the asthma team how to exercise safely.",
     emergencyRedFlags: [
       "Status asthmaticus: acute severe asthma exacerbation unresponsive to reliever inhalers [D0007-EMERGENCY-LIMITS]",
       "Peak Expiratory Flow Rate (PEFR) < 30% of predicted or personal best",
@@ -70,14 +70,14 @@ export const AsthmaDisease: KnowledgeEntity = {
     references: ["CIT-0037", "CIT-0023", "CIT-0024"],
     faqs: [
       {
-        question: "Can homeopathic remedies replace inhaled asthma medication during an acute attack?",
+        question: "Can homeopathy replace inhalers during an asthma attack?",
         answer:
-          "No. Acute asthma exacerbations and status asthmaticus are life-threatening emergencies requiring immediate conventional emergency bronchodilators, inhaled corticosteroids, and oxygen therapy. Homeopathy must never delay emergency medical care [D0007-EMERGENCY-LIMITS, CIT-0023].",
+          "No. Use the personal asthma action plan and reliever medicine exactly as prescribed. If symptoms are severe, worsening or not improving with the plan, seek emergency help immediately.",
       },
       {
-        question: "What are the key clinical diagnostic criteria for asthma under GINA guidelines?",
+        question: "When is an asthma attack an emergency?",
         answer:
-          "GINA guidelines require a history of variable respiratory symptoms (wheeze, shortness of breath, cough) combined with objective evidence of variable expiratory airflow limitation, typically confirmed by spirometry reversibility testing [CIT-0037].",
+          "Call emergency services if you are struggling to speak, very breathless, becoming exhausted or confused, have blue/grey lips, a silent chest, or your reliever is not helping as your action plan says it should.",
       },
       {
         question: "How does constitutional homeopathic care complement chronic asthma management?",
@@ -97,8 +97,8 @@ export const AsthmaDisease: KnowledgeEntity = {
     institution: "Homeo Healthcare Clinical Board",
   },
   reviewerRole: "Program-owner final clinical authorization",
-  lastClinicalReview: "2026-07-31",
-  nextClinicalReview: "2027-07-31",
+  lastClinicalReview: "2026-09-24",
+  nextClinicalReview: "2027-09-24",
   evidenceLevel: "Consensus-Guidance",
   tags: ["Asthma", "Disease", "Pulmonology", "GINA-2023", "Emergency-Safety"],
   canonicalUrl: "https://homeo.healthcare/knowledge/diseases/asthma",

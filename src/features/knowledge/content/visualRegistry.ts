@@ -604,21 +604,21 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "A closer look at voice",
     },
   ],
-  sleeplessness: [
+  "low-back-pain": [
     {
-      src: "/images/knowledge/sleeplessness/understanding-v1.png",
-      alt: "Transparent side-profile head anatomy with a softly illuminated brain and neural pathways",
-      label: "Understanding sleep regulation",
+      src: "/images/knowledge/low-back-pain/understanding-v1.png",
+      alt: "Transparent back anatomy showing the lumbar spine, discs and supporting muscles",
+      label: "Understanding the lower back",
     },
     {
-      src: "/images/knowledge/sleeplessness/lifestyle-v1.png",
-      alt: "Indian woman writing in a notebook on a softly lit apartment balcony at twilight",
-      label: "An evening reflection moment",
+      src: "/images/knowledge/low-back-pain/lifestyle-v1.png",
+      alt: "Indian woman doing a gentle standing back stretch in a bright home studio",
+      label: "Gentle movement at home",
     },
     {
-      src: "/images/knowledge/sleeplessness/learning-v1.png",
-      alt: "Abstract translucent indigo and mint arcs orbiting a softly glowing amber core",
-      label: "A closer look at rhythms",
+      src: "/images/knowledge/low-back-pain/learning-v1.png",
+      alt: "Abstract transparent glass lumbar spine sculpture with flowing support pathways",
+      label: "A closer look at movement",
     },
   ],
   hypothyroidism: [

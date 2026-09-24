@@ -7,13 +7,13 @@ export const ConstipationDisease: KnowledgeEntity = {
   editorialStatus: "published",
   reviewStatus: "owner-authorization-required",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-08-14T12:00:00Z",
-    reviewed: "2026-08-14T12:00:00Z"
+    updated: "2026-09-24T12:00:00Z",
+    reviewed: "2026-09-24T12:00:00Z"
   },
   title: {
-    en: "Chronic Functional Constipation (Colonic Inertia & Pelvic Dyssynergia)",
+    en: "Constipation",
     hi: "कब्ज / क्रॉनिक कब्जियत (Chronic Constipation / Obstipation)",
     gu: "કબજિયાત / ક્રોનિક કબજિયાત (Chronic Constipation)",
     mr: "बद्धकोष्ठता / जुनाट बद्धकोष्ठता (Chronic Constipation)",
@@ -21,7 +21,7 @@ export const ConstipationDisease: KnowledgeEntity = {
     ar: "الإمساك المزمن والقصور الحركي القولوني (Chronic Constipation)"
   },
   summary: {
-    en: "An authoritative clinical and educational profile of Chronic Functional Constipation, covering slow-transit colonic inertia, pelvic floor dyssynergic defecation, enteric neuromotor coordination, constitutional homeopathic supportive management, and emergency red flags for acute mechanical bowel obstruction, toxic megacolon, and colorectal malignancy.",
+    en: "Constipation means bowel movements are difficult, hard or less frequent than usual. Learn practical first steps, when to review medicines or diet, and warning signs that need medical care.",
     hi: "क्रॉनिक कब्ज (कब्जियत / मंद आंत्र गतिशीलता) का स्लो-ट्रांजिट पैथोलॉजी, पेल्विक फ्लोर डिसिनर्जिया, मल त्याग में रुकावट, पारंपरिक संवैधानिक होम्योपैथिक प्रबंधन, और आंतों में रुकावट (बाउल ऑब्स्ट्रक्शन) व कोलन कैंसर की आपातकालीन सुरक्षा सीमाओं सहित प्रामाणिक विवरण.",
     gu: "ક્રોનિક કબજિયાત ની આંતરડાની ધીમી ગતિ પેથોલોજી, કઠણ મળ અને શૌચ વખતે જોર કરવું, પરંપરાગત હોમિયોપેથીક સહાયક સારવાર અને આંતરડાના અટકાવાની (બોવેલ ઓબ્સ્ટ્રક્શન) ઇમરજન્સી સીમાઓનું વિવરણ.",
     mr: "जुनाट बद्धकोष्ठता (Chronic Constipation), पोट साफ न होणे व कडक शौच, आंतड्यांची मंद हालचाल, पारंपरिक होमिओपॅथिक पद्धत आणि आतड्यांच्या अडथळ्याच्या (Bowel Obstruction) आणीबाणीच्या मर्यादा.",
@@ -30,9 +30,9 @@ export const ConstipationDisease: KnowledgeEntity = {
   },
   content: {
     overview:
-      "Chronic Functional Constipation is a widespread, heterogeneous gastrointestinal disorder defined by persistent, infrequent bowel evacuations (<3 spontaneous bowel movements per week), difficulty during defecation (excessive straining in \u226525% of defecations), hard or lumpy stools (Bristol Stool Form Scale Types 1 and 2), a sensation of incomplete anorectal evacuation, and a feeling of anorectal blockage. Pathophysiologically categorized into normal-transit constipation (most common; often overlapping with constipation-predominant IBS [IBS-C]), slow-transit constipation (colonic inertia / myopathic or neuropathic delay in colonic transit), and defecatory disorders (pelvic floor dyssynergia / paradoxical anal sphincter contraction), it causes significant abdominal bloating, discomfort, and impaired quality of life.",
+      "Constipation means stools are hard, difficult to pass, less frequent than usual, or leave a feeling that the bowel has not fully emptied. It is common and often improves with routine changes, but a new or persistent change can have a medical cause worth checking.",
     definition:
-      "A symptom-based functional gastrointestinal disorder defined by the Rome IV diagnostic criteria as the presence of at least two characteristic defecatory symptoms occurring for the past 3 months with symptom onset at least 6 months prior to diagnosis, in the absence of structural, metabolic, or mechanical obstruction.",
+      "People experience constipation differently. Straining, hard or lumpy stools, feeling blocked, or needing help to pass stool can all be part of it. The goal is comfortable, regular bowel function—not a single ‘correct’ number of bowel movements.",
     causes: [
       "Slow-Transit Constipation (Colonic Inertia): marked reduction in propagating high-amplitude peristaltic colonic contractions (HAPCs), loss of enteric interstitial cells of Cajal (ICCs), and enteric myopathic/neuropathic degenerative changes",
       "Defecatory Disorders (Pelvic Floor Dyssynergia / Anismus): paradoxical contraction or failure of relaxation of the puborectalis muscle and external anal sphincter during bearing-down attempts",
@@ -62,9 +62,9 @@ export const ConstipationDisease: KnowledgeEntity = {
     conventionalManagement:
       "A stepwise structured ladder approach is recommended: (1) Dietary modification (gradually increasing dietary fiber to 25–35 g/day plus generous hydration). (2) Osmotic laxatives (polyethylene glycol [PEG 3350] is the first-line evidence-based osmotic agent; lactulose, magnesium hydroxide) or bulk-forming fiber (psyllium / ispaghula husk). (3) Stimulant laxatives (bisacodyl, senna) for rescue use. (4) Secretagogues and prokinetics (lubiprostone [chloride channel activator], linaclotide, plecanatide [guanylate cyclase-C agonists], or prucalopride [5-HT4 receptor agonist]) for severe refractory slow-transit constipation. (5) Pelvic Floor Biofeedback Therapy is the undisputed first-line treatment for dyssynergic defecation (>70–80% success rate).",
     homeopathicApproach:
-      "Homeopathic constitutional and gastrointestinal remedies (such as Nux Vomica, Bryonia Alba, Alumina, Opium, Lycopodium Clavatum, Silicea, Plumbum Metallicum, Graphites, Hydrastis Canadensis) serve as supportive care to assist peristaltic coordination, ease dry stool straining, and support bowel regularity alongside dietary fiber, adequate water intake, and biofeedback retraining.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for constipation. It must not delay assessment of severe pain, vomiting, bleeding, weight loss or possible bowel obstruction. Discuss all products with a clinician or pharmacist.",
     lifestyleAdvice:
-      "Gradually increase dietary fiber intake by consuming oats, flaxseeds, legumes, prunes, kiwi fruit, and green vegetables, drink at least 2.5 to 3 liters of water throughout the day, take advantage of the morning gastrocolic reflex by sitting on the toilet 20–30 minutes after breakfast, use a footstool ('Squatty Potty') to elevate the knees above the hips and straighten the anorectal angle, and engage in daily brisk walking to stimulate colonic motor activity.",
+      "Start with a simple routine: do not ignore the urge to open the bowels, make time after meals, move regularly and increase fibre gradually if it suits you. Drink enough for your health needs. Ask a clinician before making major changes if you have kidney, heart or bowel disease.",
     references: [
       "CIT-0004",
       "CIT-0005",
@@ -75,12 +75,12 @@ export const ConstipationDisease: KnowledgeEntity = {
     ],
     faqs: [
       {
-        question: "How does using a footstool on the toilet help with constipation?",
-        answer: "Modern toilets place the body in a seated 90-degree position where the puborectalis muscle remains partially cinched around the rectum like a kinked garden hose. Elevating your feet on a small footstool mimics natural squatting (creating a 35-degree hip angle), which fully relaxes the puborectalis muscle and allows stool to pass smoothly with minimal straining."
+        question: "When does constipation need urgent medical help?",
+        answer: "Seek urgent care for severe or worsening tummy pain, repeated vomiting, a swollen abdomen, inability to pass stool or wind, blood in the stool or black stools, fainting, fever, or sudden constipation with feeling very unwell."
       },
       {
-        question: "Is it dangerous to use osmotic laxatives like polyethylene glycol (PEG 3350) every day?",
-        answer: "No. Unlike older stimulant laxatives that irritate the bowel wall, osmotic laxatives like polyethylene glycol (PEG) simply hold water inside the stool to keep it soft and pliable. PEG is not absorbed into the bloodstream, does not cause dependency or 'lazy bowel', and is proven safe for long-term daily use under medical guidance."
+        question: "When should I discuss constipation with a clinician?",
+        answer: "Arrange review if constipation is new, persistent, changing your normal pattern, painful, or not improving with simple measures. A clinician can review medicines, other conditions and whether tests are needed."
       }
     ],
     redFlags: [
