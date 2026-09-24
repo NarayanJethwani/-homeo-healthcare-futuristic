@@ -20,7 +20,7 @@ export const SneezingSymptom: KnowledgeEntity = {
     ar: "Sneezing"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Sneezing.",
+    en: "Sneezing is a protective reflex that clears irritants from the nose. Repeated sneezing is often linked to allergy, a cold, or an irritant.",
     hi: "Sneezing के लक्षण की नैदानिक समझ.",
     gu: "Sneezing ના લક્ષણ ની સમજણ.",
     mr: "Sneezing चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const SneezingSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Sneezing."
   },
   content: {
-  "definition": "Sneezing: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Sneezing is a sudden, forceful release of air through the nose and mouth. It is a normal reflex when the inside of the nose is irritated.",
+  "clinicalMeaning": "Short spells are common. A pattern with itching, watery eyes, and a clear runny nose suggests allergy, while a sore throat, aches, or fever can point to an infection.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "Allergic rhinitis, including seasonal hay fever",
+    "A viral cold or another upper respiratory infection",
+    "Dust, smoke, perfume, cold air, or another nasal irritant",
+    "Less commonly, non-allergic rhinitis or a medicine effect"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "The timing and associated symptoms help: allergies often recur with a trigger and itch, while colds normally improve within one to two weeks. A clinician can assess severe, persistent, or unclear symptoms.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Seek urgent help for trouble breathing, facial or throat swelling, widespread hives, or feeling faint after an exposure—these can be signs of a severe allergic reaction.",
+    "Arrange a review for persistent symptoms that disturb sleep or daily life, repeated sinus pain, wheeze, or symptoms not responding to pharmacy advice.",
+    "Seek advice for a child, pregnancy, or long-term condition before using over-the-counter treatments."
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "Avoid known triggers where practical. During pollen season, shower and change after being outside, keep windows closed when pollen is high, and do not smoke. A pharmacist can advise on antihistamines, saline sprays, and suitable nasal treatments.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const SneezingSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "How can I tell allergy from a cold?",
+      "answer": "Allergy often causes itching, repeated sneezing, and watery eyes after a trigger. A cold is more likely to include sore throat, feeling unwell, and improvement within one to two weeks."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "Can sneezing be related to asthma?",
+      "answer": "Allergic rhinitis and asthma can occur together. Wheeze, cough, chest tightness, or breathlessness should be discussed with a clinician."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "When is sneezing an emergency?",
+      "answer": "Trouble breathing, swelling of the face or throat, widespread hives, or faintness after an exposure needs emergency help."
     }
   ]
 },
