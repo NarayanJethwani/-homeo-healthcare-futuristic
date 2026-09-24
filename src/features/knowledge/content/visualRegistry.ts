@@ -94,6 +94,57 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "Noticing your pattern",
     },
   ],
+  sleeplessness: [
+    {
+      src: "/images/knowledge/sleeplessness/sleep-diary-v1.png",
+      alt: "Indian woman calmly noting a sleep diary in a warmly lit bedroom",
+      label: "Noticing your sleep pattern",
+    },
+    {
+      src: "/images/knowledge/sleeplessness/routine-v1.png",
+      alt: "Indian man creating a calm evening routine in a softly lit home",
+      label: "Preparing for sleep",
+    },
+    {
+      src: "/images/knowledge/sleeplessness/circadian-v1.png",
+      alt: "Transparent illustration of a person with a gentle sleep-wake rhythm motif",
+      label: "Understanding the sleep-wake rhythm",
+    },
+  ],
+  headache: [
+    {
+      src: "/images/knowledge/headache/patterns-v2.png",
+      alt: "Indian woman calmly noting a headache diary in a bright home workspace",
+      label: "Noticing your pattern",
+    },
+    {
+      src: "/images/knowledge/headache/triggers-v2.png",
+      alt: "Older Indian man calmly tracking everyday headache triggers outdoors",
+      label: "Tracking everyday triggers",
+    },
+    {
+      src: "/images/knowledge/headache/pathways-v2.png",
+      alt: "Transparent multi-colour illustration of head and neck pathways related to headache",
+      label: "Headache can have many contributors",
+    },
+  ],
+  fever: [
+    {
+      src: "/images/knowledge/fever/understanding-v1.png",
+      alt: "Indian mother checking a thermometer while supporting her child resting at home",
+      label: "Understanding fever",
+    },
+    {
+      src: "/images/knowledge/fever/response-v1.png",
+      alt: "Transparent medical illustration of temperature regulation in the brain and body",
+      label: "Fever is a body response",
+    },
+    {
+      src: "/images/knowledge/fever/clinical-conversation-v1.png",
+      alt: "Indian family having a calm conversation with a doctor about a fever pattern",
+      label: "Knowing when to ask",
+    },
+  ],
   indigestion: [
     {
       src: "/images/knowledge/indigestion/understanding-v1.png",
