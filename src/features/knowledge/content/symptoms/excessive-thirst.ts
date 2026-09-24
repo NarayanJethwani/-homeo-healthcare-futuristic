@@ -20,7 +20,7 @@ export const ExcessiveThirstSymptom: KnowledgeEntity = {
     ar: "Excessive Thirst"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Excessive Thirst.",
+    en: "Feeling thirsty after exercise is usual; being constantly thirsty despite drinking is not and deserves attention.",
     hi: "Excessive Thirst के लक्षण की नैदानिक समझ.",
     gu: "Excessive Thirst ના લક્ષણ ની સમજણ.",
     mr: "Excessive Thirst चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const ExcessiveThirstSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Excessive Thirst."
   },
   content: {
-  "definition": "Excessive thirst: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Excessive thirst means feeling persistently thirsty or needing to drink much more than usual, even when you have had fluids. It is sometimes called polydipsia.",
+  "clinicalMeaning": "It is often a response to fluid loss or dry mouth. If it continues for several days, occurs with frequent urination, or comes with weight loss or blurred vision, a clinician can look for causes such as diabetes, medicines, or another health condition.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "Fluid loss from heat, exercise, fever, vomiting, diarrhoea, or not drinking enough",
+    "Alcohol, caffeine, or very salty or spicy foods",
+    "Pregnancy or medicines that can cause a dry mouth or increased urination",
+    "Diabetes or, less commonly, another condition affecting fluid balance"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "Notice whether this is thirst, a dry mouth, or both. A clinician may ask about how much you drink, how often you pass urine, recent illness, medicines, pregnancy, and symptoms such as tiredness, weight change, or blurred vision. Do not try to diagnose diabetes from thirst alone.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Get urgent help for confusion, fainting, severe dizziness, or signs of severe dehydration such as very little dark urine",
+    "Seek urgent assessment if you cannot keep fluids down, or thirst comes with chest pain or severe breathlessness",
+    "Arrange a GP review if drinking more has not helped after a few days, or you are also urinating often, losing weight, or noticing blurred vision"
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "Sip water regularly and replace fluids after heat or illness. Limit alcohol and excess caffeine while you work out the cause. Keep a short note of drinks, urine frequency, symptoms, and medicines to make a clinical review more useful. Avoid forcing very large amounts of water unless a clinician has advised it.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const ExcessiveThirstSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "When is thirst a reason to see a doctor?",
+      "answer": "Book a review if you are constantly thirsty for several days despite drinking, especially with frequent urination, unintentional weight loss, tiredness, or blurred vision."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "Can dry mouth feel like thirst?",
+      "answer": "Yes. Dry mouth can make you want to drink even when your body is not short of fluid. Medicines, mouth breathing, and some health conditions can contribute."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "Should I cut down on fluids if I am urinating often?",
+      "answer": "No. Do not restrict fluids to manage a new pattern of frequent urination. Keep hydrated and arrange a clinical assessment if it continues."
     }
   ]
 },

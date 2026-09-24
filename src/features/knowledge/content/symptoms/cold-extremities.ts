@@ -20,7 +20,7 @@ export const ColdExtremitiesSymptom: KnowledgeEntity = {
     ar: "Cold Extremities"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Cold Extremities.",
+    en: "Cold hands and feet are often harmless in cold weather, but recurring colour change, pain, or numbness deserves attention.",
     hi: "Cold Extremities के लक्षण की नैदानिक समझ.",
     gu: "Cold Extremities ના લક્ષણ ની સમજણ.",
     mr: "Cold Extremities चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const ColdExtremitiesSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Cold Extremities."
   },
   content: {
-  "definition": "Cold extremities: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Cold extremities means hands, feet, fingers, or toes that feel unusually cold. They may be cold because of the environment, or because blood vessels narrow in response to cold or stress.",
+  "clinicalMeaning": "Occasional cold hands and feet are common. Repeated attacks with white, blue, grey, or red colour changes, pain, numbness, or pins and needles can occur with Raynaud's phenomenon and should be discussed with a clinician if they are severe, new, or worsening.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "Cold weather, wet clothing, or long periods without moving",
+    "Stress or anxiety, which can temporarily narrow blood vessels",
+    "Raynaud's phenomenon, where fingers or toes may change colour in cold or stressful situations",
+    "Smoking, some medicines, or an underlying health condition affecting circulation or blood count"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "Keep track of triggers, how long episodes last, whether both sides are affected, and any colour change, pain, sores, numbness, or pins and needles. A clinician can decide whether this is a simple cold response, Raynaud's, a nerve problem, or another circulation concern.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Get immediate help for blue or grey skin or lips with breathing difficulty, chest pain, confusion, dizziness, or fainting",
+    "Seek urgent assessment for a suddenly cold, pale or blue, painful limb, or a new painful swollen leg",
+    "Book a GP review if colour changes, pain, numbness, sores, or pins and needles are persistent, worsening, or first begin after age 30; seek advice early for any foot problem if you have diabetes"
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "Keep hands and feet warm with layers, gloves, and socks; avoid sudden temperature changes; and gently move regularly. Warm cold skin gradually rather than using very hot water or a radiator. Avoid smoking, and reduce caffeine if it seems to trigger attacks.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const ColdExtremitiesSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "What does Raynaud's look like?",
+      "answer": "During an attack, fingers or toes may become white or lighter, then blue, and may turn red as they warm again. They can feel numb, painful, or tingly. Colour changes can look different on different skin tones."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "How should I warm cold hands and feet?",
+      "answer": "Move to a warm place and warm them slowly with dry layers. Do not put very cold hands or feet directly on a radiator or under hot water, as this can injure the skin."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "When should I get advice?",
+      "answer": "Get advice for recurring or worsening attacks, colour change with pain or numbness, skin sores, or any new foot problem if you have diabetes. Seek emergency help for blue or grey colour with breathing or chest symptoms."
     }
   ]
 },

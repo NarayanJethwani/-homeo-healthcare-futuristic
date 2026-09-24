@@ -20,7 +20,7 @@ export const WeightGainSymptom: KnowledgeEntity = {
     ar: "Weight Gain"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Weight Gain.",
+    en: "Weight gain can have many influences; a rapid change with swelling or breathlessness needs medical assessment.",
     hi: "Weight Gain के लक्षण की नैदानिक समझ.",
     gu: "Weight Gain ના લક્ષણ ની સમજણ.",
     mr: "Weight Gain चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const WeightGainSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Weight Gain."
   },
   content: {
-  "definition": "Weight gain: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Weight gain is an increase in body weight over time. It may reflect changes in body fat, muscle, food and fluid intake, or fluid retained in the body.",
+  "clinicalMeaning": "Gradual weight gain is common and can relate to eating patterns, activity, life stage, sleep, stress, or medicines. A new rapid increase can sometimes be fluid retention and should not be assumed to be body-fat gain.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "Changes in eating, activity, sleep, stress, pregnancy, or the menopause transition",
+    "Medicines, including some steroid treatments, antidepressants, antipsychotics, and medicines for diabetes",
+    "Hormonal conditions such as an underactive thyroid, PCOS, or more rarely Cushing's syndrome",
+    "Fluid retention, which can cause a relatively quick increase alongside swollen ankles, feet, hands, or abdomen"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "A review can separate gradual body-weight change from sudden fluid retention. Bring a timeline, medicine list, menstrual or pregnancy context where relevant, and any symptoms such as swelling, fatigue, feeling cold, constipation, shortness of breath, or changes in mood.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Seek urgent help for rapid weight gain with shortness of breath, chest pain, fainting, coughing blood, or a new fast or irregular heartbeat",
+    "Arrange prompt assessment for sudden swelling of the legs, face, abdomen, or one painful swollen limb",
+    "Book a routine review for persistent unexplained weight gain, particularly with fatigue, feeling cold, menstrual changes, or a possible medicine side effect"
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "Use a kind, sustainable approach: regular meals, enjoyable movement, sleep, and support for stress are usually more useful than crash diets. Track changes over weeks, not day to day, and ask a clinician for personalised help if weight affects your wellbeing or health.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const WeightGainSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "Why can my weight change quickly over a few days?",
+      "answer": "Short-term changes are often fluid, food in the digestive system, or normal hormone-related variation. Rapid gain with new swelling or breathlessness needs medical assessment."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "Can an underactive thyroid cause weight gain?",
+      "answer": "It can contribute, usually with other symptoms such as tiredness, feeling cold, constipation, dry skin, or difficulty concentrating. A blood test is needed to check thyroid function."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "Should I stop a medicine that seems to be affecting my weight?",
+      "answer": "No. Talk to the clinician who prescribed it or a pharmacist first. They can explain likely effects and discuss safe alternatives if appropriate."
     }
   ]
 },
@@ -160,4 +160,3 @@ export const WeightGainSymptom: KnowledgeEntity = {
     embeddingText: "weight gain unexplained weight increase metabolic slowing fluid retention obesity thyroid cortisol calcarea carbonica graphites"
   }
 };
-
