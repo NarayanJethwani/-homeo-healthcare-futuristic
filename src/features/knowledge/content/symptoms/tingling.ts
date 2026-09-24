@@ -20,7 +20,7 @@ export const TinglingSymptom: KnowledgeEntity = {
     ar: "Tingling"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Tingling.",
+    en: "Tingling is a pins-and-needles feeling, often from temporary nerve pressure. Persistent, painful, or one-sided tingling needs assessment.",
     hi: "Tingling के लक्षण की नैदानिक समझ.",
     gu: "Tingling ના લક્ષણ ની સમજણ.",
     mr: "Tingling चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const TinglingSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Tingling."
   },
   content: {
-  "definition": "Tingling: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Tingling is a prickling, buzzing, or pins-and-needles sensation, usually in the hands, feet, arms, or legs.",
+  "clinicalMeaning": "It often follows pressure on a nerve and settles when position changes, but persistent or progressive tingling can indicate a nerve, spine, metabolic, or circulation problem.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "Temporary pressure on a nerve or poor posture",
+    "Nerve compression in the neck, back, or wrist",
+    "Diabetes, vitamin deficiency, alcohol use, medicines, or peripheral neuropathy",
+    "Anxiety-related rapid breathing or, less commonly, a neurological condition"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "A clinician considers whether tingling is one-sided or both sides, comes with numbness or weakness, and relates to movement, neck or back pain, diabetes, medicines, or other symptoms.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Call emergency services for sudden tingling or numbness on one side with face droop, arm weakness, speech difficulty, confusion, severe headache, or vision change.",
+    "Seek urgent help for tingling with weakness, loss of bladder or bowel control, a cold or pale limb, or after serious injury.",
+    "Book a review for persistent, spreading, recurrent, or painful tingling."
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "Change position, avoid leaning on limbs for long periods, pace repetitive tasks, and note the trigger, location, and duration. Do not ignore a new one-sided or progressive pattern.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const TinglingSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "Why do I get pins and needles?",
+      "answer": "Often a position temporarily compresses a nerve or reduces blood flow. It should ease after moving; persistent symptoms need assessment."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "When is tingling urgent?",
+      "answer": "Sudden one-sided symptoms with FAST stroke signs, or tingling with weakness, bladder or bowel changes, injury, or a cold limb, needs urgent help."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "Could diabetes cause tingling?",
+      "answer": "Yes. Diabetes can affect nerves, often starting gradually in the feet. A clinician can assess this and other possible causes."
     }
   ]
 },

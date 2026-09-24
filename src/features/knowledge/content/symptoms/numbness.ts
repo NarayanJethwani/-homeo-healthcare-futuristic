@@ -20,7 +20,7 @@ export const NumbnessSymptom: KnowledgeEntity = {
     ar: "Numbness"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Numbness.",
+    en: "Numbness is reduced or altered feeling in part of the body. Sudden one-sided numbness with facial or speech changes is a stroke emergency.",
     hi: "Numbness के लक्षण की नैदानिक समझ.",
     gu: "Numbness ના લક્ષણ ની સમજણ.",
     mr: "Numbness चे लक्षण आणि उपचार.",
@@ -28,37 +28,37 @@ export const NumbnessSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Numbness."
   },
   content: {
-  "definition": "Numbness: A localized pain, sensory alteration, or mobility limitation originating from nerves, muscles, joints, or tendons.",
-  "clinicalMeaning": "Replects nociceptive pathway stimulation, localized tissue injury, or nerve root compression resulting in altered sensation.",
+  "definition": "Numbness is reduced sensation or a feeling that part of the body is asleep. It may be temporary after pressure on a nerve or persistent because of a nerve, circulation, spine, or health condition.",
+  "clinicalMeaning": "The location, suddenness, weakness, pain, colour change, and related symptoms help identify whether it is likely to be temporary or needs urgent assessment.",
   "commonCauses": [
-    "Mechanical strain or postural imbalance",
-    "Peripheral nerve compression (e.g., sciatica, carpal tunnel)",
-    "Osteoarthritis or joint degeneration",
-    "Neurogenic inflammation"
+    "Temporary pressure on a nerve or a repetitive-position problem",
+    "Nerve compression such as carpal tunnel syndrome or sciatica",
+    "Diabetes, vitamin deficiency, medicines, or peripheral neuropathy",
+    "Less commonly, a circulation or brain/spinal cord condition"
   ],
-  "differentialDiagnosis": "Differentiate from systemic autoimmune joint disease, peripheral vascular disease, and referred visceral pain.",
+  "differentialDiagnosis": "A clinician may assess the pattern, strength, reflexes, circulation, neck or back symptoms, diabetes risk, medicines, and possible vitamin deficiency.",
   "redFlags": [
-    "Loss of bladder or bowel control (Cauda Equina Syndrome)",
-    "Sudden onset of limb weakness or foot drop",
-    "Severe joint swelling with high fever indicating septic arthritis"
+    "Call emergency services for sudden numbness or weakness on one side, facial droop, speech difficulty, severe headache, sudden vision change, confusion, or loss of balance—even if it stops.",
+    "Seek urgent help for numbness with a cold, pale, painful limb; sudden severe pain after injury; or new bladder or bowel control problems.",
+    "Arrange a review for persistent, worsening, or recurrent numbness, especially with weakness or difficulty walking."
   ],
-  "lifestyleAdvice": "Implement regular stretching, adjust desk ergonomics, engage in low-impact walking, and stay hydrated to maintain joint lubrication.",
+  "lifestyleAdvice": "Avoid prolonged pressure on the affected area, vary repetitive tasks, and use a neutral posture. Do not self-treat new weakness or persistent numbness as a simple trapped nerve without an assessment.",
   "references": [
     "CIT-0011",
     "CIT-0022"
   ],
   "faqs": [
     {
-      "question": "What causes muscle stiffness in the morning?",
-      "answer": "Morning stiffness is often caused by localized inflammation, muscle inactivity during sleep, or structural degenerative joint changes that temporarily reduce synovial fluid circulation."
+      "question": "When is numbness a stroke warning sign?",
+      "answer": "Sudden one-sided numbness or weakness, facial droop, speech difficulty, confusion, vision change, or severe headache is an emergency. Call emergency services immediately."
     },
     {
-      "question": "How does stress affect nerve and muscle pain?",
-      "answer": "Stress increases muscle tension and heightens pain sensitivity (central sensitization) by releasing stress hormones that lower the pain threshold."
+      "question": "Can a trapped nerve cause numbness?",
+      "answer": "Yes. Pressure on a nerve in the wrist, neck, back, or elsewhere can cause numbness or tingling. Persistent symptoms need clinical assessment."
     },
     {
-      "question": "What is the homeopathic approach to physical injury?",
-      "answer": "Homeopathy uses remedies like Arnica Montana to manage acute swelling and bruising, and Rhus Tox or Bryonia for joint stiffness and pain, tailored to whether movement improves or worsens the symptoms."
+      "question": "When should I see a clinician?",
+      "answer": "Seek advice for numbness that persists, keeps returning, is worsening, affects balance or strength, or follows an injury."
     }
   ]
 },
