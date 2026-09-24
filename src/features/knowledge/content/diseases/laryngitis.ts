@@ -7,13 +7,13 @@ export const LaryngitisDisease: KnowledgeEntity = {
   editorialStatus: "published",
   reviewStatus: "owner-authorization-required",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-08-14T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
     reviewed: "2026-08-14T12:00:00Z"
   },
   title: {
-    en: "Acute & Chronic Laryngitis (Vocal Cord Inflammation, Dysphonia & Hoarseness)",
+    en: "Laryngitis",
     hi: "लैरिंजाइटिस / स्वरयंत्र की सूजन व आवाज बैठना (Acute & Chronic Laryngitis)",
     gu: "લેરીન્જાઇટિસ / સ્વરપેટીનો સોજો અને અવાજ બેસી જવો (Laryngitis)",
     mr: "लॅरिंजायटिस / स्वरयंत्राची सूज व आवाज बसणे (Laryngitis / Hoarseness)",
@@ -21,7 +21,7 @@ export const LaryngitisDisease: KnowledgeEntity = {
     ar: "التهاب الحنجرة وبحة الصوت (Laryngitis)"
   },
   summary: {
-    en: "An authoritative clinical and educational profile of Acute and Chronic Laryngitis, covering vocal fold mucosal edema, phonotraumatic vibratory stress, viral upper respiratory infections, Laryngopharyngeal Reflux (LPR / silent reflux), constitutional homeopathic supportive management, and emergency red flags for life-threatening acute epiglottitis, laryngeal stridor / airway obstruction, and laryngeal squamous cell carcinoma.",
+    en: "Laryngitis is irritation or swelling of the voice box that can cause a hoarse voice, throat discomfort, or cough. It often improves within one to two weeks; learn when voice changes need medical review.",
     hi: "लैरिंजाइटिस (स्वरयंत्र व वोकल कॉर्ड्स की सूजन) का वायरल व फोनोट्रॉमा पैथोलॉजी, आवाज बैठना (Hoarseness / Dysphonia), गले में सूखापन व खांसी, रिफ्लक्स, पारंपरिक संवैधानिक होम्योपैथिक प्रबंधन, और एक्यूट एपिग्लॉट्टाइटिस (Epiglottitis) व वोकल कॉर्ड कैंसर की आपातकालीन सुरक्षा सीमाओं सहित प्रामाणिक विवरण.",
     gu: "લેરીન્જાઇટિસ (અવાજ બેસી જવો) ની પેથોલોજી, વાયરલ ઇન્ફેક્શન, મોટેથી બોલવાથી થતો સોજો, એસિડ રિફ્લક્સ, પરંપરાગત હોમિયોપેથીક સહાયક સારવાર અને શ્વાસનળીમાં સોજો (એપિગ્લોટાઇટિસ) તથા ગળાના કેન્સરની ઇમરજન્સી સીમાઓનું વિવરણ.",
     mr: "लॅरिंजायटिस (Laryngitis), घसा बसणे, बोलताना होणारा त्रास, स्वरयंत्राची सूज, पारंपरिक होमिओपॅथिक पद्धत आणि श्वास अडकणे (Epiglottitis) व घशाच्या कर्करोगाच्या (Laryngeal Cancer) आणीबाणीच्या मर्यादा.",
@@ -63,7 +63,7 @@ export const LaryngitisDisease: KnowledgeEntity = {
     conventionalManagement:
       "A comprehensive evidence-based vocal hygiene and medical protocol: (1) Mandatory Complete Vocal Rest: absolute avoidance of speaking, singing, and especially whispering (whispering exerts significantly higher mechanical friction and strain on the vocal fold adductor muscles than normal relaxed speaking). (2) Optimal Hydration and Humidification: drinking 2 to 3 liters of water daily and inhaling warm unmedicated steam or using cool mist room humidifiers. (3) Elimination of Aggravating Factors: treating underlying LPR with dietary antireflux precautions and Proton Pump Inhibitors (PPIs) / H2 blockers for 8–12 weeks; using a spacer device and rinsing the mouth thoroughly after inhaled steroid use; smoking cessation. (4) Antibiotics are strictly contraindicated in acute viral laryngitis (provide zero benefit and risk adverse drug events). (5) Short-term oral corticosteroids (dexamethasone / prednisone) are reserved strictly for professional performers needing urgent short-term recovery or severe inflammatory laryngeal edema.",
     homeopathicApproach:
-      "Homeopathic constitutional and vocal-fatigue remedies (such as Argentum Metallicum, Causticum, Phosphorus, Spongia Tosta, Drosera Rotundifolia, Belladonna, Arum Triphyllum, Ferrum Phosphoricum, Lachesis Muta, Hepar Sulphuris Calcareum) serve as supportive care to ease laryngeal dryness, soothe hoarseness, and assist mucosal recovery alongside strict vocal rest, steam inhalation, and ENT evaluation.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for laryngitis. It should not replace voice rest, hydration, assessment of persistent hoarseness, or urgent care for breathing difficulty.",
     lifestyleAdvice:
       "Practice strict vocal rest (avoid speaking, shouting, and NEVER whisper; use pen and paper or smartphone messaging to communicate during acute flares), inhale warm plain steam for 10 minutes twice daily, drink plenty of room-temperature water throughout the day, avoid throat clearing (instead, take a sip of water or perform a silent hard swallow), avoid caffeine, mints, and alcohol which dry the vocal cords, elevate the head of your bed if acid reflux is present, and never smoke.",
     references: [
@@ -118,7 +118,7 @@ export const LaryngitisDisease: KnowledgeEntity = {
   readingTimeMinutes: 6,
   audience: "patient",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.1.0: Promoted to governed v1.1.0 with comprehensive vocal fold mucosal clinical boundaries, epiglottitis/laryngeal cancer red flags, and verified citations"],
+  changeLog: ["1.1.0: Promoted to governed v1.1.0 with comprehensive vocal fold mucosal clinical boundaries, epiglottitis/laryngeal cancer red flags, and verified citations", "1.2.0: Simplified the patient-facing title and summary."],
   clinicalPearl: "Whispering causes greater adductor muscle strain and vocal fold friction than quiet speech; absolute vocal silence is mandatory during acute laryngitis.",
   quickFacts: {
     "Clinical Threshold": "Hoarseness lasting >3 weeks mandates flexible laryngoscopy to rule out malignancy",

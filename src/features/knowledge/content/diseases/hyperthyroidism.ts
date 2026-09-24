@@ -7,13 +7,13 @@ export const HyperthyroidismDisease: KnowledgeEntity = {
   editorialStatus: "published",
   reviewStatus: "owner-authorization-required",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-08-14T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
     reviewed: "2026-08-14T12:00:00Z"
   },
   title: {
-    en: "Hyperthyroidism & Thyrotoxicosis (Overactive Thyroid & Graves' Disease)",
+    en: "Hyperthyroidism",
     hi: "हाइपरथायरायडिज्म / थायराइड हार्मोन की अधिकता (Hyperthyroidism / Thyrotoxicosis)",
     gu: "હાઈપરથાઈરોઈડિઝમ / થાઈરોઈડ હોર્મોનનું વધુ પડતું ઉત્પાદન (Hyperthyroidism)",
     mr: "हायपरथायरॉईडीझम / थायरॉईड संप्रेरकांचे अतिउत्पादन (Hyperthyroidism)",
@@ -21,7 +21,7 @@ export const HyperthyroidismDisease: KnowledgeEntity = {
     ar: "فرط نشاط الغدة الدرقية والانسمام الدرقي (Hyperthyroidism)"
   },
   summary: {
-    en: "An authoritative clinical and educational profile of Hyperthyroidism and Thyrotoxicosis, covering TSH-receptor autoantibody (TRAb) stimulation, autonomous thyroid nodular hypersecretion, hypermetabolic state, constitutional homeopathic supportive management, and emergency red flags for life-threatening Thyroid Storm (thyrotoxic crisis), atrial fibrillation, and acute heart failure.",
+    en: "Hyperthyroidism means there is too much thyroid hormone in the body. It can cause a fast heartbeat, tremor, heat intolerance, weight change, or anxiety-like symptoms and needs medical assessment and monitoring.",
     hi: "हाइपरथायरायडिज्म (थायराइड ग्रंथि की अतिसक्रियता) का टीएसएच-रिसेप्टर ऑटोएंटीबॉडी (TRAb) पैथोलॉजी, हाइपरमेटाबॉलिक स्थिति, वजन घटना, दिल की धड़कन तेज होना, पारंपरिक संवैधानिक होम्योपैथिक प्रबंधन, और थायराइड स्टॉर्म (Thyroid Storm) व एट्रियल फिब्रिलेशन की आपातकालीन सुरक्षा सीमाओं सहित प्रामाणिक विवरण.",
     gu: "હાઈપરથાઈરોઈડિઝમ (વધુ પડતો થાઈરોઈડ સ્ત્રાવ) ની પેથોલોજી, અચાનક વજન ઘટવું, હૃદયના ધબકારા વધવા, ગરમી સહન ન થવી, પરંપરાગત હોમિયોપેથીક સહાયક સારવાર અને થાઈરોઈડ સ્ટોર્મ (Thyroid Storm) ની જીવલેણ ઇમરજન્સી સીમાઓનું વિવરણ.",
     mr: "हायपरथायरॉईडीझम (थायरॉईड ग्रंथीची अतिसक्रियता), वजन कमी होणे, धडधड वाढणे, उष्णता सहन न होणे, पारंपरिक होमिओपॅथिक पद्धत आणि थायरॉईड स्टॉर्मच्या (Thyroid Storm) आणीबाणीच्या मर्यादा.",
@@ -62,7 +62,7 @@ export const HyperthyroidismDisease: KnowledgeEntity = {
     conventionalManagement:
       "A multimodal endocrine strategy balances rapid symptom control and definitive reduction of thyroid hormone synthesis: (1) Beta-adrenergic blockers (propranolol, atenolol) provide immediate relief from tachycardia, tremors, heat intolerance, and anxiety. (2) Antithyroid drugs (thionamides: Methimazole is first-line; Propylthiouracil [PTU] is preferred during first-trimester pregnancy and thyroid storm due to peripheral T4-to-T3 conversion inhibition). (3) Radioactive Iodine Ablation (RAI / I-131; definitive destruction of overactive follicular tissue). (4) Total or Near-Total Thyroidectomy (surgical excision for compressive large goiters, severe Graves' orbitopathy, or suspected coexisting thyroid cancer).",
     homeopathicApproach:
-      "Homeopathic constitutional and endocrine-balancing remedies (such as Iodum, Natrum Muriaticum, Lachesis Muta, Spigelia Anthelmia, Lycopus Virginicus, Thyroidinum, Phosphorus, Calcarea Carbonica, Glonoine) serve as supportive care to ease nervous hyperarousal, soothe palpitations, and assist vitality alongside strict endocrinological monitoring, serial TSH/FT4 testing, and conventional antithyroid medications.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for hyperthyroidism. It must not replace endocrinology care, thyroid blood tests, prescribed medicines, or urgent care for severe palpitations, chest symptoms, confusion, or fever.",
     lifestyleAdvice:
       "Avoid excess dietary iodine intake (avoid kelp, seaweeds, and high-iodine dietary supplements), completely avoid cigarette smoking (smoking increases the risk of severe, vision-threatening Graves' orbitopathy by over 8-fold), practice relaxation and mindfulness to soothe autonomic sympathetic overdrive, ensure adequate caloric and protein intake to prevent lean muscle wasting, and avoid unmonitored high-intensity athletic exertion while resting heart rate remains elevated.",
     references: [

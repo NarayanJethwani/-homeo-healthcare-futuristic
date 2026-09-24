@@ -8,8 +8,8 @@
   "entityRevisions": [
     {
       "entityId": "D0001",
-      "version": "1.1.0",
-      "revisionHash": "e35c5d9de4ee928409232818c7f7d8a9aa221a954aac3bb216df7fc3effb0b09",
+      "version": "1.2.0",
+      "revisionHash": "507ff06f92504c634f9b25f1e5b0c2842b19184c7cee6b0e970f5a23729201eb",
       "materialClaimCount": 8,
       "citationIds": [
         "CIT-0017",
@@ -49,7 +49,7 @@
       "rationale": "Heartburn is a typical symptom associated with GERD; the edge does not by itself establish a diagnosis.",
       "clinicalReviewRequired": true,
       "status": "draft",
-      "sourceRevision": "1.1.0",
+      "sourceRevision": "1.2.0",
       "publicationEligible": false,
       "ragEligible": false
     },
@@ -67,7 +67,7 @@
       "rationale": "NICE CG184 supports the adult diagnostic and conventional-management passages.",
       "clinicalReviewRequired": false,
       "status": "draft",
-      "sourceRevision": "1.1.0",
+      "sourceRevision": "1.2.0",
       "publicationEligible": false,
       "ragEligible": false
     },
@@ -85,7 +85,7 @@
       "rationale": "Official NIDDK information supports the patient-facing definition, symptoms, diagnosis, and lifestyle passages.",
       "clinicalReviewRequired": false,
       "status": "draft",
-      "sourceRevision": "1.1.0",
+      "sourceRevision": "1.2.0",
       "publicationEligible": false,
       "ragEligible": false
     },
@@ -103,7 +103,7 @@
       "rationale": "The current ACG guideline supports the adult GERD diagnostic and management framework.",
       "clinicalReviewRequired": false,
       "status": "draft",
-      "sourceRevision": "1.1.0",
+      "sourceRevision": "1.2.0",
       "publicationEligible": false,
       "ragEligible": false
     },
@@ -121,7 +121,7 @@
       "rationale": "NCCIH is referenced only for evidence limitations, product safety, and the conventional-care boundary.",
       "clinicalReviewRequired": false,
       "status": "draft",
-      "sourceRevision": "1.1.0",
+      "sourceRevision": "1.2.0",
       "publicationEligible": false,
       "ragEligible": false
     },
@@ -254,5 +254,5 @@
     "approvedAt": "2026-07-30",
     "decisionReference": "PR-74-owner-authorization"
   },
-  "packageHash": "4873783cf338637c91557122ad9a19149d18b0df9096248f977c85051e484a0a"
+  "packageHash": "d59e2b0c1451712fd62e4db3956eb838cb9acc16f5fb44527cd0b0bc09ecbcce"
 }

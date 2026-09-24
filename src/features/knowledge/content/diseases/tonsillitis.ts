@@ -12,7 +12,7 @@ export const TonsillitisDisease: KnowledgeEntity = {
     reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
-    en: "Acute Tonsillitis & Peritonsillar Cellulitis",
+    en: "Tonsillitis",
     hi: "टॉन्सिलाइटिस / टॉन्सिल की सूजन (Tonsillitis)",
     gu: "ટોન્સિલાઇટિસ / ટાકણાનો સોજો (Tonsillitis)",
     mr: "टॉन्सिलायटिस / टॉन्सिलची सुज (Tonsillitis)",
@@ -20,7 +20,7 @@ export const TonsillitisDisease: KnowledgeEntity = {
     ar: "التهاب اللوزتين",
   },
   summary: {
-    en: "An authoritative clinical profile of Acute Tonsillitis covering IDSA 2012 guidelines, GABHS streptococcal infection mechanics, peritonsillar abscess (Quinsy) emergency red flags, and ENT safety boundaries.",
+    en: "Tonsillitis is an infection of the tonsils that can cause a sore throat, fever, and painful swallowing. Learn what usually helps, when testing or antibiotics may be needed, and when to seek urgent help.",
     hi: "टॉन्सिलाइटिस का IDSA 2012 मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "ટોન્સિલાઇટિસનું IDSA 2012 ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "टॉन्सिलायटिसचे IDSA 2012 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
@@ -54,7 +54,7 @@ export const TonsillitisDisease: KnowledgeEntity = {
     conventionalManagement:
       "Management includes analgesics/antipyretics (acetaminophen, ibuprofen), warm saline gargles, and oral penicillin V or amoxicillin for 10 days in confirmed GABHS cases to prevent acute rheumatic fever and post-streptococcal glomerulonephritis [CIT-0056].",
     homeopathicApproach:
-      "Homeopathic remedies (such as Belladonna, Phytolacca Decandra, Mercurius Solubilis, Hepar Sulphuris, Baryta Carbonica) serve as supportive care to reduce throat inflammation, ease painful swallowing, and relieve cervical lymph node tenderness alongside proper diagnostic testing.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for tonsillitis. It must not replace clinical assessment, throat testing, prescribed antibiotics for confirmed bacterial infection, or urgent care for breathing or swallowing warning signs.",
     lifestyleAdvice:
       "Maintain soft diet, drink abundant warm fluids, practice warm salt-water gargles, replace toothbrush after GABHS treatment, and rest.",
     references: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0056"],

@@ -12,7 +12,7 @@ export const JointPainSymptom: KnowledgeEntity = {
     reviewed: "2026-07-31T20:30:00Z"
   },
   title: {
-    en: "Joint Pain (Arthralgia)",
+    en: "Joint Pain",
     hi: "जोड़ों का दर्द (Joint Pain / Arthralgia)",
     gu: "સાંધાનો દુખાવો (Joint Pain / Arthralgia)",
     mr: "सांधेदुखी (Joint Pain / Arthralgia)",
@@ -20,7 +20,7 @@ export const JointPainSymptom: KnowledgeEntity = {
     ar: "ألم المفاصل (Arthralgia)"
   },
   summary: {
-    en: "Clinical evaluation, differential diagnosis, septic joint emergency red flags, and supportive management for Joint Pain under ACR 2019 guidelines.",
+    en: "Joint pain can have many causes, including wear-and-tear, injury, inflammation, or infection. Learn what patterns may help distinguish them and when a hot, swollen joint needs urgent assessment.",
     hi: "जोड़ों के दर्द के लक्षण की नैदानिक समझ और आपातकालीन अर्थराइटिस चेतावनी लक्षण.",
     gu: "સાંધાના દુખાવાની તબીબી સમજણ અને ઈમરજન્સી ચેતવણી લક્ષણો.",
     mr: "सांधेदुखीच्या लक्षणांची वैद्यकीय माहिती आणि आपत्कालीन इशारे.",
@@ -72,16 +72,16 @@ export const JointPainSymptom: KnowledgeEntity = {
     ],
   "faqs": [
     {
-      "question": "What causes muscle stiffness in the morning?",
-      "answer": "Morning stiffness is often caused by localized inflammation, muscle inactivity during sleep, or structural degenerative joint changes that temporarily reduce synovial fluid circulation."
+      "question": "What can help joint pain day to day?",
+      "answer": "Gentle, low-impact activity, muscle strengthening, a healthy weight where relevant, and hot or cold packs may help. A clinician or physiotherapist can tailor this to the cause of your pain."
     },
     {
-      "question": "How does stress affect nerve and muscle pain?",
-      "answer": "Stress increases muscle tension and heightens pain sensitivity (central sensitization) by releasing stress hormones that lower the pain threshold."
+      "question": "When is joint pain urgent?",
+      "answer": "Seek urgent advice for sudden severe pain in one joint, especially if it is hot, swollen, difficult to move, or accompanied by fever or feeling unwell. These can be signs of a joint infection."
     },
     {
-      "question": "What is the homeopathic approach to physical injury?",
-      "answer": "Homeopathy uses remedies like Arnica Montana to manage acute swelling and bruising, and Rhus Tox or Bryonia for joint stiffness and pain, tailored to whether movement improves or worsens the symptoms."
+      "question": "Does morning stiffness always mean arthritis?",
+      "answer": "No. Brief stiffness can happen after inactivity, while longer-lasting stiffness with swelling may need medical assessment. The cause depends on the pattern, affected joints, and other symptoms."
     }
   ]
 },

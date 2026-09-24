@@ -7,13 +7,13 @@ export const RingwormTineaCorporisDisease: KnowledgeEntity = {
   editorialStatus: "published",
   reviewStatus: "owner-authorization-required",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-09-21T00:00:00Z",
-    updated: "2026-09-21T00:00:00Z",
+    updated: "2026-09-24T00:00:00Z",
     reviewed: "2026-09-21T00:00:00Z",
   },
   title: {
-    en: "Ringworm (Tinea Corporis): An Itchy Ring-Shaped Rash",
+    en: "Ringworm",
     hi: "दाद / रिंगवर्म: गोल, खुजलीदार फंगल रैश",
     gu: "દાદ / રિંગવર્મ: ગોળાકાર ખંજવાળવાળો ફંગલ ચકામો",
     mr: "दाद / रिंगवर्म: गोलाकार खाज येणारा फंगल पुरळ",
@@ -68,7 +68,7 @@ export const RingwormTineaCorporisDisease: KnowledgeEntity = {
   readingTimeMinutes: 4,
   audience: "patient",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.0.0: Added patient-first ringworm guide with spread-prevention and treatment boundaries."],
+  changeLog: ["1.0.0: Added patient-first ringworm guide with spread-prevention and treatment boundaries.", "1.1.0: Simplified the title and added focused condition and symptom connections."],
   quickFacts: { "Cause": "A fungal infection, not a worm", "Can it spread?": "Yes — through contact, shared items, and infected animals", "Common look": "An itchy ring-shaped patch", "When to seek advice": "If it spreads, affects scalp or nails, or does not improve" },
   aiReadiness: {
     retrievalSummary: "Ringworm, or tinea corporis, is a contagious fungal skin infection that often causes an itchy ring-shaped rash and needs antifungal assessment or treatment.",

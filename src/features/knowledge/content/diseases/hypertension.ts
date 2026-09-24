@@ -6,13 +6,13 @@ export const HypertensionDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-31T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
     reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
-    en: "Hypertension (High Blood Pressure)",
+    en: "High Blood Pressure",
     hi: "उच्च रक्तचाप (Hypertension)",
     gu: "હાઇ બ્લડ પ્રેશર (Hypertension)",
     mr: "उच्च रक्तदाब (Hypertension)",
@@ -20,7 +20,7 @@ export const HypertensionDisease: KnowledgeEntity = {
     ar: "ارتفاع ضغط الدم",
   },
   summary: {
-    en: "An authoritative clinical profile of Systemic Arterial Hypertension covering ACC/AHA 2017 staging criteria, end-organ vascular risk, hypertensive crisis emergency red flags, and anti-hypertensive non-discontinuation rules.",
+    en: "High blood pressure often has no symptoms but can raise the risk of heart, brain, and kidney problems over time. Learn why accurate checks, prescribed treatment, and urgent warning signs matter.",
     hi: "उच्च रक्तचाप का एसीसी/एएचए 2017 मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "હાઇ બ્લડ પ્રેશરનું ACC/AHA 2017 ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "उच्च रक्तदाबाचे ACC/AHA 2017 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
@@ -29,49 +29,50 @@ export const HypertensionDisease: KnowledgeEntity = {
   },
   content: {
     overview:
-      "Essential hypertension is defined as persistent elevation of systemic arterial blood pressure (systolic BP ≥130 mmHg or diastolic BP ≥80 mmHg) [D0009-KEYNOTES, CIT-0039]. Often asymptomatic, it is a primary risk factor for stroke, myocardial infarction, heart failure, and chronic kidney disease.",
+      "Hypertension means blood pressure stays higher than is healthy over time. It often causes no symptoms, so regular measurements are essential. Left untreated, it raises the risk of heart disease, stroke and kidney disease, but treatment can lower that risk.",
     definition:
-      "A chronic cardiovascular condition characterized by sustained elevated vascular resistance against left ventricular ejection, resulting in arterial wall remodeling and end-organ microvascular injury.",
+      "Blood pressure is the force of blood against artery walls. A diagnosis of hypertension is based on repeated accurate readings, not on one high reading or on symptoms such as a headache alone.",
     causes: [
-      "Essential (primary) hypertension (90-95% of cases): Polygenic inheritance, renal sodium retention, sympathetic hyperactivity, and endothelial dysfunction [D0009-KEYNOTES, CIT-0039]",
-      "Secondary hypertension (5-10% of cases): Chronic kidney disease, renovascular stenosis, primary aldosteronism, obstructive sleep apnea, or pheochromocytoma",
+      "Most high blood pressure has several contributors rather than one single cause",
+      "Family history, age, body weight, sleep, alcohol, smoking, diet and activity can all contribute",
+      "Kidney disease, some hormone conditions, sleep apnoea or medicines can sometimes be important causes",
     ],
     riskFactors: [
-      "Advanced age, family history of premature cardiovascular disease, and South Asian / African-American ethnicity",
-      "High dietary sodium intake (>2,300 mg/day), low potassium intake, sedentary lifestyle, and obesity",
-      "Excessive alcohol consumption, chronic psycho-emotional stress, and tobacco use",
+      "Family history, increasing age, diabetes, kidney disease or sleep apnoea",
+      "High-salt processed foods, excess alcohol, smoking, low activity or higher body weight",
+      "Medicines or supplements that can raise blood pressure; ask a clinician before stopping anything prescribed",
     ],
     symptoms: [
-      "Often asymptomatic ('silent killer') until end-organ complications manifest [D0009-KEYNOTES, CIT-0039]",
-      "Occipital morning headache, dizziness, epistaxis, or exertional dyspnea in severe blood pressure elevations",
-      "Hypertensive crisis symptoms: Severe headache, chest pain, dyspnea, neurological deficits, or visual alterations",
+      "Usually no symptoms at all",
+      "A reading that is repeatedly high on a validated home monitor or at a clinic",
+      "Severe headache, chest pain, breathlessness, weakness, speech difficulty or vision change with a very high reading are emergency warning signs—not routine hypertension symptoms",
     ],
     diagnosis:
-      "Diagnosed by multiple standardized resting blood pressure measurements across ≥2 clinical visits, out-of-office ambulatory BP monitoring (ABPM), baseline serum creatinine, eGFR, lipid profile, fasting glucose, urinalysis, and 12-lead ECG [CIT-0039].",
+      "Diagnosis uses repeated, correctly taken measurements. A clinician may ask for home or 24-hour monitoring and check for related risks or causes with blood and urine tests, an ECG, and a review of medicines and lifestyle.",
     differentialDiagnosis:
       "Differentiate essential hypertension from secondary renal, endocrine, or vascular causes, white-coat hypertension, and acute pain-induced hypertension.",
     conventionalManagement:
-      "Therapy combines DASH dietary modifications, sodium restriction (<1,500 mg/day), aerobic exercise, and guideline-directed anti-hypertensive pharmacotherapy (ACE inhibitors/ARBs, CCBs, thiazide diuretics) [CIT-0039].",
+      "Treatment is personalised. It may include a heart-healthy lower-salt eating pattern, activity, weight management, less alcohol, stopping smoking and prescribed blood-pressure medicine. Many people need both everyday changes and medicine.",
     homeopathicApproach:
-      "Homeopathic management serves as a supportive constitutional therapy to address anxiety, stress-induced vascular tone, and lifestyle factors alongside regular blood pressure monitoring.",
+      "Reliable clinical evidence has not established homeopathy as a treatment that controls high blood pressure. It must not replace prescribed medicines, regular blood-pressure checks, or urgent assessment of possible emergency symptoms.",
     lifestyleAdvice:
-      "Adopt the DASH diet, restrict daily sodium intake, engage in 150 minutes/week of moderate aerobic activity, limit alcohol, and maintain daily home BP logs.",
+      "Use a validated upper-arm monitor if your clinician recommends home checks. Sit quietly first, use the right cuff size, record readings rather than reacting to one number, and bring the log to appointments. Build gradual activity, more minimally processed foods and good sleep into a sustainable routine.",
     references: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0039"],
     faqs: [
       {
-        question: "What is a Hypertensive Emergency and what should be done?",
+        question: "When is a high blood-pressure reading an emergency?",
         answer:
-          "A Hypertensive Emergency is defined as severe blood pressure elevation (systolic BP >180 mmHg or diastolic BP >120 mmHg) with acute target organ damage (acute stroke, chest pain/infarction, pulmonary edema, acute renal failure, or altered mental status) [D0009-EMERGENCY-LIMITS, CIT-0039]. It requires IMMEDIATE emergency medical transport to an intensive care unit for parenteral antihypertensive therapy.",
+          "A reading above 180/120 mm Hg needs medical attention. Recheck after five minutes if you have no symptoms and call your clinician if it stays that high. Call emergency services immediately for chest pain, breathlessness, weakness or numbness, trouble speaking, vision changes, severe headache, or severe back or abdominal pain.",
       },
       {
-        question: "Can patients stop prescription antihypertensive medications when starting homeopathy?",
+        question: "Can I stop blood-pressure medicine if readings improve?",
         answer:
-          "NO. Prescription antihypertensive medications MUST NEVER be abruptly stopped or reduced without direct authorization from the prescribing cardiologist or physician [D0009-REGULATORY-LIMITS]. Abrupt withdrawal risks rebound hypertensive crisis or stroke.",
+          "No. Improved readings may mean the treatment plan is working. Only the prescribing clinician should decide whether a dose can change.",
       },
       {
-        question: "How does homeopathy integrate with blood pressure monitoring?",
+        question: "Does high blood pressure cause headaches?",
         answer:
-          "Homeopathy provides supportive constitutional care for stress and lifestyle risk factors while patients remain under strict blood pressure monitoring and medical follow-up [D0009-REGULATORY-LIMITS].",
+          "Usually it does not cause symptoms. Do not use a headache to judge blood pressure; measure it correctly. A severe headache with a very high reading or neurological symptoms needs urgent care.",
       },
     ],
   },
@@ -86,8 +87,8 @@ export const HypertensionDisease: KnowledgeEntity = {
     institution: "Homeo Healthcare Clinical Board",
   },
   reviewerRole: "Program-owner final clinical authorization",
-  lastClinicalReview: "2026-07-31",
-  nextClinicalReview: "2027-07-31",
+  lastClinicalReview: "2026-09-24",
+  nextClinicalReview: "2027-09-24",
   evidenceLevel: "Consensus-Guidance",
   tags: ["Hypertension", "Disease", "ACC-AHA-2017", "Cardiovascular", "Blood-Pressure", "Emergency-Safety"],
   canonicalUrl: "https://homeo.healthcare/knowledge/diseases/hypertension",
@@ -97,5 +98,6 @@ export const HypertensionDisease: KnowledgeEntity = {
   changeLog: [
     "1.0.0: Initial release of Hypertension profile",
     "1.1.0: Upgraded with ACC/AHA 2017 guideline citations (CIT-0039), passage-level claim citations (D0009-KEYNOTES, D0009-EMERGENCY-LIMITS, D0009-REGULATORY-LIMITS), hypertensive emergency red flags (>180/120 mmHg), and drug non-discontinuation boundaries",
+    "1.2.0: Patient-first rewrite with clearer measurement, emergency and medicine boundaries",
   ],
 };

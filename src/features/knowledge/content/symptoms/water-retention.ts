@@ -20,7 +20,7 @@ export const WaterRetentionSymptom: KnowledgeEntity = {
     ar: "Water Retention"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Water Retention.",
+    en: "Water retention is swelling from fluid build-up; its pattern and speed help show whether it needs urgent care.",
     hi: "Water Retention के लक्षण की नैदानिक समझ.",
     gu: "Water Retention ના લક્ષણ ની સમજણ.",
     mr: "Water Retention चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const WaterRetentionSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Water Retention."
   },
   content: {
-  "definition": "Water retention: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Water retention, also called oedema, is swelling caused by fluid collecting in body tissues. It often affects the feet, ankles, legs, hands, or face.",
+  "clinicalMeaning": "Mild swelling can occur after long periods sitting or standing, in pregnancy, or after a salty meal. New, sudden, one-sided, painful, or widespread swelling needs medical assessment because it can sometimes be linked to medicines, infection, a blood clot, or heart, kidney, liver, or thyroid conditions.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "Sitting or standing in one position for a long time, hot weather, or a high-salt diet",
+    "Pregnancy, being overweight, varicose veins, or an injury or insect bite",
+    "Some medicines, including certain blood-pressure medicines, hormones, antidepressants, and steroids",
+    "Conditions affecting the heart, kidneys, liver, thyroid, veins, or lymphatic system"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "A clinician will ask where the swelling is, whether it is one-sided, how quickly it started, and whether there is pain, redness, warmth, fever, breathlessness, or a change in urine. This helps distinguish common temporary swelling from conditions needing treatment.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Seek urgent help for sudden, severe, painful, red, or hot swelling; unexplained swelling in one leg; or swelling with fever or feeling very unwell",
+    "Call emergency services for swelling with chest pain, severe breathlessness, coughing blood, fainting, confusion, or a new fast or irregular heartbeat",
+    "Arrange a clinical review for swelling of the face, tummy, or more than one body area, or if swelling persists or is getting worse"
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "For mild ankle or foot swelling without warning signs, gentle walking, avoiding long periods in one position, raising the legs when resting, and comfortable footwear may help. Do not start diuretics, tight compression garments, or major fluid restrictions without medical advice.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const WaterRetentionSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "Is water retention the same as gaining body fat?",
+      "answer": "No. Fluid retention can cause a quick increase in weight and visible swelling. Body-fat change is usually more gradual. A clinician can help distinguish them."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "When is swollen ankle urgent?",
+      "answer": "It is urgent if it is sudden, severe, one-sided, painful, red or hot, or if you have chest pain, breathlessness, coughing blood, fainting, or feel very unwell."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "Should I drink less water if I am swollen?",
+      "answer": "Not unless a clinician has told you to. The right fluid intake depends on the cause, and restricting fluids on your own can be harmful."
     }
   ]
 },

@@ -7,6 +7,13 @@ export const KNOWLEDGE_RELATIONSHIPS: KnowledgeRelationship[] = [
   { source: "D0003", relation: "hasSymptom", target: "S0003" }, // Migraine has Headache
   { source: "D0004", relation: "hasSymptom", target: "S0001" }, // IBS has Heartburn/Bloating
 
+  // Digestive and bowel guides: connect common symptoms with the conditions they can accompany.
+  { source: "D0001", relation: "hasSymptom", target: "S0046" }, // GERD can present as Indigestion
+  { source: "D0004", relation: "hasSymptom", target: "S0024" }, // IBS can include Gas and Flatulence
+  { source: "D0046", relation: "relatedTo", target: "D0044" }, // Constipation can contribute to Piles
+  { source: "D0046", relation: "relatedTo", target: "D0045" }, // Constipation can contribute to Anal Fissure
+  { source: "D0044", relation: "relatedTo", target: "D0045" }, // Piles and Anal Fissure share symptoms but need distinction
+
   // Diseases to Remedies
   { source: "D0001", relation: "treatedWith", target: "R0002" }, // GERD - Nux Vomica
   { source: "D0001", relation: "treatedWith", target: "R0003" }, // GERD - Lycopodium
@@ -44,7 +51,6 @@ export const KNOWLEDGE_RELATIONSHIPS: KnowledgeRelationship[] = [
 
   // Scale-Up Sprint Mappings
   { source: "D0051", relation: "hasSymptom", target: "S0006" },
-  { source: "D0051", relation: "hasSymptom", target: "S0018" },
   { source: "D0051", relation: "treatedWith", target: "R0005" },
   { source: "D0051", relation: "treatedWith", target: "R0020" },
   { source: "D0051", relation: "investigatedBy", target: "L0001" },
@@ -224,7 +230,6 @@ export const KNOWLEDGE_RELATIONSHIPS: KnowledgeRelationship[] = [
 
   // Scale-Up Sprint Mappings
   { source: "D0051", relation: "hasSymptom", target: "S0006" },
-  { source: "D0051", relation: "hasSymptom", target: "S0018" },
   { source: "D0051", relation: "treatedWith", target: "R0005" },
   { source: "D0051", relation: "treatedWith", target: "R0020" },
   { source: "D0051", relation: "investigatedBy", target: "L0001" },

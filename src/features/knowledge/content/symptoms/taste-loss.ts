@@ -20,7 +20,7 @@ export const TasteLossSymptom: KnowledgeEntity = {
     ar: "Taste Loss"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Taste Loss.",
+    en: "Taste loss or change often happens when smell is reduced by a cold, allergy, or sinus problem. Persistent changes should be assessed and need safety precautions at home.",
     hi: "Taste Loss के लक्षण की नैदानिक समझ.",
     gu: "Taste Loss ના લક્ષણ ની સમજણ.",
     mr: "Taste Loss चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const TasteLossSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Taste Loss."
   },
   content: {
-  "definition": "Taste loss: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Taste loss is a reduced or altered ability to taste food. Because smell contributes strongly to flavour, a change in smell often makes food seem tasteless.",
+  "clinicalMeaning": "It commonly follows a cold, flu, COVID-19, allergy, or sinus problem and often improves. Persistent or unexplained change should be assessed.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "A cold, flu, COVID-19, allergy, sinusitis, or nasal polyps",
+    "A medicine effect, smoking, mouth or dental problems, or dry mouth",
+    "Head injury or ageing",
+    "Rarely, a neurological condition needing assessment"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "A clinician may assess the nose, mouth, smell, medicines, recent illness, head injury, and neurological symptoms. Most reported taste loss is partly due to reduced smell.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Seek emergency help for a sudden change with facial droop, weakness or numbness, speech difficulty, severe headache, seizure, or new confusion.",
+    "Arrange a review if taste or smell does not begin to return within a few weeks, follows a head injury, or comes with persistent nasal blockage, bleeding, or unexplained weight loss.",
+    "Use extra safety around gas, fire, smoke alarms, and spoiled food if smell is reduced."
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "Keep good mouth and dental hygiene, avoid smoking, and treat a cold or allergy with pharmacist advice. Saline nasal rinsing may help when allergy or infection affects smell. Use dates and labels rather than smell alone to judge food safety.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const TasteLossSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "Why does food taste bland when I have a cold?",
+      "answer": "Flavour depends greatly on smell. Congestion or reduced smell during a cold can make food seem less tasty."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "Will taste loss improve?",
+      "answer": "It often improves within weeks or months after the underlying cause settles, but persistent change should be discussed with a clinician."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "What safety steps are useful?",
+      "answer": "Check smoke and gas alarms, use dates and labels for food safety, and ask others to check for spoilage if your smell is reduced."
     }
   ]
 },

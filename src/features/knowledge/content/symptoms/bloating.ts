@@ -20,7 +20,7 @@ export const BloatingSymptom: KnowledgeEntity = {
     ar: "انتفاخ البطن (Abdominal Bloating)"
   },
   summary: {
-    en: "Clinical evaluation, differential diagnosis, malignancy red flags, and supportive management for Abdominal Bloating under ACG 2022 and Rome IV guidelines.",
+    en: "Bloating is a feeling of fullness, tightness, or a visibly swollen tummy. It is common, but regular or painful bloating needs assessment.",
     hi: "पेट फूलने के लक्षण की नैदानिक समझ और चेतावनी लक्षण.",
     gu: "પેટ ફૂલવાના લક્ષણની તબીબી સમજણ અને ચેતવણી લક્ષણો.",
     mr: "पोट फुगण्याच्या लक्षणांची वैद्यकीय माहिती आणि इशारे.",
@@ -28,22 +28,21 @@ export const BloatingSymptom: KnowledgeEntity = {
     ar: "التقييم السريري وعلامات الخطر لانتفاخ البطن."
   },
   content: {
-    definition: "Abdominal Bloating: Subjective sensation of trapped intestinal gas, fullness, or objective abdominal distension resulting from intestinal gas dynamics, visceral hypersensitivity, or gut dysbiosis.",
-    clinicalMeaning: "Reflects altered gastrointestinal motility, Small Intestinal Bacterial Overgrowth (SIBO), carbohydrate malabsorption, or organic intra-abdominal pathology.",
+    definition: "Bloating is a feeling that the tummy is full, tight, or swollen. It may occur with extra gas, constipation, eating patterns, food intolerance, or an underlying digestive condition.",
+    clinicalMeaning: "Occasional bloating is common. The timing, bowel pattern, diet, pain, and whether the tummy is visibly enlarging help determine whether self-care or medical assessment is appropriate.",
     commonCauses: [
-      "Irritable Bowel Syndrome (IBS-C or IBS-M), Functional Bloating",
-      "Small Intestinal Bacterial Overgrowth (SIBO), Lactose/Fructose Intolerance",
-      "Gastroparesis, Chronic Constipation, Celiac Disease",
-      "Gynecologic Etiologies (Endometriosis, Ovarian Cysts)"
+      "Gas from food and drinks, fizzy drinks, or swallowing air while eating",
+      "Constipation, IBS, coeliac disease, or food intolerance",
+      "Menstrual or gynaecological causes where relevant",
+      "A medicine effect or another digestive condition needing assessment"
     ],
-    differentialDiagnosis: "Differentiate functional bloating from ascites (hepatic cirrhosis / heart failure), mechanical bowel obstruction, Inflammatory Bowel Disease (IBD), and pelvic/ovarian malignancy.",
+    differentialDiagnosis: "A clinician may review diet, bowel habits, medicines, periods or pelvic symptoms, weight, and examine the abdomen. Persistent symptoms may need testing based on the wider picture.",
     redFlags: [
-      "New-onset persistent abdominal distension in women >50 years (rule out Ovarian Cancer)",
-      "Unintentional rapid weight loss, chronic nocturnal diarrhea, or GI bleeding (melena)",
-      "Progressive severe abdominal pain with persistent vomiting and obstipation (bowel obstruction)",
-      "New ascites, fluid wave, or peripheral edema"
+      "Get urgent advice for bloating with vomiting, diarrhoea or constipation, tummy pain, fever, a new lump, or being unable to pee, poo, or pass wind.",
+      "Seek emergency help for sudden severe abdominal pain, vomiting blood or coffee-ground material, or severe breathing difficulty.",
+      "Arrange a review for regular bloating, unintentional weight loss, blood in stool, or symptoms that do not improve after simple changes."
     ],
-    lifestyleAdvice: "Adopt a low-FODMAP dietary trial, eat smaller frequent meals, limit carbonated drinks and artificial sweeteners, engage in light post-meal walks, and manage constipation.",
+    lifestyleAdvice: "Eat slowly, avoid large late meals and fizzy drinks if they trigger symptoms, move gently after meals, and address constipation. Keep a simple food-and-symptom record. Do not make broad restrictive diet changes without professional advice, particularly if weight is falling.",
     references: [
       "CIT-0073",
       "CIT-0023"
@@ -72,16 +71,16 @@ export const BloatingSymptom: KnowledgeEntity = {
     ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "What commonly causes bloating?",
+      "answer": "Gas, constipation, certain foods or drinks, IBS, and food intolerance are common contributors. The pattern matters more than a single food list."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "Should I stop eating many foods?",
+      "answer": "Avoiding a personal trigger can help, but do not make extensive restrictions without a clinician or dietitian, especially if you are losing weight or have persistent symptoms."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "When is bloating urgent?",
+      "answer": "Sudden severe tummy pain, vomiting blood, or inability to pass urine, stool, or wind needs urgent help."
     }
   ]
 },

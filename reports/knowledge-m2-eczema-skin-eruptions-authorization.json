@@ -8,14 +8,13 @@
   "entityRevisions": [
     {
       "entityId": "D0002",
-      "version": "1.1.0",
-      "revisionHash": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759",
+      "version": "1.2.0",
+      "revisionHash": "23b5d0e7a52379bb95ca7e41034d606ab01185db1120fa95d7baab71d5cd7be5",
       "materialClaimCount": 8,
       "citationIds": [
-        "CIT-0019",
-        "CIT-0022",
-        "CIT-0023",
-        "CIT-0024"
+        "CIT-0149",
+        "CIT-0150",
+        "CIT-0023"
       ],
       "governedRelationshipProposalCount": 5
     },
@@ -48,7 +47,7 @@
       "rationale": "Clinical guideline consensus identifies skin eruptions and pruritus as core clinical manifestations of eczema.",
       "clinicalReviewRequired": false,
       "status": "draft",
-      "sourceRevision": "1.1.0",
+      "sourceRevision": "1.2.0",
       "publicationEligible": false,
       "ragEligible": false
     },
@@ -66,7 +65,7 @@
       "rationale": "NICE CG57 supports the childhood and adult atopic eczema diagnostic and management framework.",
       "clinicalReviewRequired": false,
       "status": "draft",
-      "sourceRevision": "1.1.0",
+      "sourceRevision": "1.2.0",
       "publicationEligible": false,
       "ragEligible": false
     },
@@ -84,7 +83,7 @@
       "rationale": "NCCIH is referenced only for evidence limitations, product safety, and conventional-care boundaries.",
       "clinicalReviewRequired": false,
       "status": "draft",
-      "sourceRevision": "1.1.0",
+      "sourceRevision": "1.2.0",
       "publicationEligible": false,
       "ragEligible": false
     },
@@ -102,7 +101,7 @@
       "rationale": "Traditional homeopathic association requiring evidence-limitation and non-replacement disclosures.",
       "clinicalReviewRequired": true,
       "status": "draft",
-      "sourceRevision": "1.1.0",
+      "sourceRevision": "1.2.0",
       "publicationEligible": false,
       "ragEligible": false
     },
@@ -120,7 +119,7 @@
       "rationale": "Atopic march connects eczema with allergic rhinitis and asthma.",
       "clinicalReviewRequired": true,
       "status": "draft",
-      "sourceRevision": "1.1.0",
+      "sourceRevision": "1.2.0",
       "publicationEligible": false,
       "ragEligible": false
     },
@@ -252,5 +251,5 @@
     "approvedAt": "2026-07-30",
     "decisionReference": "PR-m2-eczema-skin-eruptions-authorization"
   },
-  "packageHash": "a3b81625e14bab77518fe05a51898aa853aefcc7bf6f1c621a56ad5769cb8f18"
+  "packageHash": "58a6585bef5882ad94fb090b076827bc8fba098ae11a6c8d08152ffb1b3c6ae5"
 }

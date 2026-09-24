@@ -20,7 +20,7 @@ export const WheezingSymptom: KnowledgeEntity = {
     ar: "Wheezing"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Wheezing.",
+    en: "Wheezing is a high-pitched whistling sound when breathing, usually from narrowed airways. New or worsening wheeze should be assessed, and severe breathing difficulty is an emergency.",
     hi: "Wheezing के लक्षण की नैदानिक समझ.",
     gu: "Wheezing ના લક્ષણ ની સમજણ.",
     mr: "Wheezing चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const WheezingSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Wheezing."
   },
   content: {
-  "definition": "Wheezing: A subjective or objective upper or lower airway manifestation indicating mucosal congestion, irritation, or bronchospasm.",
-  "clinicalMeaning": "Replects airway smooth muscle contraction, goblet cell hypersecretion, or trigeminal nerve irritation in the nasal mucosa.",
+  "definition": "Wheezing is a high-pitched, musical whistling sound heard when breathing, often more noticeable when breathing out. It can occur with coughing, chest tightness, or breathlessness.",
+  "clinicalMeaning": "It commonly occurs when airways narrow, for example with asthma, infection, allergy, smoking-related lung disease, or an inhaled foreign object. It is not a diagnosis by itself.",
   "commonCauses": [
-    "Allergic rhinitis or seasonal hay fever",
-    "Bronchial asthma or hyper-reactivity",
-    "Sinusitis or post-nasal drip",
-    "Viral respiratory tract infections"
+    "Asthma or another airway sensitivity",
+    "A cold, flu, COVID-19, or chest infection",
+    "Allergy or exposure to smoke, pollution, cold air, or another trigger",
+    "COPD or another lung condition, especially in people who smoke or used to smoke"
   ],
-  "differentialDiagnosis": "Exclude foreign body aspiration, vocal cord paralysis, post-viral airway hyper-responsiveness, and cardiac asthma.",
+  "differentialDiagnosis": "A clinician may listen to the chest and assess oxygen levels, asthma history, allergy, infection, smoking, and medicines. Sudden wheeze after choking may indicate an inhaled object.",
   "redFlags": [
-    "Severe respiratory distress with accessory muscle use",
-    "Stridor, wheezing that suddenly stops (silent chest), or cyanosis",
-    "High fever with foul-smelling nasal discharge and facial swelling"
+    "Call emergency services for severe difficulty breathing, blue or grey lips, inability to speak full sentences, confusion, collapse, or a suddenly silent chest during an asthma attack.",
+    "Use your personal asthma action plan and reliever inhaler if prescribed; call emergency services if symptoms worsen or do not improve as directed in the plan.",
+    "Arrange a clinical review for new wheeze, wheeze waking you at night, or needing a reliever inhaler more often."
   ],
-  "lifestyleAdvice": "Keep windows closed during high pollen seasons, wash bedding weekly at 60°C, and stay hydrated to thin mucus secretions.",
+  "lifestyleAdvice": "Avoid smoke, vaping, and known triggers. Keep prescribed inhalers available and use them exactly as your asthma action plan says. Do not borrow another person’s inhaler or rely on home measures for active breathing difficulty.",
   "references": [
     "CIT-0020",
     "CIT-0021",
@@ -50,16 +50,16 @@ export const WheezingSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is the difference between allergic rhinitis and a common cold?",
-      "answer": "Allergic rhinitis is an IgE-mediated immune response triggered by allergens (pollen, dust), presenting with itchy eyes, sneezing, and clear watery discharge. A cold is a viral infection, usually presenting with thicker discharge, throat irritation, and sometimes a low-grade fever."
+      "question": "Is wheezing always asthma?",
+      "answer": "No. Asthma is a common cause, but infection, allergy, COPD, smoke exposure, and other conditions can cause wheeze. New wheeze should be assessed."
     },
     {
-      "question": "Can untreated allergies lead to asthma?",
-      "answer": "Yes. The 'atopic march' describes how upper airway allergic inflammation (allergic rhinitis) can progress to involve the lower airways, triggering asthma in susceptible individuals."
+      "question": "What should I do during an asthma attack?",
+      "answer": "Sit upright and follow your written asthma action plan. Use your prescribed reliever inhaler as directed and call emergency services if symptoms worsen or do not improve."
     },
     {
-      "question": "How does homeopathy support respiratory allergies?",
-      "answer": "Homeopathic remedies aim to reduce the body's hyper-reactivity to environmental allergens and strengthen mucosal defenses, using acute and deep-acting constitutional remedies."
+      "question": "When is wheezing an emergency?",
+      "answer": "Severe breathing difficulty, blue or grey lips, inability to speak, confusion, collapse, or no improvement with the prescribed asthma plan needs emergency help."
     }
   ]
 },

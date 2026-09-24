@@ -21,6 +21,7 @@ export const CATEGORY_COLORS: Record<string, { bg: string; text: string; border:
   gastrointestinal: { bg: "bg-amber-500/10", text: "text-amber-600 dark:text-amber-400", border: "border-amber-500/20" },
   dermatology: { bg: "bg-indigo-500/10", text: "text-indigo-600 dark:text-indigo-400", border: "border-indigo-500/20" },
   respiratory: { bg: "bg-sky-500/10", text: "text-sky-600 dark:text-sky-400", border: "border-sky-500/20" },
+  balance: { bg: "bg-cyan-500/10", text: "text-cyan-700 dark:text-cyan-300", border: "border-cyan-500/20" },
   musculoskeletal: { bg: "bg-purple-500/10", text: "text-purple-600 dark:text-purple-400", border: "border-purple-500/20" },
   urology: { bg: "bg-pink-500/10", text: "text-pink-600 dark:text-pink-400", border: "border-pink-500/20" },
   general: { bg: "bg-neutral-500/10", text: "text-neutral-600 dark:text-neutral-400", border: "border-neutral-500/20" }
@@ -33,6 +34,11 @@ export function getClinicalCategory(entity: KnowledgeEntity): string {
   const title = (typeof entity.title === "string" ? entity.title : entity.title.en || "").toLowerCase();
   const identifier = (id + " " + name + " " + title + " " + tags.join(" ")).toLowerCase();
   
+  // Hair Fall may have endocrine contributors, but its primary knowledge path
+  // should stay with scalp and dermatology topics rather than thyroid-only nodes.
+  if (identifier.includes("hair-fall")) {
+    return "dermatology";
+  }
   if (identifier.includes("hba1c") || identifier.includes("diabetes") || identifier.includes("blood-sugar")) {
     return "general";
   }
@@ -42,14 +48,20 @@ export function getClinicalCategory(entity: KnowledgeEntity): string {
   if (identifier.includes("cbc") || identifier.includes("blood count") || identifier.includes("anemia") || identifier.includes("iron") || identifier.includes("ferritin") || identifier.includes("tibc") || identifier.includes("folic") || identifier.includes("b12") || identifier.includes("hemoglobin") || identifier.includes("platelet") || identifier.includes("wbc") || identifier.includes("ana ") || identifier.includes("antinuclear") || identifier.includes("esr") || identifier.includes("crp") || identifier.includes("fatigue")) {
     return "hematology";
   }
-  if (identifier.includes("gerd") || identifier.includes("gastritis") || identifier.includes("reflux") || identifier.includes("ibs") || identifier.includes("peptic") || identifier.includes("acid") || identifier.includes("constipation") || identifier.includes("diarrhea") || identifier.includes("colic") || identifier.includes("h-pylori") || identifier.includes("bowel") || identifier.includes("gallstone") || identifier.includes("hypochlorhydria") || identifier.includes("hyperacidity") || identifier.includes("indigestion") || identifier.includes("morning-sickness") || identifier.includes("flatulent") || identifier.includes("nux-vomica") || identifier.includes("lycopodium") || identifier.includes("pulsatilla") || identifier.includes("carbo-veg") || identifier.includes("flatulence") || identifier.includes("bloating") || identifier.includes("heartburn")) {
+  if (identifier.includes("gerd") || identifier.includes("gastritis") || identifier.includes("reflux") || identifier.includes("ibs") || identifier.includes("peptic") || identifier.includes("acid") || identifier.includes("constipation") || identifier.includes("diarrhea") || identifier.includes("colic") || identifier.includes("h-pylori") || identifier.includes("bowel") || identifier.includes("gallstone") || identifier.includes("hypochlorhydria") || identifier.includes("hyperacidity") || identifier.includes("indigestion") || identifier.includes("morning-sickness") || identifier.includes("flatulent") || identifier.includes("nux-vomica") || identifier.includes("lycopodium") || identifier.includes("pulsatilla") || identifier.includes("carbo-veg") || identifier.includes("flatulence") || identifier.includes("bloating") || identifier.includes("heartburn") || identifier.includes("abdominal-pain") || identifier.includes("vomiting") || identifier.includes("nausea")) {
     return "gastrointestinal";
+  }
+  if (identifier.includes("pcos") || identifier.includes("polycystic-ovary") || identifier.includes("menstrual-irregularity")) {
+    return "reproductive";
   }
   if (identifier.includes("eczema") || identifier.includes("dermatitis") || identifier.includes("psoriasis") || identifier.includes("acne") || identifier.includes("urticaria") || identifier.includes("skin") || identifier.includes("erupt") || identifier.includes("prurit") || identifier.includes("itch") || identifier.includes("cyst") || identifier.includes("intertrigo") || identifier.includes("mastitis") || identifier.includes("fibroadenoma") || identifier.includes("sulphur") || identifier.includes("graphites") || identifier.includes("thuja")) {
     return "dermatology";
   }
   if (identifier.includes("asthma") || identifier.includes("rhinitis") || identifier.includes("sinus") || identifier.includes("cough") || identifier.includes("breath") || identifier.includes("bronch") || identifier.includes("allerg") || identifier.includes("wheez") || identifier.includes("throat") || identifier.includes("laryngitis") || identifier.includes("voice") || identifier.includes("dysphonia") || identifier.includes("gelsemium") || identifier.includes("belladonna") || identifier.includes("hepar")) {
     return "respiratory";
+  }
+  if (identifier.includes("dizziness") || identifier.includes("vertigo") || identifier.includes("vestibular") || identifier.includes("meniere") || identifier.includes("labyrinthitis")) {
+    return "balance";
   }
   if (identifier.includes("pain") || identifier.includes("back") || identifier.includes("headache") || identifier.includes("migraine") || identifier.includes("neuralg") || identifier.includes("neurop") || identifier.includes("sciatica") || identifier.includes("joint") || identifier.includes("stiff") || identifier.includes("muscle") || identifier.includes("plantar") || identifier.includes("fasciitis") || identifier.includes("meniere") || identifier.includes("paresthesia") || identifier.includes("numbness") || identifier.includes("limbs") || identifier.includes("legs") || identifier.includes("arnica") || identifier.includes("rhus") || identifier.includes("bryonia")) {
     return "musculoskeletal";
@@ -66,7 +78,7 @@ export function getClinicalCategory(entity: KnowledgeEntity): string {
       if (col.id === "col-respiratory") return "respiratory";
       if (col.id === "col-skin") return "dermatology";
       if (col.id === "col-musculoskeletal") return "musculoskeletal";
-      if (col.id === "col-womens") return "urology";
+      if (col.id === "col-womens") return "reproductive";
     }
   }
 
@@ -251,7 +263,10 @@ export function generateLearningPath(
   const steps: LearningPathStep[] = [];
   const excludeIds = new Set<string>([currentEntity.id]);
   const category = getClinicalCategory(currentEntity);
-  const capitalizedCat = category.charAt(0).toUpperCase() + category.slice(1);
+  const capitalizedCat = category
+    .split("-")
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
 
   // Helper to safely get entities and add to exclude set
   const getNextEntity = (type: EntityType) => {

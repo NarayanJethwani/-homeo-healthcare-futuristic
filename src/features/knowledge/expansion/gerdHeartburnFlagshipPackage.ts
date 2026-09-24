@@ -35,7 +35,7 @@ export interface GERDHeartburnAuthorizationPacket {
   decisionLane: "owner-final-source-bound";
   entityRevisions: Array<{
     entityId: GERDHeartburnEntityId;
-    version: "1.1.0";
+    version: string;
     revisionHash: string;
     materialClaimCount: number;
     citationIds: string[];
@@ -268,7 +268,7 @@ export function buildGERDHeartburnAuthorizationPacket(): GERDHeartburnAuthorizat
 
     return {
       entityId: entity.id as GERDHeartburnEntityId,
-      version: entity.versionInfo.version as "1.1.0",
+      version: entity.versionInfo.version,
       revisionHash: sha256({
         entityId: entity.id,
         version: entity.versionInfo.version,

@@ -17,10 +17,10 @@ export function runKnowledgeSourceIntegrityTests(): void {
   assert.strictEqual(report.status, "staging-only");
   assert.strictEqual(report.invariants.publicationState, "unchanged");
   assert.strictEqual(report.invariants.ragState, "inactive");
-  // Six newly reviewed public-health references support the patient-facing
-  // Fatigue, Sleeplessness, and Headache guides, so this deliberate catalogue baseline now includes 122
+  // The consolidated patient-facing guides include the newly reviewed
+  // authoritative records, so this deliberate catalogue baseline has 124
   // eligible records.
-  assert.strictEqual(report.summary.eligibleCitationRecords, 122);
+  assert.strictEqual(report.summary.eligibleCitationRecords, 124);
   assert.strictEqual(report.summary.blockerCount, 3);
   assert.strictEqual(report.summary.reviewCount, 1);
   for (const citationId of [
@@ -53,10 +53,8 @@ export function runKnowledgeSourceIntegrityTests(): void {
   assert.ok(report.eligibleCitationIds.includes("CIT-0029"));
   assert.ok(report.eligibleCitationIds.includes("CIT-0121"));
   assert.ok(report.eligibleCitationIds.includes("CIT-0122"));
-  assert.ok(report.eligibleCitationIds.includes("CIT-0123"));
-  assert.ok(report.eligibleCitationIds.includes("CIT-0124"));
-  assert.ok(report.eligibleCitationIds.includes("CIT-0125"));
-  assert.ok(report.eligibleCitationIds.includes("CIT-0126"));
+  assert.ok(report.eligibleCitationIds.includes("CIT-0149"));
+  assert.ok(report.eligibleCitationIds.includes("CIT-0150"));
   for (const citationId of [
     "CIT-0030",
     "CIT-0031",

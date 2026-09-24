@@ -20,7 +20,7 @@ export const IndigestionSymptom: KnowledgeEntity = {
     ar: "Indigestion"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Indigestion.",
+    en: "Indigestion can feel like discomfort, burning, fullness, bloating, or nausea after eating. Learn common triggers, simple changes that may help, and the warning signs that need medical assessment.",
     hi: "Indigestion के लक्षण की नैदानिक समझ.",
     gu: "Indigestion ના લક્ષણ ની સમજણ.",
     mr: "Indigestion चे लक्षण आणि उपचार.",
@@ -28,8 +28,8 @@ export const IndigestionSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Indigestion."
   },
   content: {
-  "definition": "Indigestion: A subjective abdominal or digestive manifestation of altered gut motility, mucosal irritation, or secretory dysregulation.",
-  "clinicalMeaning": "Indicates mucosal inflammation, smooth muscle spasm, or hyper-reactivity of the enteric nervous system.",
+  "definition": "Indigestion is discomfort in the upper tummy or chest that can include fullness, burning, bloating, nausea, or burping after eating.",
+  "clinicalMeaning": "It is common and may be linked to reflux, certain foods or drinks, medicines, or stomach irritation. Persistent symptoms should be assessed rather than self-diagnosed.",
   "commonCauses": [
     "Gastroesophageal reflux disease (GERD)",
     "Gastritis or peptic ulcer disease",
@@ -42,7 +42,7 @@ export const IndigestionSymptom: KnowledgeEntity = {
     "Difficulty swallowing (dysphagia) or gastrointestinal bleeding (melena)",
     "Severe overnight abdominal pain waking the patient"
   ],
-  "lifestyleAdvice": "Avoid carbonated beverages, caffeine, and highly fatty foods; chew food thoroughly, maintain vertical posture for 2 hours post-meals, and manage stress.",
+  "lifestyleAdvice": "Try smaller meals, avoid lying down soon after eating, and notice whether particular foods, drinks, or medicines trigger symptoms. A pharmacist can advise on suitable short-term treatments.",
   "references": [
     "CIT-0017",
     "CIT-0018",
@@ -50,16 +50,16 @@ export const IndigestionSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What are the common triggers for digestive flares?",
-      "answer": "Common triggers include dietary irritants (caffeine, alcohol, fatty foods), chronic emotional stress, irregular eating habits, and dysbiosis."
+      "question": "What commonly triggers indigestion?",
+      "answer": "Triggers vary but can include large or fatty meals, alcohol, caffeine, smoking, stress, and some medicines. Keeping a short food-and-symptom note can help identify a pattern."
     },
     {
-      "question": "How does the gut-brain axis affect digestive health?",
-      "answer": "The gut and brain are in constant communication via the vagus nerve. Emotional stress can alter gut motility, increase visceral sensitivity, and worsen symptoms of GERD, gastritis, or IBS."
+      "question": "When should I get medical advice?",
+      "answer": "Get medical advice for difficulty swallowing, repeated vomiting, unexplained weight loss, blood in vomit or stools, black stools, severe pain, or symptoms that keep returning despite self-care."
     },
     {
-      "question": "Can homeopathy manage chronic acid reflux (GERD)?",
-      "answer": "Yes, individualized homeopathy can help manage symptoms of chronic acid reflux by addressing digestive motility and hyperacidity alongside lifestyle modifications."
+      "question": "Could it be something other than indigestion?",
+      "answer": "Yes. Reflux, ulcers, gallbladder problems, some medicines, and other conditions can cause similar symptoms. A clinician can help assess persistent or worrying symptoms."
     }
   ]
 },

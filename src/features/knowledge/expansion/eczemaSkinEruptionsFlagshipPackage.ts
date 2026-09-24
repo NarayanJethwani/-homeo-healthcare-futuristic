@@ -35,7 +35,7 @@ export interface EczemaSkinEruptionsAuthorizationPacket {
   decisionLane: "owner-final-source-bound";
   entityRevisions: Array<{
     entityId: EczemaSkinEruptionsEntityId;
-    version: "1.1.0";
+    version: string;
     revisionHash: string;
     materialClaimCount: number;
     citationIds: string[];
@@ -226,7 +226,7 @@ export const ECZEMA_SKIN_ERUPTIONS_RELATIONSHIP_PROPOSALS: FlagshipRelationshipP
 export function buildEczemaSkinEruptionsAuthorizationPacket(): EczemaSkinEruptionsAuthorizationPacket {
   const entities: Array<{
     entityId: EczemaSkinEruptionsEntityId;
-    version: "1.1.0";
+    version: string;
     revisionHash: string;
     materialClaimCount: number;
     citationIds: string[];
@@ -234,7 +234,7 @@ export function buildEczemaSkinEruptionsAuthorizationPacket(): EczemaSkinEruptio
   }> = [
     {
       entityId: "D0002",
-      version: "1.1.0",
+      version: EczemaDisease.versionInfo.version,
       revisionHash: createHash("sha256")
         .update(JSON.stringify(EczemaDisease))
         .digest("hex"),
@@ -246,7 +246,7 @@ export function buildEczemaSkinEruptionsAuthorizationPacket(): EczemaSkinEruptio
     },
     {
       entityId: "S0002",
-      version: "1.1.0",
+      version: SkinEruptionsSymptom.versionInfo.version,
       revisionHash: createHash("sha256")
         .update(JSON.stringify(SkinEruptionsSymptom))
         .digest("hex"),

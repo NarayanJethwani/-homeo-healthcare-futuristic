@@ -20,7 +20,7 @@ export const KneePainSymptom: KnowledgeEntity = {
     ar: "Knee Pain"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Knee Pain.",
+    en: "Knee pain is common after strain or injury; swelling, inability to bear weight, or a hot red knee needs faster assessment.",
     hi: "Knee Pain के लक्षण की नैदानिक समझ.",
     gu: "Knee Pain ના લક્ષણ ની સમજણ.",
     mr: "Knee Pain चे लक्षण आणि उपचार.",
@@ -28,37 +28,37 @@ export const KneePainSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Knee Pain."
   },
   content: {
-  "definition": "Knee pain: A localized pain, sensory alteration, or mobility limitation originating from nerves, muscles, joints, or tendons.",
-  "clinicalMeaning": "Replects nociceptive pathway stimulation, localized tissue injury, or nerve root compression resulting in altered sensation.",
+  "definition": "Knee pain is discomfort in or around the knee joint. It can start after an injury, develop gradually, or come and go with activity.",
+  "clinicalMeaning": "Common causes include a strain, overuse, arthritis, tendon irritation, or a kneecap problem. The way symptoms began, the ability to bear weight, swelling, warmth, and locking or giving way help guide the next step.",
   "commonCauses": [
-    "Mechanical strain or postural imbalance",
-    "Peripheral nerve compression (e.g., sciatica, carpal tunnel)",
-    "Osteoarthritis or joint degeneration",
-    "Neurogenic inflammation"
+    "A twist, fall, overuse, or a sprain or strain",
+    "Tendon irritation from running, jumping, kneeling, or repetitive activity",
+    "Osteoarthritis or another long-term joint condition",
+    "Less commonly, gout, bursitis, infection, or a ligament, cartilage, or kneecap injury"
   ],
-  "differentialDiagnosis": "Differentiate from systemic autoimmune joint disease, peripheral vascular disease, and referred visceral pain.",
+  "differentialDiagnosis": "A clinician may assess the injury mechanism, movement, stability, swelling, warmth, and whether the knee locks, clicks painfully, or gives way. A hot red joint with fever is different from a mild strain and needs urgent assessment.",
   "redFlags": [
-    "Loss of bladder or bowel control (Cauda Equina Syndrome)",
-    "Sudden onset of limb weakness or foot drop",
-    "Severe joint swelling with high fever indicating septic arthritis"
+    "Get urgent help if you cannot move the knee or bear weight, it is badly swollen or changed shape, or it locks or repeatedly gives way",
+    "Seek urgent assessment for a hot, red, very painful knee with fever, chills, or feeling unwell",
+    "Book a review if pain is worsening, affects normal activities, follows a significant injury, or is not improving after a few weeks"
   ],
-  "lifestyleAdvice": "Implement regular stretching, adjust desk ergonomics, engage in low-impact walking, and stay hydrated to maintain joint lubrication.",
+  "lifestyleAdvice": "Reduce activities that clearly worsen pain at first, use an ice pack wrapped in a cloth for up to 20 minutes at a time, and keep gently moving within comfort. Avoid long periods of complete rest. A pharmacist can advise whether pain medicine is suitable for you.",
   "references": [
     "CIT-0011",
     "CIT-0022"
   ],
   "faqs": [
     {
-      "question": "What causes muscle stiffness in the morning?",
-      "answer": "Morning stiffness is often caused by localized inflammation, muscle inactivity during sleep, or structural degenerative joint changes that temporarily reduce synovial fluid circulation."
+      "question": "Should I keep moving with knee pain?",
+      "answer": "For most mild strains, gentle movement helps prevent stiffness. Avoid activities that sharply increase pain and seek urgent advice if you cannot bear weight or the knee is unstable."
     },
     {
-      "question": "How does stress affect nerve and muscle pain?",
-      "answer": "Stress increases muscle tension and heightens pain sensitivity (central sensitization) by releasing stress hormones that lower the pain threshold."
+      "question": "When does a knee injury need urgent care?",
+      "answer": "Seek urgent assessment if the knee is deformed, very swollen, hot and red, you cannot move it or put weight through it, or you feel unwell with fever."
     },
     {
-      "question": "What is the homeopathic approach to physical injury?",
-      "answer": "Homeopathy uses remedies like Arnica Montana to manage acute swelling and bruising, and Rhus Tox or Bryonia for joint stiffness and pain, tailored to whether movement improves or worsens the symptoms."
+      "question": "Is clicking always a sign of damage?",
+      "answer": "No. Painless clicking can be normal. Painful clicking, locking, giving way, or a sudden injury should be assessed."
     }
   ]
 },

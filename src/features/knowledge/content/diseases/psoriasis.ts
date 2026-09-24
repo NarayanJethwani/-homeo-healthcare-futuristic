@@ -6,13 +6,13 @@ export const PsoriasisDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-31T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
     reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
-    en: "Psoriasis Vulgaris",
+    en: "Psoriasis",
     hi: "सोरायसिस / चर्म रोग (Psoriasis Vulgaris)",
     gu: "સોરાયસિસ (Psoriasis Vulgaris)",
     mr: "सोरायसिस (Psoriasis Vulgaris)",
@@ -20,7 +20,7 @@ export const PsoriasisDisease: KnowledgeEntity = {
     ar: "الصدفية الشائعة",
   },
   summary: {
-    en: "An authoritative clinical profile of Psoriasis Vulgaris covering EuroGuiDerm 2021 guidelines, IL-23/Th17 cutaneous immune pathways, erythrodermic and pustular psoriasis emergency red flags, and systemic biologic safety boundaries.",
+    en: "Psoriasis is a long-term immune-related skin condition that can cause dry, scaly patches and sometimes joint symptoms. Learn practical support, treatment options, and when widespread redness, fever, or a painful swollen joint needs urgent care.",
     hi: "सोरायसिस (Psoriasis Vulgaris) का EuroGuiDerm 2021 मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "સોરાયસિસનું EuroGuiDerm 2021 ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "सोरायसिसचे EuroGuiDerm 2021 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
@@ -29,51 +29,50 @@ export const PsoriasisDisease: KnowledgeEntity = {
   },
   content: {
     overview:
-      "Psoriasis Vulgaris is a chronic, immune-mediated inflammatory papulosquamous skin disease driven by the IL-23/IL-17 cytokine axis, resulting in keratinocyte hyperproliferation and silvery-scaled erythematous plaques [D0015-KEYNOTES, CIT-0047]. Psoriatic arthritis co-occurs in up to 30% of patients.",
+      "Psoriasis is a long-term immune-related condition that speeds up the skin's renewal cycle. It often causes dry, raised, scaly patches on the elbows, knees, scalp, or lower back. It is not contagious, and some people also develop joint symptoms that need assessment.",
     definition:
-      "A systemic immune-mediated dermatosis characterized by well-demarcated erythematous plaques covered with silvery-white scales, predominantly over extensor surfaces, scalp, and nails.",
+      "It is an immune-related skin condition that can also affect nails and joints.",
     causes: [
-      "Dysregulated cutaneous immune activation driven by dendritic cells, T-helper 17 (Th17) cells, and IL-17/IL-23 cytokines [D0015-KEYNOTES, CIT-0047]",
-      "Genetic susceptibility loci (PSORS1, HLA-Cw6 allele dominance)",
-      "Environmental triggers: Streptococcal pharyngitis (guttate psoriasis), mechanical trauma (Koebner phenomenon), stress, and beta-blocker/lithium medications",
+      "A tendency in the immune system and, in many people, family history.",
+      "A flare can be linked with illness, skin injury, stress, smoking, alcohol, or some medicines.",
+      "The triggers differ between people and are not always obvious.",
     ],
     riskFactors: [
-      "Family history of psoriasis or psoriatic arthritis",
-      "Smoking, heavy alcohol consumption, obesity, and metabolic syndrome",
-      "Recent beta-hemolytic streptococcal infection or acute psychogenic stress",
+      "A family history of psoriasis or psoriatic arthritis.",
+      "Smoking, heavier alcohol use, or a higher body weight can make psoriasis harder to manage.",
+      "A recent throat infection, stress, or skin injury can trigger a flare for some people.",
     ],
     symptoms: [
-      "Erythematous plaques with micaceous silvery scaling on knees, elbows, scalp, and lumbosacral skin [D0015-KEYNOTES, CIT-0047]",
-      "Auspitz sign (pinpoint bleeding on scraping scale) and Koebner phenomenon (lesions at sites of trauma)",
-      "Nail changes: Pitting, oil-drop discoloration, subungual hyperkeratosis, and onycholysis",
-      "Joint symptoms: Asymmetric dactylitis ('sausage digits'), inflammatory enthesitis, and morning stiffness in psoriatic arthritis",
+      "Dry, itchy, sore, flaky patches with silvery scales, often on the elbows, knees, scalp, or lower back.",
+      "Nail pitting, changes in nail colour, or nails lifting away from the bed.",
+      "Persistent joint pain, stiffness, swollen fingers or toes, or heel pain can be signs of psoriatic arthritis.",
     ],
     diagnosis:
-      "Diagnosed primarily clinically via lesion morphology, Auspitz sign, PASI (Psoriasis Area and Severity Index) scoring, and CASPAR criteria for suspected psoriatic arthritis. Biopsy reserved for atypical cases [CIT-0047].",
+      "A clinician often diagnoses psoriasis from the appearance and location of the patches. A skin sample is sometimes needed when the diagnosis is unclear. New or persistent joint symptoms should be assessed separately.",
     differentialDiagnosis:
       "Differentiate Psoriasis Vulgaris from Seborrheic Dermatitis, Lichen Planus, Pityriasis Rosea, Secondary Syphilis, Cutaneous T-Cell Lymphoma, and Tinea Corporis.",
     conventionalManagement:
-      "Management includes topical corticosteroids with vitamin D3 analogues (calcipotriol), phototherapy (NB-UVB), oral systemic agents (methotrexate, cyclosporine, apremilast), and targeted biologic therapies (anti-TNF, anti-IL-17, anti-IL-23) [CIT-0047].",
+      "Treatment is matched to the sites affected, severity, and impact on your life. It can include regular moisturisers, prescribed creams, light therapy, tablets, injections, and joint care. Do not stop a prescribed treatment abruptly without medical advice.",
     homeopathicApproach:
-      "Homeopathic remedies (such as Arsenicum Album, Graphites, Petroleum, Sulphur) serve as supportive constitutional care to manage pruritus, improve skin scaling, and address constitutional diathesis alongside dermatological evaluation.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for psoriasis. It must not replace dermatologist or rheumatology care, especially for significant skin disease or possible psoriatic arthritis.",
     lifestyleAdvice:
-      "Apply thick emollient moisturizers daily, practice sun safety with brief natural UV exposure, avoid harsh chemical soaps or skin friction, quit smoking, and maintain healthy body weight.",
+      "Use a plain moisturiser regularly, avoid harsh soaps and picking scales, and notice personal flare triggers. Smoking cessation, moderating alcohol, movement, and weight support can help overall health. Do not use sun exposure as a substitute for prescribed light therapy or sun protection.",
     references: ["CIT-0002", "CIT-0019", "CIT-0022", "CIT-0047"],
     faqs: [
       {
-        question: "When is Psoriasis considered a life-threatening dermatological emergency requiring immediate hospitalization?",
+        question: "When does psoriasis need urgent medical help?",
         answer:
-          "Generalized redness covering >90% body surface area with loss of thermoregulation (Erythrodermic Psoriasis) or sudden widespread eruption of sterile pustules with high fever and hypocalcemia (Generalized Pustular Psoriasis) is a DERMATOLOGICAL EMERGENCY [D0015-EMERGENCY-LIMITS, CIT-0047]. It requires IMMEDIATE ER evaluation to prevent high-output cardiac failure and sepsis.",
+          "Seek urgent care for widespread red or peeling skin, a sudden rash of pus-filled spots with fever, feeling very unwell, or a hot, very painful, swollen joint. These are not typical everyday flares and need prompt assessment.",
       },
       {
-        question: "Can homeopathic remedies replace prescribed systemic biologic or methotrexate therapy in severe psoriasis?",
+        question: "Can homeopathy replace prescribed psoriasis treatment?",
         answer:
-          "NO. Homeopathy MUST NOT be used to replace prescribed systemic biologics, methotrexate, or rheumatological management in severe joint-erosive psoriatic arthritis [D0015-REGULATORY-LIMITS]. Stopping systemic therapy abruptly can trigger severe erythrodermic rebound flares.",
+          "No. Do not use homeopathy to replace prescribed treatment or to delay care for severe psoriasis or possible psoriatic arthritis.",
       },
       {
-        question: "How does homeopathy integrate with standard dermatological care for psoriasis?",
+        question: "Could my joint pain be related to psoriasis?",
         answer:
-          "Homeopathy serves as complementary constitutional care while patients remain under standard dermatological monitoring and PASI severity scoring [D0015-REGULATORY-LIMITS].",
+          "It could be. Tell a clinician about ongoing joint stiffness, swelling, heel pain, or a whole swollen finger or toe, particularly if it is worse after rest or comes with psoriasis patches or nail changes.",
       },
     ],
   },
@@ -99,5 +98,6 @@ export const PsoriasisDisease: KnowledgeEntity = {
   changeLog: [
     "1.0.0: Initial release of Psoriasis profile",
     "1.1.0: Upgraded with EuroGuiDerm 2021 evidence citations (CIT-0047), passage-level claim citations (D0015-KEYNOTES, D0015-EMERGENCY-LIMITS, D0015-REGULATORY-LIMITS), erythrodermic/pustular psoriasis red flags, and systemic biologic safety boundaries",
+    "1.2.0: Reframed the page around daily skin support, joint-awareness, and plain-language urgent-care boundaries.",
   ],
 };

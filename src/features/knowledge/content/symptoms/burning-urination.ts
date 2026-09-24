@@ -20,7 +20,7 @@ export const BurningUrinationSymptom: KnowledgeEntity = {
     ar: "Burning Urination"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Burning Urination.",
+    en: "Burning when passing urine is commonly caused by a urinary infection or irritation. Fever, back pain, blood in urine, or rapid worsening needs urgent care.",
     hi: "Burning Urination के लक्षण की नैदानिक समझ.",
     gu: "Burning Urination ના લક્ષણ ની સમજણ.",
     mr: "Burning Urination चे लक्षण आणि उपचार.",
@@ -28,37 +28,37 @@ export const BurningUrinationSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Burning Urination."
   },
   content: {
-  "definition": "Burning urination: A functional bladder complaint, micturition difficulty, or physical discomfort involving the lower urinary tract.",
-  "clinicalMeaning": "Reflects bladder detrusor hyper-reflexia, urethral mucosal inflammation, or sensory nerve hyper-sensitivity within the pelvis.",
+  "definition": "Burning urination, also called dysuria, is pain or stinging while passing urine.",
+  "clinicalMeaning": "It is often caused by a urinary tract infection, but can also occur with urethritis, vaginal irritation, stones, or another urinary condition. The accompanying symptoms guide the next step.",
   "commonCauses": [
-    "Bacterial cystitis or urethritis",
-    "Interstitual cystitis (Painful Bladder Syndrome)",
-    "Bladder neck spasm or detrusor instability",
-    "Passing of renal micro-crystals"
+    "A urinary tract infection, including bladder or kidney infection",
+    "Urethritis, including an STI that needs assessment and treatment",
+    "Irritation around the vagina or urethra, or a stone in the urinary tract",
+    "Less commonly, another bladder or prostate condition"
   ],
-  "differentialDiagnosis": "Differentiate from vulvovaginitis, prostate hypertrophy, and mechanical urethral strictures.",
+  "differentialDiagnosis": "A clinician may ask about frequency, urgency, cloudy urine, discharge, pregnancy, sexual exposure, back pain, fever, and blood in urine. Testing may include a urine sample and STI testing when appropriate.",
   "redFlags": [
-    "Gross hematuria (visible blood in urine)",
-    "High fever with severe flank/kidney pain (pyelonephritis)",
-    "Inability to pass urine (acute urinary retention)"
+    "Get urgent advice for fever or shivering, pain in the lower tummy or back under the ribs, blood in urine, pregnancy, diabetes, a catheter, or symptoms that worsen quickly.",
+    "Seek emergency help for confusion, drowsiness, difficulty speaking, or being unable to pass urine.",
+    "Arrange a review for recurrent infections or symptoms that do not improve within 48 hours of treatment or self-care advice."
   ],
-  "lifestyleAdvice": "Drink adequate plain water, void urine immediately after intercourse, avoid synthetic tight clothing, and eliminate caffeine.",
+  "lifestyleAdvice": "Drink enough fluids to pass pale urine regularly, rest, and avoid drinks that irritate the bladder for you. Do not self-treat a possible infection with supplements in place of an assessment or prescribed medicine.",
   "references": [
     "CIT-0011",
     "CIT-0022"
   ],
   "faqs": [
     {
-      "question": "What are the common causes of recurring burning urination?",
-      "answer": "Common causes include urinary tract infections (UTIs), bladder irritation (from caffeine, spices), interstitial cystitis, or early signs of renal sand (gravel)."
+      "question": "Does burning when peeing always mean a UTI?",
+      "answer": "No. A UTI is common, but urethritis, an STI, irritation, stones, and other conditions can also cause it."
     },
     {
-      "question": "How does microalbuminuria reflect kidney health?",
-      "answer": "Microalbuminuria is the presence of small amounts of albumin in the urine, indicating early glomerular capillary strain, typically associated with diabetes or hypertension."
+      "question": "When should I seek urgent help?",
+      "answer": "Fever, shivering, back pain, blood in urine, pregnancy, rapid worsening, or confusion needs urgent medical advice."
     },
     {
-      "question": "Can homeopathy support bladder control and urinary health?",
-      "answer": "Yes. Homeopathic remedies help soothe bladder lining irritation, support detrusor muscle tone, and manage chronic urinary susceptibility under medical supervision."
+      "question": "Could it be an STI?",
+      "answer": "Burning can occur with urethritis caused by an STI. Seek sexual-health or clinical advice if there is discharge, a new sexual exposure, or concern about infection."
     }
   ]
 },

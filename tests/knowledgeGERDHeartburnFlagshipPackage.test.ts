@@ -59,8 +59,12 @@ export function runKnowledgeGERDHeartburnFlagshipPackageTests(): void {
     "The revision-bound authorization packet must be deterministic"
   );
 
+  assert.deepStrictEqual(
+    Object.fromEntries(entities.map((entity) => [entity.id, entity.versionInfo.version])),
+    { D0001: "1.2.0", S0001: "1.1.0" }
+  );
+
   for (const entity of entities) {
-    assert.strictEqual(entity.versionInfo.version, "1.1.0");
     assert.strictEqual(entity.contentCompleteness, 100);
     assert.strictEqual(entity.citationHealth, "complete");
     assert.strictEqual(entity.evidenceProfile?.citationCompleteness, 1);
@@ -121,7 +125,9 @@ export function runKnowledgeGERDHeartburnFlagshipPackageTests(): void {
           proposal.status === "draft" &&
           proposal.publicationEligible === false &&
           proposal.ragEligible === false &&
-          proposal.sourceRevision === "1.1.0"
+          proposal.sourceRevision ===
+            entities.find((entity) => entity.id === proposal.sourceEntityId)
+              ?.versionInfo.version
       )
     );
   }

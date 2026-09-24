@@ -20,7 +20,7 @@ export const DifficultySwallowingSymptom: KnowledgeEntity = {
     ar: "صعوبة البلع (Dysphagia)"
   },
   summary: {
-    en: "Clinical triage, emergency differentiation, and supportive management of Difficulty Swallowing (Dysphagia) under ACG 2022 standards.",
+    en: "Difficulty swallowing, called dysphagia, can cause coughing, choking, or food sticking. It should be assessed urgently to prevent dehydration, weight loss, or food entering the airway.",
     hi: "निगलने में कठिनाई की नैदानिक समझ और आपातकालीन रेड फ्लैग्स.",
     gu: "ગળવામાં તકલીફના લક્ષણ ની સમજણ અને ઇમરજન્સી ફ્લેગ્સ.",
     mr: "गिळण्यास त्रासाचे लक्षण आणि तातडीचे रेड फ्लॅग्स.",
@@ -28,21 +28,21 @@ export const DifficultySwallowingSymptom: KnowledgeEntity = {
     ar: "التفرقة السريرية والعلامات التحذيرية لصعوبة البلع."
   },
   content: {
-    definition: "Difficulty Swallowing (Dysphagia): Impaired transit of liquid or solid boluses from the oral cavity into the stomach, classified into oropharyngeal (neuromuscular/structural) and esophageal (motility/obstructive) origins.",
-    clinicalMeaning: "Reflects esophageal stricture, eosinophilic esophagitis, achalasia, esophageal adenocarcinoma, or cranial nerve neuromuscular palsy requiring urgent endoscopic or barium evaluation.",
+    definition: "Difficulty swallowing, or dysphagia, means food, drink, or saliva does not move safely or easily from the mouth through the throat and food pipe to the stomach.",
+    clinicalMeaning: "It can lead to choking, food getting stuck, dehydration, weight loss, or chest infections when food or drink enters the airway. It is a symptom that needs timely assessment.",
     commonCauses: [
-      "Gastroesophageal Reflux Disease (GERD) Stricture or Eosinophilic Esophagitis",
-      "Esophageal Malignancy or Benign Web/Ring",
-      "Achalasia or Diffuse Esophageal Spasm",
-      "Stroke, Parkinson's, or Myasthenia Gravis (Oropharyngeal Dysphagia)"
+      "Acid reflux or another food-pipe condition",
+      "A condition affecting the brain, nerves, or muscles, such as stroke or Parkinson's disease",
+      "Medicines, mouth or throat problems, or an obstructing food-pipe condition",
+      "Cancer or its treatment, which requires specialist assessment"
     ],
-    differentialDiagnosis: "Differentiate oropharyngeal transfer dysphagia (aspiration risk) from esophageal transport dysphagia, globus sensation, and odynophagia.",
+    differentialDiagnosis: "A clinician may ask whether the problem is with starting a swallow, solids, liquids, coughing or choking, food sticking, or pain. Speech and language therapists and dietitians may help make eating and drinking safer.",
     redFlags: [
-      "Complete inability to swallow liquids or saliva with bolus impaction (Esophageal Impaction)",
-      "Progressive solid-to-liquid dysphagia with unintended weight loss (Esophageal Cancer)",
-      "Severe chest/neck pain after vomiting with subcutaneous emphysema (Esophageal Perforation / Boerhaave)"
+      "Seek emergency help if you cannot swallow saliva, have severe chest pain, trouble breathing, or feel very unwell because food is stuck.",
+      "Get urgent advice for coughing or choking with food or drink, food sticking in the throat or chest, a wet or gurgly voice after swallowing, or breathlessness after eating.",
+      "Arrange prompt assessment for repeated chest infections, dehydration, weight loss, or progressive difficulty swallowing."
     ],
-    lifestyleAdvice: "Eat small, well-chewed food boluses in an upright posture; seek immediate endoscopic evaluation for complete food impaction or progressive dysphagia.",
+    lifestyleAdvice: "Sit fully upright for meals and do not rush. Do not change food or fluid textures without an individual swallowing assessment, because what is safest depends on the cause. Follow any existing speech and language therapy plan.",
     references: [
       "CIT-0064",
       "CIT-0023"
@@ -71,16 +71,16 @@ export const DifficultySwallowingSymptom: KnowledgeEntity = {
     ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "What are signs of dysphagia?",
+      "answer": "Coughing or choking during meals, a wet voice after eating, food sticking, bringing food back up, drooling, difficulty chewing, or repeated chest infections can all be signs."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "Who can help with swallowing problems?",
+      "answer": "A clinician can assess the cause and may refer you to a speech and language therapist or dietitian for individual strategies and safer food or drink textures."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "When is swallowing difficulty an emergency?",
+      "answer": "Inability to swallow saliva, severe chest pain, trouble breathing, or feeling very unwell with food stuck needs emergency help."
     }
   ]
 },

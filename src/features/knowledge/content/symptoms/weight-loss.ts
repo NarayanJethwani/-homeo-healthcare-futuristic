@@ -20,7 +20,7 @@ export const WeightLossSymptom: KnowledgeEntity = {
     ar: "Weight Loss"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Weight Loss.",
+    en: "Weight loss without trying is worth discussing with a clinician, especially when it continues or comes with other symptoms.",
     hi: "Weight Loss के लक्षण की नैदानिक समझ.",
     gu: "Weight Loss ના લક્ષણ ની સમજણ.",
     mr: "Weight Loss चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const WeightLossSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Weight Loss."
   },
   content: {
-  "definition": "Weight loss: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Unintentional weight loss is losing weight without changing your eating, activity, or treatment plan. It is different from planned, gradual weight loss.",
+  "clinicalMeaning": "Stress, a change in appetite, medicines, digestive problems, hormone conditions, and many other causes can contribute. Persistent unexplained weight loss needs a clinical review rather than self-treatment.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "Stress, grief, anxiety, depression, or an eating disorder",
+    "Reduced appetite, poor nutrition, medicine side effects, or problems with teeth or swallowing",
+    "Digestive conditions such as coeliac disease or inflammatory bowel disease",
+    "An overactive thyroid, diabetes, heart disease, infection, or other medical conditions"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "A clinician will consider how quickly the change occurred and ask about appetite, bowel habits, mood, pain, fever, night sweats, medicines, and other symptoms. This guide cannot identify the cause on its own.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Arrange a GP appointment for ongoing or unexplained weight loss, even if you feel otherwise well",
+    "Seek prompt medical advice for weight loss with persistent pain, bleeding, fever, drenching night sweats, trouble swallowing, or ongoing vomiting or diarrhoea",
+    "Get urgent help if you cannot keep fluids down, are faint or confused, have chest pain or severe breathlessness, or feel at risk of harming yourself"
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "Do not try to compensate with supplements or restrictive diets before the cause is clear. Record your weight at the same time each week, along with appetite and symptoms. While arranging care, aim for regular meals and drinks; a clinician or dietitian can tailor nutrition advice if needed.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const WeightLossSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "How much unplanned weight loss is concerning?",
+      "answer": "Any ongoing unintentional weight loss is worth discussing with a GP. A faster change or weight loss alongside other symptoms should be assessed sooner."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "Can stress cause weight loss?",
+      "answer": "Yes. Stress, grief, anxiety, and depression can affect appetite and eating. They should still be discussed with a clinician, particularly if the weight loss continues."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "Should I stop a medicine if I think it is affecting my weight?",
+      "answer": "Do not stop prescribed medicines without advice. A pharmacist or prescriber can review possible side effects and safer options."
     }
   ]
 },

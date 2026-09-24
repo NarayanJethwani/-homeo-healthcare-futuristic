@@ -20,7 +20,7 @@ export const TremorsSymptom: KnowledgeEntity = {
     ar: "Tremors"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Tremors.",
+    en: "A tremor is involuntary shaking of part of the body. A mild tremor is common, but worsening or life-affecting tremor should be assessed.",
     hi: "Tremors के लक्षण की नैदानिक समझ.",
     gu: "Tremors ના લક્ષણ ની સમજણ.",
     mr: "Tremors चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const TremorsSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Tremors."
   },
   content: {
-  "definition": "Tremors: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "A tremor is shaking or trembling that you cannot fully control, often affecting the hands but sometimes the head, voice, or another body part.",
+  "clinicalMeaning": "A slight tremor can be normal. Stress, tiredness, caffeine, alcohol, smoking, medicines, and health conditions can make tremor more noticeable.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "Stress, tiredness, anxiety, caffeine, alcohol, nicotine, or temperature extremes",
+    "A family tendency to essential tremor",
+    "Some medicines or an overactive thyroid",
+    "A neurological condition that needs assessment"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "A clinician may assess when the tremor happens, medicines, alcohol intake, family history, and other neurological symptoms to identify the likely type and cause.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Call emergency services for sudden shaking with one-sided weakness or numbness, facial droop, speech difficulty, confusion, seizure, severe headache, or loss of consciousness.",
+    "Seek urgent advice for a new tremor after head injury, poisoning, or a rapid medicine change, or with severe chest pain or breathlessness.",
+    "Book a review if tremor is worsening or affecting eating, writing, work, walking, or daily life."
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "Note patterns with sleep, caffeine, alcohol, stress, medicines, and tasks. Reduce known triggers if safe, but speak to a clinician before changing prescribed medicine or alcohol use abruptly.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const TremorsSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "Is a slight tremor normal?",
+      "answer": "A small tremor can be normal and may be more noticeable when tired, stressed, cold, or after caffeine."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "When should tremor be checked?",
+      "answer": "See a clinician if it is worsening, new, or affecting daily activities."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "When is shaking an emergency?",
+      "answer": "Sudden shaking with stroke signs, seizure, loss of consciousness, severe headache, or new severe illness needs emergency help."
     }
   ]
 },

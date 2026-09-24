@@ -6,13 +6,13 @@ export const VitiligoDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-31T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
     reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
-    en: "Vitiligo (Leukoderma)",
+    en: "Vitiligo",
     hi: "सफेद दाग / विटिलिगो (Vitiligo / Leukoderma)",
     gu: "સફેદ ડાઘ / વિટિલિગો (Vitiligo)",
     mr: "कोड / कोढ / विटिलिगो (Vitiligo)",
@@ -20,7 +20,7 @@ export const VitiligoDisease: KnowledgeEntity = {
     ar: "البهاق",
   },
   summary: {
-    en: "An authoritative clinical profile of Vitiligo covering EuroGuiDerm 2021 guidelines, CD8+ cytotoxic T-cell melanocyte destruction mechanics, narrowband UVB phototherapy safety boundaries, and systemic autoimmune screening requirements.",
+    en: "Vitiligo causes pale or white patches because the skin loses pigment. It is not contagious. Learn how to protect affected skin from sunburn, what a clinician may check, and the treatment and support options available.",
     hi: "विटिलिगो (Vitiligo) का EuroGuiDerm 2021 मानकों के अनुसार प्रामाणिक विवरण और सुरक्षा सीमाएँ।",
     gu: "વિટિલિગોનું EuroGuiDerm 2021 ધોરણો મુજબનું નૈદાનિક વિવરણ અને સુરક્ષા સીમાઓ.",
     mr: "विटिलिगोचे EuroGuiDerm 2021 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
@@ -29,50 +29,50 @@ export const VitiligoDisease: KnowledgeEntity = {
   },
   content: {
     overview:
-      "Vitiligo is a chronic autoimmune depigmenting skin disorder characterized by selective destruction of epidermal melanocytes, resulting in chalk-white macules and patches [D0036-KEYNOTES, CIT-0060]. EuroGuiDerm 2021 guidelines prioritize halting active progression and inducing re-pigmentation.",
+      "Vitiligo is a long-term condition in which patches of skin lose their natural colour. It can affect any skin tone and may also lighten hair in the affected area. It is not contagious or caused by poor hygiene. A clinician can confirm the diagnosis, consider related health conditions when relevant, and help with sun protection and treatment choices.",
     definition:
-      "An acquired autoimmune disease affecting 0.5-2% of the global population, categorized into non-segmental (generalized, acrofacial, universal) and segmental vitiligo, driven by CD8+ T-cell-mediated melanocyte apoptosis.",
+      "A condition in which pigment-producing skin cells stop working in some areas, leaving pale or white patches.",
     causes: [
-      "Autoimmune destruction of functional melanocytes mediated by CD8+ cytotoxic T-cells producing IFN-γ and CXCL10 [D0036-KEYNOTES, CIT-0060]",
-      "Melanocyte intrinsic oxidative stress susceptibility combined with organelle dysfunction",
-      "Genetic heritability (HLA-A2, HLA-DR4, NLRP1) interacting with environmental trauma (Koebner phenomenon)",
+      "An immune-related process is thought to be involved in many people",
+      "Family history can increase the chance of developing vitiligo",
+      "Skin injury, friction, or sunburn may precede or worsen patches in some people",
     ],
     riskFactors: [
-      "Personal or family history of vitiligo or co-occurring autoimmune conditions (Hashimoto's Thyroiditis, Graves' Disease, Alopecia Areata, Pernicious Anemia, Addison's Disease)",
-      "Physical skin trauma, friction, or chemical exposure (monobenzone, phenols)",
-      "Psychological stress aggravating oxidative stress cascades",
+      "A personal or family history of vitiligo or some autoimmune conditions",
+      "Repeated skin injury, rubbing, or a severe sunburn in people who are prone to it",
+      "The emotional impact of a visible skin change, which can affect confidence and wellbeing",
     ],
     symptoms: [
-      "Asymptomatic, well-circumscribed milk-white or chalk-white macules and patches [D0036-KEYNOTES, CIT-0060]",
-      "Trichrome or quadrichrome lesions with varying shades of depigmentation, and leukotrichia (depigmented hair within lesions)",
-      "Predilection for sun-exposed areas (face, hands), periorificial zones (eyes, mouth), extensor surfaces (wrinkles, knees), and flexural friction folds",
+      "Clearly defined pale or white patches, often on the face, hands, skin folds, or around the eyes and mouth",
+      "Hair in an affected area may turn white or grey",
+      "The patches usually do not itch or hurt, but every new or changing skin mark should be assessed if the diagnosis is uncertain",
     ],
     diagnosis:
-      "Diagnosed by clinical examination enhanced by Wood's lamp fluorescence (accentuating bright blue-white epidermal depigmentation). Screening includes thyroid peroxidase autoantibodies (TPO), serum TSH, CBC, and fasting blood glucose [CIT-0060].",
+      "A clinician usually diagnoses vitiligo by examining the skin. They may use a special light or photographs to follow changes. Depending on your symptoms and history, they may also discuss tests for related autoimmune conditions; not everyone needs broad testing.",
     differentialDiagnosis:
-      "Differentiate Vitiligo from Pityriasis Alba, Tinea Versicolor (fungal scaling), Post-Inflammatory Hypopigmentation, Leprosy (hypopigmented anaesthetic macules), Nevus Depigmentosus, and Chemical Leukoderma.",
+      "Fungal infection, post-inflammatory colour change, pityriasis alba, chemical exposure, birthmarks, and other causes of pale patches can look similar. A clinician can distinguish these before treatment is chosen.",
     conventionalManagement:
-      "Management includes topical corticosteroids (high-potency), topical calcineurin inhibitors (tacrolimus, pimecrolimus), targeted narrowband UVB (NB-UVB) phototherapy, systemic mini-pulse corticosteroids (for rapidly spreading active disease), and surgical autologous melanocyte transplantation for stable localized lesions [CIT-0060].",
+      "Sun protection is important because affected skin burns easily. Depending on the pattern and how it affects you, a dermatologist may discuss camouflage, prescribed topical medicines, or supervised light treatment. Results vary and any return of pigment is usually gradual.",
     homeopathicApproach:
-      "Homeopathic remedies (such as Hydrocotyle Asiatica, Arsenicum Sulfuratum Flavum, Silicea, Sulphur, Sepia) serve as supportive constitutional care to modulate systemic immune hyper-reactivity, reduce oxidative stress, and support skin health alongside dermatological care.",
+      "Reliable clinical evidence has not established homeopathy as a treatment that restores pigment in vitiligo. It should not replace sun protection, assessment of a new skin change, or dermatologist-led treatment.",
     lifestyleAdvice:
-      "Apply broad-spectrum sunscreen (SPF 30+) to depigmented patches to prevent sunburn, avoid tight friction-causing clothing (minimizing Koebnerization), and manage stress.",
+      "Use broad-spectrum high-protection sunscreen on exposed patches, and use shade and protective clothing to reduce sunburn. Avoid tanning beds and deliberate sun exposure. If vitiligo is affecting confidence, school, work, or relationships, discuss support and camouflage options with a clinician or trusted support service.",
     references: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0060"],
     faqs: [
       {
-        question: "When does rapidly spreading depigmentation indicate active progressive disease or systemic autoimmune crisis?",
+        question: "Is vitiligo contagious?",
         answer:
-          "Rapid spreading of multiple new white patches over weeks (ACTIVE PROGRESSIVE VITILIGO), or co-occurrence of severe fatigue, dizziness, and low blood pressure (ADDISON'S DISEASE CRISIS) or eye pain/vision changes (VOGT-KOYANAGI-HARADA SYNDROME) requires URGENT DERMATOLOGICAL / ENDOCRINE EVALUATION [D0036-EMERGENCY-LIMITS, CIT-0060]. Active spreading requires prompt stabilization.",
+          "No. Vitiligo cannot be passed from one person to another through touch, shared items, food, or close contact.",
       },
       {
-        question: "Can homeopathic remedies replace Wood's lamp examination, thyroid screens, or phototherapy monitoring?",
+        question: "What is most important for daily care?",
         answer:
-          "NO. Homeopathy MUST NOT be used to replace diagnostic Wood's lamp evaluation, thyroid autoantibody screens, or supervised NB-UVB phototherapy [D0036-REGULATORY-LIMITS].",
+          "Protect pale patches from sunburn with shade, suitable clothing, and broad-spectrum sunscreen. Arrange a routine clinical assessment for new unexplained patches or if the diagnosis has not been confirmed.",
       },
       {
-        question: "How does homeopathy integrate with standard dermatological treatment for vitiligo?",
+        question: "Can homeopathy restore pigment?",
         answer:
-          "Homeopathy serves as complementary constitutional care while patients remain under standard dermatological guidance, Wood's lamp tracking, and phototherapy protocols [D0036-REGULATORY-LIMITS].",
+          "Reliable clinical evidence has not shown that homeopathy restores pigment in vitiligo. Do not use it in place of sun protection, clinical assessment, or treatment discussed with a dermatologist.",
       },
     ],
   },
@@ -90,7 +90,7 @@ export const VitiligoDisease: KnowledgeEntity = {
   lastClinicalReview: "2026-07-31",
   nextClinicalReview: "2027-07-31",
   evidenceLevel: "Consensus-Guidance",
-  tags: ["Vitiligo", "Disease", "EuroGuiDerm-2021", "Dermatology", "Autoimmune", "Phototherapy", "Emergency-Safety"],
+  tags: ["Vitiligo", "Leukoderma", "White Skin Patches", "Dermatology", "Skin Pigment", "Autoimmune"],
   canonicalUrl: "https://homeo.healthcare/knowledge/diseases/vitiligo",
   readingTimeMinutes: 6,
   audience: "patient",
@@ -98,5 +98,6 @@ export const VitiligoDisease: KnowledgeEntity = {
   changeLog: [
     "1.0.0: Initial release of Vitiligo profile",
     "1.1.0: Upgraded with EuroGuiDerm 2021 evidence citations (CIT-0060), passage-level claim citations (D0036-KEYNOTES, D0036-EMERGENCY-LIMITS, D0036-REGULATORY-LIMITS), active spreading / endocrine crisis red flags, and phototherapy safety boundaries",
+    "1.2.0: Reframed the guide around visible changes, sun protection, treatment choices, and evidence-based care boundaries.",
   ],
 };

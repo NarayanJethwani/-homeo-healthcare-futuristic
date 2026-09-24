@@ -7,13 +7,13 @@ export const AthletesFootTineaPedisDisease: KnowledgeEntity = {
   editorialStatus: "published",
   reviewStatus: "owner-authorization-required",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-09-21T00:00:00Z",
-    updated: "2026-09-21T00:00:00Z",
+    updated: "2026-09-24T00:00:00Z",
     reviewed: "2026-09-21T00:00:00Z",
   },
   title: {
-    en: "Athlete’s Foot (Tinea Pedis): Itchy, Peeling Skin Between the Toes",
+    en: "Athlete’s Foot",
     hi: "एथलीट्स फुट: पैर की उंगलियों के बीच खुजली और छिलती त्वचा",
     gu: "એથ્લીટ્સ ફૂટ: પગની આંગળીઓ વચ્ચે ખંજવાળ અને છાલ ઉતરવી",
     mr: "अॅथलीट्स फूट: पायाच्या बोटांमध्ये खाज आणि त्वचा सोलणे",
@@ -68,7 +68,7 @@ export const AthletesFootTineaPedisDisease: KnowledgeEntity = {
   readingTimeMinutes: 4,
   audience: "patient",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.0.0: Added patient-first athlete’s foot guide with practical prevention and treatment boundaries."],
+  changeLog: ["1.0.0: Added patient-first athlete’s foot guide with practical prevention and treatment boundaries.", "1.1.0: Simplified the title and added focused condition and symptom connections."],
   quickFacts: { "Cause": "A fungal infection of foot skin", "Often starts": "Between the toes", "Helpful habit": "Keep feet and toe spaces clean and dry", "When to seek advice": "If it is painful, spreading, recurrent, involves nails, or you have diabetes" },
   aiReadiness: {
     retrievalSummary: "Athlete’s foot, or tinea pedis, is a common fungal infection of the foot that often causes itchy, peeling or cracked skin between the toes and needs appropriate antifungal assessment or treatment.",

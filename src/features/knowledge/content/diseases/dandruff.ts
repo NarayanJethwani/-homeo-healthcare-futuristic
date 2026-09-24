@@ -7,13 +7,13 @@ export const DandruffDisease: KnowledgeEntity = {
   editorialStatus: "published",
   reviewStatus: "owner-authorization-required",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-08-14T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
     reviewed: "2026-08-14T12:00:00Z"
   },
   title: {
-    en: "Dandruff: Scalp Flakes, Itching & What Can Help",
+    en: "Dandruff",
     hi: "डैंड्रफ / रूसी व सिर की त्वचा का छिलना (Dandruff / Pityriasis Capitis)",
     gu: "ખોડો / માથાની ચામડી પર પોપડી વળવી અને ખંજવાળ (Dandruff)",
     mr: "कोंडा / डोक्यातील खाज व पांढरी खपली (Dandruff / Pityriasis Capitis)",
@@ -30,9 +30,9 @@ export const DandruffDisease: KnowledgeEntity = {
   },
   content: {
     overview:
-      "Dandruff (Pityriasis Capitis) is an extremely common, non-inflammatory to mildly inflammatory scalp disorder affecting approximately 50% of the global post-pubertal adult population. Pathophysiologically regarded as the mild, non-erythematous end of the Seborrheic Dermatitis spectrum, dandruff is driven by a complex interplay between three primary etiological pillars: (1) scalp skin colonization by lipophilic yeast fungi of the genus Malassezia (specifically Malassezia globosa and Malassezia restricta), (2) sebaceous gland activity secreting lipid-rich sebum, and (3) individual host epidermal barrier susceptibility. Malassezia lipases hydrolyze sebum triglycerides, releasing free fatty acids (particularly oleic and arachidonic acids) that penetrate the stratum corneum, disrupt barrier integrity, and trigger accelerated, uncoordinated epidermal keratinocyte turnover resulting in visible clumps of desquamated white-to-gray flakes.",
+      "Dandruff is a common scalp condition that causes white or grey flakes in the hair, sometimes with itch or mild redness. It is not a sign of poor hygiene. For many people, regular use of an anti-dandruff shampoo helps; persistent or painful scalp changes need a clinician to check for another cause.",
     definition:
-      "A common scalp condition characterized by excessive, uncoordinated desquamation of stratum corneum corneocytes, resulting in small white or grayish flakes and mild pruritus in the absence of prominent clinical erythema.",
+      "It is increased shedding of skin cells from the scalp. Dandruff is often considered a mild end of the seborrhoeic dermatitis spectrum.",
     causes: [
       "Malassezia fungal proliferation: lipophilic yeasts (Malassezia globosa and M. restricta) utilize extracellular lipases to metabolize sebaceous lipids, producing irritating unsaturated fatty acids (oleic acid)",
       "Stratum corneum barrier disruption: penetration of free fatty acids induces hyperkeratosis, parakeratosis (retention of nuclei in stratum corneum cells), and premature cellular shedding",
@@ -59,11 +59,11 @@ export const DandruffDisease: KnowledgeEntity = {
     differentialDiagnosis:
       "Differentiate Dandruff from Seborrheic Dermatitis (prominent erythema, thick greasy yellowish scales extending to eyebrows, nasolabial folds, and chest), Scalp Psoriasis (well-demarcated thick erythematous plaques with silvery adherent scales and nail pitting), Tinea Capitis (fungal dermatophyte infection with patchy alopecia, black dots, and scaling in children), Contact Dermatitis (intense erythema following hair dye or styling products), and Atopic Dermatitis.",
     conventionalManagement:
-      "A stepwise, targeted dermatological approach using therapeutic medicated shampoos: (1) First-line topical antifungals to reduce Malassezia fungal burden: Ketoconazole 1–2% shampoo, Ciclopirox olamine 1% shampoo, or Zinc Pyrithione 1–2% shampoo used 2 to 3 times weekly (lathered and left on the scalp for 5 minutes before rinsing). (2) Keratolytic and anti-proliferative agents: Selenium Sulfide 1–2.5% shampoo, Salicylic Acid shampoos (loosens and sheds adherent scales), and Coal Tar shampoos (slows epidermal turnover). (3) Maintenance regimen: once flaking resolves, taper medicated shampoo to once weekly to prevent relapse while using a gentle daily surfactant shampoo on intervening days.",
+      "An anti-dandruff shampoo is often the first step. A pharmacist can help you choose one and explain how to use it. If it has not helped after several weeks, the scalp is very red or sore, or you are losing hair in patches, arrange medical advice rather than adding many products at once.",
     homeopathicApproach:
-      "Homeopathic constitutional and scalp remedies (such as Sulphur, Graphites, Thuja Occidentalis, Arsenicum Album, Mezereum, Psorinum, Natrum Muriaticum, Sepia Officinalis, Kali Sulphuricum, Calcarea Carbonica) serve as supportive care to ease scalp dryness, soothe itching, and support skin barrier resilience alongside gentle hair hygiene, antifungal shampoo protocols, and stress management.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for dandruff. It should not replace assessment for a painful, infected, very inflamed, or patchy hair-loss scalp condition.",
     lifestyleAdvice:
-      "Wash hair regularly with a mild, gentle shampoo to prevent sebum accumulation, leave medicated shampoos on the scalp for a full 3 to 5 minutes so active ingredients can penetrate before rinsing thoroughly, avoid vigorous scratching with fingernails (which creates micro-abrasions and secondary bacterial infection), reduce the use of heavy hair oils, pomades, and styling gels that trap yeast and sebum, and manage daily stress levels.",
+      "Wash hair regularly and follow the shampoo directions, including the recommended contact time before rinsing. Avoid scratching hard or picking the scalp. Keep new oils, styling products, or hair dyes to a minimum if they seem to aggravate the flakes or itch.",
     references: [
       "CIT-0004",
       "CIT-0005",
@@ -74,12 +74,12 @@ export const DandruffDisease: KnowledgeEntity = {
     ],
     faqs: [
       {
-        question: "Is dandruff caused by poor hygiene or a dry scalp?",
-        answer: "No. Dandruff is not caused by poor hygiene or simply dry skin. It is caused by an overgrowth of a normal scalp fungus (Malassezia) that feeds on natural scalp oils (sebum), producing irritating fatty acids that cause skin cells to shed too quickly."
+        question: "Is dandruff caused by poor hygiene?",
+        answer: "No. Dandruff is common and is not a sign that someone is unclean. Scalp oil, sensitivity, and a normal skin yeast can all play a part."
       },
       {
-        question: "Why should I leave anti-dandruff shampoo on for 5 minutes before rinsing?",
-        answer: "Active antifungal and keratolytic ingredients (like ketoconazole, zinc pyrithione, and selenium sulfide) require at least 3 to 5 minutes of direct contact with the scalp to effectively kill Malassezia yeast and break down keratin flakes before being rinsed away."
+        question: "When should I get dandruff checked?",
+        answer: "Arrange medical advice if the scalp is very red, painful, swollen, weeping, bleeding, has patchy hair loss, or does not improve with a suitable shampoo. These signs can point to psoriasis, eczema, a fungal infection, or another scalp condition."
       }
     ],
     redFlags: [
@@ -116,7 +116,7 @@ export const DandruffDisease: KnowledgeEntity = {
   readingTimeMinutes: 5,
   audience: "patient",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.1.0: Promoted to governed v1.1.0 with comprehensive Malassezia lipid metabolism clinical boundaries, scalp cellulitis/erythroderma red flags, and verified citations"],
+  changeLog: ["1.2.0: Simplified the route from common flakes to safe shampoo use and signs that need a different diagnosis.", "1.1.0: Promoted to governed v1.1.0 with comprehensive Malassezia lipid metabolism clinical boundaries, scalp cellulitis/erythroderma red flags, and verified citations"],
   clinicalPearl: "Always instruct patients to leave antifungal shampoos on the scalp for a full 3 to 5 minutes before rinsing; immediate washing off renders active ingredients ineffective.",
   quickFacts: {
     "Prevalence": "Affects approximately 50% of the post-pubertal global population",

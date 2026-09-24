@@ -13,7 +13,7 @@ export const AnalFissureDisease: KnowledgeEntity = {
     reviewed: "2026-08-14T12:00:00Z"
   },
   title: {
-    en: "Anal Fissure (Fissure-in-Ano / Acute & Chronic Anoderm Tear)",
+    en: "Anal Fissure",
     hi: "गुदा विदर / एनल फिशर (Anal Fissure / Fissure-in-Ano)",
     gu: "હરસ-મસા અને ફિશર / ગુદામાં ચીરો પડવો (Anal Fissure)",
     mr: "फिशर / गुदद्वारात चीर पडणे (Anal Fissure)",
@@ -21,7 +21,7 @@ export const AnalFissureDisease: KnowledgeEntity = {
     ar: "الشق الشرجي (Anal Fissure)"
   },
   summary: {
-    en: "An authoritative clinical and educational profile of Anal Fissure (Fissure-in-Ano), covering posterior midline anoderm tearing, internal anal sphincter hypertonicity, microvascular ischemia, constitutional homeopathic supportive management, and emergency red flags for deep ischiorectal perianal abscess, necrotizing fasciitis, and Crohn's complex fistulae.",
+    en: "An anal fissure is a small tear in the skin around the anus that can cause sharp pain and bright-red bleeding when passing stool. Keeping stools soft often helps, but worsening or persistent symptoms need assessment.",
     hi: "एनल फिशर (गुदा मार्ग में चीरा व घाव) का एनोडर्म टीयर पैथोलॉजी, इंटरनल स्फिंक्टर की ऐंठन व जकड़न, शौच के समय व बाद में तीव्र जलन, पारंपरिक संवैधानिक होम्योपैथिक प्रबंधन, और पेरिएनल फोड़ा (एब्सेस) व फिस्टुला की आपातकालीन सुरक्षा सीमाओं सहित प्रामाणिक विवरण.",
     gu: "એનલ ફિશર (ગુદાના ભાગમાં ચીરો) ની પેથોલોજી, શૌચ વખતે કાચ ભોંકાતો હોય તેવી અસહ્ય બળતરા, પરંપરાગત હોમિયોપેથીક સહાયક સારવાર અને ગુદાના પરુવાળા ગૂમડાં (એબ્સેસ) ની ઇમરજન્સી સીમાઓનું વિવરણ.",
     mr: "फिशर (गुदद्वारात पडलेली चीर), शौचाच्या वेळी होणाऱ्या काचेसारख्या टोचणाऱ्या तीव्र वेदना व जळजळ, पारंपरिक होमिओपॅथिक पद्धत आणि भगंदर/गळूच्या आणीबाणीच्या मर्यादा.",
@@ -61,7 +61,7 @@ export const AnalFissureDisease: KnowledgeEntity = {
     conventionalManagement:
       "First-line conservative medical therapy resolves >80% of acute fissures: high-fiber diet (\u226525–35 g/day), bulk-forming laxatives (psyllium husk), stool softeners, warm water sitz baths (15–20 minutes 2 to 3 times daily to relax the internal sphincter), and topical chemical sphincter relaxants (0.2%–0.4% nitroglycerin ointment [GTN] or 2% diltiazem / 0.3% nifedipine gel twice daily for 6–8 weeks). Second-line therapy includes Botulinum toxin (Botox) injection into the internal sphincter. Lateral Internal Sphincterotomy (LIS; partial surgical division of the lower internal sphincter) is the definitive surgical gold standard (>95% healing rate) for chronic refractory fissures.",
     homeopathicApproach:
-      "Homeopathic constitutional and anorectal remedies (such as Ratanhia Peruviana, Nitricum Acidum, Paeonia Officinalis, Graphites, Nux Vomica, Sulphur, Silicea, Aesculus Hippocastanum, Thuja) serve as supportive care to ease burning post-defecation spasms, promote mucosal healing, and relieve chronic stool straining alongside high-fiber hydration and warm sitz baths.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for anal fissures. It must not replace assessment of rectal bleeding, treatment to keep stools soft, prescribed creams or procedures, or urgent care for fever and severe swelling or pain.",
     lifestyleAdvice:
       "Consume a high-fiber diet rich in whole grains, fruits, and vegetables, drink at least 2.5 to 3 liters of water daily to maintain soft pliable bowel movements, take a 15-minute warm water sitz bath immediately after every bowel movement to relax sphincter muscle spasms, respond promptly to the urge to defecate without straining, and avoid using dry toilet paper (use warm water or unscented wet wipes instead).",
     references: [

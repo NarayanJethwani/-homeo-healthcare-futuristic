@@ -7,10 +7,10 @@ export const MigraineDisease: KnowledgeEntity = {
   editorialStatus: "published",
   reviewStatus: "owner-authorization-required",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-06-30T12:00:00Z",
-    updated: "2026-08-14T12:00:00Z",
-    reviewed: "2026-08-14T12:00:00Z"
+    updated: "2026-09-24T12:00:00Z",
+    reviewed: "2026-09-24T12:00:00Z"
   },
   title: {
     en: "Migraine Headache (Hemicrania)",
@@ -21,7 +21,7 @@ export const MigraineDisease: KnowledgeEntity = {
     ar: "الصداع النصفي (Migraine)"
   },
   summary: {
-    en: "An authoritative clinical and educational profile of Migraine, covering trigeminovascular activation, cortical spreading depression (CSD), visual aura, constitutional homeopathic supportive management, and emergency red flags for thunderclap headache and intracranial hemorrhage.",
+    en: "Migraine is more than a headache: it can cause throbbing pain, nausea and sensitivity to light or sound. Learn how to track patterns, use a treatment plan and recognise emergency warning signs.",
     hi: "माइग्रेन (आधासीसी सिरदर्द) का ट्राइजेमिनोवास्कुलर पैथोफिजियोलॉजी, ऑरा के लक्षण, पारंपरिक संवैधानिक होम्योपैथिक प्रबंधन, और थंडरक्लैप सिरदर्द की आपातकालीन सुरक्षा सीमाओं सहित प्रामाणिक विवरण.",
     gu: "આધાશીશી (માઇગ્રેન) ન્યુરોવાસ્ક્યુલર પેથોલોજી, વિઝ્યુઅલ ઓરા, પરંપરાગત બંધારણીય હોમિયોપેથીક સહાયક વ્યવસ્થાપન અને અચાનક થતા ભયંકર માથાના દુખાવા (થંડરક્લેપ) ની ઇમરજન્સી સીમાઓનું વિવરણ.",
     mr: "अर्धशिशी (Migraine) आजाराचे मज्जातंतूशी संबंधित विश्लेषण, व्हिज्युअल ऑरा, पारंपरिक होमिओपॅथिक पद्धत आणि अचानक सुरू होणाऱ्या तीव्र डोकेदुखीच्या आणीबाणीच्या मर्यादा.",
@@ -30,9 +30,9 @@ export const MigraineDisease: KnowledgeEntity = {
   },
   content: {
     overview:
-      "Migraine is a chronic neurovascular disorder characterized by recurrent attacks of moderate to severe pulsating, typically unilateral headache pain lasting 4 to 72 hours, aggravated by physical activity and accompanied by nausea, photophobia, and phonophobia. Approximately 20–30% of patients experience transient focal neurological symptoms known as aura (most commonly visual scintillating scotomas) preceding the headache phase.",
+      "Migraine is a neurological condition that causes repeated headache attacks, often with nausea and sensitivity to light, sound or movement. Some people have aura—temporary visual, sensory or speech symptoms—before or during an attack. A new or unusual severe headache needs assessment.",
     definition:
-      "A primary neurological disorder of sensory processing characterized by episodic neurogenic inflammation, cortical spreading depression (CSD), and central and peripheral sensitization of the trigeminovascular system.",
+      "Migraine affects the way the nervous system processes pain and sensory information. Attacks often follow a pattern, but symptoms and triggers vary from person to person.",
     causes: [
       "Hypersensitivity and neurogenic inflammatory activation of the trigeminovascular pathway",
       "Cortical spreading depression (CSD) wave triggering focal visual or sensory aura",
@@ -60,9 +60,9 @@ export const MigraineDisease: KnowledgeEntity = {
     conventionalManagement:
       "Includes acute abortive treatment (triptans, 5-HT1F receptor agonists, NSAIDs, oral CGRP receptor antagonists) and prophylactic therapy (beta-blockers like propranolol, topiramate, amitriptyline, CGRP monoclonal antibodies like erenumab/galcanezumab, and botulinum toxin for chronic migraine).",
     homeopathicApproach:
-      "Homeopathic constitutional remedies (such as Natrum Muriaticum, Belladonna, Sanguinaria Canadensis, Spigelia, Iris Versicolor, Gelsemium, Bryonia) serve as supportive constitutional care to modulate autonomic reactivity, reduce attack frequency, and address individual symptom modalities alongside lifestyle and dietary trigger avoidance.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for migraine. It must not replace prescribed acute treatment, preventive treatment or emergency assessment for a sudden or unusual severe headache.",
     lifestyleAdvice:
-      "Maintain regular sleep-wake schedules, consume balanced meals without skipping breakfast, stay adequately hydrated, maintain a detailed headache trigger diary, practice stress-relaxation techniques (mindfulness, biofeedback), and limit caffeine intake.",
+      "Keep a simple headache diary with the timing, symptoms, medicines and possible triggers. Regular meals, hydration, sleep and pacing caffeine can help. A clinician can use the diary to decide whether acute or preventive treatment is appropriate.",
     references: [
       "CIT-0004",
       "CIT-0005",
@@ -73,12 +73,12 @@ export const MigraineDisease: KnowledgeEntity = {
     ],
     faqs: [
       {
-        question: "What is the difference between a common migraine and a classic migraine?",
-        answer: "A common migraine occurs without an aura, presenting with throbbing unilateral pain and nausea. A classic migraine is preceded by neurological aura symptoms (such as flashing zigzag lines, blind spots, or tingling) lasting 20 to 60 minutes."
+        question: "What is migraine aura?",
+        answer: "Aura is a temporary neurological symptom, often flashing lights, zigzag lines, blind spots, tingling or speech difficulty. It is different from a persistent weakness, confusion or vision loss, which needs urgent assessment."
       },
       {
-        question: "Can homeopathy replace prescription migraine medications during an acute attack?",
-        answer: "Homeopathy provides supportive constitutional care aimed at reducing chronic susceptibility, but acute severe migraine attacks require conventional medical management and physician evaluation."
+        question: "When does a headache need emergency care?",
+        answer: "Call emergency services for a sudden ‘worst-ever’ headache, a headache after significant head injury, or headache with weakness, trouble speaking, persistent vision loss, seizure, fainting, fever with a stiff neck, or confusion."
       }
     ],
     redFlags: [

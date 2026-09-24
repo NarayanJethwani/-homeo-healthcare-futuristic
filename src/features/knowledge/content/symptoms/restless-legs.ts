@@ -20,7 +20,7 @@ export const RestlessLegsSymptom: KnowledgeEntity = {
     ar: "Restless Legs"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Restless Legs.",
+    en: "Restless legs is an urge to move the legs with uncomfortable sensations, usually worse at rest and in the evening. It can disrupt sleep and deserves review when persistent.",
     hi: "Restless Legs के लक्षण की नैदानिक समझ.",
     gu: "Restless Legs ના લક્ષણ ની સમજણ.",
     mr: "Restless Legs चे लक्षण आणि उपचार.",
@@ -28,37 +28,37 @@ export const RestlessLegsSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Restless Legs."
   },
   content: {
-  "definition": "Restless legs: A localized pain, sensory alteration, or mobility limitation originating from nerves, muscles, joints, or tendons.",
-  "clinicalMeaning": "Replects nociceptive pathway stimulation, localized tissue injury, or nerve root compression resulting in altered sensation.",
+  "definition": "Restless legs syndrome is a strong urge to move the legs, often with tingling, throbbing, itching, or an uncomfortable crawling feeling. It is usually worse when resting and is relieved, at least briefly, by movement.",
+  "clinicalMeaning": "Symptoms often appear in the evening or at night and may affect sleep. Restless legs can run in families or be linked to low iron, pregnancy, kidney disease, or some medicines.",
   "commonCauses": [
-    "Mechanical strain or postural imbalance",
-    "Peripheral nerve compression (e.g., sciatica, carpal tunnel)",
-    "Osteoarthritis or joint degeneration",
-    "Neurogenic inflammation"
+    "No clear cause, sometimes with a family pattern",
+    "Low iron or iron-deficiency anaemia",
+    "Pregnancy, kidney disease, or another long-term health condition",
+    "Some medicines, caffeine, nicotine, or alcohol, which can worsen symptoms for some people"
   ],
-  "differentialDiagnosis": "Differentiate from systemic autoimmune joint disease, peripheral vascular disease, and referred visceral pain.",
+  "differentialDiagnosis": "Leg cramps, peripheral neuropathy, sciatica, and medication effects can feel similar but are managed differently. A clinician may review medicines and arrange tests such as iron studies when appropriate.",
   "redFlags": [
-    "Loss of bladder or bowel control (Cauda Equina Syndrome)",
-    "Sudden onset of limb weakness or foot drop",
-    "Severe joint swelling with high fever indicating septic arthritis"
+    "Seek emergency care for sudden leg weakness, loss of bladder or bowel control, numbness around the genitals or buttocks, or a cold, pale, painful leg.",
+    "Arrange prompt advice for one-sided swollen, hot, or red calf pain, especially with breathlessness or chest pain.",
+    "Book a review if symptoms repeatedly disturb sleep, affect mental health, or do not improve with practical changes."
   ],
-  "lifestyleAdvice": "Implement regular stretching, adjust desk ergonomics, engage in low-impact walking, and stay hydrated to maintain joint lubrication.",
+  "lifestyleAdvice": "Regular daytime movement, a steady sleep schedule, a warm bath or heat pad before bed, gentle stretching or walking during symptoms, and avoiding caffeine, nicotine, and alcohol late in the day may help. Do not start iron supplements unless a clinician has advised them.",
   "references": [
     "CIT-0011",
     "CIT-0022"
   ],
   "faqs": [
     {
-      "question": "What causes muscle stiffness in the morning?",
-      "answer": "Morning stiffness is often caused by localized inflammation, muscle inactivity during sleep, or structural degenerative joint changes that temporarily reduce synovial fluid circulation."
+      "question": "What does restless legs feel like?",
+      "answer": "It is an uncomfortable urge to move, often with tingling, itching, throbbing, or a crawling sensation. It is usually worse at rest and improves temporarily when you move."
     },
     {
-      "question": "How does stress affect nerve and muscle pain?",
-      "answer": "Stress increases muscle tension and heightens pain sensitivity (central sensitization) by releasing stress hormones that lower the pain threshold."
+      "question": "Could low iron be involved?",
+      "answer": "Low iron is one recognised contributor. A clinician can decide whether testing is appropriate and whether iron treatment is safe for you."
     },
     {
-      "question": "What is the homeopathic approach to physical injury?",
-      "answer": "Homeopathy uses remedies like Arnica Montana to manage acute swelling and bruising, and Rhus Tox or Bryonia for joint stiffness and pain, tailored to whether movement improves or worsens the symptoms."
+      "question": "When should I ask for help?",
+      "answer": "Ask for medical advice if it repeatedly affects sleep or daytime functioning, is worsening, or simple measures have not helped."
     }
   ]
 },

@@ -20,7 +20,7 @@ export const MouthUlcersSymptom: KnowledgeEntity = {
     ar: "Mouth Ulcers"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Mouth Ulcers.",
+    en: "Mouth ulcers are painful sores inside the mouth that usually heal within one to two weeks. An ulcer lasting more than three weeks must be checked.",
     hi: "Mouth Ulcers के लक्षण की नैदानिक समझ.",
     gu: "Mouth Ulcers ના લક્ષણ ની સમજણ.",
     mr: "Mouth Ulcers चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const MouthUlcersSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Mouth Ulcers."
   },
   content: {
-  "definition": "Mouth ulcers: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Mouth ulcers are small painful sores inside the mouth, often on the cheeks, lips, tongue, or gums. They are different from cold sores, which usually occur on or around the lips.",
+  "clinicalMeaning": "Most are harmless and settle on their own. Recurrent, unusually large, infected, or long-lasting ulcers need assessment to check for an underlying cause.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "Minor injury from biting the cheek, a sharp tooth, braces, or a hard toothbrush",
+    "Stress, hormonal changes, or certain foods and toothpaste ingredients",
+    "Nutritional deficiency, a medicine effect, or another health condition",
+    "Less commonly, infection or an inflammatory condition"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "A dentist or clinician may check for local irritation, dental problems, nutritional issues, medicines, recurrent ulcers elsewhere, or signs of oral cancer when an ulcer does not heal.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "See a dentist or GP for an ulcer lasting more than three weeks, one that is bigger or different from usual, near the back of the throat, bleeding, or becoming increasingly painful or red.",
+    "Seek prompt advice for fever, facial swelling, inability to drink, severe pain, or ulcers with skin or genital sores or painful swollen joints.",
+    "A new lump or persistent red or white patch in the mouth also needs assessment."
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "Use a soft toothbrush, choose cool drinks and softer foods, avoid spicy, salty, acidic, or rough foods while sore, and keep up regular dental checks. A pharmacist can advise on pain-relief gels, mouthwashes, and salt-water rinses.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const MouthUlcersSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "How long should a mouth ulcer last?",
+      "answer": "Most clear within one or two weeks. An ulcer lasting more than three weeks needs dental or medical assessment."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "Can a pharmacist help?",
+      "answer": "Yes. A pharmacist can advise on pain relief, antimicrobial mouthwash, or a saline rinse suitable for mouth ulcers."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "Are mouth ulcers contagious?",
+      "answer": "Typical mouth ulcers inside the mouth are not contagious. Cold sores around the lips are a different condition."
     }
   ]
 },

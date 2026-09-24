@@ -128,6 +128,23 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "Headache can have many contributors",
     },
   ],
+  "abdominal-pain": [
+    {
+      src: "/images/knowledge/abdominal-pain/understanding-v1.png",
+      alt: "Indian woman calmly noticing lower abdominal discomfort at a colourful café",
+      label: "Understanding the pattern",
+    },
+    {
+      src: "/images/knowledge/abdominal-pain/sources-v1.png",
+      alt: "Transparent medical illustration showing several abdominal organs in distinct colour zones",
+      label: "Pain can have many sources",
+    },
+    {
+      src: "/images/knowledge/abdominal-pain/next-step-v1.png",
+      alt: "Indian man having a calm conversation with a pharmacist in an open-air community setting",
+      label: "Choosing the right next step",
+    },
+  ],
   indigestion: [
     {
       src: "/images/knowledge/indigestion/understanding-v1.png",
@@ -585,6 +602,23 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       src: "/images/knowledge/laryngitis/learning-v1.png",
       alt: "Abstract glass vocal-fold-inspired sculpture with flowing violet and gold resonance ribbons",
       label: "A closer look at voice",
+    },
+  ],
+  "low-back-pain": [
+    {
+      src: "/images/knowledge/low-back-pain/understanding-v1.png",
+      alt: "Transparent back anatomy showing the lumbar spine, discs and supporting muscles",
+      label: "Understanding the lower back",
+    },
+    {
+      src: "/images/knowledge/low-back-pain/lifestyle-v1.png",
+      alt: "Indian woman doing a gentle standing back stretch in a bright home studio",
+      label: "Gentle movement at home",
+    },
+    {
+      src: "/images/knowledge/low-back-pain/learning-v1.png",
+      alt: "Abstract transparent glass lumbar spine sculpture with flowing support pathways",
+      label: "A closer look at movement",
     },
   ],
   hypothyroidism: [

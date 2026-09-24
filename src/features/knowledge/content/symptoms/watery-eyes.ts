@@ -20,7 +20,7 @@ export const WateryEyesSymptom: KnowledgeEntity = {
     ar: "Watery Eyes"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Watery Eyes.",
+    en: "Watery eyes can be triggered by wind, allergy, dryness, irritation, infection, or a blocked tear drain. Pain, redness, or vision changes need timely assessment.",
     hi: "Watery Eyes के लक्षण की नैदानिक समझ.",
     gu: "Watery Eyes ના લક્ષણ ની સમજણ.",
     mr: "Watery Eyes चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const WateryEyesSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Watery Eyes."
   },
   content: {
-  "definition": "Watery eyes: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Watery eyes means tears overflow onto the face more than usual. The eye may be producing extra tears in response to irritation, or tears may not be draining normally.",
+  "clinicalMeaning": "It is often temporary, but the associated symptoms matter. One-sided, persistent, painful, red, or vision-affecting watering should be assessed.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "Cold wind, smoke, dust, perfumes, or another irritant",
+    "Allergy, which often causes itching as well as watering",
+    "Dry eye, when irritation triggers reflex tearing",
+    "Conjunctivitis, an eyelid problem, a foreign body, or a narrowed tear drain"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "A clinician or eye professional can check for allergy, infection, dry eye, eyelid changes, and tear-drain blockage. Contact-lens problems and eye injury need separate attention.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Seek urgent eye care for eye pain, marked redness, light sensitivity, reduced or changed vision, or an eye injury or chemical splash.",
+    "Seek same-day advice for watering with significant swelling, pus-like discharge, or if you cannot comfortably keep the eye open.",
+    "Arrange a review for persistent one-sided watering, recurrent infections, or symptoms that affect daily activities."
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "Do not rub the eyes. Wash hands before touching the eye area, avoid sharing towels when infection is possible, and take a break from contact lenses if the eye is sore or red until you have professional advice. Protect eyes from wind and irritants where possible.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const WateryEyesSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "Why do my eyes water when they feel dry?",
+      "answer": "Dryness can irritate the eye surface and trigger reflex tearing. An eye professional or pharmacist can advise if this keeps happening."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "How can I tell allergy from infection?",
+      "answer": "Allergy often causes itching and affects both eyes. Infection can cause redness, soreness, or discharge, but symptoms overlap, so seek advice if you are unsure or symptoms are significant."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "When are watery eyes urgent?",
+      "answer": "Pain, marked redness, light sensitivity, vision change, injury, or chemical exposure need urgent eye assessment."
     }
   ]
 },

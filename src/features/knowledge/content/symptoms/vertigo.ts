@@ -20,7 +20,7 @@ export const VertigoSymptom: KnowledgeEntity = {
     ar: "Vertigo"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Vertigo.",
+    en: "Vertigo is a false sensation of spinning or movement. It is different from feeling generally light-headed and needs urgent care when neurological warning signs are present.",
     hi: "Vertigo के लक्षण की नैदानिक समझ.",
     gu: "Vertigo ના લક્ષણ ની સમજણ.",
     mr: "Vertigo चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const VertigoSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Vertigo."
   },
   content: {
-  "definition": "Vertigo: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Vertigo is the feeling that you, or the space around you, is moving or spinning when it is not. It may happen in short attacks or last longer, and can cause nausea or loss of balance.",
+  "clinicalMeaning": "Inner-ear problems are common causes, but vertigo is a symptom rather than a diagnosis. The pattern, triggers, hearing symptoms, and neurological symptoms help determine what care is needed.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "A brief inner-ear positional problem, often triggered by turning in bed or looking up",
+    "An inner-ear infection or inflammation",
+    "Migraine-associated vertigo",
+    "Less commonly, a condition affecting the brain or circulation"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "Vertigo should be distinguished from faintness, medication effects, low blood pressure, and anxiety-related dizziness. A clinician may assess balance, eye movements, ears, hearing, and neurological signs.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Call emergency services for vertigo with weakness or numbness of the face, arm, or leg, speech difficulty, new confusion, double vision, or sudden severe headache.",
+    "Seek urgent assessment for sudden hearing loss, inability to walk safely, persistent vomiting, chest pain, or vertigo after a head injury.",
+    "Arrange a clinical review if attacks keep returning, change pattern, or are affecting work, driving, or daily activities."
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "Sit or lie down as soon as spinning starts and get up slowly. Avoid driving, heights, swimming alone, or machinery while balance is affected. Keep hydrated if you can, and ask for an assessment rather than trying balance manoeuvres that have not been recommended for you.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const VertigoSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "Is vertigo the same as dizziness?",
+      "answer": "Not exactly. Vertigo is a clear sense of spinning or movement. ‘Dizziness’ can also mean feeling faint, unsteady, or light-headed."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "What should I do during a vertigo attack?",
+      "answer": "Sit or lie down somewhere safe, move your head slowly, and avoid driving or climbing. Get urgent help if neurological warning signs occur."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "When should vertigo be checked?",
+      "answer": "New, recurrent, or disruptive vertigo should be discussed with a clinician. Sudden hearing loss or stroke-like symptoms require urgent care."
     }
   ]
 },

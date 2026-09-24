@@ -20,7 +20,7 @@ export const ExcessiveSweatingSymptom: KnowledgeEntity = {
     ar: "Excessive Sweating"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Excessive Sweating.",
+    en: "Excessive sweating is sweating more than the body needs for cooling. It can be localised or widespread, and persistent symptoms can be assessed and treated.",
     hi: "Excessive Sweating के लक्षण की नैदानिक समझ.",
     gu: "Excessive Sweating ના લક્ષણ ની સમજણ.",
     mr: "Excessive Sweating चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const ExcessiveSweatingSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Excessive Sweating."
   },
   content: {
-  "definition": "Excessive sweating: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Excessive sweating, also called hyperhidrosis, is sweating when the body does not need to cool down. It may affect the underarms, hands, feet, face, or the whole body.",
+  "clinicalMeaning": "It may happen without an obvious cause or be linked to medicines or another health condition. It is treatable, and the pattern helps decide whether further assessment is needed.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "Primary hyperhidrosis, which can affect localised areas without another known condition",
+    "Heat, anxiety, alcohol, spicy foods, or medicines that increase sweating",
+    "Menopause, infection, low blood sugar, thyroid disease, or another condition needing review",
+    "A skin or footwear environment that traps moisture and causes discomfort or irritation"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "A clinician may ask where and when sweating happens, whether it occurs at night, your medicines, family history, and any fever, weight, thyroid, or glucose symptoms. Treatment depends on whether an underlying cause is present.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Seek urgent help for sudden sweating with chest pain, severe breathlessness, fainting, new confusion, or one-sided weakness.",
+    "Arrange prompt medical advice for sweating with fever, unexplained weight loss, regular night sweats, or a major change after starting a medicine.",
+    "Book a review if it lasts at least 6 months, happens at least weekly, affects daily life, or self-care has not helped."
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "Wear loose, breathable clothing; change moisture-absorbing socks when needed; rotate footwear; and identify personal triggers such as alcohol or spicy food. A pharmacist can advise on stronger antiperspirants and skin-friendly products. Do not stop prescribed medicines without clinical advice.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const ExcessiveSweatingSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "What is hyperhidrosis?",
+      "answer": "Hyperhidrosis means sweating more than the body needs for cooling. It may be localised to areas such as the hands, feet, face, or underarms, or affect the whole body."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "Can a pharmacist help?",
+      "answer": "Yes. A pharmacist can advise on stronger antiperspirants, sweat shields, foot powders, and gentle skin products, and tell you when medical review is appropriate."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "When should excessive sweating be checked?",
+      "answer": "Arrange a review if it lasts, affects daily life, happens at night, is new after a medicine change, or comes with fever, weight loss, chest pain, or fainting."
     }
   ]
 },

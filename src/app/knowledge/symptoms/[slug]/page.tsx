@@ -23,7 +23,6 @@ import HomeopathicPerspective from "@/features/knowledge/components/HomeopathicP
 import RedFlagBox from "@/features/knowledge/components/RedFlagBox";
 import MedicalIllustration from "@/features/knowledge/components/MedicalIllustration";
 import KnowledgeVisualGallery from "@/features/knowledge/components/KnowledgeVisualGallery";
-import KnowledgeTopicVideo from "@/features/knowledge/components/KnowledgeTopicVideo";
 import { Info, HelpCircle, BookOpen } from "lucide-react";
 
 interface PageProps {
@@ -107,7 +106,6 @@ export default async function SymptomDetailPage({ params }: PageProps) {
         <div className="mt-8 space-y-8 text-neutral-850 dark:text-neutral-200 leading-relaxed">
           <MedicalIllustration slug={symptom.slug} />
           <KnowledgeVisualGallery slug={symptom.slug} title={title} />
-          <KnowledgeTopicVideo slug={symptom.slug} title={title} />
           
           {/* Section: Definition & Meaning */}
           <section id="definition" className="space-y-3 scroll-mt-24">

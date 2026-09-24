@@ -7,13 +7,13 @@ export const PepticUlcerDisease: KnowledgeEntity = {
   editorialStatus: "published",
   reviewStatus: "owner-authorization-required",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-08-14T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
     reviewed: "2026-08-14T12:00:00Z"
   },
   title: {
-    en: "Peptic Ulcer Disease (Gastric & Duodenal Ulcer / PUD)",
+    en: "Peptic Ulcer",
     hi: "पेप्टिक अल्सर / पेट व आंत का छाला (Peptic Ulcer Disease)",
     gu: "પેપ્ટીક અલ્સર / પેટ અને આંતરડાના ચાંદા (Peptic Ulcer Disease)",
     mr: "पेप्टिक अल्सर / पोटातील व्रण व अल्सर (Peptic Ulcer Disease)",
@@ -21,7 +21,7 @@ export const PepticUlcerDisease: KnowledgeEntity = {
     ar: "مرض القرحة الهضمية (Peptic Ulcer Disease)"
   },
   summary: {
-    en: "An authoritative clinical and educational profile of Peptic Ulcer Disease (PUD), covering Helicobacter pylori infection, NSAID-induced mucosal injury, gastric and duodenal ulcer distinctions, constitutional homeopathic supportive management, and emergency red flags for gastrointestinal perforation, peritonitis, and massive upper GI hemorrhage.",
+    en: "A peptic ulcer is a sore in the stomach or upper small intestine, most often linked to H. pylori infection or anti-inflammatory pain medicines. Learn when testing and treatment are needed and the bleeding or perforation warning signs.",
     hi: "पेप्टिक अल्सर (पेट व ग्रहणी के छाले) का हेलिकोबैक्टर पाइलोरी पैथोलॉजी, दर्द निवारक दवाओं (NSAIDs) से म्यूकोसल क्षति, पारंपरिक संवैधानिक होम्योपैथिक प्रबंधन, और अल्सर फटने (परफोरेशन) व खून की उल्टी (हेमाटेमेसिस) की आपातकालीन सुरक्षा सीमाओं सहित प्रामाणिक विवरण.",
     gu: "પેપ્ટીક અલ્સર (જઠર અને આંતરડાના ચાંદા) ની એચ. પાયલોરી બેક્ટેરિયલ પેથોલોજી, એસિડિટી અને બળતરા, પરંપરાગત હોમિયોપેથીક સહાયક સારવાર અને હોજરી ફાટવા (પરફોરેશન) ની ઇમરજન્સી સીમાઓનું વિવરણ.",
     mr: "पेप्टिक अल्सर (पोटातील व लहान आतड्यातील अल्सर), पोटात जळजळ व तीव्र दुखणे, पारंपरिक होमिओपॅथिक पद्धत आणि अल्सर फुटून पोटात रक्तस्राव होण्याच्या आणीबाणीच्या मर्यादा.",
@@ -30,39 +30,34 @@ export const PepticUlcerDisease: KnowledgeEntity = {
   },
   content: {
     overview:
-      "Peptic Ulcer Disease (PUD) refers to focal mucosal defects penetrating through the muscularis mucosae into the deeper layers of the stomach wall (gastric ulcer) or the first portion of the duodenum (duodenal ulcer). Primarily driven by Helicobacter pylori bacterial colonization or mucosal cyclooxygenase-1 (COX-1) inhibition by nonsteroidal anti-inflammatory drugs (NSAIDs), it manifests clinically as gnawing, burning epigastric pain, postprandial dyspepsia, early satiety, nausea, and vomiting.",
+      "A peptic ulcer is a sore in the lining of the stomach or first part of the small intestine. Common causes are H. pylori infection and anti-inflammatory pain medicines such as ibuprofen or naproxen. It needs medical assessment because treatment is specific to the cause and bleeding or perforation can be serious.",
     definition:
-      "A disruption in the integrity of the gastric or duodenal mucosa characterized by a circumscribed ulceration measuring \u22655 mm in diameter, extending into the submucosa or muscularis propria due to caustic acid-peptic digestion.",
+      "It is a break in the protective lining of the stomach or duodenum (the first part of the small intestine).",
     causes: [
-      "Helicobacter pylori infection (flagellated gram-negative microaerophilic bacterium producing urease, CagA/VacA cytotoxins, and chronic antral/corpus gastritis; accounts for ~70% of gastric ulcers and >85% of duodenal ulcers)",
-      "Nonsteroidal Anti-inflammatory Drugs (NSAIDs, including aspirin, ibuprofen, naproxen, ketorolac, diclofenac; inhibit gastric mucosal prostaglandin synthesis via COX-1 suppression)",
-      "Stress-related mucosal disease (severe physiological stress in ICU patients, sepsis, major trauma, extensive burns 'Curling ulcer', severe intracranial injury 'Cushing ulcer')",
-      "Zollinger-Ellison syndrome (gastrinoma producing severe hypergastrinemia and refractory multiple atypical peptic ulcers)"
+      "H. pylori, a common stomach infection.",
+      "Anti-inflammatory pain medicines called NSAIDs, including ibuprofen and naproxen; aspirin can also contribute.",
+      "Less commonly, another illness or medicine can be involved."
     ],
     riskFactors: [
-      "Concurrent use of NSAIDs with systemic corticosteroids, anticoagulants, or antiplatelet agents (multiplies GI bleeding risk 4- to 12-fold)",
-      "Tobacco smoking (inhibits pancreatic bicarbonate secretion, reduces mucosal blood flow, and accelerates ulcer recurrence)",
-      "Chronic heavy alcohol consumption (direct mucosal barrier injury and stimulation of acid secretion)",
-      "Advanced age (>65 years; higher prevalence of silent ulcers and severe complications)",
-      "Prior history of documented peptic ulcer or upper gastrointestinal bleeding"
+      "Regular or high-dose NSAID use, especially with some other medicines that increase bleeding risk.",
+      "A past ulcer or digestive bleeding, smoking, or older age.",
+      "H. pylori infection."
     ],
     symptoms: [
-      "Epigastric pain: rhythmic, sharp, gnawing, burning, or aching discomfort located between the xiphoid process and umbilicus",
-      "Duodenal ulcer classic pattern: pain occurs 2 to 3 hours after meals or during the night (typically between 11 PM and 2 AM) and is characteristically relieved by food ingestion or antacids",
-      "Gastric ulcer classic pattern: pain is often worsened or triggered soon after eating (within 15–30 minutes), leading to food avoidance and weight loss",
-      "Postprandial bloating, abdominal distension, belching, early satiety, and nausea",
-      "Occult blood in stool or iron deficiency anemia from chronic microscopic ulcer oozing"
+      "Pain or discomfort in the upper tummy, feeling full early, nausea, bloating, or belching.",
+      "The pain may be dull or burning and can vary with meals; some people have no symptoms until there is a complication.",
+      "Vomiting blood, black stools, fainting, or sudden severe tummy pain are emergency warning signs."
     ],
     diagnosis:
-      "Esophagogastroduodenoscopy (EGD / upper endoscopy) is the definitive gold standard diagnostic investigation, allowing direct visualization of ulcer depth, size, and location, and mandatory multiple biopsies of gastric ulcers to exclude gastric adenocarcinoma or lymphoma. H. pylori testing includes urea breath test (UBT), stool antigen test (HpSA), or endoscopic mucosal biopsy with rapid urease testing (RUT / CLO test).",
+      "Testing can include an H. pylori breath or stool test and, in some situations, an upper endoscopy. The clinician chooses tests based on your symptoms, age, medical history, and risk of complications.",
     differentialDiagnosis:
       "Differentiate Peptic Ulcer Disease from Functional Dyspepsia, Gastroesophageal Reflux Disease (GERD), Biliary Colic / Acute Cholecystitis, Acute or Chronic Pancreatitis, Gastric Malignancy, Mesenteric Ischemia, and Coronary Artery Disease (inferior wall myocardial infarction presenting as epigastric burning).",
     conventionalManagement:
-      "First-line medical therapy involves Proton Pump Inhibitors (PPIs: omeprazole, pantoprazole, esomeprazole; 4–8 weeks) to achieve gastric acid suppression. H. pylori eradication utilizes quadruple therapy (bismuth subcitrate + metronidazole + tetracycline + PPI for 14 days, or concomitant non-bismuth quadruple therapy). Discontinuation of offending NSAIDs or co-prescription of gastroprotective agents (PPIs, misoprostol). Endoscopic hemostasis (hemoclips, thermal coagulation, epinephrine injection) is indicated for actively bleeding ulcers.",
+      "Treatment usually includes medicine to reduce stomach acid and treatment for the underlying cause. H. pylori needs a clinician-prescribed course of medicine. If anti-inflammatory pain medicine contributed, a clinician can advise on a safer plan; do not stop prescribed aspirin, anticoagulants, or other medicines without asking.",
     homeopathicApproach:
-      "Homeopathic constitutional and gastrointestinal remedies (such as Nux Vomica, Argentum Nitricum, Arsenicum Album, Hydrastis Canadensis, Phosphorus, Robinia Pseudacacia, Anacardium Orientale, Kali Bichromicum) serve as supportive care to soothe burning dyspepsia, ease nervous digestive irritability, and assist mucosal comfort alongside endoscopic evaluation and conventional H. pylori eradication therapy.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for peptic ulcers. It must not replace H. pylori treatment, an endoscopy when advised, or emergency care for bleeding or a possible perforation.",
     lifestyleAdvice:
-      "Strictly avoid NSAIDs and aspirin unless medically prescribed (substitute acetaminophen for simple pain relief where appropriate), eliminate cigarette smoking and tobacco use, abstain from heavy alcohol consumption, eat regular balanced meals rather than large heavy late-night meals, and practice stress-reduction techniques.",
+      "Avoid non-prescription anti-inflammatory pain medicines if they trigger or worsen symptoms, unless a clinician advises otherwise. Avoid smoking and heavy alcohol use. Food does not usually cause ulcers, but it can be sensible to avoid foods or drinks that clearly worsen your symptoms while you arrange care.",
     references: [
       "CIT-0004",
       "CIT-0005",
@@ -73,12 +68,16 @@ export const PepticUlcerDisease: KnowledgeEntity = {
     ],
     faqs: [
       {
-        question: "How do stomach ulcers differ from duodenal ulcers in pain timing?",
-        answer: "Stomach (gastric) ulcer pain is typically aggravated soon after eating when stomach acid is secreted over food. Duodenal ulcer pain is classically relieved by eating and returns 2 to 3 hours later when the stomach empties acid into the duodenum, often waking patients at night."
+        question: "When is possible ulcer pain an emergency?",
+        answer: "Seek emergency care for vomiting blood or material that looks like coffee grounds, black or bloody stools, fainting or severe dizziness, a rapid heartbeat, or sudden severe tummy pain that does not go away."
       },
       {
         question: "Does spicy food cause peptic ulcers?",
-        answer: "No. Spicy foods may irritate existing ulcers and cause temporary indigestion or discomfort, but they do not cause ulcers. The primary causes are H. pylori bacterial infection and NSAID painkiller medications."
+        answer: "No. Spicy food may worsen discomfort for some people, but the common causes are H. pylori infection and NSAID pain medicines."
+      },
+      {
+        question: "Can homeopathy treat an ulcer?",
+        answer: "No. It should not replace testing, H. pylori treatment, prescribed medicines, or urgent assessment for bleeding or severe pain."
       }
     ],
     redFlags: [
@@ -114,7 +113,7 @@ export const PepticUlcerDisease: KnowledgeEntity = {
   readingTimeMinutes: 6,
   audience: "patient",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.1.0: Promoted to governed v1.1.0 with comprehensive gastroduodenal ulcer clinical boundaries, GI bleeding/perforation red flags, and verified citations"],
+  changeLog: ["1.2.0: Simplified causes, testing, treatment boundaries, and emergency signs for a patient-first path.", "1.1.0: Promoted to governed v1.1.0 with comprehensive gastroduodenal ulcer clinical boundaries, GI bleeding/perforation red flags, and verified citations"],
   clinicalPearl: "Every gastric ulcer visualized on endoscopy must be biopsied and followed to complete endoscopic healing to rigorously exclude early gastric adenocarcinoma.",
   quickFacts: {
     "Lifetime Prevalence": "Approximately 5% to 10% in the general population globally",

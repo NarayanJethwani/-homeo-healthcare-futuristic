@@ -24,8 +24,8 @@
     "independentlyReviewedEntities": 0,
     "governedEvidenceProfiles": 0,
     "claimCitationCompleteEntities": 0,
-    "isolatedEntities": 232,
-    "duplicateRelationshipRows": 178,
+    "isolatedEntities": 228,
+    "duplicateRelationshipRows": 177,
     "activeRagEntities": 0
   },
   "records": [
@@ -221,7 +221,7 @@
         "independentReviewProven": false
       },
       "graph": {
-        "uniqueConnectionCount": 5,
+        "uniqueConnectionCount": 6,
         "duplicateRelationshipRows": 0,
         "brokenRelationshipRows": 0,
         "isolated": false
@@ -262,7 +262,7 @@
         "genericTemplateSignals": []
       },
       "evidence": {
-        "referenceCount": 4,
+        "referenceCount": 3,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
@@ -1787,7 +1787,7 @@
       "entityId": "D0006",
       "slug": "sinusitis",
       "entityType": "disease",
-      "title": "Sinusitis (Rhinosinusitis)",
+      "title": "Sinusitis",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -1893,7 +1893,7 @@
       "entityId": "D0009",
       "slug": "hypertension",
       "entityType": "disease",
-      "title": "Hypertension (High Blood Pressure)",
+      "title": "High Blood Pressure",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -1946,7 +1946,7 @@
       "entityId": "D0010",
       "slug": "diabetes-mellitus",
       "entityType": "disease",
-      "title": "Diabetes Mellitus",
+      "title": "Diabetes",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -2009,14 +2009,14 @@
       },
       "content": {
         "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
+        "structuredSectionCompleteness": 100,
         "legacyBulkGenerationCohort": true,
         "genericTemplateDetected": false,
         "genericTemplateSignals": []
       },
       "evidence": {
-        "referenceCount": 4,
-        "allReferencesResolvable": true,
+        "referenceCount": 6,
+        "allReferencesResolvable": false,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
       },
@@ -2052,7 +2052,7 @@
       "entityId": "D0014",
       "slug": "acne-vulgaris",
       "entityType": "disease",
-      "title": "Acne Vulgaris",
+      "title": "Acne",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -2105,7 +2105,7 @@
       "entityId": "D0015",
       "slug": "psoriasis",
       "entityType": "disease",
-      "title": "Psoriasis Vulgaris",
+      "title": "Psoriasis",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -2158,7 +2158,7 @@
       "entityId": "D0016",
       "slug": "urticaria",
       "entityType": "disease",
-      "title": "Hives (Urticaria): Raised Itchy Rash & When to Get Help",
+      "title": "Hives (Urticaria)",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -2688,7 +2688,7 @@
       "entityId": "D0026",
       "slug": "otitis-media",
       "entityType": "disease",
-      "title": "Otitis Media (Middle Ear Infection & Effusion)",
+      "title": "Middle Ear Infection (Otitis Media)",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -2741,7 +2741,7 @@
       "entityId": "D0027",
       "slug": "bronchitis",
       "entityType": "disease",
-      "title": "Acute & Chronic Bronchitis",
+      "title": "Bronchitis",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -2794,7 +2794,7 @@
       "entityId": "D0028",
       "slug": "tonsillitis",
       "entityType": "disease",
-      "title": "Acute Tonsillitis & Peritonsillar Cellulitis",
+      "title": "Tonsillitis",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -3006,7 +3006,7 @@
       "entityId": "D0032",
       "slug": "urinary-tract-infection",
       "entityType": "disease",
-      "title": "Urinary Tract Infection (UTI / Acute Cystitis & Pyelonephritis)",
+      "title": "Urinary Tract Infection (UTI)",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -3218,7 +3218,7 @@
       "entityId": "D0036",
       "slug": "vitiligo",
       "entityType": "disease",
-      "title": "Vitiligo (Leukoderma)",
+      "title": "Vitiligo",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -3271,7 +3271,7 @@
       "entityId": "D0037",
       "slug": "dandruff",
       "entityType": "disease",
-      "title": "Dandruff: Scalp Flakes, Itching & What Can Help",
+      "title": "Dandruff",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -3324,7 +3324,7 @@
       "entityId": "D0038",
       "slug": "seborrheic-dermatitis",
       "entityType": "disease",
-      "title": "Seborrheic Dermatitis: Flaky Scalp, Brows & Face",
+      "title": "Seborrheic Dermatitis",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -3430,7 +3430,7 @@
       "entityId": "D0040",
       "slug": "sciatica",
       "entityType": "disease",
-      "title": "Sciatica (Lumbar Radiculopathy / Sciatic Neuralgia)",
+      "title": "Sciatica",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -3639,165 +3639,6 @@
       }
     },
     {
-      "entityId": "D0044",
-      "slug": "hemorrhoids",
-      "entityType": "disease",
-      "title": "Internal & External Hemorrhoids (Piles)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Consensus-Guidance",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": false,
-        "genericTemplateSignals": []
-      },
-      "evidence": {
-        "referenceCount": 4,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 30,
-        "recommendation": "independent-review-and-enrichment",
-        "reasons": [
-          "independent-review-unproven",
-          "graph-isolated",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0045",
-      "slug": "anal-fissure",
-      "entityType": "disease",
-      "title": "Anal Fissure (Fissure-in-Ano / Acute & Chronic Anoderm Tear)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": false,
-        "genericTemplateSignals": []
-      },
-      "evidence": {
-        "referenceCount": 6,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 30,
-        "recommendation": "independent-review-and-enrichment",
-        "reasons": [
-          "independent-review-unproven",
-          "graph-isolated",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0046",
-      "slug": "constipation",
-      "entityType": "disease",
-      "title": "Chronic Functional Constipation (Colonic Inertia & Pelvic Dyssynergia)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": false,
-        "genericTemplateSignals": []
-      },
-      "evidence": {
-        "referenceCount": 6,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 30,
-        "recommendation": "independent-review-and-enrichment",
-        "reasons": [
-          "independent-review-unproven",
-          "graph-isolated",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
       "entityId": "D0047",
       "slug": "gastroenteritis",
       "entityType": "disease",
@@ -3854,7 +3695,7 @@
       "entityId": "D0048",
       "slug": "fatty-liver",
       "entityType": "disease",
-      "title": "Metabolic Dysfunction-Associated Steatotic Liver Disease (MASLD / NAFLD / Fatty Liver)",
+      "title": "Fatty Liver Disease",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -3907,7 +3748,7 @@
       "entityId": "D0049",
       "slug": "peptic-ulcer",
       "entityType": "disease",
-      "title": "Peptic Ulcer Disease (Gastric & Duodenal Ulcer / PUD)",
+      "title": "Peptic Ulcer",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -4013,7 +3854,7 @@
       "entityId": "D0076",
       "slug": "contact-dermatitis",
       "entityType": "disease",
-      "title": "Contact Dermatitis: Is Something Touching Your Skin?",
+      "title": "Contact Dermatitis",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -4066,7 +3907,7 @@
       "entityId": "D0077",
       "slug": "ringworm-tinea-corporis",
       "entityType": "disease",
-      "title": "Ringworm (Tinea Corporis): An Itchy Ring-Shaped Rash",
+      "title": "Ringworm",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -4119,7 +3960,7 @@
       "entityId": "D0078",
       "slug": "athletes-foot-tinea-pedis",
       "entityType": "disease",
-      "title": "Athlete’s Foot (Tinea Pedis): Itchy, Peeling Skin Between the Toes",
+      "title": "Athlete’s Foot",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -4172,7 +4013,7 @@
       "entityId": "D0079",
       "slug": "jock-itch-tinea-cruris",
       "entityType": "disease",
-      "title": "Jock Itch (Tinea Cruris): An Itchy, Scaly Groin Rash",
+      "title": "Jock Itch",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -4384,7 +4225,7 @@
       "entityId": "D0083",
       "slug": "scabies",
       "entityType": "disease",
-      "title": "Scabies: Intense Itching and a Spreading Rash",
+      "title": "Scabies",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -4437,7 +4278,7 @@
       "entityId": "D0084",
       "slug": "impetigo",
       "entityType": "disease",
-      "title": "Impetigo: Contagious Golden-Crusted Sores",
+      "title": "Impetigo",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -4490,7 +4331,7 @@
       "entityId": "D0085",
       "slug": "hand-foot-mouth-disease",
       "entityType": "disease",
-      "title": "Hand, Foot and Mouth Disease: Mouth Sores and Hand-Foot Rash",
+      "title": "Hand, Foot and Mouth Disease",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -4543,7 +4384,7 @@
       "entityId": "D0086",
       "slug": "chickenpox-varicella",
       "entityType": "disease",
-      "title": "Chickenpox (Varicella): Itchy Blisters That Turn to Scabs",
+      "title": "Chickenpox",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -4596,7 +4437,7 @@
       "entityId": "D0087",
       "slug": "measles-rubeola",
       "entityType": "disease",
-      "title": "Measles (Rubeola): Fever, Cough, Red Eyes, and a Spreading Rash",
+      "title": "Measles",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -4649,7 +4490,7 @@
       "entityId": "D0088",
       "slug": "conjunctivitis-pink-eye",
       "entityType": "disease",
-      "title": "Conjunctivitis (Pink Eye): Red, Watery, Itchy, or Sticky Eyes",
+      "title": "Conjunctivitis (Pink Eye)",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -4702,7 +4543,7 @@
       "entityId": "D0089",
       "slug": "dengue-fever",
       "entityType": "disease",
-      "title": "Dengue: Fever, Body Aches, Testing, and Warning Signs",
+      "title": "Dengue",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -4755,7 +4596,7 @@
       "entityId": "D0090",
       "slug": "chikungunya",
       "entityType": "disease",
-      "title": "Chikungunya: Fever, Severe Joint Pain, Testing, and Recovery",
+      "title": "Chikungunya",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -4808,7 +4649,7 @@
       "entityId": "D0091",
       "slug": "typhoid-fever",
       "entityType": "disease",
-      "title": "Typhoid (Enteric Fever): Persistent Fever, Testing, Treatment, and Prevention",
+      "title": "Typhoid Fever",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -4861,7 +4702,7 @@
       "entityId": "D0092",
       "slug": "malaria",
       "entityType": "disease",
-      "title": "Malaria: Fever, Chills, Testing, Treatment, and Prevention",
+      "title": "Malaria",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -4914,7 +4755,7 @@
       "entityId": "D0093",
       "slug": "influenza",
       "entityType": "disease",
-      "title": "Influenza (Flu): Sudden Fever, Cough, Body Aches, and Recovery",
+      "title": "Flu (Influenza)",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -4967,7 +4808,7 @@
       "entityId": "D0094",
       "slug": "mouth-ulcers",
       "entityType": "disease",
-      "title": "Mouth Ulcers: Painful Sores Inside the Mouth",
+      "title": "Mouth Ulcers",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -5020,7 +4861,7 @@
       "entityId": "D0095",
       "slug": "toothache",
       "entityType": "disease",
-      "title": "Toothache: What May Be Causing It and When to See a Dentist",
+      "title": "Toothache",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -5073,7 +4914,7 @@
       "entityId": "D0096",
       "slug": "bad-breath",
       "entityType": "disease",
-      "title": "Bad Breath (Halitosis): Common Causes and What Helps",
+      "title": "Bad Breath",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -5126,7 +4967,7 @@
       "entityId": "D0097",
       "slug": "dry-mouth",
       "entityType": "disease",
-      "title": "Dry Mouth (Xerostomia): Why It Happens and What Helps",
+      "title": "Dry Mouth",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
@@ -5762,7 +5603,7 @@
       "entityId": "S0009",
       "slug": "productive-cough",
       "entityType": "symptom",
-      "title": "Productive Cough (Wet Cough)",
+      "title": "Wet Cough (Productive Cough)",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -5871,7 +5712,7 @@
       "title": "Diarrhea",
       "audience": "patient",
       "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
+      "evidenceLevel": "Consensus-Guidance",
       "safety": {
         "withdrawn": false,
         "riskTier": "high"
@@ -5885,7 +5726,7 @@
       },
       "evidence": {
         "referenceCount": 2,
-        "allReferencesResolvable": true,
+        "allReferencesResolvable": false,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
       },
@@ -5921,10 +5762,10 @@
       "entityId": "S0016",
       "slug": "sleeplessness",
       "entityType": "symptom",
-      "title": "Sleeplessness",
+      "title": "Sleeplessness: Why You May Not Be Sleeping Well and What Can Help",
       "audience": "patient",
       "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
+      "evidenceLevel": "Consensus-Guidance",
       "safety": {
         "withdrawn": false,
         "riskTier": "high"
@@ -5937,8 +5778,61 @@
         "genericTemplateSignals": []
       },
       "evidence": {
-        "referenceCount": 5,
+        "referenceCount": 3,
         "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": false,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 30,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "S0018",
+      "slug": "skin-rash",
+      "entityType": "symptom",
+      "title": "Skin Rash: What It May Mean & When to Get Help",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Consensus-Guidance",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": false,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 2,
+        "allReferencesResolvable": false,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
       },
@@ -5977,7 +5871,7 @@
       "title": "Vomiting (Emesis)",
       "audience": "patient",
       "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
+      "evidenceLevel": "Consensus-Guidance",
       "safety": {
         "withdrawn": false,
         "riskTier": "high"
@@ -5991,60 +5885,7 @@
       },
       "evidence": {
         "referenceCount": 2,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 30,
-        "recommendation": "independent-review-and-enrichment",
-        "reasons": [
-          "independent-review-unproven",
-          "graph-isolated",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "S0024",
-      "slug": "flatulence",
-      "entityType": "symptom",
-      "title": "Flatulence",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": false,
-        "genericTemplateDetected": false,
-        "genericTemplateSignals": []
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
+        "allReferencesResolvable": false,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
       },
@@ -6239,7 +6080,7 @@
       "entityId": "S0034",
       "slug": "shortness-of-breath",
       "entityType": "symptom",
-      "title": "Shortness of Breath (Dyspnea)",
+      "title": "Shortness of Breath",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -6448,66 +6289,13 @@
       }
     },
     {
-      "entityId": "S0046",
-      "slug": "indigestion",
-      "entityType": "symptom",
-      "title": "Indigestion",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": false,
-        "genericTemplateDetected": false,
-        "genericTemplateSignals": []
-      },
-      "evidence": {
-        "referenceCount": 3,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 30,
-        "recommendation": "independent-review-and-enrichment",
-        "reasons": [
-          "independent-review-unproven",
-          "graph-isolated",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
       "entityId": "S0047",
       "slug": "anxiety",
       "entityType": "symptom",
       "title": "Anxiety",
       "audience": "patient",
       "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
+      "evidenceLevel": "Consensus-Guidance",
       "safety": {
         "withdrawn": false,
         "riskTier": "high"
@@ -6520,8 +6308,8 @@
         "genericTemplateSignals": []
       },
       "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
+        "referenceCount": 2,
+        "allReferencesResolvable": false,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
       },
@@ -6955,7 +6743,7 @@
         "independentReviewProven": false
       },
       "graph": {
-        "uniqueConnectionCount": 3,
+        "uniqueConnectionCount": 4,
         "duplicateRelationshipRows": 0,
         "brokenRelationshipRows": 0,
         "isolated": false
@@ -7031,7 +6819,7 @@
       "entityId": "D0012",
       "slug": "hyperthyroidism",
       "entityType": "disease",
-      "title": "Hyperthyroidism & Thyrotoxicosis (Overactive Thyroid & Graves' Disease)",
+      "title": "Hyperthyroidism",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -7060,6 +6848,162 @@
       },
       "graph": {
         "uniqueConnectionCount": 8,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0044",
+      "slug": "hemorrhoids",
+      "entityType": "disease",
+      "title": "Piles (Haemorrhoids)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Consensus-Guidance",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 90,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 2,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0045",
+      "slug": "anal-fissure",
+      "entityType": "disease",
+      "title": "Anal Fissure",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 2,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0046",
+      "slug": "constipation",
+      "entityType": "disease",
+      "title": "Constipation",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 6,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 2,
         "duplicateRelationshipRows": 0,
         "brokenRelationshipRows": 0,
         "isolated": false
@@ -7111,8 +7055,8 @@
         "independentReviewProven": false
       },
       "graph": {
-        "uniqueConnectionCount": 6,
-        "duplicateRelationshipRows": 6,
+        "uniqueConnectionCount": 5,
+        "duplicateRelationshipRows": 5,
         "brokenRelationshipRows": 0,
         "isolated": false
       },
@@ -7239,7 +7183,7 @@
       "entityId": "D0054",
       "slug": "chronic-cough",
       "entityType": "disease",
-      "title": "Chronic Cough (Unexplained & Refractory Cough Reflex Hypersensitivity)",
+      "title": "Chronic Cough",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -7291,7 +7235,7 @@
       "entityId": "D0055",
       "slug": "recurrent-cold",
       "entityType": "disease",
-      "title": "Recurrent Common Cold (Frequent Viral Upper Respiratory Tract Infections)",
+      "title": "Frequent Colds",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -7343,7 +7287,7 @@
       "entityId": "D0056",
       "slug": "low-back-pain",
       "entityType": "disease",
-      "title": "Mechanical Low Back Pain & Lumbago (Lumbar Spondylosis & Myofascial Strain)",
+      "title": "Low Back Pain",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -7603,7 +7547,7 @@
       "entityId": "D0061",
       "slug": "laryngitis",
       "entityType": "disease",
-      "title": "Acute & Chronic Laryngitis (Vocal Cord Inflammation, Dysphonia & Hoarseness)",
+      "title": "Laryngitis",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -14935,10 +14879,10 @@
       "entityId": "S0003",
       "slug": "headache",
       "entityType": "symptom",
-      "title": "Headache (Cephalgia)",
+      "title": "Headache: Common Causes, What May Help, and When to Get Urgent Care",
       "audience": "patient",
       "editorialStatus": "published",
-      "evidenceLevel": "Level-B",
+      "evidenceLevel": "Consensus-Guidance",
       "safety": {
         "withdrawn": false,
         "riskTier": "high"
@@ -14951,7 +14895,7 @@
         "genericTemplateSignals": []
       },
       "evidence": {
-        "referenceCount": 2,
+        "referenceCount": 3,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
@@ -14959,7 +14903,7 @@
       "review": {
         "reviewerRecorded": true,
         "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
+        "authorReviewerNameConflict": false,
         "independentReviewProven": false
       },
       "graph": {
@@ -15004,7 +14948,7 @@
       },
       "evidence": {
         "referenceCount": 2,
-        "allReferencesResolvable": true,
+        "allReferencesResolvable": false,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
       },
@@ -15146,7 +15090,7 @@
       "title": "Hair Fall",
       "audience": "patient",
       "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
+      "evidenceLevel": "Consensus-Guidance",
       "safety": {
         "withdrawn": false,
         "riskTier": "high"
@@ -15159,8 +15103,8 @@
         "genericTemplateSignals": []
       },
       "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
+        "referenceCount": 2,
+        "allReferencesResolvable": false,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
       },
@@ -15195,7 +15139,7 @@
       "entityId": "S0008",
       "slug": "sore-throat",
       "entityType": "symptom",
-      "title": "Sore Throat (Pharyngitis)",
+      "title": "Sore Throat",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -15250,7 +15194,7 @@
       "title": "Abdominal Pain",
       "audience": "patient",
       "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
+      "evidenceLevel": "Consensus-Guidance",
       "safety": {
         "withdrawn": false,
         "riskTier": "high"
@@ -15264,7 +15208,7 @@
       },
       "evidence": {
         "referenceCount": 2,
-        "allReferencesResolvable": true,
+        "allReferencesResolvable": false,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
       },
@@ -15299,10 +15243,10 @@
       "entityId": "S0013",
       "slug": "fatigue",
       "entityType": "symptom",
-      "title": "Chronic Fatigue and Weakness",
+      "title": "Fatigue: Why You May Feel Tired and When to Seek Help",
       "audience": "patient",
       "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
+      "evidenceLevel": "Consensus-Guidance",
       "safety": {
         "withdrawn": false,
         "riskTier": "high"
@@ -15315,7 +15259,7 @@
         "genericTemplateSignals": []
       },
       "evidence": {
-        "referenceCount": 2,
+        "referenceCount": 3,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
@@ -15323,7 +15267,7 @@
       "review": {
         "reviewerRecorded": true,
         "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
+        "authorReviewerNameConflict": false,
         "independentReviewProven": false
       },
       "graph": {
@@ -15403,7 +15347,7 @@
       "entityId": "S0015",
       "slug": "joint-pain",
       "entityType": "symptom",
-      "title": "Joint Pain (Arthralgia)",
+      "title": "Joint Pain",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -15433,58 +15377,6 @@
       "graph": {
         "uniqueConnectionCount": 2,
         "duplicateRelationshipRows": 2,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 20,
-        "recommendation": "independent-review-and-enrichment",
-        "reasons": [
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "S0018",
-      "slug": "skin-rash",
-      "entityType": "symptom",
-      "title": "Skin Rash: What It May Mean & When to Get Help",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": false,
-        "genericTemplateDetected": false,
-        "genericTemplateSignals": []
-      },
-      "evidence": {
-        "referenceCount": 3,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 1,
-        "duplicateRelationshipRows": 1,
         "brokenRelationshipRows": 0,
         "isolated": false
       },
@@ -15679,8 +15571,8 @@
         "genericTemplateSignals": []
       },
       "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
+        "referenceCount": 2,
+        "allReferencesResolvable": false,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
       },
@@ -15712,10 +15604,10 @@
       }
     },
     {
-      "entityId": "S0029",
-      "slug": "dizziness",
+      "entityId": "S0024",
+      "slug": "flatulence",
       "entityType": "symptom",
-      "title": "Dizziness and Vertigo",
+      "title": "Gas and Flatulence",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -15731,8 +15623,60 @@
         "genericTemplateSignals": []
       },
       "evidence": {
-        "referenceCount": 2,
+        "referenceCount": 5,
         "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 1,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "S0029",
+      "slug": "dizziness",
+      "entityType": "symptom",
+      "title": "Dizziness and Vertigo",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Consensus-Guidance",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": false,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 2,
+        "allReferencesResolvable": false,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
       },
@@ -16336,10 +16280,10 @@
       }
     },
     {
-      "entityId": "S0051",
-      "slug": "menstrual-irregularity",
+      "entityId": "S0046",
+      "slug": "indigestion",
       "entityType": "symptom",
-      "title": "Menstrual Irregularity",
+      "title": "Indigestion",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -16355,8 +16299,60 @@
         "genericTemplateSignals": []
       },
       "evidence": {
-        "referenceCount": 5,
+        "referenceCount": 3,
         "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 1,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "S0051",
+      "slug": "menstrual-irregularity",
+      "entityType": "symptom",
+      "title": "Menstrual Irregularity",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Consensus-Guidance",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": false,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 2,
+        "allReferencesResolvable": false,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
       },
@@ -16859,7 +16855,7 @@
       "entityId": "S0061",
       "slug": "mental-brain-fog",
       "entityType": "symptom",
-      "title": "Mental Brain Fog",
+      "title": "Brain Fog",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -16911,7 +16907,7 @@
       "entityId": "S0062",
       "slug": "nose-bleeding",
       "entityType": "symptom",
-      "title": "Nose Bleeding",
+      "title": "Nosebleed",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",

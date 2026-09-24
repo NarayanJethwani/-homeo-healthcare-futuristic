@@ -20,7 +20,7 @@ export const MuscleCrampsSymptom: KnowledgeEntity = {
     ar: "Muscle Cramps"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Muscle Cramps.",
+    en: "Muscle cramps are sudden painful tightening of a muscle, commonly in the calf or foot. Most settle quickly, but frequent cramps or cramps with swelling or numbness need review.",
     hi: "Muscle Cramps के लक्षण की नैदानिक समझ.",
     gu: "Muscle Cramps ના લક્ષણ ની સમજણ.",
     mr: "Muscle Cramps चे लक्षण आणि उपचार.",
@@ -28,37 +28,37 @@ export const MuscleCrampsSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Muscle Cramps."
   },
   content: {
-  "definition": "Muscle cramps: A localized pain, sensory alteration, or mobility limitation originating from nerves, muscles, joints, or tendons.",
-  "clinicalMeaning": "Replects nociceptive pathway stimulation, localized tissue injury, or nerve root compression resulting in altered sensation.",
+  "definition": "A muscle cramp is a sudden, involuntary, painful tightening of a muscle that may make movement difficult for a few seconds to several minutes.",
+  "clinicalMeaning": "Cramps are common and often harmless. Dehydration, exercise, pregnancy, ageing, medicines, and health conditions can contribute, especially when cramps recur.",
   "commonCauses": [
-    "Mechanical strain or postural imbalance",
-    "Peripheral nerve compression (e.g., sciatica, carpal tunnel)",
-    "Osteoarthritis or joint degeneration",
-    "Neurogenic inflammation"
+    "Exercise or muscle strain, especially in hot weather",
+    "Dehydration, pregnancy, ageing, or prolonged resting positions",
+    "Some medicines, including diuretics or statins",
+    "Less commonly, a circulation, nerve, liver, kidney, or metabolic condition"
   ],
-  "differentialDiagnosis": "Differentiate from systemic autoimmune joint disease, peripheral vascular disease, and referred visceral pain.",
+  "differentialDiagnosis": "A clinician may review the location, duration, exercise, hydration, medicines, swelling, numbness, weakness, and relevant health conditions.",
   "redFlags": [
-    "Loss of bladder or bowel control (Cauda Equina Syndrome)",
-    "Sudden onset of limb weakness or foot drop",
-    "Severe joint swelling with high fever indicating septic arthritis"
+    "Seek urgent help for a swollen, hot, red, or tender leg, or a cramp with chest pain or breathlessness.",
+    "Arrange a review for cramps lasting more than 10 minutes, repeatedly disturbing sleep, or accompanied by numbness, swelling, weakness, or a change in walking.",
+    "Sudden severe limb pain after injury or with a tight swollen muscle needs emergency assessment."
   ],
-  "lifestyleAdvice": "Implement regular stretching, adjust desk ergonomics, engage in low-impact walking, and stay hydrated to maintain joint lubrication.",
+  "lifestyleAdvice": "During a cramp, gently stretch and massage the muscle; standing and placing weight on the affected leg may help. Regular calf stretches and adequate fluids can reduce recurrence. Do not start quinine or supplements without clinical advice.",
   "references": [
     "CIT-0011",
     "CIT-0022"
   ],
   "faqs": [
     {
-      "question": "What causes muscle stiffness in the morning?",
-      "answer": "Morning stiffness is often caused by localized inflammation, muscle inactivity during sleep, or structural degenerative joint changes that temporarily reduce synovial fluid circulation."
+      "question": "What should I do during a cramp?",
+      "answer": "Gently stretch and massage the muscle. Most cramps settle without treatment, although soreness may remain for a day."
     },
     {
-      "question": "How does stress affect nerve and muscle pain?",
-      "answer": "Stress increases muscle tension and heightens pain sensitivity (central sensitization) by releasing stress hormones that lower the pain threshold."
+      "question": "When should cramps be checked?",
+      "answer": "Seek advice for frequent cramps, cramps lasting more than 10 minutes, sleep disruption, or cramps with swelling, numbness, or weakness."
     },
     {
-      "question": "What is the homeopathic approach to physical injury?",
-      "answer": "Homeopathy uses remedies like Arnica Montana to manage acute swelling and bruising, and Rhus Tox or Bryonia for joint stiffness and pain, tailored to whether movement improves or worsens the symptoms."
+      "question": "Can medicines cause cramps?",
+      "answer": "Some medicines can contribute. Speak to the prescriber or pharmacist rather than stopping prescribed medicine yourself."
     }
   ]
 },
