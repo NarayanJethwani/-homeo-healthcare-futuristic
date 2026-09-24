@@ -7,13 +7,13 @@ export const UrinaryTractInfectionDisease: KnowledgeEntity = {
   editorialStatus: "published",
   reviewStatus: "owner-authorization-required",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-08-14T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
     reviewed: "2026-08-14T12:00:00Z"
   },
   title: {
-    en: "Urinary Tract Infection (UTI / Acute Cystitis & Pyelonephritis)",
+    en: "Urinary Tract Infection (UTI)",
     hi: "मूत्र मार्ग संक्रमण (यूटीआई / सिस्टाइटिस / UTI)",
     gu: "પેશાબનો ચેપ / યુટીઆઈ (Urinary Tract Infection)",
     mr: "मूत्रमार्गाचा संसर्ग (Urinary Tract Infection / UTI)",
@@ -21,7 +21,7 @@ export const UrinaryTractInfectionDisease: KnowledgeEntity = {
     ar: "التهاب المسالك البولية (Urinary Tract Infection)"
   },
   summary: {
-    en: "An authoritative clinical and educational profile of Urinary Tract Infections (UTI), covering uropathogenic E. coli colonization, acute cystitis, recurrent UTI pathophysiology, constitutional homeopathic supportive management, and emergency red flags for acute ascending pyelonephritis and uroseptic bacteremia.",
+    en: "A UTI can cause burning when passing urine, needing to go often or suddenly, and lower tummy discomfort. Learn when testing and antibiotics may be needed and when symptoms suggest a kidney infection.",
     hi: "मूत्र मार्ग संक्रमण (यूटीआई/सिस्टाइटिस) का यूरोपैथोजेनिक ई. कोलाई पैथोलॉजी, बार-बार होने वाले मूत्र संक्रमण, पारंपरिक संवैधानिक होम्योपैथिक प्रबंधन, और तीव्र पायलोनेफ्राइटिस (गुर्दे का संक्रमण) व सेप्सिस की आपातकालीन सुरक्षा सीमाओं सहित प्रामाणिक विवरण.",
     gu: "પેશાબનો ચેપ (યુટીઆઈ) ની બેક્ટેરિયલ પેથોલોજી, પેશાબમાં બળતરા અને વારંવાર પેશાબ થવાની લાગણી, પરંપરાગત હોમિયોપેથીક સહાયક સારવાર અને પાયલોનેફ્રાઇટિસ (કિડની ઇન્ફેક્શન) ની ઇમરજન્સી સીમાઓનું વિવરણ.",
     mr: "मूत्रमार्गाचा जंतुसंसर्ग (UTI), लघवीची तीव्र जळजळ व कळ, वारंवार लघवीची भावना, पारंपरिक होमिओपॅथिक पद्धत आणि किडनी इन्फेक्शनच्या आणीबाणीच्या मर्यादा.",
@@ -30,39 +30,34 @@ export const UrinaryTractInfectionDisease: KnowledgeEntity = {
   },
   content: {
     overview:
-      "Urinary Tract Infection (UTI) represents microbial invasion and inflammation of the urinary tract epithelium, ranging from uncomplicated lower urinary tract infection (acute bacterial cystitis) to upper tract involvement (acute pyelonephritis). Predominantly driven by uropathogenic Escherichia coli (UPEC) ascending from the perianal microbiota, it presents clinically with severe dysuria (burning micturition), urinary frequency, urgency, suprapubic tenderness, and cloudy, foul-smelling or blood-tinged urine.",
+      "A urinary tract infection (UTI) often affects the bladder and can cause burning or stinging when passing urine, needing to go more often or urgently, and lower tummy discomfort. Similar symptoms can have other causes, so testing is useful in some people. Fever, side or back pain, vomiting, or pregnancy need prompt care.",
     definition:
       "An infection of the urinary tract characterized by significant bacteriuria (typically \u226510^5 CFU/mL in clean-catch midstream urine or \u226510^3 CFU/mL in symptomatic females) accompanied by clinical symptoms of urothelial inflammation.",
     causes: [
-      "Ascending colonization by uropathogenic Escherichia coli (UPEC; responsible for 75–90% of uncomplicated community UTIs)",
-      "Other uropathogens: Klebsiella pneumoniae, Proteus mirabilis, Enterococcus faecalis, Staphylococcus saprophyticus, Pseudomonas aeruginosa",
-      "Bacterial virulence factors: type 1 fimbriae and P-fimbriae facilitating urothelial adherence and intracellular bacterial community (IBC) formation",
-      "Short female urethral length and close anatomical proximity of the external urethral meatus to the anus"
+      "Bacteria are the usual cause of a bladder infection; E. coli is common.",
+      "A catheter, urinary blockage, or difficulty emptying the bladder can raise the risk.",
+      "Some sexual-health, vaginal, prostate, or bladder conditions can cause similar symptoms and need different care."
     ],
     riskFactors: [
-      "Female gender (up to 50–60% of women experience at least one UTI in their lifetime)",
-      "Recent sexual intercourse ('honeymoon cystitis') and use of spermicides or diaphragm contraception",
-      "Postmenopausal estrogen deficiency (loss of protective vaginal Lactobacillus species and elevated vaginal pH)",
-      "Incomplete bladder emptying: benign prostatic hyperplasia (BPH), neurogenic bladder, pelvic organ prolapse, urinary strictures",
-      "Indwelling urinary catheters, immunosuppression, poorly controlled diabetes mellitus, and urolithiasis"
+      "Previous UTIs, pregnancy, diabetes, or changes after menopause.",
+      "A urinary catheter, kidney stone, prostate enlargement, or another cause of incomplete bladder emptying.",
+      "Some contraceptive methods, including spermicides or diaphragms."
     ],
     symptoms: [
-      "Dysuria: intense, sharp, burning or scalding sensation in the urethra during and immediately following urination",
-      "Urinary frequency (voiding small volumes frequently) and urgent, compelling desire to void (urinary urgency)",
-      "Suprapubic aching, pelvic heaviness, and lower abdominal discomfort",
-      "Cloudy, turbid, malodorous urine, and microscopic or gross terminal hematuria",
-      "Systemic symptoms in pyelonephritis: high fever, shaking chills/rigors, nausea, vomiting, and unilateral or bilateral costovertebral angle (flank) tenderness"
+      "Burning or stinging when passing urine, and needing to pass urine more often or urgently.",
+      "Lower tummy discomfort and urine that may look cloudy, have a strong smell, or contain blood.",
+      "Fever, chills, nausea or vomiting, and pain in the side or back can suggest a kidney infection."
     ],
     diagnosis:
-      "Diagnosed clinically based on characteristic lower urinary symptoms, supported by rapid urine dipstick analysis (positive leukocyte esterase and positive urinary nitrites) and microscopic urinalysis (pyuria \u226510 WBCs/hpf and bacteriuria). Clean-catch midstream urine culture and antimicrobial susceptibility testing is the gold standard, mandatory for recurrent UTIs, treatment failures, pregnancy, men, and suspected pyelonephritis.",
+      "A clinician considers your symptoms, medical history, and sometimes a urine test or culture. Testing is especially important in pregnancy, for men and children, when infections keep returning, when treatment has not helped, or when a kidney infection is possible.",
     differentialDiagnosis:
       "Differentiate Lower UTI from Interstitial Cystitis / Bladder Pain Syndrome (BPS), Vulvovaginal Candidiasis, Trichomoniasis, Chlamydia trachomatis / Neisseria gonorrhoeae Urethritis, Genitourinary Syndrome of Menopause (atrophic vaginitis), and Bladder Carcinoma.",
     conventionalManagement:
-      "First-line empirical antibiotic regimens for uncomplicated acute cystitis include nitrofurantoin monohydrate/macrocrystals (5 days), trimethoprim-sulfamethoxazole (TMP-SMX; 3 days where local resistance <20%), or fosfomycin trometamol (single dose). Acute pyelonephritis requires fluoroquinolones (ciprofloxacin) or parenteral cephalosporins (ceftriaxone) based on culture sensitivity. Prophylaxis includes non-antimicrobial options like D-mannose, cranberry proanthocyanidins, and vaginal estrogen in postmenopausal women.",
+      "Many bacterial UTIs are treated with a clinician-prescribed antibiotic. The choice and duration depend on the person, the bacteria, allergies, pregnancy, and whether the infection may involve the kidneys. Take prescribed antibiotics exactly as directed and seek advice if symptoms worsen or do not improve.",
     homeopathicApproach:
-      "Homeopathic constitutional and urinary tract remedies (such as Cantharis Vesicatoria, Staphysagria, Sarsaparilla, Equisetum Hyemale, Apis Mellifica, Berberis Vulgaris, Chimaphila Umbellata) serve as supportive care to ease burning dysuria, soothe post-coital urethral spasms, and assist recurring bladder irritability alongside adequate fluid intake and conventional antibiotic treatment where indicated.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for UTIs. It must not replace testing, antibiotics when indicated, or prompt assessment for pregnancy, fever, side or back pain, vomiting, or severe illness.",
     lifestyleAdvice:
-      "Drink plenty of water throughout the day to flush bacteria from the urinary tract, void promptly following sexual intercourse, wipe from front to back after bowel movements, avoid irritating feminine hygiene sprays, douches, and scented bath products, take showers rather than bubble baths, and avoid delaying urination when the urge arises.",
+      "Drink enough fluid for your usual health needs, unless a clinician has advised a limit. Do not routinely hold urine, wipe front to back after a bowel movement, and avoid scented products that irritate the area. Ask a clinician about recurrent UTIs rather than relying on supplements or home remedies.",
     references: [
       "CIT-0004",
       "CIT-0005",
@@ -73,12 +68,16 @@ export const UrinaryTractInfectionDisease: KnowledgeEntity = {
     ],
     faqs: [
       {
-        question: "How does D-mannose help prevent recurrent urinary tract infections?",
-        answer: "D-mannose is a natural sugar that binds to the type 1 fimbriae of E. coli bacteria, preventing them from adhering to the bladder wall receptors and allowing them to be flushed out naturally in the urine stream."
+        question: "When should I arrange a urine test or medical review?",
+        answer: "Arrange timely review if you are pregnant, a man or child has symptoms, symptoms keep returning, there is visible blood in the urine, or treatment has not helped. Similar symptoms can come from conditions other than a UTI."
       },
       {
-        question: "When does a simple bladder infection become a kidney infection (pyelonephritis)?",
-        answer: "When bacteria travel up the ureters to the kidney tissue, resulting in systemic symptoms such as high fever, shaking chills, severe flank pain (costovertebral angle tenderness), and nausea."
+        question: "When could a UTI be a kidney infection?",
+        answer: "Fever or chills, nausea or vomiting, and pain in the side or back can mean an infection has reached a kidney. Seek urgent medical care, especially if you feel very unwell."
+      },
+      {
+        question: "Can homeopathy replace antibiotics for a UTI?",
+        answer: "No. Homeopathy should not delay testing, prescribed antibiotics, or urgent assessment for a possible kidney infection."
       }
     ],
     redFlags: [
@@ -115,7 +114,7 @@ export const UrinaryTractInfectionDisease: KnowledgeEntity = {
   readingTimeMinutes: 6,
   audience: "patient",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.1.0: Promoted to governed v1.1.0 with comprehensive uropathology clinical boundaries, pyelonephritis red flags, and verified citations"],
+  changeLog: ["1.2.0: Simplified the patient route from symptoms to testing, treatment boundaries, and urgent kidney-infection signs.", "1.1.0: Promoted to governed v1.1.0 with comprehensive uropathology clinical boundaries, pyelonephritis red flags, and verified citations"],
   clinicalPearl: "Flank tenderness (CVA tenderness) paired with fever and dysuria immediately differentiates upper tract pyelonephritis from simple lower tract cystitis.",
   quickFacts: {
     "Lifetime Incidence": "Over 50% in adult females (up to 25% experience recurrent episodes within 6 months)",
