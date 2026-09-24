@@ -15,7 +15,6 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [isPortalHost, setIsPortalHost] = useState(false);
-  const [mounted, setMounted] = useState(false);
 
   const [portalUrl, setPortalUrl] = useState("https://portal.homeo.healthcare/login");
 
@@ -28,7 +27,6 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    setMounted(true);
     const isDark = document.documentElement.classList.contains("dark");
     setTheme(isDark ? "dark" : "light");
     if (typeof window !== "undefined") {
@@ -85,19 +83,20 @@ export default function Navbar() {
   return (
     <>
       <motion.nav
+        aria-label="Main navigation"
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${
-          scrolled ? "py-4" : "py-6"
+          scrolled ? "py-2 sm:py-3" : "py-3 sm:py-4"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="glass-panel rounded-full px-6 py-3 flex items-center justify-between border-white/30 shadow-[0_8px_30px_rgb(20,184,166,0.03)]">
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-6">
+          <div className="glass-panel flex min-h-[68px] items-center justify-between gap-4 rounded-full border-white/30 px-4 py-2.5 shadow-[0_8px_30px_rgb(20,184,166,0.06)] sm:px-5 xl:gap-5">
             
             {/* Logo */}
             <Magnetic>
-              <Link href="/" data-cursor="homeo" className="flex items-center gap-2 group cursor-pointer">
+              <Link href="/" data-cursor="homeo" className="group flex shrink-0 items-center gap-2.5 cursor-pointer">
                 <div className="relative flex items-center justify-center w-9 h-9 rounded-full bg-white border border-slate-200/50 overflow-hidden shadow-sm flex-shrink-0">
                   <Image
                     src="/images/logo.png"
@@ -116,67 +115,71 @@ export default function Navbar() {
             </Magnetic>
 
             {/* Desktop Navigation Links */}
-            <div className="hidden lg:flex items-center gap-4">
+            <div className="hidden min-w-0 flex-1 items-center justify-center gap-3 xl:flex 2xl:gap-5">
               {menuItems.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
                   data-cursor="explore"
-                  className="text-sm font-semibold text-slate-700 hover:text-mint transition-colors duration-300 relative py-1 cursor-pointer group whitespace-nowrap"
+                  aria-current={pathname === item.href ? "page" : undefined}
+                  className={`group relative cursor-pointer whitespace-nowrap py-2 text-[13px] font-semibold transition-colors duration-300 2xl:text-sm ${
+                    pathname === item.href ? "text-mint-dark dark:text-mint" : "text-slate-700 hover:text-mint-dark dark:hover:text-mint"
+                  }`}
                 >
                   {item.name}
-                  <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-mint transition-all duration-300 group-hover:w-full group-hover:left-0" />
+                  <span className={`absolute bottom-0 left-1/2 h-0.5 bg-mint transition-all duration-300 group-hover:left-0 group-hover:w-full ${pathname === item.href ? "left-0 w-full" : "w-0"}`} />
                 </Link>
               ))}
             </div>
 
-            {/* CTA Button & Desktop Theme Toggle */}
-            <div className="hidden md:flex items-center gap-4">
+            {/* Desktop actions */}
+            <div className="hidden shrink-0 items-center gap-2 xl:flex">
               <Magnetic>
                 <button
                   onClick={toggleTheme}
                   aria-label="Toggle theme"
-                  className="glass-panel border-mint/20 hover:border-mint/60 bg-mint/5 hover:bg-mint/10 text-[#1A2421] dark:text-zinc-200 p-2.5 rounded-full cursor-pointer transition-all duration-300 flex items-center justify-center"
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-mint/20 bg-mint/5 text-[#1A2421] transition-all duration-300 hover:border-mint/60 hover:bg-mint/10 dark:text-zinc-200"
                 >
                   {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
                 </button>
               </Magnetic>
 
               <Magnetic>
-                <a
-                  href={portalUrl}
-                  data-cursor="explore"
-                  className="glass-panel border-[#0F766E]/20 hover:border-mint/50 bg-[#0F766E]/5 hover:bg-mint/10 text-slate-700 dark:text-zinc-200 hover:text-mint dark:hover:text-mint px-4 py-2 rounded-full text-[11px] font-bold tracking-wider uppercase transition-all duration-500 flex items-center gap-1 cursor-pointer"
-                >
-                  Patient / Doctor Login
-                </a>
-              </Magnetic>
-
-              <Magnetic>
                 <Link
-                  href="https://homeo.healthcare/#booking"
+                  href="/#booking"
                   data-cursor="book"
-                  className="glass-panel border-mint/20 hover:border-mint/40 bg-mint/5 hover:bg-white text-mint-dark hover:text-mint-dark px-5 py-2 rounded-full text-xs font-bold tracking-wide uppercase transition-all duration-500 flex items-center gap-1.5 cursor-pointer"
+                  className="flex h-10 items-center gap-1.5 whitespace-nowrap rounded-full bg-mint-dark px-5 text-xs font-bold tracking-wide text-white shadow-sm shadow-mint/20 transition-colors duration-300 hover:bg-[#0B5F59]"
                 >
                   Book Consultation
-                  <ArrowUpRight className="w-3.5 h-3.5 text-mint-dark" />
+                  <ArrowUpRight className="h-3.5 w-3.5" />
                 </Link>
               </Magnetic>
             </div>
 
             {/* Mobile Controls */}
-            <div className="lg:hidden flex items-center gap-3">
+            <div className="flex shrink-0 items-center gap-2 xl:hidden">
+              <Link
+                href="/#booking"
+                className="hidden h-10 items-center gap-1 rounded-full bg-mint-dark px-4 text-xs font-bold text-white transition-colors hover:bg-[#0B5F59] sm:inline-flex"
+              >
+                <span className="md:hidden">Book</span>
+                <span className="hidden md:inline">Book Consultation</span>
+                <ArrowUpRight className="h-3.5 w-3.5" />
+              </Link>
               <button
                 onClick={toggleTheme}
                 aria-label="Toggle theme"
-                className="p-2 text-[#1A2421] dark:text-zinc-200 hover:text-mint transition-colors cursor-pointer"
+                className="cursor-pointer rounded-full p-2 text-[#1A2421] transition-colors hover:text-mint dark:text-zinc-200"
               >
                 {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
               </button>
 
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-1.5 text-[#1A2421] dark:text-zinc-200 hover:text-mint transition-colors cursor-pointer"
+                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+                aria-expanded={mobileMenuOpen}
+                aria-controls="mobile-navigation"
+                className="cursor-pointer rounded-full p-2 text-[#1A2421] transition-colors hover:text-mint dark:text-zinc-200"
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
@@ -193,9 +196,10 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-x-0 top-24 z-30 mx-6 lg:hidden"
+            id="mobile-navigation"
+            className="fixed inset-x-0 top-20 z-[60] mx-4 xl:hidden sm:top-24 sm:mx-6"
           >
-            <div className="bg-white/80 dark:bg-[#0B0F19]/85 backdrop-blur-2xl border border-white/40 dark:border-slate-800/40 rounded-3xl p-5 shadow-[0_20px_50px_rgba(20,184,166,0.15)] max-h-[calc(100vh-120px)] overflow-y-auto">
+            <div className="bg-white dark:bg-[#0B0F19] border border-white/40 dark:border-slate-800/40 rounded-3xl p-5 shadow-[0_20px_50px_rgba(20,184,166,0.15)] max-h-[calc(100vh-120px)] overflow-y-auto">
               <div className="flex flex-col gap-4">
                 {menuItems.map((item, idx) => (
                   <motion.div
@@ -207,6 +211,7 @@ export default function Navbar() {
                     <Link
                       href={item.href}
                       onClick={() => setMobileMenuOpen(false)}
+                      aria-current={pathname === item.href ? "page" : undefined}
                       className="flex items-center justify-between p-3 rounded-2xl bg-slate-500/5 dark:bg-white/5 hover:bg-mint/10 dark:hover:bg-mint/15 transition-all duration-300 group cursor-pointer border border-transparent hover:border-mint/20"
                     >
                       <div className="flex items-center gap-3">
@@ -232,7 +237,7 @@ export default function Navbar() {
                   Clinical Workspace
                 </a>
                 <Link
-                  href="https://homeo.healthcare/#booking"
+                  href="/#booking"
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full text-center bg-mint hover:bg-mint-dark text-white py-3 rounded-2xl text-xs font-bold tracking-wider uppercase shadow-md shadow-mint/10 hover:shadow-mint/20 transition-all duration-300 flex items-center justify-center gap-2"
                 >
