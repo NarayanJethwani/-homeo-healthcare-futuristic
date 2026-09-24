@@ -20,7 +20,7 @@ export const SinusitisDisease: KnowledgeEntity = {
     ar: "التهاب الجيوب الأنفية",
   },
   summary: {
-    en: "Sinusitis is swelling inside the nose and sinuses, often after a cold or alongside allergies. Learn simple relief measures and the eye, severe headache, and fever symptoms that need urgent help.",
+    en: "Sinusitis is swelling of the sinuses, often after a cold or flu. It can cause a blocked nose, facial pressure, reduced smell, and discoloured mucus. Learn what usually helps and when symptoms need review.",
     hi: "साइनसाइटिस का EPOS 2020 मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "સાઇનસાઇટિસનું EPOS 2020 ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "सायनसायटिसचे EPOS 2020 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
@@ -29,7 +29,7 @@ export const SinusitisDisease: KnowledgeEntity = {
   },
   content: {
     overview:
-      "Sinusitis, also called rhinosinusitis, can cause a blocked or runny nose, facial pressure, reduced smell, cough, or headache. Most short-lived episodes begin with a viral cold and improve with time; antibiotics are not useful for every episode. Symptoms that are severe, persistent, or involve the eyes need medical assessment.",
+      "Sinusitis is swelling in the small air spaces around the nose. It commonly follows a viral illness and usually improves without antibiotics. Allergies, nasal swelling, or other factors can contribute when symptoms keep returning or last longer than expected.",
     definition:
       "It is inflammation of the lining of the nose and nearby air spaces called sinuses. It can be short-lived or last longer, especially when allergies, nasal polyps, or another ongoing problem are involved.",
     causes: [
@@ -54,7 +54,7 @@ export const SinusitisDisease: KnowledgeEntity = {
     conventionalManagement:
       "Care may include symptom relief, saline nasal rinses, and a clinician- or pharmacist-advised nasal spray. Antibiotics or surgery are reserved for selected situations after assessment.",
     homeopathicApproach:
-      "Reliable clinical evidence has not established homeopathy as a treatment for sinusitis. It must not replace assessment or urgent care for eye swelling, vision changes, severe headache, high fever, or severe illness.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for sinusitis. It should not delay assessment of severe, worsening, persistent, or eye-related symptoms, or treatment advised by a clinician.",
     lifestyleAdvice:
       "Rest, fluids, simple pain relief if safe for you, and saline nasal rinses can help some people. Ask a pharmacist or clinician about nasal sprays and use them as directed. Avoid smoke and do not put hot steam close to the face, especially for children.",
     references: ["CIT-0020", "CIT-0021", "CIT-0022", "CIT-0043"],
@@ -98,6 +98,6 @@ export const SinusitisDisease: KnowledgeEntity = {
   changeLog: [
     "1.0.0: Initial release of Sinusitis profile",
     "1.1.0: Upgraded with EPOS 2020 evidence citations (CIT-0043), passage-level claim citations (D0006-KEYNOTES, D0006-EMERGENCY-LIMITS, D0006-REGULATORY-LIMITS), orbital cellulitis red flags, and emergency ENT non-replacement rules",
-    "1.2.0: Reframed the page around common symptoms, practical next steps, and plain-language urgent-care boundaries.",
+    "1.2.0: Reframed the opening around symptoms, expected recovery, and evidence-based care boundaries.",
   ],
 };

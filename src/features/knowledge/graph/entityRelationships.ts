@@ -7,15 +7,13 @@ export const KNOWLEDGE_RELATIONSHIPS: KnowledgeRelationship[] = [
   { source: "D0003", relation: "hasSymptom", target: "S0003" }, // Migraine has Headache
   { source: "D0004", relation: "hasSymptom", target: "S0001" }, // IBS has Heartburn/Bloating
 
-  // Skin changes & fungal infections: connect patients to the closest
-  // relevant symptom or condition, not unrelated knowledge nodes.
-  { source: "D0036", relation: "relatedTo", target: "D0011" }, // Vitiligo and thyroid context
-  { source: "D0076", relation: "hasSymptom", target: "S0018" }, // Contact dermatitis has Skin Rash
-  { source: "D0076", relation: "relatedTo", target: "D0002" }, // Contact dermatitis and Eczema
-  { source: "D0077", relation: "hasSymptom", target: "S0018" }, // Ringworm has Skin Rash
-  { source: "D0077", relation: "relatedTo", target: "D0078" }, // Ringworm and Athlete's Foot
-  { source: "D0078", relation: "relatedTo", target: "D0079" }, // Athlete's Foot and Jock Itch
-  { source: "D0079", relation: "relatedTo", target: "D0077" }, // Jock Itch and Ringworm
+  // Airway and upper-respiratory guides: link readers to closely related
+  // concerns rather than broad, unrelated nodes.
+  { source: "D0005", relation: "hasSymptom", target: "S0037" }, // Allergic Rhinitis has Nasal Congestion
+  { source: "D0005", relation: "relatedTo", target: "D0006" }, // Allergic Rhinitis and Sinusitis
+  { source: "D0006", relation: "relatedTo", target: "D0054" }, // Sinusitis and Chronic Cough
+  { source: "D0054", relation: "relatedTo", target: "D0061" }, // Chronic Cough and Laryngitis
+  { source: "D0055", relation: "relatedTo", target: "D0006" }, // Frequent Colds and Sinusitis
 
   // Diseases to Remedies
   { source: "D0001", relation: "treatedWith", target: "R0002" }, // GERD - Nux Vomica

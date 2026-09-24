@@ -7,13 +7,13 @@ export const ChronicCoughDisease: KnowledgeEntity = {
   editorialStatus: "published",
   reviewStatus: "owner-authorization-required",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-08-14T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
     reviewed: "2026-08-14T12:00:00Z"
   },
   title: {
-    en: "Chronic Cough (Unexplained & Refractory Cough Reflex Hypersensitivity)",
+    en: "Chronic Cough",
     hi: "क्रॉनिक कफ / पुरानी व लगातार खांसी (Chronic Cough / Cough Hypersensitivity)",
     gu: "ક્રોનિક ઉધરસ / લાંબા સમયની જૂની ઉધરસ (Chronic Cough)",
     mr: "जुनाट खोकला / सतत येणारा कोरडा किंवा कफयुक्त खोकला (Chronic Cough)",
@@ -21,7 +21,7 @@ export const ChronicCoughDisease: KnowledgeEntity = {
     ar: "السعال المزمن وفرط حساسية منعكس السعال (Chronic Cough)"
   },
   summary: {
-    en: "An authoritative clinical and educational profile of Chronic Cough, covering Cough Hypersensitivity Syndrome (CHS), Upper Airway Cough Syndrome (UACS / post-nasal drip), Cough-Variant Asthma, non-acid GERD, constitutional homeopathic supportive management, and emergency red flags for massive hemoptysis, bronchogenic carcinoma, active pulmonary tuberculosis, and foreign body aspiration.",
+    en: "A chronic cough is a cough that lasts more than eight weeks in adults. Common causes include post-nasal drip, asthma, reflux, medicines, or a lingering infection; it deserves a structured clinical assessment.",
     hi: "क्रॉनिक कफ (पुरानी लगातार खांसी) का कफ हाइपरसेंसिटिविटी सिंड्रोम पैथोलॉजी, पोस्ट-नेजल ड्रिप (UACS), कफ-वेरिएंट अस्थमा, रिफ्लक्स, पारंपरिक संवैधानिक होम्योपैथिक प्रबंधन, और खांसी में खून (Hemoptysis), फेफड़ों के कैंसर व टीबी की आपातकालीन सुरक्षा सीमाओं सहित प्रामाणिक विवरण.",
     gu: "ક્રોનિક કફ (લાંબા સમયની ઉધરસ) ની એરવે હાઇપર-રિએક્ટિવિટી પેથોલોજી, કફ વેરિઅન્ટ અસ્થમા, એસિડ રિફ્લક્સ ઉધરસ, પરંપરાગત હોમિયોપેથીક સહાયક સારવાર અને ઉધરસમાં લોહી પડવું (હિમોપ્ટિસિસ) તથા ટીબી-કેન્સરની ઇમરજન્સી સીમાઓનું વિવરણ.",
     mr: "जुनाट खोकला (Chronic Cough), छातीत घरघर व घशात सतत टोचणे, अ‍ॅसिडिटी व अ‍ॅलर्जीमुळे येणारा खोकला, पारंपरिक होमिओपॅथिक पद्धत आणि खोकल्यातून रक्त पडणे (Hemoptysis) व क्षयरोगाच्या आणीबाणीच्या मर्यादा.",
@@ -62,7 +62,7 @@ export const ChronicCoughDisease: KnowledgeEntity = {
     conventionalManagement:
       "Stepwise targeted therapy directed at the identified underlying etiology: (1) For UACS: intranasal corticosteroids (fluticasone) plus second-generation oral antihistamines / decongestants and nasal saline irrigations. (2) For Asthma/NAEB: inhaled corticosteroids (ICS: budesonide, fluticasone) with or without long-acting beta-agonists (LABA) or leukotriene receptor antagonists (montelukast). (3) For GERD/LPR: high-dose proton pump inhibitors (PPIs) plus dietary reflux precautions for 8–12 weeks; addition of prokinetics or baclofen for non-acid reflux. (4) For Refractory / Unexplained Neurogenic Cough: central cough neuromodulators (gabapentin, pregabalin, low-dose amitriptyline), Speech and Language Therapy (SLT; cough suppression behavioural techniques), or peripheral P2X3 receptor antagonists (gefapixant).",
     homeopathicApproach:
-      "Homeopathic constitutional and respiratory remedies (such as Drosera Rotundifolia, Rumex Crispus, Spongia Tosta, Bryonia Alba, Ipecacuanha, Antimonium Tartaricum, Kali Bichromicum, Pulsatilla Nigricans, Causticum, Hepar Sulphuris) serve as supportive care to soothe laryngeal tickling, relieve spasmodic fits, and assist mucus clearance alongside chest radiograph screening, allergy management, and pulmonology evaluation.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for chronic cough. A cough lasting more than eight weeks needs a structured clinical assessment, and homeopathy must not delay care for coughing blood, chest pain, breathlessness, fever, weight loss, or worsening symptoms.",
     lifestyleAdvice:
       "Maintain a smoke-free home environment and eliminate active tobacco smoking, practice cough suppression techniques (sip cold water, swallow hard, perform purse-lipped breathing when feeling a throat tickle), elevate the head of the bed 6 inches and avoid eating within 3 hours of sleep if reflux is present, use a cool mist room humidifier, and avoid strong chemical aerosol sprays and perfumes.",
     references: [
@@ -118,7 +118,7 @@ export const ChronicCoughDisease: KnowledgeEntity = {
   readingTimeMinutes: 6,
   audience: "patient",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.1.0: Promoted to governed v1.1.0 with comprehensive pulmonological cough reflex clinical boundaries, hemoptysis/neoplasm red flags, and verified citations"],
+  changeLog: ["1.1.0: Promoted to governed v1.1.0 with comprehensive pulmonological cough reflex clinical boundaries, hemoptysis/neoplasm red flags, and verified citations", "1.2.0: Simplified the patient-facing title and summary."],
   clinicalPearl: "A normal chest X-ray and non-smoking status in adult chronic cough points directly to the big three: Upper Airway Cough Syndrome, Cough-Variant Asthma, or GERD.",
   quickFacts: {
     "Clinical Definition": "Cough persisting for >8 weeks in adults (>4 weeks in children)",
