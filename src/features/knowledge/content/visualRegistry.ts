@@ -128,21 +128,21 @@ export const KNOWLEDGE_VISUALS: Record<string, KnowledgeVisual[]> = {
       label: "Headache can have many contributors",
     },
   ],
-  nausea: [
+  vomiting: [
     {
-      src: "/images/knowledge/nausea/understanding-v1.png",
-      alt: "Young Indian man taking a calm pause with mild nausea in a sunlit creative studio",
-      label: "Understanding nausea",
+      src: "/images/knowledge/vomiting/understanding-v1.png",
+      alt: "Indian man taking small sips of water during a quiet train journey",
+      label: "Understanding vomiting",
     },
     {
-      src: "/images/knowledge/nausea/pathways-v1.png",
-      alt: "Transparent medical illustration connecting the stomach, brain and inner-ear balance system",
-      label: "Nausea can have several contributors",
+      src: "/images/knowledge/vomiting/hydration-v1.png",
+      alt: "Transparent medical illustration of the stomach with flowing water and fluid-balance motifs",
+      label: "Fluids matter",
     },
     {
-      src: "/images/knowledge/nausea/patterns-v1.png",
-      alt: "Older Indian woman noting a food and symptom pattern on a leafy rooftop terrace",
-      label: "Noticing your pattern",
+      src: "/images/knowledge/vomiting/patterns-v1.png",
+      alt: "Indian woman calmly noting symptoms beside a glass of water in a daylight library",
+      label: "Knowing when to ask",
     },
   ],
   indigestion: [
