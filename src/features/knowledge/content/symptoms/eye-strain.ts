@@ -20,7 +20,7 @@ export const EyeStrainSymptom: KnowledgeEntity = {
     ar: "Eye Strain"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Eye Strain.",
+    en: "Eye strain is tired, uncomfortable, dry, or watery eyes after sustained visual tasks. Persistent symptoms should prompt an eye-health review.",
     hi: "Eye Strain के लक्षण की नैदानिक समझ.",
     gu: "Eye Strain ના લક્ષણ ની સમજણ.",
     mr: "Eye Strain चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const EyeStrainSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Eye Strain."
   },
   content: {
-  "definition": "Eye strain: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Eye strain is discomfort or fatigue in and around the eyes, sometimes with headache, blurred focus, dryness, or watering, often after reading, driving, or screen work.",
+  "clinicalMeaning": "It is often linked to visual demand or dry eyes, but it can also be a sign that vision correction or an eye-health assessment is needed.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "Long periods of close work, computer use, reading, or driving",
+    "Glare, poor lighting, small text, or an uncomfortable viewing distance",
+    "Dry eyes or reduced blinking during focused screen work",
+    "An out-of-date glasses prescription or another focusing problem"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "Eye strain should be distinguished from infection, allergy, migraine, dry eye disease, and more urgent causes of eye pain or visual change. An optometrist or clinician can assess persistent symptoms.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Seek urgent eye care for sudden loss or change of vision, severe eye pain, marked redness, light sensitivity, or a new injury or chemical splash.",
+    "Seek urgent help for eye symptoms with a severe headache, weakness, speech difficulty, or facial droop.",
+    "Arrange an eye examination if discomfort, headaches, blurred vision, or watering keeps returning or does not improve with rest."
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "Take regular visual breaks, blink fully, and vary close work with looking into the distance. Reduce glare, adjust text size and screen position, use comfortable lighting, and keep glasses or contact-lens checks up to date.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const EyeStrainSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "Can screens cause eye strain?",
+      "answer": "Long screen sessions can contribute because people focus closely and blink less. Glare, small text, and uncorrected vision can add to the problem."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "How can I make close work easier on my eyes?",
+      "answer": "Use comfortable lighting, reduce glare, increase text size if needed, blink deliberately, and take regular breaks that let you focus into the distance."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "When should I have my eyes checked?",
+      "answer": "Arrange an eye examination if symptoms persist, recur, affect vision, or you have headaches or trouble focusing. Sudden visual change or severe pain is urgent."
     }
   ]
 },
