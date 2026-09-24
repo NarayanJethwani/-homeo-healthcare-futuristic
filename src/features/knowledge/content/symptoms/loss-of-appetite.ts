@@ -20,7 +20,7 @@ export const LossofAppetiteSymptom: KnowledgeEntity = {
     ar: "Loss of Appetite"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Loss of Appetite.",
+    en: "Loss of appetite means eating less because you do not feel hungry or food is unappealing. It can be temporary, but persistent low appetite or unintentional weight loss needs assessment.",
     hi: "Loss of Appetite के लक्षण की नैदानिक समझ.",
     gu: "Loss of Appetite ના લક્ષણ ની સમજણ.",
     mr: "Loss of Appetite चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const LossofAppetiteSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Loss of Appetite."
   },
   content: {
-  "definition": "Loss of appetite: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Loss of appetite is a reduced desire to eat. It may be brief during illness or stress, but it can affect nutrition and energy if it lasts.",
+  "clinicalMeaning": "It can be caused by infection, pain, nausea, medicines, stress, low mood, digestive disease, or another health condition. The duration, weight change, and other symptoms guide assessment.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "A short-term infection, nausea, pain, or recovery from illness or surgery",
+    "Stress, anxiety, low mood, grief, or an eating disorder",
+    "Medicines, alcohol or other substances, or changes in taste and smell",
+    "Digestive, hormonal, heart, kidney, liver, or other health conditions"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "A clinician may ask about weight, nausea, bowel changes, pain, mood, medicines, mouth or swallowing problems, and recent illness. Tests are guided by the story and examination.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Arrange prompt advice for unintentional weight loss, persistent low appetite, dehydration, repeated vomiting, blood in vomit or stool, or a new lump or persistent pain.",
+    "Seek urgent help for severe abdominal pain, chest pain, severe breathlessness, confusion, or inability to keep fluids down.",
+    "Seek support urgently if appetite loss is linked with thoughts of harming yourself or an eating pattern that feels out of control."
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "If you are otherwise well, try small frequent meals or snacks, nourishing drinks, and fluids between meals. Choose familiar foods and eat at the times you feel most able. Do not rely on supplements or appetite stimulants without professional advice when weight is falling.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const LossofAppetiteSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "When is low appetite concerning?",
+      "answer": "It should be checked if it persists, causes weight loss, limits fluids, or comes with vomiting, pain, bowel changes, fever, or a significant change in mood."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "What can I eat if I do not feel hungry?",
+      "answer": "Small frequent meals, snacks, and nourishing drinks can be easier than large meals. A dietitian can give tailored help if weight loss or illness is involved."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "Could stress affect appetite?",
+      "answer": "Yes. Stress, anxiety, grief, and low mood can all change appetite. It is important to seek support if this is persistent or affecting nutrition or safety."
     }
   ]
 },

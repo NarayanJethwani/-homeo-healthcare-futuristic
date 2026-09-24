@@ -20,7 +20,7 @@ export const AcidRefluxSymptom: KnowledgeEntity = {
     ar: "ارتجاع الحمض (Acid Reflux)"
   },
   summary: {
-    en: "Clinical evaluation, differential diagnosis, red flag alarm features, and supportive management for Acid Reflux under ACG 2022 guidelines.",
+    en: "Acid reflux is stomach acid travelling toward the throat, often causing heartburn or a sour taste. Recurrent reflux and swallowing problems should be assessed.",
     hi: "एसिड रिफ्लक्स लक्षण की नैदानिक समझ और चेतावनी लक्षण.",
     gu: "એસિડ રિફ્લક્સ લક્ષણની તબીબી સમજણ અને ચેતવણી લક્ષણો.",
     mr: "ॲसिड रिफ्लक्स लक्षणांची वैद्यकीय माहिती आणि इशारे.",
@@ -28,22 +28,21 @@ export const AcidRefluxSymptom: KnowledgeEntity = {
     ar: "التقييم السريري وعلامات الخطر لارتجاع الحمض."
   },
   content: {
-    definition: "Acid Reflux: Retrograde flow of gastric acid and pepsin into the esophagus causing retrosternal burning (heartburn), acid regurgitation, or atypical extra-esophageal symptoms.",
-    clinicalMeaning: "Reflects lower esophageal sphincter (LES) transient relaxations, hiatal hernia, or delayed gastric emptying; persistent reflux leads to erosive esophagitis, strictures, or Barrett's Esophagus.",
+    definition: "Acid reflux happens when stomach acid travels up into the food pipe, causing heartburn, a sour taste, or food and fluid coming back up. Repeated troublesome reflux may be called GORD or GERD.",
+    clinicalMeaning: "Symptoms often worsen after eating, when bending, or lying down. Persistent symptoms need review because other conditions can look similar and treatment may be needed.",
     commonCauses: [
-      "Gastroesophageal Reflux Disease (GERD), Hiatal Hernia",
-      "Gastroparesis, Delayed Gastric Emptying, Pregnancy",
-      "Dietary Triggers (Fatty foods, chocolate, caffeine, citrus, alcohol)",
-      "Medication-Induced LES Relaxation (Calcium channel blockers, nitrates)"
+      "Reflux or a hiatus hernia",
+      "Pregnancy, increased abdominal pressure, or being overweight",
+      "Personal food and drink triggers, smoking, or alcohol",
+      "Some medicines or a delayed stomach emptying pattern"
     ],
-    differentialDiagnosis: "Differentiate acute coronary syndrome (ACS) / angina (demanding urgent ECG), peptic ulcer disease, eosinophilic esophagitis, esophageal spasm, and achalasia.",
+    differentialDiagnosis: "Chest pain must not be assumed to be reflux. A clinician may consider heart conditions, swallowing disorders, ulcers, medication effects, and other digestive causes.",
     redFlags: [
-      "Progressive difficulty swallowing (dysphagia) or painful swallowing (odynophagia)",
-      "Hematemesis, melena, or unexplained iron deficiency anemia",
-      "Persistent vomiting, unintentional weight loss, or epigastric mass",
-      "Crushing substernal chest pain radiating to jaw or left arm (rule out ACS)"
+      "Call emergency services for new or severe chest pressure or pain with breathlessness, sweating, faintness, or pain spreading to the arm, jaw, shoulder, or back.",
+      "Arrange prompt advice for food sticking, painful swallowing, frequent vomiting, vomiting blood, black stools, or unexplained weight loss.",
+      "Book a review if heartburn happens most days or pharmacy treatment and lifestyle changes are not helping."
     ],
-    lifestyleAdvice: "Elevate head of bed 6 inches, avoid eating within 3 hours of sleep, eliminate dietary triggers, maintain optimal weight, and avoid tight-fitting garments.",
+    lifestyleAdvice: "Avoid lying down for two to three hours after eating, identify personal triggers rather than using a universal ban list, stop smoking, and consider weight support if relevant. A pharmacist can advise on antacids or alginates; do not use them regularly for long periods without advice.",
     references: [
       "CIT-0073",
       "CIT-0023"
@@ -72,16 +71,16 @@ export const AcidRefluxSymptom: KnowledgeEntity = {
     ],
   "faqs": [
     {
-      "question": "What are the common triggers for digestive flares?",
-      "answer": "Common triggers include dietary irritants (caffeine, alcohol, fatty foods), chronic emotional stress, irregular eating habits, and dysbiosis."
+      "question": "What is the difference between reflux and heartburn?",
+      "answer": "Reflux is stomach acid travelling upward. Heartburn is the burning chest sensation it commonly causes."
     },
     {
-      "question": "How does the gut-brain axis affect digestive health?",
-      "answer": "The gut and brain are in constant communication via the vagus nerve. Emotional stress can alter gut motility, increase visceral sensitivity, and worsen symptoms of GERD, gastritis, or IBS."
+      "question": "Can I use antacids?",
+      "answer": "A pharmacist can help you choose a suitable antacid or alginate and explain how to use it. Persistent or daily symptoms should be reviewed."
     },
     {
-      "question": "Can homeopathy manage chronic acid reflux (GERD)?",
-      "answer": "Yes, individualized homeopathy can help manage symptoms of chronic acid reflux by addressing digestive motility and hyperacidity alongside lifestyle modifications."
+      "question": "When is reflux urgent?",
+      "answer": "Emergency chest pain symptoms, food sticking, painful swallowing, vomiting blood, black stools, frequent vomiting, or unexplained weight loss need prompt medical assessment."
     }
   ]
 },
