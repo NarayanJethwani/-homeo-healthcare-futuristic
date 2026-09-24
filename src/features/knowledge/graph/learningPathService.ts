@@ -34,6 +34,11 @@ export function getClinicalCategory(entity: KnowledgeEntity): string {
   const title = (typeof entity.title === "string" ? entity.title : entity.title.en || "").toLowerCase();
   const identifier = (id + " " + name + " " + title + " " + tags.join(" ")).toLowerCase();
   
+  // Hair Fall may have endocrine contributors, but its primary knowledge path
+  // should stay with scalp and dermatology topics rather than thyroid-only nodes.
+  if (identifier.includes("hair-fall")) {
+    return "dermatology";
+  }
   if (identifier.includes("hba1c") || identifier.includes("diabetes") || identifier.includes("blood-sugar")) {
     return "general";
   }
