@@ -20,7 +20,7 @@ export const KneePainSymptom: KnowledgeEntity = {
     ar: "Knee Pain"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Knee Pain.",
+    en: "Knee pain can follow an injury, strain, or a condition such as osteoarthritis. Find simple ways to ease symptoms and the signs—such as inability to bear weight or a hot swollen knee—that need urgent advice.",
     hi: "Knee Pain के लक्षण की नैदानिक समझ.",
     gu: "Knee Pain ના લક્ષણ ની સમજણ.",
     mr: "Knee Pain चे लक्षण आणि उपचार.",
@@ -28,37 +28,37 @@ export const KneePainSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Knee Pain."
   },
   content: {
-  "definition": "Knee pain: A localized pain, sensory alteration, or mobility limitation originating from nerves, muscles, joints, or tendons.",
-  "clinicalMeaning": "Replects nociceptive pathway stimulation, localized tissue injury, or nerve root compression resulting in altered sensation.",
+  "definition": "Knee pain is discomfort, stiffness, swelling, or reduced movement in or around the knee joint.",
+  "clinicalMeaning": "It can result from an injury, overuse, osteoarthritis, inflammation, or less commonly infection. The pattern of pain, swelling, and ability to bear weight helps guide next steps.",
   "commonCauses": [
-    "Mechanical strain or postural imbalance",
-    "Peripheral nerve compression (e.g., sciatica, carpal tunnel)",
-    "Osteoarthritis or joint degeneration",
-    "Neurogenic inflammation"
+    "A strain, sprain, tendon problem, or overuse injury",
+    "Osteoarthritis or other joint wear-and-tear",
+    "Cartilage or ligament injury after twisting or impact",
+    "Inflammation, gout, or joint infection"
   ],
-  "differentialDiagnosis": "Differentiate from systemic autoimmune joint disease, peripheral vascular disease, and referred visceral pain.",
+  "differentialDiagnosis": "A clinician may consider injury, osteoarthritis, inflammatory arthritis, gout, infection, or pain referred from the hip or back.",
   "redFlags": [
-    "Loss of bladder or bowel control (Cauda Equina Syndrome)",
-    "Sudden onset of limb weakness or foot drop",
-    "Severe joint swelling with high fever indicating septic arthritis"
+    "A very painful knee that cannot move or bear weight",
+    "A badly swollen knee, a changed shape, or locking or giving way after injury",
+    "A hot, red, swollen knee with fever or feeling generally unwell"
   ],
-  "lifestyleAdvice": "Implement regular stretching, adjust desk ergonomics, engage in low-impact walking, and stay hydrated to maintain joint lubrication.",
+  "lifestyleAdvice": "Reduce weight-bearing briefly if it is painful, use a wrapped cold pack for up to 20 minutes at a time, and return to gentle movement as symptoms allow. Ask a clinician or physiotherapist about exercises that suit the cause of your pain.",
   "references": [
     "CIT-0011",
     "CIT-0022"
   ],
   "faqs": [
     {
-      "question": "What causes muscle stiffness in the morning?",
-      "answer": "Morning stiffness is often caused by localized inflammation, muscle inactivity during sleep, or structural degenerative joint changes that temporarily reduce synovial fluid circulation."
+      "question": "What can I do for knee pain at home?",
+      "answer": "Avoid activities that make pain worse, use a cold pack wrapped in a towel for short periods, and consider pain relief that is safe for you. A pharmacist can help you choose an option."
     },
     {
-      "question": "How does stress affect nerve and muscle pain?",
-      "answer": "Stress increases muscle tension and heightens pain sensitivity (central sensitization) by releasing stress hormones that lower the pain threshold."
+      "question": "When should I get urgent help for knee pain?",
+      "answer": "Get urgent advice if you cannot move the knee or bear weight, it is badly swollen or changed shape, it locks or gives way, or it is hot, red, swollen, and you have a fever or feel unwell."
     },
     {
-      "question": "What is the homeopathic approach to physical injury?",
-      "answer": "Homeopathy uses remedies like Arnica Montana to manage acute swelling and bruising, and Rhus Tox or Bryonia for joint stiffness and pain, tailored to whether movement improves or worsens the symptoms."
+      "question": "Could knee pain be osteoarthritis?",
+      "answer": "Osteoarthritis is one common cause, especially when pain and stiffness build gradually and affect activity. A clinician can help confirm the cause and discuss exercise, weight management, pain relief, and other support."
     }
   ]
 },

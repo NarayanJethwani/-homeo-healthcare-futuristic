@@ -21,7 +21,7 @@ export const LowBackPainDisease: KnowledgeEntity = {
     ar: "ألم أسفل الظهر واللومباغو (Low Back Pain)"
   },
   summary: {
-    en: "Low back pain is common and often improves with gentle movement and time. Learn practical ways to stay active and the warning signs that need urgent medical assessment.",
+    en: "Low back pain is common and often improves with gentle movement and time. Learn safe ways to stay active, when medical review is useful, and the rare warning signs that need urgent assessment.",
     hi: "कमर दर्द (लंबैगो / मैकेनिकल लो बैक पेन) का मांसपेशीय ऐंठन पैथोलॉजी, लम्बर फैसेट आर्थ्रोपैथी, डिस्क डिजनरेशन, पारंपरिक संवैधानिक होम्योपैथिक प्रबंधन, और काउडा इक्विना सिंड्रोम (Cauda Equina) व रीढ़ की हड्डी के संक्रमण की आपातकालीन सुरक्षा सीमाओं सहित प्रामाणिक विवरण.",
     gu: "કમરનો દુખાવો (લમ્બાગો) ની મસ્ક્યુલોસ્કેલેટલ પેથોલોજી, કમરના મણકાનો ઘસારો, સ્નાયુઓની અકડાઈ, પરંપરાગત હોમિયોપેથીક સહાયક સારવાર અને પેશાબ-મળના નિયંત્રણ ગુમાવવા (કાઉડા ઇક્વિના) ની ઇમરજન્સી સીમાઓનું વિવરણ.",
     mr: "कंबरदुखी (Low Back Pain / Lumbago), मणक्यांची झीज व स्नायूंचा ताण, पारंपरिक होमिओपॅथिक पद्धत आणि कॉडा इक्विना सिंड्रोमच्या (Cauda Equina) आणीबाणीच्या मर्यादा.",
@@ -61,7 +61,7 @@ export const LowBackPainDisease: KnowledgeEntity = {
     conventionalManagement:
       "Evidence-based clinical guidelines (ACP, NICE) recommend: (1) Remaining physically active and avoiding prolonged bed rest (bed rest >48 hours delays recovery). (2) First-line non-pharmacological therapies: superficial heat wraps, spinal manipulation, acupuncture, massage, Cognitive Behavioral Therapy (CBT), and active structured exercise programs (core stabilization, McKenzie method, yoga). (3) Pharmacotherapy for acute exacerbations: oral NSAIDs (ibuprofen, naproxen) or skeletal muscle relaxants for short-term rescue use. Acetaminophen and opioids are not recommended as first-line therapies. (4) Interventional lumbar facet joint medial branch blocks or radiofrequency ablation for chronic refractory facetogenic back pain.",
     homeopathicApproach:
-      "Reliable clinical evidence has not established homeopathy as a treatment for low back pain. It must not delay assessment of weakness, numbness, bladder or bowel changes, fever, major trauma or other warning signs.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for low back pain. It must not replace clinical assessment, physiotherapy or other prescribed care, or urgent assessment for bladder, bowel, saddle-numbness, or worsening weakness warning signs.",
     lifestyleAdvice:
       "Stay gently active and avoid prolonged bed rest. Short walks, a comfortable heat pack and gradually returning to usual activity can help many people. Use careful lifting technique and ask a clinician or physiotherapist which exercises are right for you.",
     references: [

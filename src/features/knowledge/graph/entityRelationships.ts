@@ -7,11 +7,11 @@ export const KNOWLEDGE_RELATIONSHIPS: KnowledgeRelationship[] = [
   { source: "D0003", relation: "hasSymptom", target: "S0003" }, // Migraine has Headache
   { source: "D0004", relation: "hasSymptom", target: "S0001" }, // IBS has Heartburn/Bloating
 
-  // Respiratory guides: start from the symptom a patient notices, then lead to the relevant condition.
-  { source: "D0007", relation: "hasSymptom", target: "S0034" }, // Asthma has Shortness of Breath
-  { source: "D0027", relation: "hasSymptom", target: "S0009" }, // Bronchitis has Wet Cough
-  { source: "D0055", relation: "hasSymptom", target: "S0009" }, // Frequent Colds can have Wet Cough
-  { source: "D0027", relation: "relatedTo", target: "D0007" }, // Bronchitis and asthma can both cause wheeze and breathlessness
+  // Mobility and pain guides: connect a patient's starting symptom to the most relevant condition.
+  { source: "D0017", relation: "hasSymptom", target: "S0014" }, // Osteoarthritis has Knee Pain
+  { source: "D0017", relation: "hasSymptom", target: "S0015" }, // Osteoarthritis has Joint Pain
+  { source: "D0040", relation: "relatedTo", target: "D0056" }, // Sciatica and Low Back Pain
+  { source: "D0056", relation: "relatedTo", target: "D0040" }, // Low Back Pain and Sciatica
 
   // Diseases to Remedies
   { source: "D0001", relation: "treatedWith", target: "R0002" }, // GERD - Nux Vomica
