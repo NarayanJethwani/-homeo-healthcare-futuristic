@@ -42,7 +42,10 @@ export default function QuickFactsCard({ entity }: QuickFactsCardProps) {
       };
     } else if (entity.entityType === "symptom") {
       facts = {
-        "System Focus": category.charAt(0).toUpperCase() + category.slice(1),
+        "System Focus": category
+          .split("-")
+          .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+          .join(" "),
         "Clinical Character": "Subjective patient manifestation",
         "Diagnostic Urgency": "Monitor for red flag progress"
       };

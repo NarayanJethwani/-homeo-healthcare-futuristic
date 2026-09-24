@@ -21,7 +21,7 @@ export const CATEGORY_COLORS: Record<string, { bg: string; text: string; border:
   gastrointestinal: { bg: "bg-amber-500/10", text: "text-amber-600 dark:text-amber-400", border: "border-amber-500/20" },
   dermatology: { bg: "bg-indigo-500/10", text: "text-indigo-600 dark:text-indigo-400", border: "border-indigo-500/20" },
   respiratory: { bg: "bg-sky-500/10", text: "text-sky-600 dark:text-sky-400", border: "border-sky-500/20" },
-  reproductive: { bg: "bg-rose-500/10", text: "text-rose-600 dark:text-rose-400", border: "border-rose-500/20" },
+  "mental-health": { bg: "bg-violet-500/10", text: "text-violet-600 dark:text-violet-400", border: "border-violet-500/20" },
   musculoskeletal: { bg: "bg-purple-500/10", text: "text-purple-600 dark:text-purple-400", border: "border-purple-500/20" },
   urology: { bg: "bg-pink-500/10", text: "text-pink-600 dark:text-pink-400", border: "border-pink-500/20" },
   general: { bg: "bg-neutral-500/10", text: "text-neutral-600 dark:text-neutral-400", border: "border-neutral-500/20" }
@@ -54,6 +54,9 @@ export function getClinicalCategory(entity: KnowledgeEntity): string {
   }
   if (identifier.includes("asthma") || identifier.includes("rhinitis") || identifier.includes("sinus") || identifier.includes("cough") || identifier.includes("breath") || identifier.includes("bronch") || identifier.includes("allerg") || identifier.includes("wheez") || identifier.includes("throat") || identifier.includes("laryngitis") || identifier.includes("voice") || identifier.includes("dysphonia") || identifier.includes("gelsemium") || identifier.includes("belladonna") || identifier.includes("hepar")) {
     return "respiratory";
+  }
+  if (identifier.includes("anxiety")) {
+    return "mental-health";
   }
   if (identifier.includes("pain") || identifier.includes("back") || identifier.includes("headache") || identifier.includes("migraine") || identifier.includes("neuralg") || identifier.includes("neurop") || identifier.includes("sciatica") || identifier.includes("joint") || identifier.includes("stiff") || identifier.includes("muscle") || identifier.includes("plantar") || identifier.includes("fasciitis") || identifier.includes("meniere") || identifier.includes("paresthesia") || identifier.includes("numbness") || identifier.includes("limbs") || identifier.includes("legs") || identifier.includes("arnica") || identifier.includes("rhus") || identifier.includes("bryonia")) {
     return "musculoskeletal";
@@ -255,7 +258,10 @@ export function generateLearningPath(
   const steps: LearningPathStep[] = [];
   const excludeIds = new Set<string>([currentEntity.id]);
   const category = getClinicalCategory(currentEntity);
-  const capitalizedCat = category.charAt(0).toUpperCase() + category.slice(1);
+  const capitalizedCat = category
+    .split("-")
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
 
   // Helper to safely get entities and add to exclude set
   const getNextEntity = (type: EntityType) => {
