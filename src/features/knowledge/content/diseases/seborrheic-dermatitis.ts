@@ -7,13 +7,13 @@ export const SeborrheicDermatitisDisease: KnowledgeEntity = {
   editorialStatus: "published",
   reviewStatus: "owner-authorization-required",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-08-14T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
     reviewed: "2026-08-14T12:00:00Z"
   },
   title: {
-    en: "Seborrheic Dermatitis: Flaky Scalp, Brows & Face",
+    en: "Seborrheic Dermatitis",
     hi: "सेबोरहाइक डर्मेटाइटिस / चिकनी पपड़ीदार त्वचा रोग (Seborrheic Dermatitis)",
     gu: "સેબોરિક ડર્મેટાઇટિસ / તેલિય ચીકણી પોપડીઓ અને લાલ ચકામા (Seborrheic Dermatitis)",
     mr: "सेबोरिक डर्मेटायटिस / तेलकट खपल्या व त्वचेची जळजळ (Seborrheic Dermatitis)",
@@ -30,9 +30,9 @@ export const SeborrheicDermatitisDisease: KnowledgeEntity = {
   },
   content: {
     overview:
-      "Seborrheic Dermatitis is a chronic, relapsing inflammatory dermatosis characterized by well-demarcated erythematous plaques topped with greasy, yellowish, oily scales occurring predominantly in regions of high sebaceous gland density—including the scalp, face (nasolabial folds, glabella, eyebrows, beard area), retroauricular folds, external auditory canal, and upper central chest (pre-sternal region). Occurring in two distinct age populations—infants (infantile seborrheic dermatitis, presenting as thick greasy yellowish scalp crusts termed 'cradle cap' within the first 3 months of life) and adults (peak incidence between 30 and 60 years)—it is driven by an abnormal cell-mediated cutaneous inflammatory reaction to lipophilic Malassezia yeasts feeding on sebum lipids. In severe or sudden explosive forms, it may serve as an early cutaneous marker for underlying HIV infection or Parkinson's disease.",
+      "Seborrheic dermatitis is a common long-term skin condition that can cause flaky or greasy scales and mild redness on the scalp, eyebrows, sides of the nose, beard area, ears, or chest. In babies it is often called cradle cap. It can come and go, and treatment is focused on gentle care and controlling flares.",
     definition:
-      "A chronic inflammatory skin disorder affecting areas rich in sebaceous glands, characterized by salmon-colored erythematous patches covered with greasy, yellowish, adherent scales and mild-to-moderate pruritus.",
+      "It is an inflammatory skin condition in oilier areas of the body. It is related to the same pattern that can cause dandruff, but may be redder or affect the face and chest as well as the scalp.",
     causes: [
       "Malassezia yeast colonization: overgrowth of Malassezia globosa and Malassezia restricta whose lipases degrade sebum triglycerides into irritant unsaturated free fatty acids",
       "Cutaneous inflammatory and immune response: localized epidermal penetration of metabolites activates keratinocyte Toll-like receptors (TLR2), NF-kappaB signaling, and local production of pro-inflammatory cytokines (IL-1beta, IL-6, TNF-alpha, IL-8)",
@@ -60,11 +60,11 @@ export const SeborrheicDermatitisDisease: KnowledgeEntity = {
     differentialDiagnosis:
       "Differentiate Seborrheic Dermatitis from Plaque Psoriasis / Sebopsoriasis (thick, silvery-white micaceous scales on sharply defined erythematous plaques with Auspitz sign and nail pitting), Atopic Dermatitis (intense pruritus on flexural surfaces with elevated IgE), Rosacea (erythema and telangiectasias across central face without greasy yellow scales; triggered by spicy foods/heat), Contact Dermatitis, Lupus Erythematosus (malar butterfly rash sparing nasolabial folds, positive ANA), and Tinea Faciei.",
     conventionalManagement:
-      "A multimodal topical strategy aimed at clearing scales, suppressing Malassezia burden, and soothing inflammation: (1) Scalp therapy: topical antifungal shampoos (Ketoconazole 2%, Ciclopirox 1%, Zinc Pyrithione 1–2%, Selenium Sulfide 2.5%) lathered and left for 5 minutes 2 to 3 times weekly; alternating with salicylic acid or coal tar shampoos for thick adherent crusts. (2) Facial and body therapy: topical antifungal creams (Ketoconazole 2% cream, Ciclopirox cream applied BID for 2–4 weeks). (3) Non-steroidal topical anti-inflammatory agents: Topical Calcineurin Inhibitors (Pimecrolimus 1% cream, Tacrolimus 0.1% ointment; highly effective steroid-sparing agents for facial and retroauricular areas avoiding steroid-induced skin atrophy or rosacea). (4) Mild low-potency topical corticosteroids (hydrocortisone 1% cream) for acute short-term flares (maximum 5–7 days). (5) Infantile cradle cap management: gentle massage with pure mineral or coconut oil to soften crusts followed by gentle brushing with a soft infant comb and washing with mild baby shampoo.",
+      "Care can include an anti-dandruff or antifungal shampoo for the scalp and a clinician- or pharmacist-advised treatment for the face or body. Babies with cradle cap usually need only gentle washing and softening of loose scales; do not pick them off. Seek advice before using medicated treatments on an infant or around the eyes.",
     homeopathicApproach:
-      "Homeopathic constitutional and skin remedies (such as Graphites, Sulphur, Natrum Muriaticum, Mezereum, Kali Sulphuricum, Calcarea Carbonica, Sepia Officinalis, Arsenicum Album, Petroleum, Thuja Occidentalis) serve as supportive care to ease facial redness, soothe itchy retroauricular fissures, and support skin barrier resilience alongside gentle cleansers, antifungal creams, and dermatologist follow-up.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for seborrheic dermatitis. It should not replace assessment for a painful, infected, widespread, or treatment-resistant skin eruption.",
     lifestyleAdvice:
-      "Wash face daily with a gentle, fragrance-free foaming cleanser, avoid alcohol-based skin toners, harsh soaps, and heavy petrolatum-based moisturizers that trap sebum, use lukewarm water rather than hot showers to prevent facial flushing, shave facial hair or maintain a trimmed beard if facial scaling persists beneath facial hair, spend safe brief periods in natural sunlight (UV radiation inhibits Malassezia growth), and avoid touching or picking at facial scales.",
+      "Use a gentle fragrance-free cleanser and avoid harsh soaps, scrubs, or picking at scales. Follow the directions for any shampoo or cream, and keep a simple routine rather than switching products frequently during a flare. Avoid deliberate sun exposure as treatment and continue normal sun protection.",
     references: [
       "CIT-0004",
       "CIT-0005",
@@ -75,12 +75,12 @@ export const SeborrheicDermatitisDisease: KnowledgeEntity = {
     ],
     faqs: [
       {
-        question: "How is seborrheic dermatitis different from facial eczema or rosacea?",
-        answer: "Seborrheic dermatitis specifically produces greasy, yellowish scales located directly in the oily folds between the nose and cheeks (nasolabial folds) and eyebrows. Rosacea causes facial redness and spider veins on the cheeks and nose without greasy scales, while eczema typically appears on dry flexural areas like the insides of the elbows."
+        question: "How is seborrheic dermatitis different from dandruff, eczema, or rosacea?",
+        answer: "Dandruff is usually limited to scalp flakes. Seborrheic dermatitis can also affect oily areas such as the eyebrows and sides of the nose. Eczema is often drier and can affect different areas; rosacea causes facial redness without typical greasy scale. A clinician can clarify the diagnosis when it is not clear."
       },
       {
-        question: "How should cradle cap be treated in a newborn baby?",
-        answer: "Cradle cap is completely harmless and self-limiting in infants. Soften the thick yellow crusts by applying a small amount of pure mineral oil or coconut oil to the baby's scalp for 15 minutes, gently brush with a soft baby brush, and wash with mild baby shampoo. Avoid picking or aggressively peeling off dry crusts."
+        question: "What is safe care for cradle cap?",
+        answer: "Cradle cap is common and usually settles. Use gentle baby shampoo and a soft brush for loose scales; avoid peeling or scratching the scalp. Ask a clinician if the skin is swollen, weeping, painful, spreads widely, or your baby seems unwell."
       }
     ],
     redFlags: [
@@ -117,7 +117,7 @@ export const SeborrheicDermatitisDisease: KnowledgeEntity = {
   readingTimeMinutes: 6,
   audience: "patient",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.1.0: Promoted to governed v1.1.0 with comprehensive sebaceous zone inflammatory clinical boundaries, erythroderma/eczema herpeticum red flags, and verified citations"],
+  changeLog: ["1.2.0: Simplified adult and infant care, linked the condition clearly to dandruff, and clarified when a skin eruption needs assessment.", "1.1.0: Promoted to governed v1.1.0 with comprehensive sebaceous zone inflammatory clinical boundaries, erythroderma/eczema herpeticum red flags, and verified citations"],
   clinicalPearl: "Sudden explosive, severe, or treatment-refractory seborrheic dermatitis in a young adult is an established clinical indicator warranting HIV screening.",
   quickFacts: {
     "Bimodal Incidence": "Infants (0–3 months; cradle cap) and Adults (30–60 years; male predominance)",

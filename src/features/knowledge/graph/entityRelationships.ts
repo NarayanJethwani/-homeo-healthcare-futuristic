@@ -7,6 +7,17 @@ export const KNOWLEDGE_RELATIONSHIPS: KnowledgeRelationship[] = [
   { source: "D0003", relation: "hasSymptom", target: "S0003" }, // Migraine has Headache
   { source: "D0004", relation: "hasSymptom", target: "S0001" }, // IBS has Heartburn/Bloating
 
+  // Skin-health collection: keep each page connected to the symptom or
+  // closely related condition that helps a reader make a sensible next move.
+  { source: "D0014", relation: "hasSymptom", target: "S0002" }, // Acne has skin eruptions
+  { source: "D0014", relation: "relatedTo", target: "D0013" }, // Acne and PCOS can share hormonal context
+  { source: "D0015", relation: "hasSymptom", target: "S0002" }, // Psoriasis has skin eruptions
+  { source: "D0015", relation: "relatedTo", target: "D0038" }, // Psoriasis and seborrheic dermatitis can look similar
+  { source: "D0016", relation: "hasSymptom", target: "S0018" }, // Hives has skin rash
+  { source: "D0016", relation: "relatedTo", target: "D0002" }, // Hives and eczema are common itchy-rash differentials
+  { source: "D0037", relation: "relatedTo", target: "D0038" }, // Dandruff is related to seborrheic dermatitis
+  { source: "D0038", relation: "hasSymptom", target: "S0002" }, // Seborrheic dermatitis has skin eruptions
+
   // Diseases to Remedies
   { source: "D0001", relation: "treatedWith", target: "R0002" }, // GERD - Nux Vomica
   { source: "D0001", relation: "treatedWith", target: "R0003" }, // GERD - Lycopodium
