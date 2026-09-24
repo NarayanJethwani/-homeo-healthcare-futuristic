@@ -20,7 +20,7 @@ export const MuscleWeaknessSymptom: KnowledgeEntity = {
     ar: "ضعف العضلات (Muscle Weakness)"
   },
   summary: {
-    en: "Clinical triage, neurological localization, and emergency management of Muscle Weakness under AAN 2021 standards.",
+    en: "Muscle weakness means loss of power, not simply tiredness. Sudden weakness—especially on one side—is an emergency.",
     hi: "मांसपेशियों की कमजोरी की नैदानिक समझ और आपातकालीन रेड फ्लैग्स.",
     gu: "સ્નાયુઓની નબળાઈના લક્ષણ ની સમજણ અને ઇમરજન્સી ફ્લેગ્સ.",
     mr: "स्नायूंच्या दुर्बलतेचे लक्षण आणि तातडीचे रेड फ्लॅग्स.",
@@ -28,21 +28,21 @@ export const MuscleWeaknessSymptom: KnowledgeEntity = {
     ar: "التفرقة السريرية والعلامات التحذيرية لضعف العضلات."
   },
   content: {
-    definition: "Muscle Weakness (Paresis): Reduction in maximum voluntary motor force exerted by one or more skeletal muscle groups, localizing to upper motor neuron (brain/spinal cord), lower motor neuron (anterior horn cell/root/nerve), neuromuscular junction, or primary muscle tissue.",
-    clinicalMeaning: "Reflects acute ischemic stroke, spinal cord compression, Guillain-Barré syndrome, myasthenia gravis crisis, or severe electrolyte imbalance (hypokalemia) requiring immediate neurological localization.",
+    definition: "Muscle weakness is reduced ability to move or hold a part of the body as usual. It is different from fatigue, which is a low-energy feeling without a clear loss of power.",
+    clinicalMeaning: "Weakness may follow illness, injury, nerve or muscle problems, medicines, or metabolic conditions. Sudden or rapidly progressive weakness needs emergency assessment.",
     commonCauses: [
-      "Stroke or Transient Ischemic Attack (TIA)",
-      "Spinal Cord Compression or Acute Radiculopathy",
-      "Guillain-Barré Syndrome or Myasthenia Gravis",
-      "Severe Hypokalemia, Hypomagnesemia, or Polymyositis"
+      "Stroke or a transient ischaemic attack",
+      "A nerve, spinal cord, muscle, or neuromuscular condition",
+      "Illness, injury, medicine effects, or electrolyte changes",
+      "A long-term neurological or muscle condition"
     ],
-    differentialDiagnosis: "Differentiate upper motor neuron weakness (hyperreflexia, spasticity) from lower motor neuron weakness (flaccidity, atrophy), myasthenia (fatigability), and myopathy.",
+    differentialDiagnosis: "A clinician considers onset, one- or two-sided pattern, sensation, pain, speech or swallowing changes, breathing, injury, medicines, and other neurological symptoms.",
     redFlags: [
-      "Sudden focal weakness of face, arm, or leg (Stroke / TIA - FAST alert)",
-      "Rapidly ascending paraparesis or quadriparesis with loss of deep tendon reflexes (Guillain-Barré Syndrome)",
-      "Weakness accompanied by dyspnea or dysphagia (Impending Neuromuscular Respiratory Crisis)"
+      "Call emergency services for sudden face, arm, or leg weakness or numbness on one side, facial droop, speech difficulty, confusion, or sudden vision change—even if it settles.",
+      "Seek emergency help for rapidly spreading weakness, weakness with breathing or swallowing difficulty, or new bladder or bowel control problems.",
+      "Arrange prompt review for new, persistent, progressive, or function-limiting weakness."
     ],
-    lifestyleAdvice: "Immediate 911 emergency activation for acute unilateral motor weakness or dyspnea; prioritize urgent neurological imaging and electromyography.",
+    lifestyleAdvice: "Do not force exercise through unexplained weakness or use supplements as a substitute for assessment. Note the onset, body parts affected, triggers, and associated symptoms to support a clinical review.",
     references: [
       "CIT-0066",
       "CIT-0023"
@@ -71,16 +71,16 @@ export const MuscleWeaknessSymptom: KnowledgeEntity = {
     ],
   "faqs": [
     {
-      "question": "What causes muscle stiffness in the morning?",
-      "answer": "Morning stiffness is often caused by localized inflammation, muscle inactivity during sleep, or structural degenerative joint changes that temporarily reduce synovial fluid circulation."
+      "question": "Is weakness the same as fatigue?",
+      "answer": "No. Fatigue is low energy; weakness is a real reduction in power, such as being unable to lift an arm or stand as usual."
     },
     {
-      "question": "How does stress affect nerve and muscle pain?",
-      "answer": "Stress increases muscle tension and heightens pain sensitivity (central sensitization) by releasing stress hormones that lower the pain threshold."
+      "question": "When is weakness a stroke emergency?",
+      "answer": "Sudden one-sided weakness or numbness, face droop, speech difficulty, confusion, or sudden vision change requires emergency help."
     },
     {
-      "question": "What is the homeopathic approach to physical injury?",
-      "answer": "Homeopathy uses remedies like Arnica Montana to manage acute swelling and bruising, and Rhus Tox or Bryonia for joint stiffness and pain, tailored to whether movement improves or worsens the symptoms."
+      "question": "When should I get a review?",
+      "answer": "New, persistent, worsening, or function-limiting weakness should be assessed promptly."
     }
   ]
 },
