@@ -6,13 +6,13 @@ export const AcneVulgarisDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-31T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
     reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
-    en: "Acne Vulgaris",
+    en: "Acne",
     hi: "मुहासे / एक्ने वर्लगारिस (Acne Vulgaris)",
     gu: "ખીલ / એક્ને વલ્ગારિસ (Acne Vulgaris)",
     mr: "कीळ / ॲक्ने व्हल्गारिस (Acne Vulgaris)",
@@ -20,7 +20,7 @@ export const AcneVulgarisDisease: KnowledgeEntity = {
     ar: "حب الشباب الشائع",
   },
   summary: {
-    en: "An authoritative clinical profile of Acne Vulgaris covering AAD 2024 evidence guidelines, Cutibacterium acnes follicular dynamics, acne fulminans emergency red flags, and isotretinoin safety boundaries.",
+    en: "Acne can cause blackheads, whiteheads, pimples, and sometimes deep painful spots. Learn gentle skin-care steps, when treatment takes time, and when to see a dermatologist to reduce scarring.",
     hi: "मुहासों (Acne Vulgaris) का AAD 2024 मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "ખીલનું AAD 2024 ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "ॲक्ने व्हल्गारिसचे AAD 2024 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
@@ -29,50 +29,50 @@ export const AcneVulgarisDisease: KnowledgeEntity = {
   },
   content: {
     overview:
-      "Acne Vulgaris is a chronic inflammatory dermatosis of the pilosebaceous unit characterized by follicular hyperkeratinization, seborrhea, Cutibacterium acnes proliferation, and inflammatory papules, pustules, nodules, or cysts [D0014-KEYNOTES, CIT-0046]. AAD 2024 classifies severity as mild, moderate, or severe.",
+      "Acne is a common skin condition that causes blackheads, whiteheads, pimples, or deeper painful lumps. It develops when pores become blocked by oil and dead skin cells and inflammation follows. It is not caused by being unclean, and effective treatment is available.",
     definition:
-      "A chronic multifactorial inflammatory disorder of hair follicles and sebaceous glands leading to comedones, inflammatory papulopustules, deep nodulocysts, and potential scarring.",
+      "It is an inflammatory condition of hair follicles and oil glands. It can affect the face, chest, shoulders, and back.",
     causes: [
-      "Androgen-driven seborrhea and altered sebum lipid composition [D0014-KEYNOTES, CIT-0046]",
-      "Abnormal follicular infundibular hyperkeratinization blocking sebum outflow",
-      "Follicular colonization by Cutibacterium acnes triggering innate and adaptive cutaneous immunity",
+      "Pores becoming blocked by oil and dead skin cells.",
+      "Inflammation and normal skin bacteria contributing to spots.",
+      "Hormonal changes, some medicines, and some hair or skin products can make acne more likely.",
     ],
     riskFactors: [
-      "Adolescent and young adult hyperandrogenemia or PCOS",
-      "Family history of severe nodulocystic acne and keloidal scarring",
-      "Use of comedogenic cosmetics, topical corticosteroids, or systemic medications (lithium, anticonvulsants)",
+      "Puberty, menstrual or other hormonal changes, including PCOS in some people.",
+      "A family tendency to acne or scarring.",
+      "Products that clog pores or medicines that can trigger acne-like breakouts.",
     ],
     symptoms: [
-      "Non-inflammatory comedones (open blackheads, closed whiteheads) and inflammatory papules/pustules [D0014-KEYNOTES, CIT-0046]",
-      "Painful deep erythematous nodulocysts located on face, chest, upper back, and shoulders",
-      "Post-inflammatory hyperpigmentation (PIH), erythematous macules, and permanent atrophic/hypertrophic scarring",
+      "Blackheads, whiteheads, red bumps, or pus-filled spots.",
+      "Deep, painful lumps can occur, especially on the face, chest, shoulders, or back.",
+      "Dark marks can remain after spots heal; deeper acne can leave scars.",
     ],
     diagnosis:
-      "Diagnosed clinically via skin examination assessing lesion type, distribution, and severity grading (Global Acne Grading System). Hormonal evaluation (testosterone, DHEAS) indicated if hyperandrogenism signs exist [CIT-0046].",
+      "A clinician or dermatologist usually diagnoses acne by looking at the types and pattern of spots. They may ask about medicines, menstrual changes, excess hair growth, or other signs that a hormone assessment could be useful.",
     differentialDiagnosis:
       "Differentiate Acne Vulgaris from Rosacea, Folliculitis (Malassezia/bacterial), Perioral Dermatitis, Hidradenitis Suppurativa, and Drug-Induced Acneiform Eruptions.",
     conventionalManagement:
-      "Management includes topical benzoyl peroxide, topical retinoids (adapalene, tretinoin), topical/oral antibiotics (doxycycline), hormonal therapy (COCPs, spironolactone), and oral isotretinoin for severe recalcitrant nodulocystic acne [CIT-0046].",
+      "Treatment depends on the type and severity of acne. It can include a topical retinoid, benzoyl peroxide, other prescribed medicines, or specialist treatment for deep or scarring acne. Give a consistent plan time to work and ask a clinician or pharmacist which products are safe for you, especially during pregnancy.",
     homeopathicApproach:
-      "Homeopathic remedies (such as Hepar Sulphuris, Silicea, Sulphur, Pulsatilla, Berberis Aquifolium) act as supportive constitutional therapy to soothe cutaneous inflammation, reduce pustular suppurative tendency, and promote skin healing alongside dermatological evaluation.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for acne. It must not replace dermatologist care for deep, painful, scarring, or rapidly worsening acne.",
     lifestyleAdvice:
-      "Cleanse face twice daily with a mild non-comedogenic cleanser, avoid aggressive scrubbing or popping lesions, apply oil-free sunscreen, and consume a balanced low-glycemic diet.",
+      "Wash gently up to twice a day and after sweating. Avoid scrubs, picking, or squeezing spots because they can increase irritation and scarring. Choose oil-free or non-comedogenic products and sunscreen, and introduce acne treatments slowly if your skin becomes dry or sore.",
     references: ["CIT-0002", "CIT-0019", "CIT-0022", "CIT-0046"],
     faqs: [
       {
-        question: "When does severe Acne require emergency dermatological hospitalization?",
+        question: "When should I see a dermatologist sooner?",
         answer:
-          "Sudden explosive onset of ulcerative, necrotizing, hemorrhagic acne nodules accompanied by high fever, polyarthralgias, and systemic leukocytosis indicates ACNE FULMINANS [D0014-EMERGENCY-LIMITS, CIT-0046]. This is a DERMATOLOGICAL EMERGENCY requiring IMMEDIATE ER evaluation.",
+          "Arrange prompt care for deep painful lumps, scarring, acne that is affecting your wellbeing, or acne that does not improve with a consistent plan. Seek urgent care if a sudden severe outbreak comes with fever, joint pain, or feeling very unwell.",
       },
       {
-        question: "Can homeopathic remedies replace prescribed systemic isotretinoin or dermatological supervision?",
+        question: "Can homeopathy replace prescribed acne treatment?",
         answer:
-          "NO. Homeopathy MUST NOT be used to replace prescribed systemic isotretinoin in severe scarring nodulocystic acne or delay dermatological supervision [D0014-REGULATORY-LIMITS]. Delaying effective treatment in severe nodular acne risks permanent facial scarring.",
+          "No. Do not use homeopathy to delay dermatologist assessment, prescribed medicines, or treatment that can prevent permanent scars.",
       },
       {
-        question: "How does homeopathy integrate with standard dermatological acne care?",
+        question: "Why is my acne treatment taking time?",
         answer:
-          "Homeopathy serves as complementary constitutional support while patients remain under standard dermatological care and non-comedogenic skin hygiene protocols [D0014-REGULATORY-LIMITS].",
+          "Acne treatment works gradually because it treats both current and future blocked pores. Follow the product directions and give a consistent plan several weeks before deciding whether it is helping, unless you have a concerning reaction.",
       },
     ],
   },
@@ -98,5 +98,6 @@ export const AcneVulgarisDisease: KnowledgeEntity = {
   changeLog: [
     "1.0.0: Initial release of Acne Vulgaris profile",
     "1.1.0: Upgraded with AAD 2024 evidence citations (CIT-0046), passage-level claim citations (D0014-KEYNOTES, D0014-EMERGENCY-LIMITS, D0014-REGULATORY-LIMITS), acne fulminans red flags, and isotretinoin safety boundaries",
+    "1.2.0: Reframed the page around acne types, a gentle routine, treatment expectations, and scar-prevention decisions.",
   ],
 };
