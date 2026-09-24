@@ -13,7 +13,7 @@ export const ScabiesDisease: KnowledgeEntity = {
     reviewed: "2026-09-21T00:00:00Z",
   },
   title: {
-    en: "Scabies: Intense Itching and a Spreading Rash",
+    en: "Scabies",
     hi: "स्केबीज़: तेज खुजली और फैलता हुआ रैश",
     gu: "સ્કેબીઝ: તીવ્ર ખંજવાળ અને ફેલાતો ચકામો",
     mr: "स्केबीज: तीव्र खाज आणि पसरणारा पुरळ",

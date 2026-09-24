@@ -13,7 +13,7 @@ export const ImpetigoDisease: KnowledgeEntity = {
     reviewed: "2026-09-21T00:00:00Z",
   },
   title: {
-    en: "Impetigo: Contagious Golden-Crusted Sores",
+    en: "Impetigo",
     hi: "इम्पेटाइगो: संक्रामक सुनहरी पपड़ी वाले घाव",
     gu: "ઇમ્પેટાઇગો: ચેપી, સોનેરી પોપડીવાળા ચાંદા",
     mr: "इम्पेटिगो: संसर्गजन्य, सोनेरी खपली असलेले घाव",
