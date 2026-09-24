@@ -20,7 +20,7 @@ export const ItchingSymptom: KnowledgeEntity = {
     ar: "الحكة (Pruritus)"
   },
   summary: {
-    en: "Clinical evaluation, differential diagnosis, systemic etiology screening, and supportive management for Pruritus under AAD 2020 guidelines.",
+    en: "Itchy skin is often linked to dryness or irritation; learn simple skin care and when persistent itching needs a check-up.",
     hi: "खुजली के लक्षण की नैदानिक समझ और प्रणालीगत चेतावनी लक्षण.",
     gu: "ખંજવાળના લક્ષણની તબીબી સમજણ અને ઈમરજન્સી ચેતવણી લક્ષણો.",
     mr: "खाजेच्या लक्षणांची वैद्यकीय माहिती आणि आपत्कालीन इशारे.",
@@ -28,60 +28,37 @@ export const ItchingSymptom: KnowledgeEntity = {
     ar: "التقييم السريري وعلامات الخطر للحكة."
   },
   content: {
-    definition: "Pruritus (Itching): An unpleasant, localized or generalized cutaneous sensation provoking the desire or reflex to scratch.",
-    clinicalMeaning: "Reflects dermatologic inflammatory disease (pruritoceptive), neuropathic C-fiber stimulation, or neurogenic/systemic accumulation of pruritogens (bile salts, uremic toxins, cytokines).",
+    definition: "Itching, also called pruritus, is an uncomfortable skin sensation that makes you want to scratch. It may affect one small area or much of the body.",
+    clinicalMeaning: "Itchy skin is usually caused by dryness, irritation, eczema, hives, infection, or a reaction to a product or medicine. Itching all over the body, persistent itch without an obvious rash, or itch in pregnancy should be assessed rather than self-diagnosed.",
     commonCauses: [
-      "Dermatologic: Atopic Dermatitis, Xerosis, Contact Dermatitis, Urticaria, Psoriasis",
-      "Systemic: Cholestatic Liver Disease, Chronic Kidney Disease (Uremic Pruritus)",
-      "Hematologic: Polycythemia Vera, Hodgkin Lymphoma, Iron Deficiency Anemia",
-      "Endocrine / Infectious: Hyperthyroidism, Diabetes Mellitus, Scabies, Cutaneous Fungal Infection"
+      "Dry skin, eczema, contact dermatitis, hives, or psoriasis",
+      "Irritants or allergens such as fragranced products, detergents, metals, plants, fabrics, or medicines",
+      "Fungal infection, scabies, insect bites, or lice",
+      "Less commonly, a thyroid, liver, kidney, or blood condition"
     ],
-    differentialDiagnosis: "Differentiate primary dermatologic rash with pruritus from generalized non-rash systemic pruritus (biliary, renal, hematologic, malignant, or medication-induced).",
+    differentialDiagnosis: "Notice where the itch began, whether there is a rash or swelling, what new products or medicines were introduced, and whether anyone close to you is itchy. A clinician can assess for skin conditions, allergy, infection, or a medical cause when necessary.",
     redFlags: [
-      "Generalized pruritus accompanied by jaundice, dark urine, or pale stools (biliary obstruction)",
-      "Aquagenic pruritus (intense itching after warm water exposure) with plethoric face (Polycythemia Vera)",
-      "Unexplained generalized itching with B-symptoms (fever, night sweats, weight loss, painless lymphadenopathy)",
-      "Generalized erythroderma (>90% body surface area) with skin exfoliation and systemic toxicity"
+      "Get emergency help for itching with trouble breathing or swallowing, or swelling of the lips, tongue, throat, or face",
+      "Seek urgent advice for a rapidly spreading, painful, blistering rash, skin that is hot or leaking pus, or itch with fever and feeling very unwell",
+      "Book a GP review for severe, widespread, recurrent, or persistent itching; yellow skin or eyes, dark urine, unplanned weight loss, or itch during pregnancy should be checked promptly"
     ],
-    lifestyleAdvice: "Apply emollient barrier creams liberally, use lukewarm bath water with soap-free synthetic detergents, keep fingernails trimmed, wear loose cotton clothing, and avoid scratching.",
+    lifestyleAdvice: "Use an unperfumed moisturiser regularly, take cool or lukewarm showers, choose loose cotton clothes, and keep nails short. Pat or press the skin instead of scratching. Stop a clearly irritating new product if it is safe to do so, and ask a pharmacist before using medicated creams.",
     references: [
       "CIT-0079",
       "CIT-0023"
     ],
-    claimCitations: [
-      {
-        claimId: "CLM-S0114-001",
-        passage: "Generalized pruritus in the absence of primary skin lesions requires systematic evaluation for underlying hepatic, renal, hematologic, thyroid, or malignant disease.",
-        citationIds: ["CIT-0079"]
-      },
-      {
-        claimId: "CLM-S0114-002",
-        passage: "Severe generalized itching accompanied by jaundice or elevated serum bile acids indicates cholestatic hepatobiliary obstruction.",
-        citationIds: ["CIT-0079"]
-      },
-      {
-        claimId: "CLM-S0114-003",
-        passage: "Aquagenic pruritus without visible rash is a classical symptom of Polycythemia Vera, requiring complete blood count and JAK2 V617F mutation testing.",
-        citationIds: ["CIT-0079"]
-      },
-      {
-        claimId: "CLM-S0114-004",
-        passage: "Homeopathic topical and internal supportive care (e.g., Sulphur, Graphites, Rhus Tox) does not substitute for hepatobiliary or hematologic evaluation in non-dermatologic systemic pruritus.",
-        citationIds: ["CIT-0023"]
-      }
-    ],
   "faqs": [
     {
-      "question": "Why do skin conditions worsen with emotional stress?",
-      "answer": "Stress releases cortisol and pro-inflammatory cytokines, which compromise the skin barrier and activate immune pathways, triggering flares of eczema, psoriasis, or acne."
+      "question": "What can help itchy skin at home?",
+      "answer": "Unperfumed moisturiser, cool or lukewarm showers, loose cotton clothing, and avoiding fragranced products can help. A pharmacist can advise on suitable products or medicines."
     },
     {
-      "question": "Are topical steroids the only treatment for eczema?",
-      "answer": "No. While topical steroids manage acute flare inflammation, long-term care requires barrier repair (emollients), trigger identification, and systemic constitutional support."
+      "question": "When should I see a clinician?",
+      "answer": "Seek advice if the itching is severe, widespread, keeps returning, disrupts daily life, comes with a new rash or swelling, or does not improve with simple care."
     },
     {
-      "question": "How does homeopathy approach skin diseases?",
-      "answer": "Homeopathy views skin eruptions as outward manifestations of internal systemic imbalance. Treatment focuses on systemic immunomodulation and constitutional remedies rather than purely suppressing symptoms."
+      "question": "Can I use a steroid cream for any itch?",
+      "answer": "No. The right treatment depends on the cause and body area. Ask a pharmacist or clinician before using a steroid cream, especially on the face, genitals, or broken skin."
     }
   ]
 },
