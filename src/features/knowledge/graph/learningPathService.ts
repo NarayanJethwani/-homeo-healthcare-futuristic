@@ -70,7 +70,7 @@ export function getClinicalCategory(entity: KnowledgeEntity): string {
       if (col.id === "col-respiratory") return "respiratory";
       if (col.id === "col-skin") return "dermatology";
       if (col.id === "col-musculoskeletal") return "musculoskeletal";
-      if (col.id === "col-womens") return "urology";
+      if (col.id === "col-womens") return "reproductive";
     }
   }
 
