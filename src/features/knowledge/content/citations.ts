@@ -1927,6 +1927,12 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0126", title: "Headaches", authors: ["National Health Service"], journal: "NHS", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.nhs.uk/symptoms/headaches/", sourceIdentifier: "NHS-HEADACHES", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-23", verificationEvidenceUrl: "https://www.nhs.uk/symptoms/headaches/", verificationNotes: "NHS public guidance covering common contributors, headache diaries, urgent and emergency warning signs, and when to seek clinical advice.", scopeTags: ["headache", "headache-diary", "headache-triggers", "headache-red-flags", "urgent-care"]
+  },
+  {
+    id: "CIT-0145", title: "Do you have hair loss or hair shedding?", authors: ["American Academy of Dermatology"], journal: "American Academy of Dermatology", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.aad.org/public/diseases/hair-loss/insider/shedding", sourceIdentifier: "AAD-HAIR-LOSS-SHEDDING", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-24", verificationEvidenceUrl: "https://www.aad.org/public/diseases/hair-loss/insider/shedding", verificationNotes: "AAD guidance distinguishing normal and excessive shedding from hair loss, with common triggers and the value of dermatology assessment.", scopeTags: ["hair-fall", "hair-loss", "hair-shedding", "telogen-effluvium", "dermatology"]
+  },
+  {
+    id: "CIT-0146", title: "Hair loss: Diagnosis and treatment", authors: ["American Academy of Dermatology"], journal: "American Academy of Dermatology", year: 2026, citationStyle: "AMA", category: "Clinical-Review", canonicalUrl: "https://www.aad.org/public/diseases/hair-loss/treatment/diagnosis-treat", sourceIdentifier: "AAD-HAIR-LOSS-DIAGNOSIS", sourceAuthority: "external-authoritative", verificationStatus: "verified", verifiedAt: "2026-09-24", verificationEvidenceUrl: "https://www.aad.org/public/diseases/hair-loss/treatment/diagnosis-treat", verificationNotes: "AAD guidance covering the clinical history, scalp examination, possible testing and cause-specific management of hair loss.", scopeTags: ["hair-fall", "hair-loss", "scalp-exam", "hair-loss-testing", "dermatology"]
   }
 ];
 
