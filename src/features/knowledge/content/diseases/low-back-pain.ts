@@ -13,7 +13,7 @@ export const LowBackPainDisease: KnowledgeEntity = {
     reviewed: "2026-08-14T12:00:00Z"
   },
   title: {
-    en: "Mechanical Low Back Pain & Lumbago (Lumbar Spondylosis & Myofascial Strain)",
+    en: "Low Back Pain",
     hi: "कमर दर्द / लम्बर स्पोंडिलोसिस व लंबैगो (Low Back Pain / Lumbago)",
     gu: "કમરનો દુખાવો / લમ્બાગો (Low Back Pain / Lumbar Spondylosis)",
     mr: "पाठदुखी आणि कंबरदुखी / लंबॅगो (Low Back Pain / Lumbar Strain)",
@@ -21,7 +21,7 @@ export const LowBackPainDisease: KnowledgeEntity = {
     ar: "ألم أسفل الظهر واللومباغو (Low Back Pain)"
   },
   summary: {
-    en: "An authoritative clinical and educational profile of Non-Specific Mechanical Low Back Pain (Lumbago), covering paraspinal muscle strain, lumbar facet arthropathy, degenerative disc disease, constitutional homeopathic supportive management, and emergency red flags for Cauda Equina Syndrome, spinal epidural abscess, metastatic vertebral collapse, and abdominal aortic aneurysm (AAA).",
+    en: "Low back pain is common and often improves with gentle movement and time. Learn safe ways to stay active, when medical review is useful, and the rare warning signs that need urgent assessment.",
     hi: "कमर दर्द (लंबैगो / मैकेनिकल लो बैक पेन) का मांसपेशीय ऐंठन पैथोलॉजी, लम्बर फैसेट आर्थ्रोपैथी, डिस्क डिजनरेशन, पारंपरिक संवैधानिक होम्योपैथिक प्रबंधन, और काउडा इक्विना सिंड्रोम (Cauda Equina) व रीढ़ की हड्डी के संक्रमण की आपातकालीन सुरक्षा सीमाओं सहित प्रामाणिक विवरण.",
     gu: "કમરનો દુખાવો (લમ્બાગો) ની મસ્ક્યુલોસ્કેલેટલ પેથોલોજી, કમરના મણકાનો ઘસારો, સ્નાયુઓની અકડાઈ, પરંપરાગત હોમિયોપેથીક સહાયક સારવાર અને પેશાબ-મળના નિયંત્રણ ગુમાવવા (કાઉડા ઇક્વિના) ની ઇમરજન્સી સીમાઓનું વિવરણ.",
     mr: "कंबरदुखी (Low Back Pain / Lumbago), मणक्यांची झीज व स्नायूंचा ताण, पारंपरिक होमिओपॅथिक पद्धत आणि कॉडा इक्विना सिंड्रोमच्या (Cauda Equina) आणीबाणीच्या मर्यादा.",
@@ -61,7 +61,7 @@ export const LowBackPainDisease: KnowledgeEntity = {
     conventionalManagement:
       "Evidence-based clinical guidelines (ACP, NICE) recommend: (1) Remaining physically active and avoiding prolonged bed rest (bed rest >48 hours delays recovery). (2) First-line non-pharmacological therapies: superficial heat wraps, spinal manipulation, acupuncture, massage, Cognitive Behavioral Therapy (CBT), and active structured exercise programs (core stabilization, McKenzie method, yoga). (3) Pharmacotherapy for acute exacerbations: oral NSAIDs (ibuprofen, naproxen) or skeletal muscle relaxants for short-term rescue use. Acetaminophen and opioids are not recommended as first-line therapies. (4) Interventional lumbar facet joint medial branch blocks or radiofrequency ablation for chronic refractory facetogenic back pain.",
     homeopathicApproach:
-      "Homeopathic constitutional and musculoskeletal remedies (such as Rhus Toxicodendron, Bryonia Alba, Arnica Montana, Kali Carbonicum, Ruta Graveolens, Calcarea Fluorica, Aesculus Hippocastanum, Berberis Vulgaris, Cimicifuga Racemosa) serve as supportive care to soothe paraspinal stiffness, ease motion-related aching, and support structural vitality alongside active exercise, core strengthening, and ergonomic modifications.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for low back pain. It must not replace clinical assessment, physiotherapy or other prescribed care, or urgent assessment for bladder, bowel, saddle-numbness, or worsening weakness warning signs.",
     lifestyleAdvice:
       "Stay active with daily walking and avoid staying in bed, apply a warm heating pad for 20 minutes to soothe paraspinal muscle spasms, practice core strengthening exercises (planks, bird-dog, pelvic tilts) once acute pain settles, maintain an ergonomic workstation with adequate lumbar support, practice safe lifting techniques (bend at the knees and hips, keep heavy loads close to the body, and never twist while lifting), and maintain a healthy body weight.",
     references: [

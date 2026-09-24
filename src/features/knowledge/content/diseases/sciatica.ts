@@ -13,7 +13,7 @@ export const SciaticaDisease: KnowledgeEntity = {
     reviewed: "2026-08-14T12:00:00Z"
   },
   title: {
-    en: "Sciatica (Lumbar Radiculopathy / Sciatic Neuralgia)",
+    en: "Sciatica",
     hi: "साइटिका / गृध्रसी (Sciatica / Lumbar Radiculopathy)",
     gu: "રાંઝણ / સાયટીકા (Sciatica / Lumbar Radiculopathy)",
     mr: "सायटिका / रांजण (Sciatica / Lumbar Radiculopathy)",
@@ -21,7 +21,7 @@ export const SciaticaDisease: KnowledgeEntity = {
     ar: "عرق النسا (Sciatica)"
   },
   summary: {
-    en: "An authoritative clinical and educational profile of Sciatica, covering L4, L5, and S1 lumbar nerve root compression, disc herniation, piriformis syndrome, constitutional homeopathic supportive management, and emergency red flags for cauda equina syndrome and progressive motor weakness (foot drop).",
+    en: "Sciatica is pain, tingling, numbness, or weakness that travels from the lower back or buttock down a leg. Learn how it differs from ordinary back pain and the signs that need urgent assessment.",
     hi: "साइटिका (गृध्रसी/कमर से पैर का दर्द) का लम्बर डिस्क हर्नियेशन पैथोलॉजी, एल5/एस1 नर्व रूट कंप्रेशन, पाइरीफॉर्मिस सिंड्रोम, पारंपरिक संवैधानिक होम्योपैथिक प्रबंधन, और कॉडा इक्विना सिंड्रोम की आपातकालीन सुरक्षा सीमाओं सहित प्रामाणिक विवरण.",
     gu: "રાંઝણ (સાયટીકા) ની લમ્બર ડિસ્ક હર્નિયેશન પેથોલોજી, કમરથી પગની એડી સુધી ખેંચાતો તીવ્ર દુખાવો, પરંપરાગત હોમિયોપેથીક સહાયક સારવાર અને કૉડા ઇક્વિના સિન્ડ્રોમની ઇમરજન્સી સીમાઓનું વિવરણ.",
     mr: "सायटिका (रांजण), कंबरेतून पायात जाणारी तीव्र कळ, पायाला मुंग्या व बधिरता, पारंपरिक होमिओपॅथिक पद्धत आणि कॉडा इक्विना सिंड्रोमच्या आणीबाणीच्या मर्यादा.",
@@ -60,7 +60,7 @@ export const SciaticaDisease: KnowledgeEntity = {
     conventionalManagement:
       "Conservative therapy forms the first-line foundation: short-term activity modification (avoiding bed rest beyond 48 hours), physical therapy (McKenzie extensions, core stabilization), NSAIDs, oral neuropathic agents (gabapentin, pregabalin), and fluoroscopy-guided lumbar transforaminal epidural steroid injections (TFESI). Surgical microdiscectomy or decompression is indicated for progressive neurological deficit, cauda equina syndrome, or refractory intractable pain lasting >6–12 weeks.",
     homeopathicApproach:
-      "Homeopathic constitutional and neuralgic remedies (such as Colocynthis, Magnesia Phosphorica, Gnaphalium Polycephalum, Rhus Toxicodendron, Hypericum Perforatum, Valeriana Officinalis, Kali Bichromicum, Bryonia) serve as supportive care to ease neuralgic spasms, relieve posture-related stiffness, and address individual pain modalities alongside core physiotherapy and ergonomic guidance.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for sciatica. It must not replace assessment, physiotherapy or other prescribed care, or emergency help for new bladder or bowel changes, saddle numbness, or severe or worsening weakness.",
     lifestyleAdvice:
       "Avoid prolonged static sitting or slumping, use a firm lumbar support cushion, engage in daily low-impact walking and gentle hamstring stretches, practice safe lifting techniques (bend at the knees and hips, keep heavy loads close to the body, and never twist while lifting), and maintain healthy abdominal core muscle tone.",
     references: [

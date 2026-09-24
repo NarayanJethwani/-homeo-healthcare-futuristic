@@ -7,6 +7,12 @@ export const KNOWLEDGE_RELATIONSHIPS: KnowledgeRelationship[] = [
   { source: "D0003", relation: "hasSymptom", target: "S0003" }, // Migraine has Headache
   { source: "D0004", relation: "hasSymptom", target: "S0001" }, // IBS has Heartburn/Bloating
 
+  // Mobility and pain guides: connect a patient's starting symptom to the most relevant condition.
+  { source: "D0017", relation: "hasSymptom", target: "S0014" }, // Osteoarthritis has Knee Pain
+  { source: "D0017", relation: "hasSymptom", target: "S0015" }, // Osteoarthritis has Joint Pain
+  { source: "D0040", relation: "relatedTo", target: "D0056" }, // Sciatica and Low Back Pain
+  { source: "D0056", relation: "relatedTo", target: "D0040" }, // Low Back Pain and Sciatica
+
   // Diseases to Remedies
   { source: "D0001", relation: "treatedWith", target: "R0002" }, // GERD - Nux Vomica
   { source: "D0001", relation: "treatedWith", target: "R0003" }, // GERD - Lycopodium

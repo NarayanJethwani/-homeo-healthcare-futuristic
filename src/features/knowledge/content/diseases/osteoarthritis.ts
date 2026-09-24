@@ -20,7 +20,7 @@ export const OsteoarthritisDisease: KnowledgeEntity = {
     ar: "الفيصال العظمي",
   },
   summary: {
-    en: "An authoritative clinical profile of Osteoarthritis covering OARSI 2019 guidelines, articular cartilage degradation mechanics, septic arthritis emergency red flags, and surgical referral safety boundaries.",
+    en: "Osteoarthritis causes joint pain, stiffness, and difficulty moving, often affecting the knees, hips, or hands. Regular exercise, healthy weight management, and tailored support can improve symptoms.",
     hi: "ऑस्टियोआर्थराइटिस का OARSI 2019 मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "ઓસ્ટિઓઆર્થરાઇટિસનું OARSI 2019 ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "ऑस्टिओआर्थरायटिसचे OARSI 2019 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
@@ -54,7 +54,7 @@ export const OsteoarthritisDisease: KnowledgeEntity = {
     conventionalManagement:
       "Management includes biomechanical therapy (weight loss, low-impact exercise, quadriceps strengthening, knee braces), topical NSAIDs, oral acetaminophen/NSAIDs, intra-articular corticosteroid or hyaluronic acid injections, and total joint arthroplasty for end-stage destruction [CIT-0049].",
     homeopathicApproach:
-      "Homeopathic remedies (such as Rhus Toxicodendron, Bryonia Alba, Calcarea Fluorica, Ruta Graveolens) act as supportive care to soothe mechanical joint stiffness, improve mobility, and reduce weather-change sensitivity alongside physical rehabilitation.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for osteoarthritis. It must not replace exercise, physiotherapy, pain management agreed with a clinician, orthopedic review, or urgent assessment of a hot, swollen, or infected joint.",
     lifestyleAdvice:
       "Perform low-impact aerobic exercise (swimming, cycling), achieve weight reduction, wear supportive shock-absorbing footwear, and utilize thermal therapy (warm baths/ice packs).",
     references: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0049"],
