@@ -6,10 +6,10 @@ export const DizzinessSymptom: KnowledgeEntity = {
   entityType: "symptom",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-31T20:30:00Z",
-    reviewed: "2026-07-31T20:30:00Z"
+    updated: "2026-09-24T00:00:00Z",
+    reviewed: "2026-09-24T00:00:00Z"
   },
   title: {
     en: "Dizziness and Vertigo",
@@ -20,7 +20,7 @@ export const DizzinessSymptom: KnowledgeEntity = {
     ar: "الدوخة والدوار (Dizziness and Vertigo)"
   },
   summary: {
-    en: "Clinical evaluation, differential diagnosis, central stroke red flags (HINTS examination), and supportive management for Dizziness under AAN 2020 guidelines.",
+    en: "Dizziness can mean feeling faint, off-balance or as if you or the room is spinning. Learn how to describe the pattern, stay safe, and know when to seek urgent help.",
     hi: "चक्कर आने के लक्षण की नैदानिक समझ और स्ट्रोक चेतावनी लक्षण.",
     gu: "ચક્કર આવવાના લક્ષણની તબીબી સમજણ અને ઈમરજન્સી ચેતવણી લક્ષણો.",
     mr: "चक्कर येण्याच्या लक्षणांची वैद्यकीय माहिती आणि आपत्कालीन इशारे.",
@@ -28,60 +28,55 @@ export const DizzinessSymptom: KnowledgeEntity = {
     ar: "التقييم السريري وعلامات الخطر للدوخة."
   },
   content: {
-    definition: "Dizziness: A broad clinical term encompassing rotational spinning sensation (Vertigo), lightheadedness/presyncope, disequilibrium, or non-specific spatial disorientation.",
-    clinicalMeaning: "Reflects vestibular nerve or inner ear pathology (BPPV, vestibular neuritis), central brainstem/cerebellar stroke, cardiac dysrhythmia, or orthostatic hypotension.",
+    definition: "Dizziness is a broad word people use for different sensations. You may feel light-headed or close to fainting, unsteady on your feet, or as though you or the room is spinning. The spinning feeling is called vertigo. Describing exactly what happens, how long it lasts and what brings it on helps identify the cause.",
+    clinicalMeaning: "Many causes of dizziness are not serious, but dizziness can occasionally signal a problem that needs urgent care. It may relate to dehydration, a sudden blood-pressure drop, medicines, an inner-ear balance problem, migraine, low blood sugar, a heart rhythm problem or a neurological condition. New, severe or persistent symptoms deserve medical advice rather than self-diagnosis.",
     commonCauses: [
-      "Benign Paroxysmal Positional Vertigo (BPPV), Vestibular Neuritis / Labyrinthitis",
-      "Meniere's Disease, Vestibular Migraine",
-      "Orthostatic Hypotension, Medication Side Effects (Antihypertensives, Sedatives)",
-      "Anemia, Hypoglycemia, Dehydration, Anxiety / Hyperventilation"
+      "Dehydration, fever, not eating enough, getting up quickly, or a sudden drop in blood pressure",
+      "Medicines, alcohol, caffeine, nicotine or other substances that can affect alertness or blood pressure",
+      "Inner-ear balance conditions, including positional vertigo, labyrinthitis or Ménière's disease",
+      "Migraine, low blood sugar, anaemia, anxiety, a heart rhythm problem or another physical health condition"
     ],
-    differentialDiagnosis: "Differentiate peripheral vestibular dizziness (BPPV, neuritis) from central neurological stroke (posterior circulation / cerebellar ischemia), cardiac arrhythmias (AV block, VT), and presyncope.",
+    differentialDiagnosis: "A clinician may ask whether the feeling is spinning, faintness or imbalance; when it started; whether head movement, standing, food, illness, medicines or stress affect it; and whether there is hearing loss, ringing in the ears, headache, palpitations, chest pain or neurological symptoms. They may check blood pressure, heart rhythm, walking, balance, hearing or blood tests depending on the pattern.",
     redFlags: [
-      "Sudden onset continuous vertigo with focal neurological deficits (dysarthria, diplopia, ataxia, facial weakness)",
-      "Abnormal HINTS exam (normal head impulse, direction-changing nystagmus, vertical skew deviation - suggestive of central stroke)",
-      "Dizziness accompanied by chest pain, palpitations, presyncope, or loss of consciousness",
-      "Sudden severe unilateral hearing loss or inability to stand/walk unassisted"
+      "Call emergency services or go to the nearest emergency department for sudden or severe dizziness with weakness or numbness on one side, facial drooping, trouble speaking, trouble swallowing, loss of vision, double vision, new confusion, or a severe new headache.",
+      "Seek emergency help for dizziness with chest pain, severe shortness of breath, fainting, a new irregular or racing heartbeat, seizure, or a head injury.",
+      "Seek urgent medical advice if you cannot keep fluids down, cannot stand or walk safely, have sudden hearing loss, or have fever with a severe headache or a stiff neck.",
+      "Arrange a clinical review if dizziness is new, keeps returning, is getting worse, follows a medicine change, or is affecting driving, work or daily life."
     ],
-    lifestyleAdvice: "Perform Epley maneuver for positional vertigo under guidance, change positions slowly, maintain adequate hydration, avoid sudden neck movements, and reduce salt intake if Meniere's disease is suspected.",
-    references: [
-      "CIT-0077",
-      "CIT-0023"
-    ],
+    lifestyleAdvice: "When dizzy, sit or lie down promptly and get up slowly. Move carefully, use support if you are unsteady, drink fluids if you can, and avoid driving, ladders, swimming alone or operating machinery until you feel safe again. Keep a brief note of timing, triggers, food and fluids, medicines and other symptoms. Do not try a manoeuvre or exercise for vertigo unless a clinician has identified the likely cause and shown you how to do it safely.",
+    references: ["CIT-0143", "CIT-0144"],
     claimCitations: [
       {
-        claimId: "CLM-S0012-001",
-        passage: "Acute continuous vertigo with ataxia, dysarthria, or abnormal HINTS examination requires immediate brain MRI to rule out posterior circulation cerebellar stroke.",
-        citationIds: ["CIT-0077"]
+        claimId: "S0029-DIZZINESS-UNDERSTANDING",
+        passage: "definition; clinicalMeaning; commonCauses; differentialDiagnosis",
+        citationIds: ["CIT-0143", "CIT-0144"]
       },
       {
-        claimId: "CLM-S0012-002",
-        passage: "Benign Paroxysmal Positional Vertigo (BPPV) is characterized by brief (<1 minute) episodes of spinning vertigo triggered by head position changes, effectively treated with canalith repositioning procedures.",
-        citationIds: ["CIT-0077"]
-      },
-      {
-        claimId: "CLM-S0012-003",
-        passage: "Lightheadedness accompanied by palpitations or syncope mandates ECG and Holter monitoring for cardiac dysrhythmias.",
-        citationIds: ["CIT-0077"]
-      },
-      {
-        claimId: "CLM-S0012-004",
-        passage: "Homeopathic supportive remedies (e.g., Conium, Bryonia, Cocculus) do not substitute for emergency stroke neuroimaging or cardiac telemetry in acute central vertigo.",
-        citationIds: ["CIT-0023"]
+        claimId: "S0029-DIZZINESS-SAFETY-AND-SUPPORT",
+        passage: "redFlags; lifestyleAdvice; FAQs",
+        citationIds: ["CIT-0143", "CIT-0144"]
       }
     ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      question: "What is the difference between dizziness and vertigo?",
+      answer: "Dizziness can mean feeling faint, light-headed, unsteady or off-balance. Vertigo is the specific feeling that you or the room is spinning when nothing is moving. The distinction helps a clinician look for the cause."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      question: "What should I do when I feel dizzy?",
+      answer: "Sit or lie down promptly, move slowly and avoid driving, climbing or machinery until you are steady. Drink fluids if you can. Get urgent help for warning signs such as weakness, trouble speaking, chest pain, fainting, severe breathlessness or sudden vision changes."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      question: "Could a medicine be causing my dizziness?",
+      answer: "Yes. Some medicines and substances can contribute to dizziness or low blood pressure. Do not stop a prescribed medicine suddenly; ask a clinician or pharmacist to review it, especially if dizziness began after a new medicine or dose change."
+    },
+    {
+      question: "When should I book an appointment?",
+      answer: "Arrange an appointment if dizziness is new, keeps coming back, is worsening, comes with hearing changes, follows a medicine change, or affects normal activities. A clinician can assess the pattern and decide whether tests or balance support are needed."
+    },
+    {
+      question: "Can homeopathy treat dizziness or vertigo?",
+      answer: "Reliable clinical evidence has not established homeopathy as a treatment for dizziness or vertigo. It should not replace assessment for inner-ear conditions, heart problems, neurological causes or urgent warning signs."
     }
   ]
 },
@@ -95,11 +90,11 @@ export const DizzinessSymptom: KnowledgeEntity = {
     specialty: "Internal Medicine",
     institution: "Homeo Healthcare Clinic"
   },
-  evidenceLevel: "Traditional-Literature",
-  tags: ["Dizziness", "Symptom", "Clinical"],
+  evidenceLevel: "Consensus-Guidance",
+  tags: ["Dizziness", "Vertigo", "Balance", "Inner Ear", "Symptom"],
   canonicalUrl: "https://homeo.healthcare/knowledge/symptoms/dizziness",
   readingTimeMinutes: 3,
   audience: "patient",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.0.0: Initial release of Dizziness symptom profile"]
+  changeLog: ["1.0.0: Initial release of Dizziness symptom profile", "1.2.0: Rewritten as a patient-first guide with clear safety boundaries and fall-prevention advice."]
 };
