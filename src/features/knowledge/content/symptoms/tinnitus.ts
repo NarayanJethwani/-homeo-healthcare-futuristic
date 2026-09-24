@@ -20,7 +20,7 @@ export const TinnitusSymptom: KnowledgeEntity = {
     ar: "Tinnitus"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Tinnitus.",
+    en: "Tinnitus is hearing a sound such as ringing, buzzing, or hissing when there is no outside sound. Persistent or changing tinnitus deserves a health review.",
     hi: "Tinnitus के लक्षण की नैदानिक समझ.",
     gu: "Tinnitus ના લક્ષણ ની સમજણ.",
     mr: "Tinnitus चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const TinnitusSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Tinnitus."
   },
   content: {
-  "definition": "Tinnitus: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Tinnitus is the perception of sound in one or both ears, or in the head, without an external sound source. It may be a ring, buzz, hiss, hum, or pulse-like sound.",
+  "clinicalMeaning": "It is common and can be temporary, but a new, persistent, one-sided, or changing sound should be assessed so hearing and ear health can be checked.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "Hearing changes, including noise-related hearing loss",
+    "Earwax, an ear infection, or another ear condition",
+    "Some medicines or recent exposure to loud sound",
+    "Stress, poor sleep, or anxiety, which can make the sound harder to cope with"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "A clinician may examine the ears, review medicines, and arrange hearing assessment when appropriate. A heartbeat-synchronous sound or tinnitus with hearing or balance symptoms needs particular attention.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Seek urgent help for tinnitus after a head injury, or with sudden hearing loss, facial weakness, severe vertigo, new confusion, weakness, or speech difficulty.",
+    "Contact a clinician promptly if the sound beats in time with your pulse, is only on one side, or is getting worse.",
+    "Ask for support if tinnitus is severely affecting sleep, mood, concentration, or daily life."
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "Avoid complete silence if it makes tinnitus more noticeable: a low, comfortable background sound may help. Protect hearing around loud noise, keep a regular sleep routine, and discuss persistent symptoms rather than repeatedly increasing headphone volume.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const TinnitusSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "What does tinnitus sound like?",
+      "answer": "People describe ringing, buzzing, hissing, humming, clicking, or a pulse-like sound. It may be constant or come and go."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "Will tinnitus go away?",
+      "answer": "It may settle when a temporary trigger resolves, but some people have it for longer. Assessment and strategies for sleep, hearing protection, and sound management can make it less intrusive."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "When is tinnitus urgent?",
+      "answer": "Seek urgent help if it begins after a head injury or comes with sudden hearing loss, facial weakness, severe spinning, or stroke-like symptoms."
     }
   ]
 },
