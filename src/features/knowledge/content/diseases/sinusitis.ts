@@ -6,13 +6,13 @@ export const SinusitisDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-31T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
     reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
-    en: "Sinusitis (Rhinosinusitis)",
+    en: "Sinusitis",
     hi: "साइनसाइटिस / नाक का पोलिप (Sinusitis)",
     gu: "સાઇનસાઇટિસ (Sinusitis)",
     mr: "सायनसायटिस (Sinusitis)",
@@ -20,7 +20,7 @@ export const SinusitisDisease: KnowledgeEntity = {
     ar: "التهاب الجيوب الأنفية",
   },
   summary: {
-    en: "An authoritative clinical profile of Sinusitis covering EPOS 2020 diagnostic criteria, acute viral vs bacterial differentiation, orbital cellulitis emergency red flags, and non-replacement safety boundaries.",
+    en: "Sinusitis is swelling inside the nose and sinuses, often after a cold or alongside allergies. Learn simple relief measures and the eye, severe headache, and fever symptoms that need urgent help.",
     hi: "साइनसाइटिस का EPOS 2020 मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "સાઇનસાઇટિસનું EPOS 2020 ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "सायनसायटिसचे EPOS 2020 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
@@ -29,50 +29,50 @@ export const SinusitisDisease: KnowledgeEntity = {
   },
   content: {
     overview:
-      "Sinusitis (Rhinosinusitis) is defined as inflammation of the paranasal sinuses and nasal mucosa characterized by nasal blockage/discharge, facial pressure/pain, and reduction of smell [D0006-KEYNOTES, CIT-0043]. EPOS 2020 categorizes symptoms lasting <12 weeks as acute and ≥12 weeks as chronic rhinosinusitis.",
+      "Sinusitis, also called rhinosinusitis, can cause a blocked or runny nose, facial pressure, reduced smell, cough, or headache. Most short-lived episodes begin with a viral cold and improve with time; antibiotics are not useful for every episode. Symptoms that are severe, persistent, or involve the eyes need medical assessment.",
     definition:
-      "An inflammatory disorder of the paranasal sinus lining caused by viral or bacterial infection, allergic sensitization, or anatomical obstruction of the ostiomeatal complex.",
+      "It is inflammation of the lining of the nose and nearby air spaces called sinuses. It can be short-lived or last longer, especially when allergies, nasal polyps, or another ongoing problem are involved.",
     causes: [
-      "Viral upper respiratory tract infection (Rhinovirus, Influenza, Parainfluenza) initiating acute viral rhinosinusitis [D0006-KEYNOTES, CIT-0043]",
-      "Secondary bacterial superinfection (Streptococcus pneumoniae, Haemophilus influenzae, Moraxella catarrhalis) following persistent ostial obstruction",
-      "Allergic fungal rhinosinusitis, environmental atopy, or anatomical deviations (septal spur, nasal polyposis)",
+      "A viral cold or flu-like illness is a common trigger for a short episode.",
+      "Allergies, nasal polyps, or a structural blockage can contribute to ongoing symptoms.",
+      "A dental infection or, less commonly, a bacterial infection may need targeted assessment.",
     ],
     riskFactors: [
-      "Allergic rhinitis, asthma, or chronic environmental airborne irritant exposure",
-      "Anatomical ostial blockage (deviated nasal septum, hypertrophied turbinates, nasal polyps)",
-      "Dental infections of upper maxillary molars radiating to the maxillary sinus cavity",
+      "Allergies, asthma, smoke exposure, or other airborne irritants.",
+      "Nasal polyps, a deviated septum, or another problem affecting sinus drainage.",
+      "A dental infection near the upper teeth.",
     ],
     symptoms: [
-      "Anterior or posterior mucopurulent nasal discharge, nasal obstruction, and facial pain/fullness [D0006-KEYNOTES, CIT-0043]",
-      "Hyposmia or anosmia (reduced or lost sense of smell) and frontal or maxillary pressure worsening on bending forward",
-      "Halitosis, ear fullness, dental aching, and persistent nocturnal cough",
+      "A blocked or runny nose, facial pressure or tenderness, and a reduced sense of smell.",
+      "Headache, cough, ear pressure, tiredness, bad breath, or tooth discomfort can also occur.",
+      "A fever or coloured mucus can occur, but neither alone confirms a bacterial infection.",
     ],
     diagnosis:
-      "Evaluated clinically via EPOS 2020 criteria (2 or more symptoms, 1 being obstruction or discharge). Confirmed by anterior rhinoscopy, nasal endoscopy, or non-contrast sinus CT scans for chronic recalcitrant cases [CIT-0043].",
+      "A clinician usually diagnoses sinusitis from the pattern and duration of symptoms and an examination of the nose. Persistent, recurrent, or unusual symptoms may need further assessment, sometimes with imaging or an ENT review.",
     differentialDiagnosis:
       "Differentiate acute bacterial rhinosinusitis from viral URTI, allergic rhinitis, tension headache, migraine, dental abscess, and trigeminal neuralgia.",
     conventionalManagement:
-      "Management includes hypertonic saline nasal lavage, topical intranasal corticosteroids, analgesics, short-course oral antibiotics for severe bacterial superinfections, or functional endoscopic sinus surgery (FESS) for anatomical ostial blockages [CIT-0043].",
+      "Care may include symptom relief, saline nasal rinses, and a clinician- or pharmacist-advised nasal spray. Antibiotics or surgery are reserved for selected situations after assessment.",
     homeopathicApproach:
-      "Homeopathic remedies (such as Kali Bichromicum, Silicea, Pulsatilla, Hydrastis) serve as supportive constitutional therapy to relieve ostial congestion, thin tenacious secretions, and reduce sinus recurrence alongside standard medical evaluation.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for sinusitis. It must not replace assessment or urgent care for eye swelling, vision changes, severe headache, high fever, or severe illness.",
     lifestyleAdvice:
-      "Perform daily warm saline nasal rinses, maintain adequate hydration, utilize facial steam inhalation, avoid tobacco smoke, and treat underlying allergic rhinitis promptly.",
+      "Rest, fluids, simple pain relief if safe for you, and saline nasal rinses can help some people. Ask a pharmacist or clinician about nasal sprays and use them as directed. Avoid smoke and do not put hot steam close to the face, especially for children.",
     references: ["CIT-0020", "CIT-0021", "CIT-0022", "CIT-0043"],
     faqs: [
       {
-        question: "When does acute Sinusitis require emergency ENT evaluation?",
+        question: "When should sinusitis symptoms be checked urgently?",
         answer:
-          "Periorbital edema/erythema, diplopia, reduced visual acuity, severe unilateral frontal headache, high fever (>39°C), neck stiffness, or altered sensorium indicates COMPLICATED ORBITAL CELLULITIS OR INTRACRANIAL EXTENSION [D0006-EMERGENCY-LIMITS, CIT-0043]. This is a MEDICAL EMERGENCY requiring IMMEDIATE ER evaluation.",
+          "Seek urgent care for swelling or redness around an eye, a change in vision, a severe or worsening headache, confusion, a stiff neck, severe illness, or a very high fever. These symptoms are uncommon but can signal a serious complication.",
       },
       {
-        question: "Can homeopathic remedies replace antibiotics or ENT surgical evaluation in complicated sinusitis?",
+        question: "Can homeopathy replace medical treatment for sinusitis?",
         answer:
-          "NO. Homeopathy MUST NOT be used to delay urgent antibiotic therapy in severe acute bacterial sinusitis or surgical drainage in complicated orbital/intracranial extension [D0006-REGULATORY-LIMITS]. Delaying emergency ENT care risks permanent vision loss or meningitis.",
+          "No. Do not use homeopathy to delay urgent care, prescribed treatment, or an ENT assessment when a clinician recommends one.",
       },
       {
-        question: "How does homeopathy integrate with standard sinus care?",
+        question: "What is a sensible first step for new sinus symptoms?",
         answer:
-          "Homeopathy acts as a complementary modality alongside standard saline irrigation, allergic risk management, and clinical ENT oversight [D0006-REGULATORY-LIMITS].",
+          "Most new symptoms follow a cold and settle with time. Speak to a pharmacist or clinician if you are very unwell, symptoms worsen, they keep returning, or they do not improve as expected.",
       },
     ],
   },
@@ -98,5 +98,6 @@ export const SinusitisDisease: KnowledgeEntity = {
   changeLog: [
     "1.0.0: Initial release of Sinusitis profile",
     "1.1.0: Upgraded with EPOS 2020 evidence citations (CIT-0043), passage-level claim citations (D0006-KEYNOTES, D0006-EMERGENCY-LIMITS, D0006-REGULATORY-LIMITS), orbital cellulitis red flags, and emergency ENT non-replacement rules",
+    "1.2.0: Reframed the page around common symptoms, practical next steps, and plain-language urgent-care boundaries.",
   ],
 };

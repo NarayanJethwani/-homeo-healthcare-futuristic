@@ -7,9 +7,9 @@ export const VitaminDDeficiencyDisease: KnowledgeEntity = {
   editorialStatus: "published",
   reviewStatus: "owner-authorization-required",
   versionInfo: {
-    version: "1.2.0",
+    version: "1.3.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-09-20T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
     reviewed: "2026-08-14T12:00:00Z"
   },
   title: {
@@ -130,7 +130,7 @@ export const VitaminDDeficiencyDisease: KnowledgeEntity = {
   readingTimeMinutes: 6,
   audience: "patient",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.2.0: Simplified the patient-first overview, treatment boundaries, and question-led guidance while retaining clinical safety information.", "1.1.0: Promoted to governed v1.1.0 with comprehensive secosteroid endocrinological clinical boundaries, hypocalcemic tetany/rickets red flags, and verified citations"],
+  changeLog: ["1.3.0: Refreshed the patient-first information while preserving individualized testing, supplement safety, and clinical review boundaries.", "1.2.0: Simplified the patient-first overview, treatment boundaries, and question-led guidance while retaining clinical safety information.", "1.1.0: Promoted to governed v1.1.0 with comprehensive secosteroid endocrinological clinical boundaries, hypocalcemic tetany/rickets red flags, and verified citations"],
   clinicalPearl: "Total 25-hydroxyvitamin D [25(OH)D] is the usual test for vitamin D status; interpretation should be individualised rather than based on a number alone.",
   quickFacts: {
     "Why it matters": "Vitamin D supports bone, muscle, nerve, and immune function",

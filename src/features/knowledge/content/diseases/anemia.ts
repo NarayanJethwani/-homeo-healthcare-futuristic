@@ -6,9 +6,9 @@ export const AnemiaDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.2.0",
+    version: "1.3.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-09-21T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
     reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
@@ -110,5 +110,6 @@ export const AnemiaDisease: KnowledgeEntity = {
     "1.0.0: Initial release of Anemia profile",
     "1.1.0: Upgraded with WHO 2017 evidence citations (CIT-0042), passage-level claim citations (D0051-KEYNOTES, D0051-EMERGENCY-LIMITS, D0051-REGULATORY-LIMITS), severe anemia red flags (Hb <7.0 g/dL), and transfusion non-replacement rules",
     "1.2.0: Added a question-first patient layer, cause-led next steps, and clearer safety guidance for supplements and urgent symptoms.",
+    "1.3.0: Refreshed the patient-facing information while preserving cause-led testing, supplement safety, and clinical review boundaries.",
   ],
 };
