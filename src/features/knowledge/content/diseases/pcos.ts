@@ -6,10 +6,10 @@ export const PCOSDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-31T12:00:00Z",
-    reviewed: "2026-07-31T12:00:00Z",
+    updated: "2026-09-23T21:00:00Z",
+    reviewed: "2026-09-23T21:00:00Z",
   },
   title: {
     en: "Polycystic Ovary Syndrome (PCOS)",
@@ -20,59 +20,69 @@ export const PCOSDisease: KnowledgeEntity = {
     ar: "متلازمة المبيض المتعدد التكيسات",
   },
   summary: {
-    en: "An authoritative clinical profile of Polycystic Ovary Syndrome (PCOS) covering 2023 Rotterdam criteria, hyperandrogenism vs insulin resistance dynamics, ovarian torsion emergency red flags, and metabolic screening non-replacement rules.",
+    en: "PCOS is a common hormone-related condition that can affect periods, skin, hair, fertility and long-term metabolic health. Learn what it can look like and what a practical care plan can include.",
     hi: "पीसीओएस का 2023 अंतर्राष्ट्रीय रोटरडैम मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "પીસીઓએસનું 2023 રોટરડેમ ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "पीसीओएसचे 2023 आंतरराष्ट्रीय रोटरडॅम निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
-    es: "Un perfil clínico autorizado del SOP según los criterios Rotterdam 2023 y límites de emergencia.",
+    es: "El SOP es una condición hormonal común que puede afectar los períodos, la piel, el cabello, la fertilidad y la salud metabólica.",
     ar: "دليل سريري موثوق لمتلازمة المبيض المتعدد التكيسات وفقًا لمعايير 2023 وحدود السلامة.",
   },
   content: {
     overview:
-      "Polycystic Ovary Syndrome (PCOS) is a complex endocrine-metabolic disorder defined by the 2023 International Rotterdam criteria requiring at least 2 of 3 features: ovulatory dysfunction (oligo-/amenorrhea), hyperandrogenism (clinical or biochemical), and polycystic ovarian morphology on ultrasound [D0013-KEYNOTES, CIT-0045].",
+      "Polycystic Ovary Syndrome (PCOS) is a common condition involving ovulation and hormones. It can affect periods, acne, unwanted hair growth, scalp-hair thinning, weight, mood and fertility. Its name is misleading: having PCOS does not mean you necessarily have ovarian cysts, and an ultrasound alone does not diagnose it.",
     definition:
-      "A heterogenous reproductive and metabolic endocrinopathy characterized by anovulation, hyperandrogenemia, insulin resistance, and characteristic ovarian follicular microcysts.",
+      "PCOS is diagnosed from a pattern of symptoms, hormone assessment and, when appropriate, ultrasound findings after other possible causes are considered. It is not caused by anything you did wrong, and people experience it differently.",
     causes: [
-      "Insulin resistance and compensatory hyperinsulinemia stimulating ovarian androgen synthesis [D0013-KEYNOTES, CIT-0045]",
-      "Altered hypothalamic-pituitary LH/FSH pulse frequency favoring excess luteinizing hormone secretion",
-      "Genetic polygenic architecture interacting with sedentary lifestyle and weight gain",
+      "A mix of inherited tendency and differences in hormone and insulin signalling",
+      "Family history can raise the chance of PCOS, but it is not anyone's fault",
+      "Weight changes and lifestyle can affect symptoms for some people, but they are not the sole cause of PCOS",
     ],
     riskFactors: [
-      "First-degree family history of PCOS or Type 2 Diabetes Mellitus",
-      "Obesity, central adiposity, and metabolic syndrome",
-      "Premature adrenarche or early-onset childhood weight gain",
+      "A close relative with PCOS or type 2 diabetes",
+      "Signs of insulin resistance, such as dark, velvety skin patches on the neck or armpits",
+      "Irregular cycles, acne, unwanted facial/body hair or scalp-hair thinning that are affecting daily life",
     ],
     symptoms: [
-      "Irregular, infrequent, or absent menstrual cycles (oligo- or amenorrhea) [D0013-KEYNOTES, CIT-0045]",
-      "Hirsutism (excessive terminal facial/body hair), severe recalcitrant acne, and androgenic alopecia",
-      "Acanthosis nigricans (velvety hyperpigmentation of neck/axillae), weight gain, and infertility",
+      "Irregular, infrequent or absent periods",
+      "Acne, unwanted facial or body hair, or scalp-hair thinning",
+      "Difficulty with weight changes, fertility, mood or energy for some people",
     ],
     diagnosis:
-      "Evaluated via serum free/total testosterone, DHEAS, LH/FSH ratio, fasting glucose/insulin (OGTT), lipid panel, serum progesterone, and pelvic transvaginal/abdominal ultrasound showing ≥20 follicles per ovary or volume ≥10 mL [CIT-0045].",
+      "A clinician will discuss your cycles, symptoms, medicines and goals, and may arrange blood tests for hormones and metabolic health. Ultrasound can be useful in some adults, but is not always needed or appropriate—particularly for younger people.",
     differentialDiagnosis:
-      "Differentiate PCOS from Thyroid Dysfunction, Hyperprolactinemia, Non-Classic Congenital Adrenal Hyperplasia (NCCAH), Cushing Syndrome, and Androgen-Secreting Ovarian Tumors.",
+      "Other hormone, thyroid, medication and reproductive conditions can cause similar symptoms, which is why a proper assessment matters before labelling a pattern as PCOS.",
+    redFlags: [
+      "Get urgent medical help for sudden, severe one-sided pelvic or lower-abdominal pain, especially with vomiting, fainting, fever or a possible pregnancy.",
+      "Seek prompt medical advice for very heavy bleeding, pain in pregnancy or possible pregnancy, or a rapid new change such as deepening voice or quickly worsening facial hair.",
+      "Make a routine appointment if irregular periods, acne, hair changes, mood, fertility or weight concerns are affecting daily life."
+    ],
     conventionalManagement:
-      "Management includes lifestyle weight management, combined oral contraceptive pills (COCPs) for cycle regulation, metformin for insulin resistance, anti-androgens (spironolactone) for hirsutism, and letrozole/clomiphene for ovulation induction [CIT-0045].",
+      "Care is tailored to what matters to you: period regularity and endometrial protection, acne or hair symptoms, metabolic screening, fertility goals and emotional wellbeing. Options can include lifestyle support, hormonal treatment, acne or hair treatments, metformin for some people, and fertility care when pregnancy is desired.",
     homeopathicApproach:
-      "Homeopathic remedies (such as Pulsatilla, Sepia, Calcarea Carbonica, Thuja) provide supportive constitutional care to assist in menstrual regularity, soothe associated acne, and enhance general vitality alongside metabolic monitoring.",
+      "Homeopathy should not replace diagnosis, cycle protection, metabolic screening, fertility treatment or prescribed medicines. If you choose complementary care, tell your gynecologist or endocrinologist so it can be coordinated safely.",
     lifestyleAdvice:
-      "Engage in 150+ minutes of weekly aerobic and resistance exercise, consume a low-glycemic Mediterranean-style diet, manage stress, and track menstrual cycle regularity.",
-    references: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0045"],
+      "A sustainable routine works better than a perfect plan: regular movement you enjoy, balanced meals, sleep, stress support, and cycle tracking can help you and your clinician notice change. These steps support health but are not a cure or a substitute for medical follow-up.",
+    references: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0045", "CIT-0137", "CIT-0138"],
     faqs: [
       {
-        question: "When is pelvic pain in a PCOS patient considered a medical emergency requiring urgent surgery?",
+        question: "Do I need an ultrasound to be diagnosed with PCOS?",
         answer:
-          "Sudden, acute, severe unilateral pelvic pain accompanied by nausea, vomiting, fever, or peritoneal signs indicates POSSIBLE OVARIAN TORSION OR RUPTURED HEMORRHAGIC CYST [D0013-EMERGENCY-LIMITS, CIT-0045]. This is a SURGICAL EMERGENCY requiring IMMEDIATE ER evaluation.",
+          "Not always. Diagnosis considers symptoms, cycles, hormone tests and your age. Ultrasound may help in some adults, but it is not the only test and is not generally used for diagnosis in younger adolescents.",
       },
       {
-        question: "Can homeopathic remedies replace pelvic ultrasound, endometrial safety screening, or metformin?",
+        question: "Can I have PCOS if I am not trying to conceive?",
         answer:
-          "NO. Homeopathy MUST NOT be used to replace diagnostic pelvic ultrasound, glucose tolerance testing, or endometrial protection in prolonged amenorrhea [D0013-REGULATORY-LIMITS]. Unopposed estrogen in prolonged amenorrhea increases endometrial cancer risk.",
+          "Yes. PCOS can affect periods, skin, hair, mood and metabolic health whether or not fertility is a current goal. Your care plan can focus on the symptoms and goals that matter to you now.",
       },
       {
-        question: "How does homeopathy integrate with standard gynecological care for PCOS?",
+        question: "When should I seek urgent help?",
         answer:
-          "Homeopathy serves as complementary constitutional care alongside routine metabolic screening, pelvic ultrasound, and gynecological supervision [D0013-REGULATORY-LIMITS].",
+          "Seek urgent help for sudden severe pelvic pain, especially with vomiting, fainting, fever or possible pregnancy. Seek prompt advice for very heavy bleeding or a rapid new change in androgen-related symptoms.",
+      },
+      {
+        question: "Can homeopathy replace my PCOS treatment plan?",
+        answer:
+          "No. Complementary care must not replace medical assessment, cycle protection, metabolic screening, fertility care or prescribed medicines. Discuss any complementary treatment with your clinical team.",
       },
     ],
   },
@@ -98,5 +108,6 @@ export const PCOSDisease: KnowledgeEntity = {
   changeLog: [
     "1.0.0: Initial release of PCOS profile",
     "1.1.0: Upgraded with 2023 Rotterdam International PCOS evidence citations (CIT-0045), passage-level claim citations (D0013-KEYNOTES, D0013-EMERGENCY-LIMITS, D0013-REGULATORY-LIMITS), ovarian torsion red flags, and endometrial safety screening rules",
+    "1.2.0: Rewritten as a patient-first guide while retaining diagnosis, metabolic screening and urgent-care safeguards.",
   ],
 };

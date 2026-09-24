@@ -21,6 +21,7 @@ export const CATEGORY_COLORS: Record<string, { bg: string; text: string; border:
   gastrointestinal: { bg: "bg-amber-500/10", text: "text-amber-600 dark:text-amber-400", border: "border-amber-500/20" },
   dermatology: { bg: "bg-indigo-500/10", text: "text-indigo-600 dark:text-indigo-400", border: "border-indigo-500/20" },
   respiratory: { bg: "bg-sky-500/10", text: "text-sky-600 dark:text-sky-400", border: "border-sky-500/20" },
+  reproductive: { bg: "bg-rose-500/10", text: "text-rose-600 dark:text-rose-400", border: "border-rose-500/20" },
   musculoskeletal: { bg: "bg-purple-500/10", text: "text-purple-600 dark:text-purple-400", border: "border-purple-500/20" },
   urology: { bg: "bg-pink-500/10", text: "text-pink-600 dark:text-pink-400", border: "border-pink-500/20" },
   general: { bg: "bg-neutral-500/10", text: "text-neutral-600 dark:text-neutral-400", border: "border-neutral-500/20" }
@@ -44,6 +45,9 @@ export function getClinicalCategory(entity: KnowledgeEntity): string {
   }
   if (identifier.includes("gerd") || identifier.includes("gastritis") || identifier.includes("reflux") || identifier.includes("ibs") || identifier.includes("peptic") || identifier.includes("acid") || identifier.includes("constipation") || identifier.includes("diarrhea") || identifier.includes("colic") || identifier.includes("h-pylori") || identifier.includes("bowel") || identifier.includes("gallstone") || identifier.includes("hypochlorhydria") || identifier.includes("hyperacidity") || identifier.includes("indigestion") || identifier.includes("morning-sickness") || identifier.includes("flatulent") || identifier.includes("nux-vomica") || identifier.includes("lycopodium") || identifier.includes("pulsatilla") || identifier.includes("carbo-veg") || identifier.includes("flatulence") || identifier.includes("bloating") || identifier.includes("heartburn") || identifier.includes("abdominal-pain") || identifier.includes("vomiting") || identifier.includes("nausea")) {
     return "gastrointestinal";
+  }
+  if (identifier.includes("pcos") || identifier.includes("polycystic-ovary") || identifier.includes("menstrual-irregularity")) {
+    return "reproductive";
   }
   if (identifier.includes("eczema") || identifier.includes("dermatitis") || identifier.includes("psoriasis") || identifier.includes("acne") || identifier.includes("urticaria") || identifier.includes("skin") || identifier.includes("erupt") || identifier.includes("prurit") || identifier.includes("itch") || identifier.includes("cyst") || identifier.includes("intertrigo") || identifier.includes("mastitis") || identifier.includes("fibroadenoma") || identifier.includes("sulphur") || identifier.includes("graphites") || identifier.includes("thuja")) {
     return "dermatology";
