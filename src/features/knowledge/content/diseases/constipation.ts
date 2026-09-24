@@ -21,7 +21,7 @@ export const ConstipationDisease: KnowledgeEntity = {
     ar: "الإمساك المزمن والقصور الحركي القولوني (Chronic Constipation)"
   },
   summary: {
-    en: "Constipation means bowel movements are difficult, hard or less frequent than usual. Learn practical first steps, when to review medicines or diet, and warning signs that need medical care.",
+    en: "Constipation means passing stools less often than usual or finding them hard to pass. Learn simple diet and routine changes that may help, and when bleeding, pain, or ongoing symptoms need medical advice.",
     hi: "क्रॉनिक कब्ज (कब्जियत / मंद आंत्र गतिशीलता) का स्लो-ट्रांजिट पैथोलॉजी, पेल्विक फ्लोर डिसिनर्जिया, मल त्याग में रुकावट, पारंपरिक संवैधानिक होम्योपैथिक प्रबंधन, और आंतों में रुकावट (बाउल ऑब्स्ट्रक्शन) व कोलन कैंसर की आपातकालीन सुरक्षा सीमाओं सहित प्रामाणिक विवरण.",
     gu: "ક્રોનિક કબજિયાત ની આંતરડાની ધીમી ગતિ પેથોલોજી, કઠણ મળ અને શૌચ વખતે જોર કરવું, પરંપરાગત હોમિયોપેથીક સહાયક સારવાર અને આંતરડાના અટકાવાની (બોવેલ ઓબ્સ્ટ્રક્શન) ઇમરજન્સી સીમાઓનું વિવરણ.",
     mr: "जुनाट बद्धकोष्ठता (Chronic Constipation), पोट साफ न होणे व कडक शौच, आंतड्यांची मंद हालचाल, पारंपरिक होमिओपॅथिक पद्धत आणि आतड्यांच्या अडथळ्याच्या (Bowel Obstruction) आणीबाणीच्या मर्यादा.",
@@ -62,7 +62,7 @@ export const ConstipationDisease: KnowledgeEntity = {
     conventionalManagement:
       "A stepwise structured ladder approach is recommended: (1) Dietary modification (gradually increasing dietary fiber to 25–35 g/day plus generous hydration). (2) Osmotic laxatives (polyethylene glycol [PEG 3350] is the first-line evidence-based osmotic agent; lactulose, magnesium hydroxide) or bulk-forming fiber (psyllium / ispaghula husk). (3) Stimulant laxatives (bisacodyl, senna) for rescue use. (4) Secretagogues and prokinetics (lubiprostone [chloride channel activator], linaclotide, plecanatide [guanylate cyclase-C agonists], or prucalopride [5-HT4 receptor agonist]) for severe refractory slow-transit constipation. (5) Pelvic Floor Biofeedback Therapy is the undisputed first-line treatment for dyssynergic defecation (>70–80% success rate).",
     homeopathicApproach:
-      "Reliable clinical evidence has not established homeopathy as a treatment for constipation. It must not delay assessment of severe pain, vomiting, bleeding, weight loss or possible bowel obstruction. Discuss all products with a clinician or pharmacist.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for constipation. It must not replace an assessment for persistent or new symptoms, use of prescribed laxatives, or urgent care for severe pain, vomiting, bleeding, or suspected bowel obstruction.",
     lifestyleAdvice:
       "Start with a simple routine: do not ignore the urge to open the bowels, make time after meals, move regularly and increase fibre gradually if it suits you. Drink enough for your health needs. Ask a clinician before making major changes if you have kidney, heart or bowel disease.",
     references: [

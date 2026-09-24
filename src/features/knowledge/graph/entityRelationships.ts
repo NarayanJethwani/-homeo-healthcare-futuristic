@@ -7,11 +7,12 @@ export const KNOWLEDGE_RELATIONSHIPS: KnowledgeRelationship[] = [
   { source: "D0003", relation: "hasSymptom", target: "S0003" }, // Migraine has Headache
   { source: "D0004", relation: "hasSymptom", target: "S0001" }, // IBS has Heartburn/Bloating
 
-  // Mobility and pain guides: connect a patient's starting symptom to the most relevant condition.
-  { source: "D0017", relation: "hasSymptom", target: "S0014" }, // Osteoarthritis has Knee Pain
-  { source: "D0017", relation: "hasSymptom", target: "S0015" }, // Osteoarthritis has Joint Pain
-  { source: "D0040", relation: "relatedTo", target: "D0056" }, // Sciatica and Low Back Pain
-  { source: "D0056", relation: "relatedTo", target: "D0040" }, // Low Back Pain and Sciatica
+  // Digestive and bowel guides: connect common symptoms with the conditions they can accompany.
+  { source: "D0001", relation: "hasSymptom", target: "S0046" }, // GERD can present as Indigestion
+  { source: "D0004", relation: "hasSymptom", target: "S0024" }, // IBS can include Gas and Flatulence
+  { source: "D0046", relation: "relatedTo", target: "D0044" }, // Constipation can contribute to Piles
+  { source: "D0046", relation: "relatedTo", target: "D0045" }, // Constipation can contribute to Anal Fissure
+  { source: "D0044", relation: "relatedTo", target: "D0045" }, // Piles and Anal Fissure share symptoms but need distinction
 
   // Diseases to Remedies
   { source: "D0001", relation: "treatedWith", target: "R0002" }, // GERD - Nux Vomica
