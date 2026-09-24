@@ -22,8 +22,6 @@ import DifferentialDiagnosisTable from "@/features/knowledge/components/Differen
 import HomeopathicPerspective from "@/features/knowledge/components/HomeopathicPerspective";
 import RedFlagBox from "@/features/knowledge/components/RedFlagBox";
 import MedicalIllustration from "@/features/knowledge/components/MedicalIllustration";
-import KnowledgeVisualGallery from "@/features/knowledge/components/KnowledgeVisualGallery";
-import KnowledgeTopicVideo from "@/features/knowledge/components/KnowledgeTopicVideo";
 import { Info, HelpCircle, BookOpen } from "lucide-react";
 
 interface PageProps {

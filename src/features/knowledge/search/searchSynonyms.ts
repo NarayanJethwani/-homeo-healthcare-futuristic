@@ -293,6 +293,33 @@ const PHRASE_SYNONYMS: Record<string, string[]> = {
 };
 
 /**
+ * Intent phrases make symptom-first, natural-language questions useful without
+ * requiring a visitor to know the medical name of a condition.
+ */
+const PHRASE_SYNONYMS: Record<string, string[]> = {
+  "burning in chest after food": ["heartburn", "acid reflux", "gerd"],
+  "burning in chest after eating": ["heartburn", "acid reflux", "gerd"],
+  "why is my tsh high": ["tsh", "thyroid", "hypothyroidism"],
+  "hair is falling": ["hair fall", "alopecia", "thyroid"],
+  "hair loss": ["hair fall", "alopecia", "thyroid"],
+  "why am i dizzy": ["dizziness", "vertigo"],
+  "headache with nausea": ["migraine", "headache"],
+  "stomach pain after eating": ["indigestion", "acid reflux", "gastritis"],
+  "what does low vitamin d mean": ["vitamin d", "vitamin d deficiency", "25 hydroxyvitamin d"],
+  "do i need a vitamin d test": ["vitamin d", "vitamin d deficiency", "25 hydroxyvitamin d"],
+  "why am i tired and low vitamin d": ["vitamin d", "vitamin d deficiency", "fatigue", "anemia", "thyroid"],
+  "what does low b12 mean": ["vitamin b12", "vitamin b12 deficiency", "cobalamin", "b12 test"],
+  "why are my hands and feet tingling": ["vitamin b12", "peripheral neuropathy", "diabetes", "thyroid"],
+  "do i need a b12 test": ["vitamin b12", "vitamin b12 deficiency", "cobalamin"],
+  "what does low hemoglobin mean": ["anemia", "anaemia", "cbc", "ferritin", "iron deficiency"],
+  "why am i tired and dizzy": ["anemia", "anaemia", "fatigue", "dizziness", "thyroid"],
+  "should i take iron tablets": ["anemia", "anaemia", "iron deficiency", "ferritin"],
+  "what does my cbc mean": ["cbc", "complete blood count", "blood test"],
+  "how do i read a blood test report": ["cbc", "complete blood count", "hemoglobin", "platelets", "white blood cells"],
+  "why is my hemoglobin low": ["anemia", "anaemia", "cbc", "ferritin", "iron deficiency"],
+};
+
+/**
  * Common misspellings mapper.
  */
 export const MISSSPELLINGS_MAP: Record<string, string> = {

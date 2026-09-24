@@ -140,7 +140,7 @@ export const VitaminDDeficiencyDisease: KnowledgeEntity = {
   },
   aiReadiness: {
     retrievalSummary: "Vitamin D deficiency is a low 25(OH)D blood result that may affect bone and muscle health. Management is individual and can include clinician-guided supplements, diet, and follow-up testing.",
-    clinicalSummary: "Total 25(OH)D is the usual measure of vitamin D status. Consider symptoms, risk factors, medicines, kidney or liver disease, and laboratory ranges; avoid unsupervised high-dose supplementation because excess can cause hypercalcaemia and kidney injury. This information does not replace clinician-guided treatment or urgent assessment for red-flag symptoms.",
+    clinicalSummary: "Total 25(OH)D is the usual measure of vitamin D status. Consider symptoms, risk factors, medicines, kidney or liver disease, and laboratory ranges; avoid unsupervised high-dose supplementation because excess can cause hypercalcaemia and kidney injury.",
     patientSummary: "Low vitamin D may not cause obvious symptoms. A clinician can help you understand whether a blood result matters for you and whether food changes, a supplement, or follow-up testing is appropriate.",
     studentSummary: "Use total 25(OH)D to assess vitamin D status. Interpret a result in context; identify malabsorption, renal/hepatic disease, medicines, and excess-supplement risk. Urgent symptoms include seizure, severe breathing difficulty, confusion, or acute inability to bear weight.",
     keywords: ["vitamin d deficiency", "hypovitaminosis d", "low 25-hydroxyvitamin d", "bone pain muscle weakness", "osteomalacia", "rickets", "cholecalciferol"],
