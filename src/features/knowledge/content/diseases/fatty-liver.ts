@@ -7,13 +7,13 @@ export const FattyLiverDisease: KnowledgeEntity = {
   editorialStatus: "published",
   reviewStatus: "owner-authorization-required",
   versionInfo: {
-    version: "1.1.0",
+    version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-08-14T12:00:00Z",
+    updated: "2026-09-24T12:00:00Z",
     reviewed: "2026-08-14T12:00:00Z"
   },
   title: {
-    en: "Metabolic Dysfunction-Associated Steatotic Liver Disease (MASLD / NAFLD / Fatty Liver)",
+    en: "Fatty Liver Disease",
     hi: "फैटी लिवर रोग / हेपेटिक स्टीटोसिस (MASLD / NAFLD / Fatty Liver)",
     gu: "ફેટી લિવર / લીવર પર ચરબી જમા થવી (Fatty Liver Disease / MASLD)",
     mr: "फॅटी लिव्हर / यकृतावर चरबी साचणे (Fatty Liver Disease / MASLD)",
@@ -21,7 +21,7 @@ export const FattyLiverDisease: KnowledgeEntity = {
     ar: "مرض الكبد الدهني المرتبط بالخلل الأيضي (MASLD / Fatty Liver)"
   },
   summary: {
-    en: "An authoritative clinical and educational profile of Metabolic Dysfunction-Associated Steatotic Liver Disease (MASLD / NAFLD / NASH), covering hepatic triglyceride accumulation, lipotoxicity, necroinflammation, progressive fibrogenesis, constitutional homeopathic supportive management, and emergency red flags for decompensated cirrhosis, bleeding esophageal varices, and acute hepatic encephalopathy.",
+    en: "Fatty liver disease means fat has built up in the liver. It often has no symptoms, is closely linked with metabolic health, and benefits from a tailored clinical plan to protect liver, heart, and overall health.",
     hi: "फैटी लिवर (MASLD / NAFLD) का हेपेटिक लिपिड संचय पैथोलॉजी, इंसुलिन रेजिस्टेंस, नॉन-अल्कोहलिक स्टीटोहेपेटाइटिस (NASH), फाइब्रोसिस, पारंपरिक संवैधानिक होम्योपैथिक प्रबंधन, और डीकंपेंसेटेड सिरोसिस व हेपेटिक एन्सेफैलोपैथी की आपातकालीन सुरक्षा सीमाओं सहित प्रामाणिक विवरण.",
     gu: "ફેટી લિવર રોગ (MASLD / NAFLD) ની લિપિડ પેથોલોજી, ઇન્સ્યુલિન રેઝિસ્ટન્સ, લિવરમાં ચરબી અને સોજો, પરંપરાગત હોમિયોપેથીક સહાયક સારવાર અને લિવર સિરોસિસ તથા કમળાની ઇમરજન્સી સીમાઓનું વિવરણ.",
     mr: "फॅटी लिव्हर (MASLD / NAFLD), यकृतात चरबी साचणे व सूज, इन्सुलिन रेझिस्टन्स, पारंपरिक होमिओपॅथिक पद्धत आणि लिव्हर सिरॉसिसच्या आणीबाणीच्या मर्यादा.",
@@ -60,7 +60,7 @@ export const FattyLiverDisease: KnowledgeEntity = {
     conventionalManagement:
       "Lifestyle modification and cardiometabolic risk factor control form the foundation of management across all international hepatology guidelines (AASLD, EASL): (1) Dietary intervention: Mediterranean diet, restriction of refined carbohydrates and high-fructose corn syrup, and elimination of sugary beverages. (2) Weight loss targets: 3% to 5% total body weight loss reduces simple steatosis; 7% to 10% weight loss reverses steatohepatitis (MASH) and induces fibrosis regression. (3) Physical exercise: 150–300 minutes of moderate-intensity aerobic exercise plus 2 weekly resistance training sessions. (4) Pharmacotherapy: Resmetirom (thyroid hormone receptor-beta [THR-beta] agonist; first FDA-approved medication for non-cirrhotic MASH with moderate-to-advanced fibrosis), GLP-1 receptor agonists (semaglutide, tirzepatide; for patients with comorbid diabetes/obesity), Vitamin E (800 IU/day in non-diabetic biopsy-proven MASH), and pioglitazone.",
     homeopathicApproach:
-      "Homeopathic constitutional and hepatic organ-drainage remedies (such as Chelidonium Majus, Carduus Marianus, Lycopodium Clavatum, Nux Vomica, Phosphorus, Taraxacum Officinale, Natrum Sulphuricum, Leptandra Virginica, Chionanthus Virginica) serve as supportive care to assist metabolic sluggishness, relieve right hypochondriac fullness, and support digestive function alongside structured Mediterranean diet, regular exercise, weight management, and hepatology fibrosis screening.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for fatty liver disease. It must not replace recommended weight and metabolic care, liver monitoring, treatment for related conditions, or specialist assessment when liver disease is advanced.",
     lifestyleAdvice:
       "Adopt a strict Mediterranean dietary pattern emphasizing extra-virgin olive oil, avocados, green leafy vegetables, nuts, legumes, and wild fatty fish, strictly eliminate sugar-sweetened beverages, fruit juices, and processed snacks containing high-fructose corn syrup, completely abstain from alcohol consumption to protect vulnerable hepatocytes, engage in at least 30 minutes of brisk walking 5 days a week, and drink 2 to 3 cups of unsweetened black or green coffee daily (proven to reduce hepatic fibrosis progression).",
     references: [

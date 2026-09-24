@@ -9,7 +9,7 @@ export const HypothyroidismDisease: KnowledgeEntity = {
     version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
     updated: "2026-09-24T12:00:00Z",
-    reviewed: "2026-09-24T12:00:00Z",
+    reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
     en: "Hypothyroidism",
@@ -20,7 +20,7 @@ export const HypothyroidismDisease: KnowledgeEntity = {
     ar: "قصور الغدة الدرقية",
   },
   summary: {
-    en: "An underactive thyroid can slow many body functions. Learn the common symptoms, how blood tests confirm the cause, and why prescribed thyroid hormone needs regular follow-up.",
+    en: "Hypothyroidism means the thyroid is not making enough hormone. It can contribute to tiredness, feeling cold, constipation, and other changes; diagnosis and treatment rely on clinical review and blood tests.",
     hi: "हाइपोथायरायडिज्म का एटीए 2014 मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "હાઇપોથાઇરોઇડિઝમનું ATA 2014 ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "हायपोथायरॉईडिझमचे ATA 2014 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
@@ -54,7 +54,7 @@ export const HypothyroidismDisease: KnowledgeEntity = {
     conventionalManagement:
       "Treatment commonly replaces the thyroid hormone the body is not making with prescribed levothyroxine. Blood tests are repeated after starting or changing the dose, and then at intervals agreed with the clinician.",
     homeopathicApproach:
-      "Reliable clinical evidence has not established homeopathy as a replacement for thyroid hormone treatment. It must not replace prescribed levothyroxine, blood-test monitoring or urgent medical care. Tell the clinician about all complementary products you use.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for hypothyroidism. It must not replace thyroid hormone prescribed for you, blood-test monitoring, or assessment of new or worsening symptoms.",
     lifestyleAdvice:
       "Take thyroid medicine exactly as prescribed and ask your pharmacist or clinician about timing with food, supplements and other medicines. Avoid starting iodine or “thyroid support” supplements unless your clinician recommends them; excess iodine can be harmful for some people.",
     references: ["CIT-0012", "CIT-0013", "CIT-0014", "CIT-0041"],

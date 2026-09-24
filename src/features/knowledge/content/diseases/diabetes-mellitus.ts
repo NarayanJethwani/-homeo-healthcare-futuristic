@@ -9,10 +9,10 @@ export const DiabetesMellitusDisease: KnowledgeEntity = {
     version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
     updated: "2026-09-24T12:00:00Z",
-    reviewed: "2026-09-24T12:00:00Z",
+    reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
-    en: "Diabetes Mellitus",
+    en: "Diabetes",
     hi: "मधुमेह (Diabetes Mellitus)",
     gu: "ડાયાબિટીસ મેલીટસ (Diabetes Mellitus)",
     mr: "मधुमेह (Diabetes Mellitus)",
@@ -20,7 +20,7 @@ export const DiabetesMellitusDisease: KnowledgeEntity = {
     ar: "داء السكري",
   },
   summary: {
-    en: "Diabetes affects how the body uses glucose for energy. Learn the common signs, why the type of diabetes matters, and how everyday monitoring and treatment protect long-term health.",
+    en: "Diabetes affects how the body uses glucose (blood sugar). Learn common symptoms, why regular monitoring and prescribed treatment matter, and when high or low blood sugar needs urgent help.",
     hi: "मधुमेह का एडीए 2024 मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "ડાયાબિટીસનું ADA 2024 ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "मधुमेहाचे ADA 2024 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
@@ -54,7 +54,7 @@ export const DiabetesMellitusDisease: KnowledgeEntity = {
     conventionalManagement:
       "Treatment may include diabetes education, food and activity support, medicines, glucose monitoring and—especially for type 1 diabetes—insulin. Regular checks of blood pressure, cholesterol, kidneys, eyes and feet help prevent complications.",
     homeopathicApproach:
-      "Reliable clinical evidence has not established homeopathy as a treatment for diabetes or its complications. It must not replace insulin, prescribed diabetes medicines, glucose monitoring, foot care or emergency assessment. Tell the diabetes team about all products you use.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for diabetes or its complications. It must not replace insulin, prescribed medicines, glucose monitoring, foot care, or urgent treatment for very high or low blood sugar.",
     lifestyleAdvice:
       "Work with the diabetes team on a practical eating, activity and monitoring plan. Check feet regularly, keep appointments for eye and kidney screening, and follow a sick-day plan. Avoid changing insulin or medicines on your own.",
     references: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0040"],

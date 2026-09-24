@@ -9,10 +9,10 @@ export const HypertensionDisease: KnowledgeEntity = {
     version: "1.2.0",
     created: "2026-07-08T12:00:00Z",
     updated: "2026-09-24T12:00:00Z",
-    reviewed: "2026-09-24T12:00:00Z",
+    reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
-    en: "Hypertension (High Blood Pressure)",
+    en: "High Blood Pressure",
     hi: "उच्च रक्तचाप (Hypertension)",
     gu: "હાઇ બ્લડ પ્રેશર (Hypertension)",
     mr: "उच्च रक्तदाब (Hypertension)",
@@ -20,7 +20,7 @@ export const HypertensionDisease: KnowledgeEntity = {
     ar: "ارتفاع ضغط الدم",
   },
   summary: {
-    en: "High blood pressure usually has no warning symptoms. Learn how accurate readings, everyday habits and prescribed treatment work together to protect the heart, brain and kidneys.",
+    en: "High blood pressure often has no symptoms but can raise the risk of heart, brain, and kidney problems over time. Learn why accurate checks, prescribed treatment, and urgent warning signs matter.",
     hi: "उच्च रक्तचाप का एसीसी/एएचए 2017 मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
     gu: "હાઇ બ્લડ પ્રેશરનું ACC/AHA 2017 ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
     mr: "उच्च रक्तदाबाचे ACC/AHA 2017 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
@@ -54,7 +54,7 @@ export const HypertensionDisease: KnowledgeEntity = {
     conventionalManagement:
       "Treatment is personalised. It may include a heart-healthy lower-salt eating pattern, activity, weight management, less alcohol, stopping smoking and prescribed blood-pressure medicine. Many people need both everyday changes and medicine.",
     homeopathicApproach:
-      "Reliable clinical evidence has not established homeopathy as a treatment for hypertension. It must not replace home monitoring, prescribed blood-pressure medicine or emergency assessment. Do not change prescribed doses without the prescriber’s advice.",
+      "Reliable clinical evidence has not established homeopathy as a treatment that controls high blood pressure. It must not replace prescribed medicines, regular blood-pressure checks, or urgent assessment of possible emergency symptoms.",
     lifestyleAdvice:
       "Use a validated upper-arm monitor if your clinician recommends home checks. Sit quietly first, use the right cuff size, record readings rather than reacting to one number, and bring the log to appointments. Build gradual activity, more minimally processed foods and good sleep into a sustainable routine.",
     references: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0039"],
