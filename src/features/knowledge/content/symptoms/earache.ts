@@ -20,7 +20,7 @@ export const EaracheSymptom: KnowledgeEntity = {
     ar: "Earache"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Earache.",
+    en: "Earache is common and often settles in a few days, but leaking fluid, hearing change, or swelling around the ear need advice sooner.",
     hi: "Earache के लक्षण की नैदानिक समझ.",
     gu: "Earache ના લક્ષણ ની સમજણ.",
     mr: "Earache चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const EaracheSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Earache."
   },
   content: {
-  "definition": "Earache: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Earache is pain felt in or around one or both ears. It can be sharp, dull, throbbing, or a feeling of pressure.",
+  "clinicalMeaning": "Ear pain is often linked to an ear infection, a cold, earwax, a throat problem, or a dental problem. The cause is not always inside the ear, so accompanying symptoms and duration matter.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "Middle or outer ear infection, especially after a cold",
+    "Earwax build-up, water irritation, or an object in the ear",
+    "Sore throat, tonsillitis, jaw problems, teething, or a dental abscess",
+    "A change in air pressure, injury, or a perforated eardrum"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "A clinician may check the ear canal and eardrum, and ask about fever, discharge, hearing, dizziness, recent cold symptoms, swallowing pain, dental pain, swimming, or trauma. Do not put objects into the ear to investigate or remove wax.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Get urgent advice if pain lasts more than 2 to 3 days, you feel very unwell, have a high fever, or there is fluid coming from the ear",
+    "Seek prompt assessment for swelling around the ear, a new hearing change, severe dizziness, vomiting, or something stuck in the ear",
+    "Seek advice early for a young child, recurrent earache, or ear symptoms if you have diabetes, a weakened immune system, or a significant long-term condition"
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "Rest, drink fluids, and use a warm flannel on the outer ear. Paracetamol or ibuprofen may help if they are safe for you; ask a pharmacist if unsure. Do not insert cotton buds, attempt to remove wax, or let water enter a painful ear.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const EaracheSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "Should I use cotton buds to clear ear pain?",
+      "answer": "No. Cotton buds can push wax deeper and damage the ear canal or eardrum. Ask a pharmacist or clinician for safe advice instead."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "Can a sore throat or tooth cause earache?",
+      "answer": "Yes. Ear pain can be referred from the throat, teeth, or jaw. Pain when swallowing or toothache are useful clues to mention at an assessment."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "When should a child with earache be checked?",
+      "answer": "Get advice sooner if a child is very unwell, has a high temperature, fluid from the ear, hearing or balance changes, or if pain is not improving after a few days."
     }
   ]
 },

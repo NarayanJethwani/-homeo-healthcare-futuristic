@@ -20,7 +20,7 @@ export const SwollenGlandsSymptom: KnowledgeEntity = {
     ar: "Swollen Glands"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Swollen Glands.",
+    en: "Swollen glands are often a sign your body is fighting an infection; changes that persist, grow, or feel hard need a check-up.",
     hi: "Swollen Glands के लक्षण की नैदानिक समझ.",
     gu: "Swollen Glands ના લક્ષણ ની સમજણ.",
     mr: "Swollen Glands चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const SwollenGlandsSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Swollen Glands."
   },
   content: {
-  "definition": "Swollen glands: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Swollen glands usually means enlarged lymph nodes—small, bean-shaped parts of the immune system. They can feel like tender lumps in the neck, under the chin, armpits, or groin.",
+  "clinicalMeaning": "Lymph nodes commonly swell near an infection and often settle within 1 to 2 weeks. The location, tenderness, size, movement, duration, and accompanying symptoms help show whether a review is needed.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "Common infections such as colds, tonsillitis, ear or throat infections",
+    "Viral infections such as glandular fever",
+    "A local dental, skin, or other infection near the swollen area",
+    "Rarely, an immune or blood-related condition"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "A clinician will ask about recent infection, sore throat, cough, fever, dental symptoms, travel, medicines, night sweats, and weight change. They may examine the glands and arrange tests if they have not settled or the cause is unclear.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Get urgent help for difficulty breathing or swallowing with swollen glands",
+    "Book a GP review if glands are getting bigger, have not improved within 1 to 2 weeks, feel hard or fixed, or are above or below the collarbone",
+    "Seek prompt advice for swollen glands with persistent fever, drenching night sweats, unintentional weight loss, or no other sign of infection"
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "Rest, drink fluids, and use simple pain relief if it is suitable for you. Do not repeatedly press or massage the lumps. Note when they appeared and any related symptoms so you can give a clear history if they persist.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const SwollenGlandsSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "How long do swollen glands usually last?",
+      "answer": "Glands swollen because of a common infection often start to settle within 1 to 2 weeks. If they persist, enlarge, or feel hard, arrange a GP review."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "Can a cold cause swollen neck glands?",
+      "answer": "Yes. Lymph nodes commonly swell near a cold, sore throat, tonsillitis, or ear infection while the body is responding to infection."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "When are swollen glands urgent?",
+      "answer": "Get urgent help if they are making it hard to breathe or swallow. Seek prompt medical advice for persistent fever, night sweats, weight loss, or glands that are hard, fixed, or growing."
     }
   ]
 },

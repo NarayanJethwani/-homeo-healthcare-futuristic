@@ -20,7 +20,7 @@ export const KneePainSymptom: KnowledgeEntity = {
     ar: "Knee Pain"
   },
   summary: {
-    en: "Knee pain can follow an injury, strain, or a condition such as osteoarthritis. Find simple ways to ease symptoms and the signs—such as inability to bear weight or a hot swollen knee—that need urgent advice.",
+    en: "Knee pain is common after strain or injury; swelling, inability to bear weight, or a hot red knee needs faster assessment.",
     hi: "Knee Pain के लक्षण की नैदानिक समझ.",
     gu: "Knee Pain ના લક્ષણ ની સમજણ.",
     mr: "Knee Pain चे लक्षण आणि उपचार.",
@@ -28,37 +28,37 @@ export const KneePainSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Knee Pain."
   },
   content: {
-  "definition": "Knee pain is discomfort, stiffness, swelling, or reduced movement in or around the knee joint.",
-  "clinicalMeaning": "It can result from an injury, overuse, osteoarthritis, inflammation, or less commonly infection. The pattern of pain, swelling, and ability to bear weight helps guide next steps.",
+  "definition": "Knee pain is discomfort in or around the knee joint. It can start after an injury, develop gradually, or come and go with activity.",
+  "clinicalMeaning": "Common causes include a strain, overuse, arthritis, tendon irritation, or a kneecap problem. The way symptoms began, the ability to bear weight, swelling, warmth, and locking or giving way help guide the next step.",
   "commonCauses": [
-    "A strain, sprain, tendon problem, or overuse injury",
-    "Osteoarthritis or other joint wear-and-tear",
-    "Cartilage or ligament injury after twisting or impact",
-    "Inflammation, gout, or joint infection"
+    "A twist, fall, overuse, or a sprain or strain",
+    "Tendon irritation from running, jumping, kneeling, or repetitive activity",
+    "Osteoarthritis or another long-term joint condition",
+    "Less commonly, gout, bursitis, infection, or a ligament, cartilage, or kneecap injury"
   ],
-  "differentialDiagnosis": "A clinician may consider injury, osteoarthritis, inflammatory arthritis, gout, infection, or pain referred from the hip or back.",
+  "differentialDiagnosis": "A clinician may assess the injury mechanism, movement, stability, swelling, warmth, and whether the knee locks, clicks painfully, or gives way. A hot red joint with fever is different from a mild strain and needs urgent assessment.",
   "redFlags": [
-    "A very painful knee that cannot move or bear weight",
-    "A badly swollen knee, a changed shape, or locking or giving way after injury",
-    "A hot, red, swollen knee with fever or feeling generally unwell"
+    "Get urgent help if you cannot move the knee or bear weight, it is badly swollen or changed shape, or it locks or repeatedly gives way",
+    "Seek urgent assessment for a hot, red, very painful knee with fever, chills, or feeling unwell",
+    "Book a review if pain is worsening, affects normal activities, follows a significant injury, or is not improving after a few weeks"
   ],
-  "lifestyleAdvice": "Reduce weight-bearing briefly if it is painful, use a wrapped cold pack for up to 20 minutes at a time, and return to gentle movement as symptoms allow. Ask a clinician or physiotherapist about exercises that suit the cause of your pain.",
+  "lifestyleAdvice": "Reduce activities that clearly worsen pain at first, use an ice pack wrapped in a cloth for up to 20 minutes at a time, and keep gently moving within comfort. Avoid long periods of complete rest. A pharmacist can advise whether pain medicine is suitable for you.",
   "references": [
     "CIT-0011",
     "CIT-0022"
   ],
   "faqs": [
     {
-      "question": "What can I do for knee pain at home?",
-      "answer": "Avoid activities that make pain worse, use a cold pack wrapped in a towel for short periods, and consider pain relief that is safe for you. A pharmacist can help you choose an option."
+      "question": "Should I keep moving with knee pain?",
+      "answer": "For most mild strains, gentle movement helps prevent stiffness. Avoid activities that sharply increase pain and seek urgent advice if you cannot bear weight or the knee is unstable."
     },
     {
-      "question": "When should I get urgent help for knee pain?",
-      "answer": "Get urgent advice if you cannot move the knee or bear weight, it is badly swollen or changed shape, it locks or gives way, or it is hot, red, swollen, and you have a fever or feel unwell."
+      "question": "When does a knee injury need urgent care?",
+      "answer": "Seek urgent assessment if the knee is deformed, very swollen, hot and red, you cannot move it or put weight through it, or you feel unwell with fever."
     },
     {
-      "question": "Could knee pain be osteoarthritis?",
-      "answer": "Osteoarthritis is one common cause, especially when pain and stiffness build gradually and affect activity. A clinician can help confirm the cause and discuss exercise, weight management, pain relief, and other support."
+      "question": "Is clicking always a sign of damage?",
+      "answer": "No. Painless clicking can be normal. Painful clicking, locking, giving way, or a sudden injury should be assessed."
     }
   ]
 },

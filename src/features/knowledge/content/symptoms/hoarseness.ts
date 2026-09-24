@@ -20,7 +20,7 @@ export const HoarsenessSymptom: KnowledgeEntity = {
     ar: "Hoarseness"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Hoarseness.",
+    en: "A hoarse or croaky voice often follows a cold or voice strain; a persistent voice change should be checked.",
     hi: "Hoarseness के लक्षण की नैदानिक समझ.",
     gu: "Hoarseness ના લક્ષણ ની સમજણ.",
     mr: "Hoarseness चे लक्षण आणि उपचार.",
@@ -28,21 +28,21 @@ export const HoarsenessSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Hoarseness."
   },
   content: {
-  "definition": "Hoarseness: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
+  "definition": "Hoarseness is a change in how the voice sounds. It may seem croaky, rough, breathy, weak, strained, or quieter than usual.",
+  "clinicalMeaning": "A short-lived hoarse voice is commonly caused by laryngitis after a cold, voice overuse, or irritation. Reflux, allergies, smoking, inhalers, and other conditions can also contribute. A voice that remains altered for more than 3 weeks needs a GP assessment.",
   "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
+    "Viral laryngitis linked to a cold or flu",
+    "Voice overuse, shouting, singing, or frequent throat-clearing",
+    "Acid reflux, allergies, smoke, dust, dry air, alcohol, or caffeine",
+    "Some medicines or, less commonly, a condition affecting the voice box"
   ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
+  "differentialDiagnosis": "A clinician will ask how long the change has lasted, whether it is constant, your voice demands, smoking and alcohol history, reflux symptoms, coughing, swallowing symptoms, neck lumps, and medicines. An ENT specialist may examine the voice box if needed.",
   "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
+    "Call emergency services for difficulty breathing, or urgent care if swallowing is very painful or difficult",
+    "Book a GP appointment if hoarseness lasts more than 3 weeks, keeps returning, or is getting worse",
+    "Seek prompt advice for a voice change with coughing blood, a neck lump, unintentional weight loss, severe pain, or a history of smoking"
   ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
+  "lifestyleAdvice": "Rest the voice where possible, sip fluids, avoid smoking and smoky or dusty places, and reduce throat-clearing. Do not whisper or speak loudly because both can strain the voice. Address reflux symptoms with a clinician or pharmacist if they are frequent.",
   "references": [
     "CIT-0004",
     "CIT-0005",
@@ -52,16 +52,16 @@ export const HoarsenessSymptom: KnowledgeEntity = {
   ],
   "faqs": [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      "question": "How long does laryngitis usually last?",
+      "answer": "A typical viral laryngitis often improves within 1 to 2 weeks. If your voice has not returned to normal after 3 weeks, arrange a GP review."
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      "question": "Should I whisper to rest my voice?",
+      "answer": "No. Whispering can strain the voice box. Speak gently only when needed and avoid shouting or prolonged talking while recovering."
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+      "question": "Can reflux cause hoarseness?",
+      "answer": "Yes. Acid reaching the throat can irritate the voice box. Mention heartburn, sour taste, or symptoms worse after meals or lying down to a clinician."
     }
   ]
 },
