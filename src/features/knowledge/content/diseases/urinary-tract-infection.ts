@@ -21,7 +21,7 @@ export const UrinaryTractInfectionDisease: KnowledgeEntity = {
     ar: "التهاب المسالك البولية (Urinary Tract Infection)"
   },
   summary: {
-    en: "A UTI can cause burning when passing urine, needing to go often or suddenly, and lower tummy discomfort. Learn when testing and antibiotics may be needed and when symptoms suggest a kidney infection.",
+    en: "A UTI can cause burning when passing urine, needing to go more often, urgency, or lower tummy pain. Learn when self-care may help, when to contact a clinician, and symptoms that may mean a kidney infection.",
     hi: "मूत्र मार्ग संक्रमण (यूटीआई/सिस्टाइटिस) का यूरोपैथोजेनिक ई. कोलाई पैथोलॉजी, बार-बार होने वाले मूत्र संक्रमण, पारंपरिक संवैधानिक होम्योपैथिक प्रबंधन, और तीव्र पायलोनेफ्राइटिस (गुर्दे का संक्रमण) व सेप्सिस की आपातकालीन सुरक्षा सीमाओं सहित प्रामाणिक विवरण.",
     gu: "પેશાબનો ચેપ (યુટીઆઈ) ની બેક્ટેરિયલ પેથોલોજી, પેશાબમાં બળતરા અને વારંવાર પેશાબ થવાની લાગણી, પરંપરાગત હોમિયોપેથીક સહાયક સારવાર અને પાયલોનેફ્રાઇટિસ (કિડની ઇન્ફેક્શન) ની ઇમરજન્સી સીમાઓનું વિવરણ.",
     mr: "मूत्रमार्गाचा जंतुसंसर्ग (UTI), लघवीची तीव्र जळजळ व कळ, वारंवार लघवीची भावना, पारंपरिक होमिओपॅथिक पद्धत आणि किडनी इन्फेक्शनच्या आणीबाणीच्या मर्यादा.",
@@ -55,7 +55,7 @@ export const UrinaryTractInfectionDisease: KnowledgeEntity = {
     conventionalManagement:
       "Many bacterial UTIs are treated with a clinician-prescribed antibiotic. The choice and duration depend on the person, the bacteria, allergies, pregnancy, and whether the infection may involve the kidneys. Take prescribed antibiotics exactly as directed and seek advice if symptoms worsen or do not improve.",
     homeopathicApproach:
-      "Reliable clinical evidence has not established homeopathy as a treatment for UTIs. It must not replace testing, antibiotics when indicated, or prompt assessment for pregnancy, fever, side or back pain, vomiting, or severe illness.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for urinary tract infections. It must not replace a urine assessment, prescribed antibiotics when indicated, or urgent care for fever, flank pain, vomiting, confusion, pregnancy, or other high-risk symptoms.",
     lifestyleAdvice:
       "Drink enough fluid for your usual health needs, unless a clinician has advised a limit. Do not routinely hold urine, wipe front to back after a bowel movement, and avoid scented products that irritate the area. Ask a clinician about recurrent UTIs rather than relying on supplements or home remedies.",
     references: [
@@ -68,8 +68,8 @@ export const UrinaryTractInfectionDisease: KnowledgeEntity = {
     ],
     faqs: [
       {
-        question: "When should I arrange a urine test or medical review?",
-        answer: "Arrange timely review if you are pregnant, a man or child has symptoms, symptoms keep returning, there is visible blood in the urine, or treatment has not helped. Similar symptoms can come from conditions other than a UTI."
+        question: "Can cranberry products or cystitis sachets treat a UTI?",
+        answer: "They have not been shown to treat a UTI once symptoms have started. Speak with a clinician or pharmacist about treatment that is right for you, especially if symptoms are severe, recurrent, or you are pregnant."
       },
       {
         question: "When could a UTI be a kidney infection?",

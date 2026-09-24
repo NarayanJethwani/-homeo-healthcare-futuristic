@@ -13,7 +13,7 @@ export const OtitisMediaDisease: KnowledgeEntity = {
     reviewed: "2026-08-14T12:00:00Z"
   },
   title: {
-    en: "Otitis Media (Middle Ear Infection & Effusion)",
+    en: "Middle Ear Infection (Otitis Media)",
     hi: "ओटाइटिस मीडिया / कान का संक्रमण (Otitis Media)",
     gu: "ઓટાઇટિસ મીડિયા / કાનનો ચેપ (Otitis Media)",
     mr: "कान दुखणे आणि कान वाहणे (Otitis Media)",
@@ -21,7 +21,7 @@ export const OtitisMediaDisease: KnowledgeEntity = {
     ar: "التهاب الأذن الوسطى (Otitis Media)"
   },
   summary: {
-    en: "An authoritative clinical and educational profile of Otitis Media, covering acute otitis media (AOM), otitis media with effusion (OME), Eustachian tube dysfunction, constitutional homeopathic supportive management, and emergency red flags for acute mastoiditis, facial nerve palsy, and intracranial infection.",
+    en: "A middle ear infection can cause earache, fever, irritability, or temporary hearing changes, especially in children. Learn what usually improves at home and the symptoms that need prompt medical advice.",
     hi: "ओटाइटिस मीडिया (मध्य कर्ण संक्रमण) का एक्यूट ओटाइटिस मीडिया (AOM), यूस्टेशियन ट्यूब डिसफंक्शन, कान में मवाद/द्रव का संचय, पारंपरिक संवैधानिक होम्योपैथिक प्रबंधन, और तीव्र मास्टॉयडाइटिस की आपातकालीन सुरक्षा सीमाओं सहित प्रामाणिक विवरण.",
     gu: "ઓટાઇટિસ મીડિયા (કાનનો ચેપ અને પરુ), યુસ્ટેચિયન ટ્યુબની ખામી, કાનનો તીવ્ર દુખાવો, પરંપરાગત હોમિયોપેથીક સહાયક સારવાર અને માસ્ટોઇડાઇટિસ ની ઇમરજન્સી સીમાઓનું વિવરણ.",
     mr: "मध्यम कानाचा संसर्ग (Otitis Media), कानात पू होणे, ऐकू कमी येणे, पारंपरिक होमिओपॅथिक पद्धत आणि मास्टॉइड इन्फेक्शनच्या आणीबाणीच्या मर्यादा.",
@@ -61,7 +61,7 @@ export const OtitisMediaDisease: KnowledgeEntity = {
     conventionalManagement:
       "Initial management includes strict weight-based analgesia (acetaminophen, ibuprofen). In mild unilateral AOM in older children, a watchful waiting strategy (48–72 hours observation) is recommended by AAP guidelines. First-line antibiotic therapy (high-dose amoxicillin or amoxicillin-clavulanate) is indicated for severe bilateral disease, infants <6 months, or persistent symptoms. Tympanostomy tube insertion (grommets) and adenoidectomy are indicated for recurrent AOM or chronic OME with hearing deficit.",
     homeopathicApproach:
-      "Homeopathic constitutional and acute remedies (such as Belladonna, Chamomilla, Pulsatilla Nigricans, Hepar Sulphuris, Mercurius Solubilis, Silicea, Ferrum Phosphoricum) serve as supportive care to ease pain, soothe infant distress, and assist fluid resorption alongside close otoscopic monitoring and pediatrician evaluation.",
+      "Reliable clinical evidence has not established homeopathy as a treatment for middle ear infection. It must not replace pain relief recommended by a clinician, a child's medical assessment, prescribed treatment, or urgent care for severe symptoms.",
     lifestyleAdvice:
       "Feed infants in a semi-upright position rather than lying flat, eliminate household tobacco smoke exposure, practice good hand hygiene, avoid inserting cotton swabs or foreign objects into the ear canal, keep water out of the ear if a tympanic perforation or grommet tube is present, and adhere to recommended pediatric pneumococcal and influenza immunizations.",
     references: [

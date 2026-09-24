@@ -7,12 +7,12 @@ export const KNOWLEDGE_RELATIONSHIPS: KnowledgeRelationship[] = [
   { source: "D0003", relation: "hasSymptom", target: "S0003" }, // Migraine has Headache
   { source: "D0004", relation: "hasSymptom", target: "S0001" }, // IBS has Heartburn/Bloating
 
-  // Contagious skin conditions: keep adjacent reading clinically relevant.
-  { source: "D0083", relation: "hasSymptom", target: "S0018" }, // Scabies has Skin Rash
-  { source: "D0084", relation: "hasSymptom", target: "S0018" }, // Impetigo has Skin Rash
-  { source: "D0085", relation: "relatedTo", target: "D0094" }, // HFMD and Mouth Ulcers
-  { source: "D0086", relation: "relatedTo", target: "D0085" }, // Chickenpox and HFMD
-  { source: "D0087", relation: "relatedTo", target: "D0088" }, // Measles and Conjunctivitis
+  // Common infection guides: connect a condition to the symptom a patient is likely to start with.
+  { source: "D0093", relation: "hasSymptom", target: "S0008" }, // Flu has Sore Throat
+  { source: "D0028", relation: "hasSymptom", target: "S0008" }, // Tonsillitis has Sore Throat
+  { source: "D0026", relation: "hasSymptom", target: "S0040" }, // Middle Ear Infection has Earache
+  { source: "D0032", relation: "hasSymptom", target: "S0052" }, // UTI has Burning Urination
+  { source: "D0026", relation: "relatedTo", target: "D0028" }, // Ear pain can be referred from throat infection
 
   // Diseases to Remedies
   { source: "D0001", relation: "treatedWith", target: "R0002" }, // GERD - Nux Vomica
