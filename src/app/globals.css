@@ -305,6 +305,18 @@ html {
   scroll-padding-top: 90px;
 }
 
+@media (min-width: 768px) and (max-width: 1279px) {
+  html {
+    scroll-padding-top: 124px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 body {
   background-color: var(--color-pearl);
   color: var(--foreground);
