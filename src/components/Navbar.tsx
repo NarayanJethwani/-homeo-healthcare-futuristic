@@ -2,15 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Menu, X, ArrowUpRight, Sun, Moon, Stethoscope, ClipboardList, User, ShoppingBag, BookOpen, Mail, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import Magnetic from "./Magnetic";
 
 
 export default function Navbar() {
   const pathname = usePathname();
+  const shouldReduceMotion = useReducedMotion();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -51,6 +51,25 @@ export default function Navbar() {
     };
   }, [mobileMenuOpen]);
 
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileMenuOpen(false);
+    };
+    const desktopBreakpoint = window.matchMedia("(min-width: 768px)");
+    const closeOnDesktop = () => {
+      if (desktopBreakpoint.matches) setMobileMenuOpen(false);
+    };
+
+    window.addEventListener("keydown", closeOnEscape);
+    desktopBreakpoint.addEventListener("change", closeOnDesktop);
+    return () => {
+      window.removeEventListener("keydown", closeOnEscape);
+      desktopBreakpoint.removeEventListener("change", closeOnDesktop);
+    };
+  }, [mobileMenuOpen]);
+
   const toggleTheme = () => {
     const nextTheme = theme === "light" ? "dark" : "light";
     setTheme(nextTheme);
@@ -76,6 +95,8 @@ export default function Navbar() {
     { name: "Contact", href: "/contact-us", icon: Mail, color: "bg-rose-500/10 text-rose-600 dark:text-rose-400" },
   ];
 
+  const isActiveSection = (href: string) => pathname === href || pathname?.startsWith(`${href}/`);
+
   if (pathname?.startsWith("/admin") || isPortalHost) {
     return null;
   }
@@ -84,122 +105,115 @@ export default function Navbar() {
     <>
       <motion.nav
         aria-label="Main navigation"
-        initial={{ y: -50, opacity: 0 }}
+        initial={shouldReduceMotion ? false : { y: -8, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${
+        transition={{ duration: shouldReduceMotion ? 0 : 0.24, ease: "easeOut" }}
+        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-200 motion-reduce:transition-none ${
           scrolled ? "py-2 sm:py-3 md:py-2 xl:py-3" : "py-3 sm:py-4 md:py-2 xl:py-4"
         }`}
       >
         <div className="mx-auto max-w-[1440px] px-4 sm:px-6">
-          <div className="glass-panel flex min-h-[68px] flex-wrap items-center justify-between gap-x-4 gap-y-0 rounded-[28px] border-white/30 px-4 py-2.5 shadow-[0_8px_30px_rgb(20,184,166,0.06)] sm:px-5 md:py-2 xl:flex-nowrap xl:gap-5 xl:rounded-full xl:py-2.5">
-            
+          <div className="glass-panel flex min-h-[68px] flex-wrap items-center justify-between gap-x-0 gap-y-0 rounded-[28px] border-white/30 px-3 py-2.5 shadow-[0_8px_30px_rgb(20,184,166,0.06)] sm:gap-x-4 sm:px-5 md:py-2 xl:flex-nowrap xl:gap-5 xl:rounded-full xl:py-2.5">
             {/* Logo */}
-            <Magnetic>
-              <Link href="/" data-cursor="homeo" className="group flex shrink-0 items-center gap-2.5 cursor-pointer">
-                <div className="relative flex items-center justify-center w-9 h-9 rounded-full bg-white border border-slate-200/50 overflow-hidden shadow-sm flex-shrink-0">
-                  <Image
-                    src="/images/logo.png"
-                    alt="Homeo Healthcare Logo"
-                    width={36}
-                    height={36}
-                    className="object-contain p-0.5"
-                    priority
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-bold tracking-tight text-[#1A2421] text-base leading-none">Homeo</span>
-                  <span className="text-[10px] text-mint uppercase tracking-widest font-semibold">Healthcare</span>
-                </div>
-              </Link>
-            </Magnetic>
+            <Link href="/" data-cursor="homeo" className="group flex shrink-0 items-center gap-2.5 rounded-full focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-mint-dark">
+              <div className="relative flex items-center justify-center w-9 h-9 rounded-full bg-white border border-slate-200/50 overflow-hidden shadow-sm flex-shrink-0">
+                <Image
+                  src="/images/logo.png"
+                  alt=""
+                  width={36}
+                  height={36}
+                  className="object-contain p-0.5"
+                  priority
+                />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[17px] font-bold leading-none tracking-tight text-[#1A2421] dark:text-zinc-100">Homeo</span>
+                <span className="text-[10px] text-mint uppercase tracking-widest font-semibold">Healthcare</span>
+              </div>
+            </Link>
 
             {/* Desktop Navigation Links */}
-            <div className="hidden min-w-0 flex-1 items-center justify-center gap-3 xl:flex 2xl:gap-5">
-              {menuItems.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  data-cursor="explore"
-                  aria-current={pathname === item.href ? "page" : undefined}
-                  className={`group relative cursor-pointer whitespace-nowrap py-2 text-[13px] font-semibold transition-colors duration-300 2xl:text-sm ${
-                    pathname === item.href ? "text-mint-dark dark:text-mint" : "text-slate-700 hover:text-mint-dark dark:hover:text-mint"
-                  }`}
-                >
-                  {item.name}
-                  <span className={`absolute bottom-0 left-1/2 h-0.5 bg-mint transition-all duration-300 group-hover:left-0 group-hover:w-full ${pathname === item.href ? "left-0 w-full" : "w-0"}`} />
-                </Link>
-              ))}
+            <div className="hidden min-w-0 flex-1 items-center justify-center gap-2 xl:flex 2xl:gap-4">
+              {menuItems.map((item) => {
+                const active = isActiveSection(item.href);
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    data-cursor="explore"
+                    aria-current={pathname === item.href ? "page" : undefined}
+                    className={`group relative whitespace-nowrap rounded-sm py-2 text-sm font-semibold transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-mint-dark motion-reduce:transition-none ${
+                      active ? "text-mint-dark dark:text-mint" : "text-slate-700 hover:text-mint-dark dark:text-zinc-200 dark:hover:text-mint"
+                    }`}
+                  >
+                    {item.name}
+                    <span className={`absolute bottom-0 left-1/2 h-0.5 bg-mint-dark transition-all duration-200 group-hover:left-0 group-hover:w-full motion-reduce:transition-none ${active ? "left-0 w-full" : "w-0"}`} />
+                  </Link>
+                );
+              })}
             </div>
 
             {/* Desktop actions */}
             <div className="hidden shrink-0 items-center gap-2 md:flex">
-              <Magnetic>
-                <button
-                  onClick={toggleTheme}
-                  aria-label="Toggle theme"
-                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-mint/20 bg-mint/5 text-[#1A2421] transition-all duration-300 hover:border-mint/60 hover:bg-mint/10 dark:text-zinc-200"
-                >
-                  {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-                </button>
-              </Magnetic>
+              <button
+                onClick={toggleTheme}
+                aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-mint/20 bg-mint/5 text-[#1A2421] transition-colors duration-200 hover:border-mint/60 hover:bg-mint/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-dark dark:text-zinc-200 motion-reduce:transition-none"
+              >
+                {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+              </button>
 
-              <Magnetic>
-                <Link
-                  href="/#booking"
-                  data-cursor="book"
-                  className="flex h-10 items-center gap-1.5 whitespace-nowrap rounded-full bg-mint-dark px-5 text-xs font-bold tracking-wide text-white shadow-sm shadow-mint/20 transition-colors duration-300 hover:bg-[#0B5F59]"
-                >
-                  Book Consultation
-                  <ArrowUpRight className="h-3.5 w-3.5" />
-                </Link>
-              </Magnetic>
+              <Link
+                href="/#booking"
+                data-cursor="book"
+                className="flex h-11 items-center gap-1.5 whitespace-nowrap rounded-full bg-mint-dark px-5 text-sm font-semibold text-white shadow-sm shadow-mint/20 transition-colors duration-200 hover:bg-[#0B5F59] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-dark motion-reduce:transition-none"
+              >
+                Book Consultation
+                <ArrowUpRight className="h-3.5 w-3.5" />
+              </Link>
             </div>
 
             {/* Mobile Controls */}
-            <div className="flex shrink-0 items-center gap-2 md:hidden">
+            <div className="flex shrink-0 items-center gap-1 sm:gap-2 md:hidden">
               <Link
                 href="/#booking"
-                className="hidden h-10 items-center gap-1 rounded-full bg-mint-dark px-4 text-xs font-bold text-white transition-colors hover:bg-[#0B5F59] sm:inline-flex"
+                onClick={() => setMobileMenuOpen(false)}
+                className="inline-flex h-11 items-center gap-1 rounded-full bg-mint-dark px-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-[#0B5F59] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-dark sm:px-4 motion-reduce:transition-none"
               >
                 <span>Book</span>
                 <ArrowUpRight className="h-3.5 w-3.5" />
               </Link>
-              <button
-                onClick={toggleTheme}
-                aria-label="Toggle theme"
-                className="cursor-pointer rounded-full p-2 text-[#1A2421] transition-colors hover:text-mint dark:text-zinc-200"
-              >
-                {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-              </button>
 
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
                 aria-expanded={mobileMenuOpen}
                 aria-controls="mobile-navigation"
-                className="cursor-pointer rounded-full p-2 text-[#1A2421] transition-colors hover:text-mint dark:text-zinc-200"
+                className="flex h-11 w-11 items-center justify-center rounded-full text-[#1A2421] transition-colors duration-200 hover:text-mint-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-dark dark:text-zinc-200 motion-reduce:transition-none"
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             </div>
 
             {/* Keep all sections visible when the single-row layout has less room. */}
-            <div className="order-last hidden basis-full items-center justify-center gap-4 border-t border-slate-200/60 pt-1.5 dark:border-white/10 md:flex xl:hidden">
-              {menuItems.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  data-cursor="explore"
-                  aria-current={pathname === item.href ? "page" : undefined}
-                  className={`group relative cursor-pointer whitespace-nowrap py-1.5 text-xs font-semibold transition-colors duration-300 lg:text-[13px] ${
-                    pathname === item.href ? "text-mint-dark dark:text-mint" : "text-slate-700 hover:text-mint-dark dark:hover:text-mint"
-                  }`}
-                >
-                  {item.name}
-                  <span className={`absolute bottom-0 left-1/2 h-0.5 bg-mint transition-all duration-300 group-hover:left-0 group-hover:w-full ${pathname === item.href ? "left-0 w-full" : "w-0"}`} />
-                </Link>
-              ))}
+            <div className="order-last hidden basis-full items-center justify-center gap-3 border-t border-slate-200/60 pt-1.5 dark:border-white/10 md:flex xl:hidden lg:gap-4">
+              {menuItems.map((item) => {
+                const active = isActiveSection(item.href);
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    data-cursor="explore"
+                    aria-current={pathname === item.href ? "page" : undefined}
+                    className={`group relative whitespace-nowrap rounded-sm py-1.5 text-sm font-semibold transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-dark motion-reduce:transition-none ${
+                      active ? "text-mint-dark dark:text-mint" : "text-slate-700 hover:text-mint-dark dark:text-zinc-200 dark:hover:text-mint"
+                    }`}
+                  >
+                    {item.name}
+                    <span className={`absolute bottom-0 left-1/2 h-0.5 bg-mint-dark transition-all duration-200 group-hover:left-0 group-hover:w-full motion-reduce:transition-none ${active ? "left-0 w-full" : "w-0"}`} />
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -209,54 +223,60 @@ export default function Navbar() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={shouldReduceMotion ? false : { opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
+            exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
+            transition={{ duration: shouldReduceMotion ? 0 : 0.2 }}
             id="mobile-navigation"
             className="fixed inset-x-0 top-20 z-[60] mx-4 md:hidden sm:top-24 sm:mx-6"
           >
             <div className="bg-white dark:bg-[#0B0F19] border border-white/40 dark:border-slate-800/40 rounded-3xl p-5 shadow-[0_20px_50px_rgba(20,184,166,0.15)] max-h-[calc(100vh-120px)] overflow-y-auto">
               <div className="flex flex-col gap-4">
-                {menuItems.map((item, idx) => (
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 24, delay: idx * 0.05 }}
-                    key={item.name}
-                  >
+                {menuItems.map((item) => (
+                  <div key={item.name}>
                     <Link
                       href={item.href}
                       onClick={() => setMobileMenuOpen(false)}
                       aria-current={pathname === item.href ? "page" : undefined}
-                      className="flex items-center justify-between p-3 rounded-2xl bg-slate-500/5 dark:bg-white/5 hover:bg-mint/10 dark:hover:bg-mint/15 transition-all duration-300 group cursor-pointer border border-transparent hover:border-mint/20"
+                      className={`group flex min-h-12 items-center justify-between rounded-2xl border p-3 transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-dark motion-reduce:transition-none ${
+                        isActiveSection(item.href)
+                          ? "border-mint/30 bg-mint/10 dark:bg-mint/15"
+                          : "border-transparent bg-slate-500/5 hover:border-mint/20 hover:bg-mint/10 dark:bg-white/5 dark:hover:bg-mint/15"
+                      }`}
                     >
                       <div className="flex items-center gap-3">
                         <div className={`p-2.5 rounded-xl ${item.color} flex items-center justify-center flex-shrink-0`}>
                           <item.icon className="w-5 h-5" />
                         </div>
-                        <span className="text-base font-bold text-slate-800 dark:text-zinc-100 group-hover:text-mint transition-colors">
+                        <span className="text-base font-semibold text-slate-800 transition-colors group-hover:text-mint dark:text-zinc-100 motion-reduce:transition-none">
                           {item.name}
                         </span>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-mint group-hover:translate-x-1 transition-all" />
+                      <ChevronRight className="w-4 h-4 text-slate-400 transition-transform duration-200 group-hover:translate-x-1 group-hover:text-mint motion-reduce:transform-none motion-reduce:transition-none" />
                     </Link>
-                  </motion.div>
+                  </div>
                 ))}
                 
                 <div className="h-px bg-slate-100 dark:bg-slate-800/60 my-2" />
+                <button
+                  onClick={toggleTheme}
+                  className="flex min-h-12 w-full items-center gap-3 rounded-2xl px-3 text-left text-sm font-semibold text-slate-700 transition-colors duration-200 hover:bg-slate-500/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-dark dark:text-zinc-200 motion-reduce:transition-none"
+                >
+                  {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+                  Switch to {theme === "light" ? "dark" : "light"} mode
+                </button>
                 
                 <a
                   href={portalUrl}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center border border-[#0F766E]/20 text-[#0F766E] dark:text-mint bg-[#0F766E]/5 hover:bg-[#0F766E]/10 py-3 rounded-2xl text-xs font-bold tracking-wider uppercase transition-colors duration-300 flex items-center justify-center gap-2"
+                  className="flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl border border-[#0F766E]/20 bg-[#0F766E]/5 py-3 text-center text-xs font-bold uppercase tracking-wider text-[#0F766E] transition-colors duration-200 hover:bg-[#0F766E]/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-dark dark:text-mint motion-reduce:transition-none"
                 >
                   Clinical Workspace
                 </a>
                 <Link
                   href="/#booking"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center bg-mint hover:bg-mint-dark text-white py-3 rounded-2xl text-xs font-bold tracking-wider uppercase shadow-md shadow-mint/10 hover:shadow-mint/20 transition-all duration-300 flex items-center justify-center gap-2"
+                  className="flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-mint py-3 text-center text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-mint/10 transition-colors duration-200 hover:bg-mint-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-dark motion-reduce:transition-none"
                 >
                   Book Consultation
                   <ArrowUpRight className="w-4 h-4" />
@@ -265,7 +285,7 @@ export default function Navbar() {
                 <div className="flex gap-3 pt-1">
                   <a
                     href="mailto:narayan.jethwani@homeo.healthcare"
-                    className="flex-1 text-center border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-zinc-300 py-3 rounded-2xl text-xs font-bold hover:border-mint hover:text-mint dark:hover:text-mint transition-colors"
+                    className="flex-1 rounded-2xl border border-slate-200 py-3 text-center text-xs font-bold text-slate-800 transition-colors duration-200 hover:border-mint hover:text-mint focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-dark dark:border-slate-800 dark:text-zinc-300 dark:hover:text-mint motion-reduce:transition-none"
                   >
                     Email Dr. Narayan
                   </a>
@@ -273,7 +293,7 @@ export default function Navbar() {
                     href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918446056789"}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 text-center border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 hover:bg-emerald-500/10 py-3 rounded-2xl text-xs font-bold transition-colors"
+                    className="flex-1 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 py-3 text-center text-xs font-bold text-emerald-600 transition-colors duration-200 hover:bg-emerald-500/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint-dark dark:text-emerald-400 motion-reduce:transition-none"
                   >
                     WhatsApp Chat
                   </a>
