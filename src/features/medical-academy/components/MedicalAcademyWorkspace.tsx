@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, KeyboardEvent, useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import {
   Activity,
   ArrowRight,
@@ -58,12 +59,18 @@ import HoloHumanSearchModal, { type SearchResultItem } from "./HoloHumanSearchMo
 import { REMEDY_TROPISM_DATA } from "../data/remedyTropismData";
 import { HOLOHUMAN_SYSTEM_MATERIALS } from "../render/holoHumanMaterials";
 import { SystemSpecific3DViewer } from "./SystemSpecific3DViewer";
+import type { WholeBodySelection } from "./WholeBodyAtlas";
 import { SYSTEM_DETAILED_KNOWLEDGE } from "../data/systemDetailedKnowledgeData";
 import { resolveSystem3DAsset, SYSTEM_3D_REGISTRY } from "../render/system3DRegistry";
 
+const WholeBodyAtlas = dynamic(() => import("./WholeBodyAtlas"), {
+  ssr: false,
+  loading: () => <p className="p-6 text-sm text-slate-500">Opening Whole Body Atlas…</p>,
+});
+
 type AssistantMode = "teach" | "quiz" | "research" | "homeopathy";
 type AtlasLayer = "systems" | "regions";
-type AtlasViewMode = "3d" | "2d";
+type AtlasViewMode = "3d" | "atlas" | "2d";
 
 interface AssistantMessage {
   id: string;
@@ -260,7 +267,7 @@ function AcademyHome({ onNavigate }: { onNavigate: (section: AcademySection) => 
   const cards = [
     {
       title: "Interactive anatomy",
-      copy: "Rotate a full 3D body, explore twelve system layers, or switch to the accessible 2D regional map.",
+      copy: "Explore twelve system layers in 3D, inspect the whole-body Human Atlas, and study the nine abdominal regions.",
       icon: Search,
       action: "Open atlas",
       target: "explore" as const,
@@ -572,6 +579,7 @@ function AnatomyAtlas({
   const [viewMode, setViewMode] = useState<AtlasViewMode>("3d");
   const [layer, setLayer] = useState<AtlasLayer>("systems");
   const [selectedRegion, setSelectedRegion] = useState<AnatomyRegionId>("epigastric");
+  const [wholeBodySelection, setWholeBodySelection] = useState<WholeBodySelection | null>(null);
   const [activeSubOrganId, setActiveSubOrganId] = useState<string | null>(null);
   const active3DAsset = resolveSystem3DAsset(system3D, activeSubOrganId);
   const [detailTab, setDetailTab] = useState<"structures" | "physiology" | "biomarkers" | "pathologies" | "homeopathy">("structures");
@@ -584,6 +592,19 @@ function AnatomyAtlas({
 
   const region = ANATOMY_REGIONS.find((item) => item.id === selectedRegion) ?? ANATOMY_REGIONS[1];
   const activeRemedy = activeRemedyTropismId ? REMEDY_TROPISM_DATA[activeRemedyTropismId] : null;
+
+  const focusWholeBodySelection = () => {
+    if (wholeBodySelection) {
+      const name = wholeBodySelection.name.toLowerCase();
+      const match = SYSTEM_3D_REGISTRY[wholeBodySelection.systemId].assets
+        .flatMap((asset) => asset.structures)
+        .find((structure) =>
+          [structure.name, ...structure.aliases].some((candidate) => candidate.toLowerCase() === name)
+        );
+      setActiveSubOrganId(match?.id ?? null);
+    }
+    setViewMode("3d");
+  };
 
   return (
     <div className="space-y-4">
@@ -607,11 +628,11 @@ function AnatomyAtlas({
           </p>
         </div>
         <div className="inline-flex w-fit rounded-xl border border-slate-200 bg-slate-100 p-1 dark:border-slate-700 dark:bg-slate-900" aria-label="Atlas view">
-          {([['3d', '3D System Model'], ['2d', '2D Regional Map']] as const).map(([id, label]) => (
+          {([['3d', 'System Focus'], ['atlas', 'Whole Body Atlas']] as const).map(([id, label]) => (
             <button
               key={id}
               type="button"
-              onClick={() => setViewMode(id)}
+              onClick={() => id === "3d" ? focusWholeBodySelection() : setViewMode("atlas")}
               aria-pressed={viewMode === id}
               className={`min-h-9 rounded-lg px-3 text-[11px] font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${viewMode === id ? "bg-slate-950 text-white shadow-sm dark:bg-teal-400 dark:text-slate-950" : "text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white"}`}
             >
@@ -633,10 +654,10 @@ function AnatomyAtlas({
                 type="button"
                 onClick={() => {
                   setLayer(id);
-                  if (id === "regions") setViewMode("2d");
+                  if (id === "regions") setViewMode("atlas");
                 }}
-                aria-pressed={layer === id && (id === "systems" || viewMode === "2d")}
-                className={`min-h-9 rounded-lg px-2 text-[11px] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${layer === id && (id === "systems" || viewMode === "2d") ? "bg-white text-slate-950 shadow-sm dark:bg-slate-700 dark:text-white" : "text-slate-500 dark:text-slate-300"}`}
+                aria-pressed={layer === id && (id === "systems" || viewMode !== "3d")}
+                className={`min-h-9 rounded-lg px-2 text-[11px] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${layer === id && (id === "systems" || viewMode !== "3d") ? "bg-white text-slate-950 shadow-sm dark:bg-slate-700 dark:text-white" : "text-slate-500 dark:text-slate-300"}`}
               >
                 {label}
               </button>
@@ -689,8 +710,19 @@ function AnatomyAtlas({
                 activeRemedyTropismId={activeRemedyTropismId}
                 onRemedyTropismSelect={onRemedyTropismSelect}
               />
+            ) : viewMode === "atlas" ? (
+              <WholeBodyAtlas
+                selectedSystem={selected}
+                layer={layer}
+                selectedRegion={selectedRegion}
+                onSelectSystem={onSelect}
+                onSelectRegion={setSelectedRegion}
+                onSelectStructure={setWholeBodySelection}
+                onUseSimpleMap={() => setViewMode("2d")}
+              />
             ) : (
               <div className="space-y-4">
+                <button type="button" onClick={() => setViewMode("atlas")} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:text-slate-200">Back to Whole Body Atlas</button>
                 <BodyMap layer={layer} selected={selected} selectedRegion={selectedRegion} onSelect={onSelect} onSelectRegion={setSelectedRegion} />
               </div>
             )}
@@ -698,9 +730,11 @@ function AnatomyAtlas({
 
           <div className="mt-4 flex flex-col gap-2 text-[10px] leading-4 text-slate-500 sm:flex-row sm:items-center sm:justify-between border-t border-slate-200/60 dark:border-slate-800/60 pt-3">
             <span>
-              {active3DAsset?.provenanceStatus === "source-verified"
-                ? "Source-verified anatomical reference · local anatomy review pending."
-                : "Procedural development model · not anatomically validated."}
+              {viewMode === "atlas"
+                ? "BodyParts3D adult male educational reference · 3D anatomy is not a diagnostic model."
+                : active3DAsset?.provenanceStatus === "source-verified"
+                  ? "Source-verified anatomical reference · local anatomy review pending."
+                  : "Procedural development model · not anatomically validated."}
             </span>
             <span className="text-teal-700 dark:text-teal-300 font-semibold">Active: {system3D.name}</span>
           </div>
@@ -728,6 +762,16 @@ function AnatomyAtlas({
               Module #{String(ANATOMY_SYSTEMS.findIndex(s => s.id === selected) + 1).padStart(2, '0')}
             </span>
           </div>
+
+          {viewMode === "atlas" && wholeBodySelection && (
+            <div className="rounded-2xl border border-teal-300 bg-teal-50 p-3.5 dark:border-teal-800 dark:bg-teal-950/30">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-teal-700 dark:text-teal-300">Selected in Whole Body Atlas</p>
+              <h3 className="mt-1 text-sm font-bold capitalize text-slate-950 dark:text-white">{wholeBodySelection.name}</h3>
+              <p className="mt-1 text-xs leading-relaxed text-slate-700 dark:text-slate-300">{wholeBodySelection.description}</p>
+              <p className="mt-2 text-[10px] text-slate-500">BodyParts3D {wholeBodySelection.id} · {wholeBodySelection.pieceCount} modeled {wholeBodySelection.pieceCount === 1 ? "piece" : "pieces"}</p>
+              <button type="button" onClick={focusWholeBodySelection} className="mt-3 rounded-lg bg-teal-700 px-3 py-2 text-xs font-semibold text-white hover:bg-teal-800">Open in System Focus</button>
+            </div>
+          )}
 
           {/* 5-Tier Interactive Knowledge Navigation Tabs */}
           <div className="flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1 dark:bg-slate-950 scrollbar-thin">
