@@ -7,3 +7,5 @@ The compressed model chunks and manifest in `public/models/human-atlas/` are ada
 When Reproductive is selected, the atlas defaults to a separate female pelvic organ view assembled from five Human Reference Atlas reference organ GLBs already in `public/models/anatomy/reproductive/`. The organs share a Visible Human Female coordinate frame and are never overlaid on the BodyParts3D male reference. The user can switch between the female organs and male atlas. This female view covers the uterus, both ovaries, and both fallopian tubes; it is not a complete female whole-body atlas.
 
 This integration loads the model when Whole Body Atlas is opened. It uses the original chunked rendering and selection engine inside the Medical Academy layout, with the portal's own system and regional teaching controls.
+
+Medical Academy also offers a dedicated Complete Human Atlas tab. It opens the BodyParts3D reference with all 15 display systems enabled and the full 2,234-mesh, 3,432-concept catalogue searchable. System Focus and the existing Whole Body Atlas retain their selected-system teaching behavior.

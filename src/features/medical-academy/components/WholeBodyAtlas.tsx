@@ -7,7 +7,6 @@ import AnatomyScene from "../render/human-atlas/scene";
 import FemaleReproductiveScene from "../render/human-atlas/female-reproductive-scene";
 import { FEMALE_REPRODUCTIVE_ORGANS } from "../render/human-atlas/female-reproductive";
 import {
-  DEFAULT_VISIBLE,
   SYSTEMS,
   explanation,
   type Atlas,
@@ -57,6 +56,7 @@ const VIEWS: { id: View; label: string }[] = [
   { id: "side", label: "Side" },
   { id: "back", label: "Back" },
 ];
+const ALL_SYSTEMS = SYSTEMS.map((system) => system.id);
 
 export interface WholeBodySelection {
   id: string;
@@ -70,6 +70,7 @@ export interface WholeBodySelection {
 }
 
 interface WholeBodyAtlasProps {
+  scope?: "system" | "complete";
   selectedSystem: AnatomySystemId;
   layer: "systems" | "regions";
   selectedRegion: AnatomyRegionId;
@@ -80,6 +81,7 @@ interface WholeBodyAtlasProps {
 }
 
 export default function WholeBodyAtlas({
+  scope = "system",
   selectedSystem,
   layer,
   selectedRegion,
@@ -99,7 +101,7 @@ export default function WholeBodyAtlas({
   const [selectedConcept, setSelectedConcept] = useState<Concept | null>(null);
   const [state, setState] = useState<SceneState>(() => ({
     explode: 0,
-    visible: [...ATLAS_SYSTEMS[selectedSystem], "integumentary"],
+    visible: scope === "complete" ? [...ALL_SYSTEMS] : [...ATLAS_SYSTEMS[selectedSystem], "integumentary"],
     selected: [],
     isolate: false,
     view: "three-quarter",
@@ -123,6 +125,7 @@ export default function WholeBodyAtlas({
   }, []);
 
   useEffect(() => {
+    if (scope === "complete") return;
     if (lastSystemRef.current === selectedSystem) return;
     lastSystemRef.current = selectedSystem;
     setReferenceSex(selectedSystem === "reproductive" ? "female" : "male");
@@ -135,7 +138,7 @@ export default function WholeBodyAtlas({
       isolate: false,
     }));
     onSelectStructure(null);
-  }, [selectedSystem, onSelectStructure]);
+  }, [scope, selectedSystem, onSelectStructure]);
 
   const partsById = useMemo(() => new Map(atlas?.parts.map((part) => [part.id, part])), [atlas]);
   const results = useMemo(() => {
@@ -157,7 +160,7 @@ export default function WholeBodyAtlas({
     setState((previous) => ({
       ...previous,
       selected: concept.elements,
-      visible: Array.from(new Set([...ATLAS_SYSTEMS[systemId], "integumentary"])),
+      visible: scope === "complete" ? previous.visible : Array.from(new Set([...ATLAS_SYSTEMS[systemId], "integumentary"])),
       isolate: false,
       rotate: false,
     }));
@@ -184,7 +187,7 @@ export default function WholeBodyAtlas({
     onSelectStructure(null);
     setState((previous) => ({
       explode: 0,
-      visible: [...ATLAS_SYSTEMS[selectedSystem], "integumentary"],
+      visible: scope === "complete" ? [...ALL_SYSTEMS] : [...ATLAS_SYSTEMS[selectedSystem], "integumentary"],
       selected: [],
       isolate: false,
       view: "three-quarter",
@@ -195,8 +198,9 @@ export default function WholeBodyAtlas({
 
   const region = ANATOMY_REGIONS.find((item) => item.id === selectedRegion) ?? ANATOMY_REGIONS[1];
   const activeCount = atlas?.parts.filter((part) => state.visible.includes(part.system)).length ?? 0;
-  const femaleView = selectedSystem === "reproductive" && referenceSex === "female";
+  const femaleView = scope === "system" && selectedSystem === "reproductive" && referenceSex === "female";
   const selectedFemale = FEMALE_REPRODUCTIVE_ORGANS.find((organ) => organ.id === selectedFemaleId);
+  const selectedPart = selectedConcept ? partsById.get(selectedConcept.elements[0]) : undefined;
 
   const switchReference = (sex: "male" | "female") => {
     if (sex === referenceSex) return;
@@ -225,20 +229,20 @@ export default function WholeBodyAtlas({
   };
 
   return (
-    <div className="space-y-3" aria-label="Whole Body Atlas">
+    <div className="space-y-3" aria-label={scope === "complete" ? "Complete Human Atlas" : "Whole Body Atlas"}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <p className="text-xs font-bold text-slate-900 dark:text-white">Whole Body Atlas</p>
+          <p className="text-xs font-bold text-slate-900 dark:text-white">{scope === "complete" ? "Complete Human Atlas" : "Whole Body Atlas"}</p>
           <p className="text-[11px] text-slate-500 dark:text-slate-400">
-            {femaleView ? "Female pelvic organ reference · Human Reference Atlas" : `${atlas ? `${atlas.parts.length.toLocaleString()} selectable anatomical pieces` : "Loading anatomy catalogue"} · BodyParts3D adult male reference`}
+            {femaleView ? "Female pelvic organ reference · Human Reference Atlas" : scope === "complete" ? `${atlas?.parts.length.toLocaleString() ?? "2,234"} selectable meshes · ${SYSTEMS.length} systems · ${atlas?.concepts.length.toLocaleString() ?? "3,432"} named concepts · BodyParts3D adult male reference` : `${atlas ? `${atlas.parts.length.toLocaleString()} selectable anatomical pieces` : "Loading anatomy catalogue"} · BodyParts3D adult male reference`}
           </p>
         </div>
-        <button type="button" onClick={onUseSimpleMap} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-[11px] font-semibold text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300">
+        {scope === "system" && <button type="button" onClick={onUseSimpleMap} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-[11px] font-semibold text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300">
           Simple map
-        </button>
+        </button>}
       </div>
 
-      {selectedSystem === "reproductive" && (
+      {scope === "system" && selectedSystem === "reproductive" && (
         <div className="flex flex-wrap items-center gap-2" aria-label="Reproductive anatomy reference">
           <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">Reproductive anatomy:</span>
           {(["female", "male"] as const).map((sex) => (
@@ -249,7 +253,7 @@ export default function WholeBodyAtlas({
         </div>
       )}
 
-      <div className="relative h-[510px] overflow-hidden rounded-2xl border border-slate-200 bg-[#f2f3f3] sm:h-[580px] dark:border-slate-700">
+      <div className={`relative overflow-hidden rounded-2xl border border-slate-200 bg-[#f2f3f3] dark:border-slate-700 ${scope === "complete" ? "h-[600px] sm:h-[720px]" : "h-[510px] sm:h-[580px]"}`}>
         {femaleView && !femaleError && (
           <FemaleReproductiveScene selectedId={selectedFemaleId} view={state.view} rotate={state.rotate} reset={state.reset} onSelect={selectFemaleOrgan} onProgress={setFemaleProgress} onError={setFemaleError} />
         )}
@@ -265,7 +269,7 @@ export default function WholeBodyAtlas({
         {(femaleView ? femaleError : loadError) && (
           <div role="alert" className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 p-5 text-center text-sm text-slate-700">
             <p>{femaleView ? femaleError : loadError}</p>
-            <button type="button" onClick={onUseSimpleMap} className="rounded-lg bg-slate-900 px-3 py-2 text-xs font-semibold text-white">Open simple map</button>
+            {scope === "system" && <button type="button" onClick={onUseSimpleMap} className="rounded-lg bg-slate-900 px-3 py-2 text-xs font-semibold text-white">Open simple map</button>}
           </div>
         )}
       </div>
@@ -289,7 +293,7 @@ export default function WholeBodyAtlas({
         <button type="button" onClick={() => setState((previous) => ({ ...previous, visible: [...ATLAS_SYSTEMS[selectedSystem], "integumentary"], isolate: false }))} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-[11px] dark:border-slate-700">Selected system</button>
         <button type="button" onClick={() => setState((previous) => ({ ...previous, visible: ["cardiac", "respiratory", "digestive", "urinary", "endocrine", "reproductive", "integumentary"], isolate: false }))} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-[11px] dark:border-slate-700">Organs</button>
         <button type="button" onClick={() => setState((previous) => ({ ...previous, visible: ["skeletal", "integumentary"], isolate: false }))} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-[11px] dark:border-slate-700">Skeleton</button>
-        <button type="button" onClick={() => setState((previous) => ({ ...previous, visible: DEFAULT_VISIBLE, isolate: false }))} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-[11px] dark:border-slate-700">All</button>
+        <button type="button" onClick={() => setState((previous) => ({ ...previous, visible: [...ALL_SYSTEMS], isolate: false }))} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-[11px] dark:border-slate-700">All</button>
         <span className="self-center text-[10px] text-slate-500">{activeCount.toLocaleString()} visible pieces</span>
       </div>}
 
@@ -314,7 +318,7 @@ export default function WholeBodyAtlas({
         </div>
       ) : <div className="relative">
         <Search className="pointer-events-none absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
-        <input type="search" aria-label="Search anatomical structures" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search heart, stomach, femur…" className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-8 pr-3 text-xs text-slate-900 outline-none focus:border-teal-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white" />
+        <input type="search" aria-label="Search anatomical structures" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={scope === "complete" ? "Search 3,432 concepts: heart, stomach, femur…" : "Search heart, stomach, femur…"} className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-8 pr-3 text-xs text-slate-900 outline-none focus:border-teal-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white" />
         {query && (
           <div className="absolute left-0 right-0 top-full z-30 mt-1 max-h-56 overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-lg dark:border-slate-700 dark:bg-slate-900">
             {results.length ? results.map((concept) => (
@@ -332,6 +336,15 @@ export default function WholeBodyAtlas({
           <button type="button" onClick={() => setState((previous) => ({ ...previous, isolate: !previous.isolate, explode: 0 }))} className="rounded-md border border-teal-300 px-2 py-1 font-semibold dark:border-teal-700">{state.isolate ? "Show context" : "Isolate"}</button>
           <button type="button" onClick={() => { setSelectedConcept(null); onSelectStructure(null); setState((previous) => ({ ...previous, selected: [], isolate: false })); }} className="ml-auto underline">Clear</button>
         </div>
+      )}
+
+      {scope === "complete" && selectedConcept && selectedPart && (
+        <section aria-label="Selected anatomy details" className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900">
+          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-teal-700 dark:text-teal-300">{SYSTEMS.find((system) => system.id === selectedPart.system)?.name}</p>
+          <h3 className="mt-1 text-sm font-bold text-slate-950 dark:text-white">{selectedConcept.name}</h3>
+          <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">{explanation(selectedConcept.name, selectedPart.system)}</p>
+          <p className="mt-2 text-[10px] text-slate-500">{selectedConcept.elements.length} selected {selectedConcept.elements.length === 1 ? "mesh" : "meshes"} · {selectedConcept.id}</p>
+        </section>
       )}
 
       {femaleView && selectedFemale && (

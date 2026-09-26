@@ -70,7 +70,7 @@ const WholeBodyAtlas = dynamic(() => import("./WholeBodyAtlas"), {
 
 type AssistantMode = "teach" | "quiz" | "research" | "homeopathy";
 type AtlasLayer = "systems" | "regions";
-type AtlasViewMode = "3d" | "atlas" | "2d";
+type AtlasViewMode = "3d" | "atlas" | "complete" | "2d";
 
 interface AssistantMessage {
   id: string;
@@ -617,22 +617,22 @@ function AnatomyAtlas({
               style={{ backgroundColor: system.accent }}
             />
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">
-              HoloHuman™ 3D Atlas · {system.name}
+              {viewMode === "complete" ? "BodyParts3D · Adult male reference" : `HoloHuman™ 3D Atlas · ${system.name}`}
             </p>
           </div>
           <h2 className="mt-1 text-2xl font-bold text-slate-950 dark:text-white">
-            {system3D.name}
+            {viewMode === "complete" ? "Complete Human Atlas" : system3D.name}
           </h2>
           <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-            {system3D.subtitle}
+            {viewMode === "complete" ? "Explore 2,234 selectable meshes across 15 anatomical systems and search 3,432 named concepts." : system3D.subtitle}
           </p>
         </div>
         <div className="inline-flex w-fit rounded-xl border border-slate-200 bg-slate-100 p-1 dark:border-slate-700 dark:bg-slate-900" aria-label="Atlas view">
-          {([['3d', 'System Focus'], ['atlas', 'Whole Body Atlas']] as const).map(([id, label]) => (
+          {([['3d', 'System Focus'], ['atlas', 'Whole Body Atlas'], ['complete', 'Complete Human Atlas']] as const).map(([id, label]) => (
             <button
               key={id}
               type="button"
-              onClick={() => id === "3d" ? focusWholeBodySelection() : setViewMode("atlas")}
+              onClick={() => id === "3d" ? focusWholeBodySelection() : setViewMode(id)}
               aria-pressed={viewMode === id}
               className={`min-h-9 rounded-lg px-3 text-[11px] font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${viewMode === id ? "bg-slate-950 text-white shadow-sm dark:bg-teal-400 dark:text-slate-950" : "text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white"}`}
             >
@@ -642,7 +642,21 @@ function AnatomyAtlas({
         </div>
       </div>
 
-      {/* Main 3-Column Studio Grid */}
+      {viewMode === "complete" ? (
+        <section className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6" aria-label="Complete Human Atlas explorer">
+          <WholeBodyAtlas
+            scope="complete"
+            selectedSystem={selected}
+            layer="systems"
+            selectedRegion={selectedRegion}
+            onSelectSystem={onSelect}
+            onSelectRegion={setSelectedRegion}
+            onSelectStructure={setWholeBodySelection}
+            onUseSimpleMap={() => setViewMode("2d")}
+          />
+        </section>
+      ) : (
+      /* Main 3-Column Studio Grid */
       <div className="grid overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 lg:grid-cols-[220px_minmax(420px,1.3fr)_minmax(360px,1.1fr)]">
         {/* Left Column: 12 Organ Systems Navigator */}
         <aside className="border-b border-slate-200 bg-slate-50/80 p-3.5 dark:border-slate-800 dark:bg-slate-950/50 lg:border-b-0 lg:border-r">
@@ -1062,6 +1076,7 @@ function AnatomyAtlas({
           </div>
         </section>
       </div>
+      )}
     </div>
   );
 }
