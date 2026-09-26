@@ -4,4 +4,6 @@ The renderer, anatomy types, download decoder, pointer handling, and exploded la
 
 The compressed model chunks and manifest in `public/models/human-atlas/` are adapted from the same commit. They contain BodyParts3D 4.0 adult male reference anatomy. The data attribution, source links, license, and adaptation details are in `public/models/human-atlas/ATTRIBUTION.md`.
 
+When Reproductive is selected, the atlas defaults to a separate female pelvic organ view assembled from five Human Reference Atlas reference organ GLBs already in `public/models/anatomy/reproductive/`. The organs share a Visible Human Female coordinate frame and are never overlaid on the BodyParts3D male reference. The user can switch between the female organs and male atlas. This female view covers the uterus, both ovaries, and both fallopian tubes; it is not a complete female whole-body atlas.
+
 This integration loads the model when Whole Body Atlas is opened. It uses the original chunked rendering and selection engine inside the Medical Academy layout, with the portal's own system and regional teaching controls.

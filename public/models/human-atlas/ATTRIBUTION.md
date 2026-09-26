@@ -27,3 +27,14 @@ Earlier repository revisions included female reference anatomy: Kristen Browne a
 Adaptations: translated native meter/Y-up coordinates onto the stage, coincident vertices welded and source normals averaged, geometry simplified with a 0.2% per-structure relative error bound, and normals quantized. Colors and display systems are curated for this interface. All 888 source meshes are represented, with 1,073 source nodes available as selectable individual or compound concepts.
 
 This is a reference assembly with whole-body surface and selected organs, including female reproductive anatomy. Its skeleton and muscle coverage is partial. It is not a complete model of every human structure or a single-person scan. Eight placenta/umbilical structures are classified under Pregnancy reference and hidden by default.
+
+## Female reproductive organ view
+
+The female reproductive view uses five existing Human Reference Atlas / HuBMAP GLB assets in a shared Visible Human Female coordinate frame: uterus (including cervical landmarks), left and right ovaries, and left and right fallopian tubes. They are displayed together without changing their source coordinates. Their colors are adapted for this interface. This view does not include the vagina, vulva, or the rest of a female whole-body model.
+
+- Uterus, Female v1.2: Kristen Browne and Heidi Schlehlein (2024), DOI: https://doi.org/10.48539/HBM627.VTKD.892
+- Ovary, Female, Left v1.1: Kristen Browne and Heidi Schlehlein (2022), DOI: https://doi.org/10.48539/HBM499.JLMB.357
+- Ovary, Female, Right v1.1: Kristen Browne and Heidi Schlehlein (2022), DOI: https://doi.org/10.48539/HBM453.QTZX.449
+- Fallopian Tube, Female, Left v1.1: Kristen Browne and Heidi Schlehlein (2022), DOI: https://doi.org/10.48539/HBM887.HZKB.637
+- Fallopian Tube, Female, Right v1.1: Kristen Browne and Heidi Schlehlein (2022), DOI: https://doi.org/10.48539/HBM875.FCDP.878
+- License: https://creativecommons.org/licenses/by/4.0/

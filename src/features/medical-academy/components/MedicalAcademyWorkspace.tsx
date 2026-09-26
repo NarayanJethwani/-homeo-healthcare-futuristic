@@ -601,7 +601,7 @@ function AnatomyAtlas({
         .find((structure) =>
           [structure.name, ...structure.aliases].some((candidate) => candidate.toLowerCase() === name)
         );
-      setActiveSubOrganId(match?.id ?? null);
+      setActiveSubOrganId(wholeBodySelection.systemFocusId ?? match?.id ?? null);
     }
     setViewMode("3d");
   };
@@ -731,7 +731,7 @@ function AnatomyAtlas({
           <div className="mt-4 flex flex-col gap-2 text-[10px] leading-4 text-slate-500 sm:flex-row sm:items-center sm:justify-between border-t border-slate-200/60 dark:border-slate-800/60 pt-3">
             <span>
               {viewMode === "atlas"
-                ? "BodyParts3D adult male educational reference · 3D anatomy is not a diagnostic model."
+                ? "Educational 3D anatomy reference · model coverage varies by selected view."
                 : active3DAsset?.provenanceStatus === "source-verified"
                   ? "Source-verified anatomical reference · local anatomy review pending."
                   : "Procedural development model · not anatomically validated."}
@@ -768,7 +768,7 @@ function AnatomyAtlas({
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-teal-700 dark:text-teal-300">Selected in Whole Body Atlas</p>
               <h3 className="mt-1 text-sm font-bold capitalize text-slate-950 dark:text-white">{wholeBodySelection.name}</h3>
               <p className="mt-1 text-xs leading-relaxed text-slate-700 dark:text-slate-300">{wholeBodySelection.description}</p>
-              <p className="mt-2 text-[10px] text-slate-500">BodyParts3D {wholeBodySelection.id} · {wholeBodySelection.pieceCount} modeled {wholeBodySelection.pieceCount === 1 ? "piece" : "pieces"}</p>
+              <p className="mt-2 text-[10px] text-slate-500">{wholeBodySelection.sourceLabel ?? "BodyParts3D"} {wholeBodySelection.id} · {wholeBodySelection.pieceCount} modeled {wholeBodySelection.pieceCount === 1 ? "piece" : "pieces"}</p>
               <button type="button" onClick={focusWholeBodySelection} className="mt-3 rounded-lg bg-teal-700 px-3 py-2 text-xs font-semibold text-white hover:bg-teal-800">Open in System Focus</button>
             </div>
           )}
