@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Inter, Playfair_Display } from "next/font/google";
+import localFont from "next/font/local";
 import { headers } from "next/headers";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -8,28 +8,26 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import LucyButton from "@/components/LucyButton";
 import "./globals.css";
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+const plusJakartaSans = localFont({
+  src: "./fonts/PlusJakartaSans-Variable.ttf",
   variable: "--font-plus-jakarta",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: "300 800",
   display: "swap",
 });
 
-const inter = Inter({
+const inter = localFont({
+  src: "./fonts/Inter-Variable.ttf",
   variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: "300 600",
   display: "swap",
 });
 
-const playfairDisplay = Playfair_Display({
+const playfairDisplay = localFont({
+  src: "./fonts/PlayfairDisplay-Variable.ttf",
   variable: "--font-playfair",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: "400 700",
   display: "swap",
 });
-
-
 
 export const metadata: Metadata = {
   title: "Homeo Healthcare | Advanced Homeopathic Care for Modern Life",

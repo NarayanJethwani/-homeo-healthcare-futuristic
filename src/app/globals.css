@@ -296,8 +296,9 @@
   --color-sky-dark: #0369A1;
   --color-beige: #F5F2EB;
   
+  /* The original typefaces are bundled locally to avoid remote build fetches. */
   --font-sans: var(--font-plus-jakarta), var(--font-inter), system-ui, -apple-system, sans-serif;
-  --font-serif: "Playfair Display", Georgia, serif;
+  --font-serif: var(--font-playfair), Georgia, serif;
 }
 
 html {
