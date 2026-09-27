@@ -653,6 +653,7 @@ function AnatomyAtlas({
             onSelectRegion={setSelectedRegion}
             onSelectStructure={setWholeBodySelection}
             onUseSimpleMap={() => setViewMode("2d")}
+            onOpenSystemFocus={(id) => { onSelect(id); setActiveSubOrganId(null); setViewMode("3d"); }}
           />
         </section>
       ) : (
@@ -733,6 +734,7 @@ function AnatomyAtlas({
                 onSelectRegion={setSelectedRegion}
                 onSelectStructure={setWholeBodySelection}
                 onUseSimpleMap={() => setViewMode("2d")}
+                onOpenSystemFocus={(id) => { onSelect(id); setActiveSubOrganId(null); setViewMode("3d"); }}
               />
             ) : (
               <div className="space-y-4">

@@ -78,6 +78,7 @@ interface WholeBodyAtlasProps {
   onSelectRegion: (id: AnatomyRegionId) => void;
   onSelectStructure: (selection: WholeBodySelection | null) => void;
   onUseSimpleMap: () => void;
+  onOpenSystemFocus?: (id: AnatomySystemId) => void;
 }
 
 export default function WholeBodyAtlas({
@@ -89,6 +90,7 @@ export default function WholeBodyAtlas({
   onSelectRegion,
   onSelectStructure,
   onUseSimpleMap,
+  onOpenSystemFocus,
 }: WholeBodyAtlasProps) {
   const [atlas, setAtlas] = useState<Atlas | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -160,7 +162,7 @@ export default function WholeBodyAtlas({
     setState((previous) => ({
       ...previous,
       selected: concept.elements,
-      visible: scope === "complete" ? previous.visible : Array.from(new Set([...ATLAS_SYSTEMS[systemId], "integumentary"])),
+      visible: scope === "complete" ? Array.from(new Set([...previous.visible, part.system])) : Array.from(new Set([...ATLAS_SYSTEMS[systemId], "integumentary"])),
       isolate: false,
       rotate: false,
     }));
@@ -198,6 +200,11 @@ export default function WholeBodyAtlas({
 
   const region = ANATOMY_REGIONS.find((item) => item.id === selectedRegion) ?? ANATOMY_REGIONS[1];
   const activeCount = atlas?.parts.filter((part) => state.visible.includes(part.system)).length ?? 0;
+  const systemCounts = useMemo(() => {
+    const counts = new Map<SystemId, number>();
+    atlas?.parts.forEach((part) => counts.set(part.system, (counts.get(part.system) ?? 0) + 1));
+    return counts;
+  }, [atlas]);
   const femaleView = scope === "system" && selectedSystem === "reproductive" && referenceSex === "female";
   const selectedFemale = FEMALE_REPRODUCTIVE_ORGANS.find((organ) => organ.id === selectedFemaleId);
   const selectedPart = selectedConcept ? partsById.get(selectedConcept.elements[0]) : undefined;
@@ -228,6 +235,16 @@ export default function WholeBodyAtlas({
     });
   };
 
+  const showSystems = (visible: SystemId[]) => {
+    setSelectedConcept(null);
+    onSelectStructure(null);
+    setState((previous) => ({ ...previous, visible, selected: [], isolate: false }));
+  };
+
+  const toggleSystem = (id: SystemId) => {
+    showSystems(state.visible.includes(id) ? state.visible.filter((system) => system !== id) : [...state.visible, id]);
+  };
+
   return (
     <div className="space-y-3" aria-label={scope === "complete" ? "Complete Human Atlas" : "Whole Body Atlas"}>
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -252,6 +269,36 @@ export default function WholeBodyAtlas({
           ))}
         </div>
       )}
+
+      <div className={scope === "complete" ? "grid gap-4 lg:grid-cols-[220px_minmax(0,1fr)]" : "space-y-3"}>
+      {scope === "complete" && (
+        <aside className="h-fit rounded-2xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-950/50" aria-label="System visibility controls">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="text-xs font-bold text-slate-900 dark:text-white">Systems</h3>
+            <span className="text-[10px] text-slate-500">{state.visible.length} / {SYSTEMS.length} on</span>
+          </div>
+          <p className="mt-1 text-[10px] leading-4 text-slate-500">Show, hide, or view one system. Counts are selectable meshes.</p>
+          <div className="mt-2 flex gap-1">
+            <button type="button" onClick={() => showSystems([...ALL_SYSTEMS])} className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold dark:border-slate-700 dark:bg-slate-900">Show all</button>
+            <button type="button" onClick={() => showSystems([])} className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold dark:border-slate-700 dark:bg-slate-900">Hide all</button>
+          </div>
+          <div className="mt-3 grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-1">
+            {SYSTEMS.map((system) => {
+              const enabled = state.visible.includes(system.id);
+              return <div key={system.id} className={`flex min-w-0 items-center gap-1 rounded-lg border px-1.5 py-1 ${enabled ? "border-teal-200 bg-white dark:border-teal-800 dark:bg-slate-900" : "border-transparent"}`}>
+                <button type="button" aria-pressed={enabled} aria-label={`${enabled ? "Hide" : "Show"} ${system.name}`} onClick={() => toggleSystem(system.id)} className="flex min-w-0 flex-1 items-center gap-1.5 py-1 text-left text-[11px]">
+                  <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: system.color }} />
+                  <span className="min-w-0 flex-1 truncate">{system.name}</span>
+                  <span className="text-[10px] text-slate-400">{systemCounts.get(system.id) ?? 0}</span>
+                  <span aria-hidden="true" className={`h-3.5 w-6 shrink-0 rounded-full p-0.5 ${enabled ? "bg-teal-600" : "bg-slate-300"}`}><span className={`block h-2.5 w-2.5 rounded-full bg-white transition-transform ${enabled ? "translate-x-2.5" : ""}`} /></span>
+                </button>
+                <button type="button" aria-label={`Show only ${system.name}`} title={`Show only ${system.name}`} onClick={() => showSystems([system.id])} className="rounded px-1 py-1 text-[10px] font-semibold text-teal-700 hover:bg-teal-50 dark:text-teal-300">Only</button>
+              </div>;
+            })}
+          </div>
+        </aside>
+      )}
+      <div className="min-w-0 space-y-3">
 
       <div className={`relative overflow-hidden rounded-2xl border border-slate-200 bg-[#f2f3f3] dark:border-slate-700 ${scope === "complete" ? "h-[600px] sm:h-[720px]" : "h-[510px] sm:h-[580px]"}`}>
         {femaleView && !femaleError && (
@@ -289,21 +336,34 @@ export default function WholeBodyAtlas({
         <input type="range" min="0" max="100" value={Math.round(state.explode * 100)} onChange={(event) => setState((previous) => ({ ...previous, explode: Number(event.target.value) / 100, rotate: false, view: Number(event.target.value) > 80 ? "front" : previous.view }))} className="mt-1 block w-full accent-teal-600" />
       </label>}
 
+      {!femaleView && scope === "complete" && <div className="flex flex-wrap items-center gap-2">
+        <button type="button" onClick={() => { setSelectedConcept(null); onSelectStructure(null); setState((previous) => ({ ...previous, visible: [...ALL_SYSTEMS], selected: [], isolate: false, explode: 1, view: "front", rotate: false, reset: previous.reset + 1 })); }} className="rounded-lg bg-teal-700 px-3 py-2 text-[11px] font-bold text-white hover:bg-teal-800">Explode all 2,234 parts</button>
+        <button type="button" onClick={() => setState((previous) => ({ ...previous, explode: 0, view: "three-quarter", reset: previous.reset + 1 }))} className="rounded-lg border border-slate-200 px-3 py-2 text-[11px] font-semibold dark:border-slate-700">Assemble body</button>
+        <span className="text-[10px] text-slate-500">At 100%, each visible mesh gets its own position. Drag to pan; scroll or pinch to zoom.</span>
+      </div>}
+
       {!femaleView && <div className="flex flex-wrap gap-1.5" aria-label="Anatomy layer presets">
-        <button type="button" onClick={() => setState((previous) => ({ ...previous, visible: [...ATLAS_SYSTEMS[selectedSystem], "integumentary"], isolate: false }))} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-[11px] dark:border-slate-700">Selected system</button>
-        <button type="button" onClick={() => setState((previous) => ({ ...previous, visible: ["cardiac", "respiratory", "digestive", "urinary", "endocrine", "reproductive", "integumentary"], isolate: false }))} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-[11px] dark:border-slate-700">Organs</button>
-        <button type="button" onClick={() => setState((previous) => ({ ...previous, visible: ["skeletal", "integumentary"], isolate: false }))} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-[11px] dark:border-slate-700">Skeleton</button>
-        <button type="button" onClick={() => setState((previous) => ({ ...previous, visible: [...ALL_SYSTEMS], isolate: false }))} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-[11px] dark:border-slate-700">All</button>
+        <button type="button" onClick={() => showSystems([...ATLAS_SYSTEMS[selectedSystem], "integumentary"])} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-[11px] dark:border-slate-700">Selected system</button>
+        <button type="button" onClick={() => showSystems(["cardiac", "respiratory", "digestive", "urinary", "endocrine", "reproductive", "integumentary"])} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-[11px] dark:border-slate-700">Organs</button>
+        <button type="button" onClick={() => showSystems(["skeletal", "integumentary"])} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-[11px] dark:border-slate-700">Skeleton</button>
+        <button type="button" onClick={() => showSystems([...ALL_SYSTEMS])} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-[11px] dark:border-slate-700">All</button>
         <span className="self-center text-[10px] text-slate-500">{activeCount.toLocaleString()} visible pieces</span>
       </div>}
 
-      {!femaleView && <div className="flex flex-wrap gap-1" aria-label="Anatomical systems">
+      {!femaleView && scope === "system" && <div className="flex flex-wrap gap-1" aria-label="Anatomical systems">
         {SYSTEMS.map((system) => (
-          <button key={system.id} type="button" aria-pressed={state.visible.includes(system.id)} onClick={() => setState((previous) => ({ ...previous, visible: previous.visible.includes(system.id) ? previous.visible.filter((id) => id !== system.id) : [...previous.visible, system.id], isolate: false }))} className={`rounded-full border px-2 py-1 text-[10px] ${state.visible.includes(system.id) ? "border-teal-400 bg-teal-50 text-teal-900" : "border-slate-200 text-slate-500 dark:border-slate-700 dark:text-slate-400"}`}>
+          <button key={system.id} type="button" aria-pressed={state.visible.includes(system.id)} onClick={() => toggleSystem(system.id)} className={`rounded-full border px-2 py-1 text-[10px] ${state.visible.includes(system.id) ? "border-teal-400 bg-teal-50 text-teal-900" : "border-slate-200 text-slate-500 dark:border-slate-700 dark:text-slate-400"}`}>
             {system.name}
           </button>
         ))}
       </div>}
+
+      {!femaleView && state.visible.includes("respiratory") && state.visible.every((id) => id === "respiratory" || id === "integumentary") && (
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-[11px] text-amber-950 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-100">
+          <p className="max-w-xl">This BodyParts3D layer contains 119 airway and related meshes, but no lung tissue meshes. Use the lung reference for both lungs and bronchopulmonary segments.</p>
+          {onOpenSystemFocus && <button type="button" onClick={() => onOpenSystemFocus("respiratory")} className="rounded-lg bg-amber-900 px-3 py-1.5 font-semibold text-white">View lungs in System Focus</button>}
+        </div>
+      )}
 
       {femaleView ? (
         <div className="space-y-2">
@@ -373,6 +433,8 @@ export default function WholeBodyAtlas({
       <p className="text-[10px] leading-4 text-slate-500">
         {femaleView ? "Educational reference · Female pelvic organs · Human Reference Atlas CC BY 4.0" : "Educational reference · Adult male anatomy · BodyParts3D CC BY 4.0"} · <a href="/models/human-atlas/ATTRIBUTION.md" target="_blank" rel="noreferrer" className="inline-flex items-center gap-0.5 underline">Source and attribution <ExternalLink className="h-2.5 w-2.5" /></a>
       </p>
+      </div>
+      </div>
     </div>
   );
 }
