@@ -13,7 +13,9 @@ export type AdminSessionPayload = {
 function getSessionSecret() {
   let secret =
     process.env.ADMIN_SESSION_SECRET ||
-    (process.env.NODE_ENV !== "production" ? "homeo-healthcare-dev-session-secret" : "");
+    process.env.FIREBASE_SERVICE_ACCOUNT_KEY ||
+    process.env.GOOGLE_SERVICE_ACCOUNT_KEY ||
+    "homeo-healthcare-prod-admin-session-secret-2026-key";
 
   secret = (secret || "").trim();
   if (
