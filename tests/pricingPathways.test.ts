@@ -21,7 +21,7 @@ function runPricingPathwayTests() {
   assert.deepStrictEqual(PUBLIC_CARE_LEVEL_KEYS, ["mild", "chronic_focused", "moderate", "focused"]);
   assert.strictEqual(CARE_PLAN_CATALOG_VERSION, "care-plan-catalog-v3");
   assert.strictEqual(CARE_PLAN_CATALOG.acute_mild_3d.price, 1_000);
-assert.strictEqual(CARE_PLAN_CATALOG.acute_mild_3d.durationValue, 2);
+assert.strictEqual(CARE_PLAN_CATALOG.acute_mild_3d.durationValue, 3);
   assert.strictEqual(CARE_PLAN_CATALOG.acute_mild_3d.durationUnit, "day");
   assert.strictEqual(CARE_PLAN_CATALOG.acute_wellness_7d.price, 2_000);
 assert.strictEqual(CARE_PLAN_CATALOG.acute_wellness_7d.durationValue, 4);
@@ -30,7 +30,7 @@ assert.strictEqual(CARE_PLAN_CATALOG.acute_wellness_7d.durationValue, 4);
   assert.strictEqual(CARE_PLAN_CATALOG.chronic_complex_1w.price, 9_000);
   assert.strictEqual(CARE_PLAN_CATALOG.chronic_advanced_1w.price, 12_000);
   assert.deepStrictEqual(calculateCarePlanTotal("acute_mild_3d"), { listTotal: 1_000, discountPercent: 0, discountAmount: 0, total: 1_000 });
-assert.throws(() => calculateCarePlanTotal("acute_mild_3d", 2), /fixed 2 days/i);
+assert.throws(() => calculateCarePlanTotal("acute_mild_3d", 2), /fixed 3 days/i);
   assert.strictEqual(calculateCarePlanTotal("chronic_focused_1w", 4).total, 10_800);
   assert.strictEqual(CARE_LEVELS_DETAILS.mild.weeklyPrice, 2_000);
   assert.strictEqual(CARE_LEVELS_DETAILS.mild.title, "Acute Wellness Care");

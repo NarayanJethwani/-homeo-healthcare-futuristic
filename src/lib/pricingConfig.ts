@@ -26,6 +26,7 @@ export interface CarePlanDefinition {
   id: CarePlanId;
   family: CarePlanFamily;
   title: string;
+  badge?: string;
   price: number;
   durationValue: number;
   durationUnit: CarePlanDurationUnit;
@@ -116,13 +117,13 @@ export const CARE_PLAN_CATALOG: Record<CarePlanId, CarePlanDefinition> = {
   acute_mild_3d: {
     id: "acute_mild_3d",
     family: "acute",
-    title: "Mild Acute Care",
+    title: "Express Acute Care (3 Days)",
+    badge: "Targeted Acute Protocol · ₹1,000",
     price: 1_000,
-    // Legacy ID is retained for compatibility with existing records.
-    durationValue: 2,
+    durationValue: 3,
     durationUnit: "day",
     legacyCareLevelKey: "mild",
-    scope: "Short physician-reviewed support for one suitable mild, non-emergency acute concern.",
+    scope: "Targeted 3-day physician-directed acute protocol for one suitable, non-emergency acute concern with proprietary formulation dispensing.",
     reassessmentRequired: true,
     emergencyCare: false,
   },

@@ -31,13 +31,13 @@ export const CLINICAL_CARE_TIER_OPTIONS: Record<StoreClinicalCareTierId, Clinica
   acute_mild: {
     id: "acute_mild",
     family: "acute",
-    periodValue: 2,
+    periodValue: 3,
     periodUnit: "day",
-    name: "Mild Acute Care",
+    name: "Express Acute Care (3 Days)",
     weeklyRatePaise: planPaise("acute_mild_3d"),
     weeklyRateINR: CARE_PLAN_CATALOG.acute_mild_3d.price,
-    description: "Two-day physician-reviewed support for one suitable mild, non-emergency acute concern.",
-    recommendedFor: "A mild, recent concern after emergency warning signs have been excluded",
+    description: "Targeted 3-day physician-directed acute protocol for one suitable non-emergency acute concern.",
+    recommendedFor: "A mild, recent concern after emergency warning signs have been excluded (Targeted Acute Protocol · ₹1,000)",
   },
   acute_wellness: {
     id: "acute_wellness",

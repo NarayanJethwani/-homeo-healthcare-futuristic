@@ -45,7 +45,7 @@ assert.equal(formatINRFromPaise(1200000), "₹12,000");
 assert.equal(formatINRFromPaise(2400000), "₹24,000");
 assert.equal(calculateTierCarePeriodTotalPaise("acute_mild", 1), 100000);
 assert.equal(calculateTierCarePeriodTotalPaise("acute_wellness", 1), 200000);
-assert.equal(getTierCarePeriodLabel("acute_mild", 1), "2 days");
+assert.equal(getTierCarePeriodLabel("acute_mild", 1), "3 days");
 assert.equal(getTierCarePeriodLabel("acute_wellness", 1), "4 days");
 console.log("✅ TEST PASSED: 2. Complete care-period amounts calculate correctly in integer paise");
 
@@ -62,7 +62,7 @@ const legacyPackageNames = [
 ];
 
 const patientFacingTierNames = Object.values(CLINICAL_CARE_TIER_OPTIONS).map((t) => t.name);
-assert.deepEqual(patientFacingTierNames, ["Mild Acute Care", "Acute Wellness Care", "Subacute Care", "Focused Membership", "Integrated Membership", "Comprehensive Membership", "Focused Clinical Care", "Integrated Chronic Care", "Complex Chronic Care", "Advanced Chronic Care"]);
+assert.deepEqual(patientFacingTierNames, ["Express Acute Care (3 Days)", "Acute Wellness Care", "Subacute Care", "Focused Membership", "Integrated Membership", "Comprehensive Membership", "Focused Clinical Care", "Integrated Chronic Care", "Complex Chronic Care", "Advanced Chronic Care"]);
 
 for (const name of legacyPackageNames) {
   assert.equal(patientFacingTierNames.includes(name), false, `Legacy name '${name}' must not exist in new tier options`);
@@ -227,7 +227,7 @@ console.log("\n🎉 All 10 Isolated /store Clinical Care Portal Tests Passed 100
 
 // Fixed billing periods must survive stale weekly selections and the review handoff.
 for (const [id, amount, value, unit] of [
-  ["acute_mild", 100000, 2, "day"], ["acute_wellness", 200000, 4, "day"],
+  ["acute_mild", 100000, 3, "day"], ["acute_wellness", 200000, 4, "day"],
   ["subacute", 300000, 1, "week"],
 ] as const) {
   for (const weeks of ALLOWED_CARE_DURATIONS) {

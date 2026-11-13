@@ -1047,6 +1047,26 @@ export default function StorePage() {
     const details = careLevelsDetails[level];
     const weeklyBase = details.weeklyPrice;
     
+    // Express Acute Care (3 Days) support: duration 0.5 represents the 3-day course
+    if (cycle === "weekly" && duration === 0.5) {
+      const expressBase = level === "mild" ? 1000 : Math.round(weeklyBase * 0.5);
+      const tierSurcharges = surchargesLookup[level] || {
+        unitWeekly: Math.round(weeklyBase * 0.25),
+        unitMonthly: Math.round(weeklyBase * 0.25) * 4,
+      };
+      const expressSurcharge = conditions > 1 ? Math.round((conditions - 1) * tierSurcharges.unitWeekly * 0.5) : 0;
+      const rawTotal = expressBase + expressSurcharge;
+      return {
+        basePrice: expressBase,
+        surcharge: expressSurcharge,
+        adjustedBasePrice: rawTotal,
+        rawTotal,
+        discountPercent: 0,
+        discountAmount: 0,
+        finalPrice: rawTotal,
+      };
+    }
+
     // Unified math: Monthly base is strictly 4x weekly rate, avoiding double discounting
     const basePrice = cycle === "weekly" ? weeklyBase : weeklyBase * 4;
 
@@ -1197,6 +1217,10 @@ export default function StorePage() {
     const details = careLevelsDetails[tierKey] || careLevelsDetails.chronic_focused;
     const pricing = calculatePricing(tierKey, walkInBillingCycle, walkInDurationValue, walkInConditionsCount);
 
+    const isExpressAcute = tierKey === "mild" && walkInDurationValue === 0.5;
+    const planTitle = isExpressAcute ? "Express Acute Care (3 Days)" : details.title;
+    const protocolBadge = isExpressAcute ? "Targeted Acute Protocol · ₹1,000" : (details.badge || details.subtitle || "");
+
     const baseConcessionPrice = (() => {
       if (!walkInApplyConcession) return pricing.finalPrice;
       if (walkInConcessionType === "senior") return Math.round(pricing.finalPrice * 0.85);
@@ -1218,9 +1242,13 @@ export default function StorePage() {
     })();
 
     const finalPrice = baseConcessionPrice + addonAmount;
-    const cycleText = walkInBillingCycle === "weekly" ? "Weekly" : "Monthly";
-    const durationText = `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "Week" : "Weeks") : (walkInDurationValue === 1 ? "Month" : "Months")}`;
-    const daysText = walkInBillingCycle === "weekly" ? walkInDurationValue * 7 : walkInDurationValue * 30;
+    const cycleText = walkInBillingCycle === "weekly" ? (isExpressAcute ? "3-Day Course" : "Weekly") : "Monthly";
+    const durationText = isExpressAcute
+      ? "3 Days"
+      : `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "Week" : "Weeks") : (walkInDurationValue === 1 ? "Month" : "Months")}`;
+    const daysText = walkInBillingCycle === "weekly"
+      ? (walkInDurationValue === 0.5 ? 3 : walkInDurationValue * 7)
+      : walkInDurationValue * 30;
     const dailyRate = Math.round(finalPrice / daysText);
     const concernsList = walkInSelectedConcerns.length > 0
       ? walkInSelectedConcerns.join(", ")
@@ -1230,13 +1258,14 @@ export default function StorePage() {
     return `🌿 *Homeo Healthcare — Physician Treatment Plan*\n` +
       `----------------------------------------\n` +
       patientHeader +
-      `*Clinical Care Program:* ${details.title}\n` +
+      `*Clinical Care Program:* ${planTitle}\n` +
+      `*Protocol:* ${protocolBadge}\n` +
       `*Targeted Health Concerns:* ${concernsList}\n` +
-      `*Care Duration:* ${durationText} (${daysText} Days — ${cycleText} Billing)\n` +
+      `*Care Duration:* ${durationText} (${daysText} Days — ${cycleText})\n` +
       `----------------------------------------\n` +
       `*Itemized Care Investment:*\n` +
-      `• Base Clinical Care: ₹${pricing.basePrice.toLocaleString("en-IN")}/${walkInBillingCycle === "weekly" ? "wk" : "mo"}\n` +
-      (pricing.surcharge > 0 ? `• Multi-Concern Coordination: +₹${pricing.surcharge.toLocaleString("en-IN")}/${walkInBillingCycle === "weekly" ? "wk" : "mo"}\n` : "") +
+      `• Base Clinical Care: ₹${pricing.basePrice.toLocaleString("en-IN")}/${isExpressAcute ? "3 days" : (walkInBillingCycle === "weekly" ? "wk" : "mo")}\n` +
+      (pricing.surcharge > 0 ? `• Multi-Concern Coordination: +₹${pricing.surcharge.toLocaleString("en-IN")}/${isExpressAcute ? "3 days" : (walkInBillingCycle === "weekly" ? "wk" : "mo")}\n` : "") +
       (pricing.discountPercent > 0 ? `• Continuity Benefit (${pricing.discountPercent}%): -₹${pricing.discountAmount.toLocaleString("en-IN")}\n` : "") +
       (walkInApplyConcession && concessionDiscount > 0 ? `• Clinical Concession: -₹${concessionDiscount.toLocaleString("en-IN")}\n` : "") +
       (walkInApplyMedicineAddon && addonAmount > 0 ? `• Specialty Remedies Add-on: +₹${addonAmount.toLocaleString("en-IN")}\n` : "") +
@@ -1244,12 +1273,12 @@ export default function StorePage() {
       `*Total Treatment Investment: ₹${finalPrice.toLocaleString("en-IN")}*\n` +
       `*Daily Care Equivalent: ₹${dailyRate}/day*\n` +
       `----------------------------------------\n` +
-      `*What is Included:*\n` +
-      `✓ In-depth Constitutional Evaluation & Repertorization\n` +
-      `✓ Personalized Micro-Dose Homeopathic Remedies Dispensed\n` +
-      `✓ Customized Anti-Inflammatory Dietary Regimen\n` +
-      `✓ Doorstep Delivery (Express Courier Across India)\n` +
-      `✓ Regular Clinical Monitoring & Remedy Titration\n\n` +
+      `*Clinical Dispensing & Regimen:*\n` +
+      `✓ Physician-Directed Proprietary Acute Formulations Included\n` +
+      `✓ Customized Regimen (Numbered Morning, Evening & SOS Titration Vials)\n` +
+      `✓ Targeted Anti-Inflammatory / Diet Guidance Sheet\n` +
+      `✓ Doorstep Express Courier Dispatch Across India\n` +
+      `✓ Clinical Review & Reassessment Included\n\n` +
       `Dr. Narayan Jethwani MD | Homeo Healthcare\n` +
       `https://homeo.healthcare`;
   };
@@ -1271,12 +1300,16 @@ export default function StorePage() {
     const tierKey = (walkInTier in careLevelsDetails ? walkInTier : "chronic_focused") as keyof typeof careLevelsDetails;
     const details = careLevelsDetails[tierKey];
     const finalPrice = getWalkInFinalPrice();
-    const durationText = `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "Week" : "Weeks") : (walkInDurationValue === 1 ? "Month" : "Months")}`;
+    const isExpressAcute = tierKey === "mild" && walkInDurationValue === 0.5;
+    const planTitle = isExpressAcute ? "Express Acute Care (3 Days)" : details.title;
+    const durationText = isExpressAcute
+      ? "3 Days"
+      : `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "Week" : "Weeks") : (walkInDurationValue === 1 ? "Month" : "Months")}`;
     const conditionsText = walkInConditionsCount === 1 ? "1 Concern" : `${walkInConditionsCount} Concerns`;
 
     const newConfig: SavedConfig = {
       id: Math.random().toString(36).substring(2, 9),
-      name: `Doctor Plan: ${details.title} (${conditionsText}, ${durationText})`,
+      name: `Doctor Plan: ${planTitle} (${conditionsText}, ${durationText})`,
       careLevel: tierKey,
       billingCycle: walkInBillingCycle,
       durationValue: walkInDurationValue,
@@ -2075,7 +2108,7 @@ export default function StorePage() {
                                       conditions: "Acute cold/cough, seasonal allergies, simple hair fall, minor indigestion, mild flares.",
                                       weeklyPrice: 2000,
                                       monthlyPrice: 7200,
-                                      protocol: "Constitutional micro-dose remedies, basic diet sheet, bi-weekly check-ins.",
+                                      protocol: "Constitutional micro-dose remedies, basic diet sheet, bi-weekly check-ins. (Express 3-Day Protocol available: ₹1,000)",
                                       textColor: "text-slate-900",
                                     },
                                     {
@@ -2143,7 +2176,10 @@ export default function StorePage() {
                                     return (
                                       <tr
                                         key={row.key}
-                                        onClick={() => setCareLevel(row.key as keyof typeof careLevelsDetails)}
+                                        onClick={() => {
+                                          setCareLevel(row.key as keyof typeof careLevelsDetails);
+                                          if (row.key !== "mild" && durationValue === 0.5) setDurationValue(1);
+                                        }}
                                         className={`cursor-pointer transition-all duration-200 ${
                                           isSelected
                                             ? "bg-mint/[0.08] ring-1 ring-mint/30 shadow-xs"
@@ -2202,7 +2238,10 @@ export default function StorePage() {
                           <button
                             type="button"
                             key={level}
-                            onClick={() => setCareLevel(level)}
+                            onClick={() => {
+                              setCareLevel(level);
+                              if (level !== "mild" && durationValue === 0.5) setDurationValue(1);
+                            }}
                             className={`p-3 rounded-2xl border text-left transition-all duration-300 flex items-center gap-3 cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-[0.97] relative group overflow-hidden ${
                               active
                                 ? "border-mint bg-gradient-to-br from-mint/[0.08] to-teal-500/[0.02] ring-1 ring-mint/20 shadow-md shadow-mint/5"
@@ -2433,13 +2472,23 @@ export default function StorePage() {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                               {(() => {
                                 const opts = billingCycle === "weekly"
-                                  ? [
-                                      { value: 1, label: "1 Week", desc: "Baseline acute care", discount: "0%" },
-                                      { value: 2, label: "2 Weeks", desc: "Short-term relief option", discount: "0%" },
-                                      { value: 4, label: "4 Weeks", desc: "1 Month equivalent stabilization", discount: "10%" },
-                                      { value: 8, label: "8 Weeks", desc: "Intermediate chronic therapy", discount: "15%" },
-                                      { value: 12, label: "12 Weeks", desc: "Complete systemic course", discount: "20%" }
-                                    ]
+                                  ? (careLevel === "mild"
+                                      ? [
+                                          { value: 0.5, label: "3 Days", desc: "Express Acute Care (Targeted Acute Protocol)", discount: "0%" },
+                                          { value: 1, label: "1 Week", desc: "Baseline acute care", discount: "0%" },
+                                          { value: 2, label: "2 Weeks", desc: "Short-term relief option", discount: "0%" },
+                                          { value: 4, label: "4 Weeks", desc: "1 Month equivalent stabilization", discount: "10%" },
+                                          { value: 8, label: "8 Weeks", desc: "Intermediate chronic therapy", discount: "15%" },
+                                          { value: 12, label: "12 Weeks", desc: "Complete systemic course", discount: "20%" }
+                                        ]
+                                      : [
+                                          { value: 1, label: "1 Week", desc: "Baseline acute care", discount: "0%" },
+                                          { value: 2, label: "2 Weeks", desc: "Short-term relief option", discount: "0%" },
+                                          { value: 4, label: "4 Weeks", desc: "1 Month equivalent stabilization", discount: "10%" },
+                                          { value: 8, label: "8 Weeks", desc: "Intermediate chronic therapy", discount: "15%" },
+                                          { value: 12, label: "12 Weeks", desc: "Complete systemic course", discount: "20%" }
+                                        ]
+                                    )
                                   : [
                                       { value: 1, label: "1 Month", desc: "Baseline chronic cycle", discount: "10%" },
                                       { value: 2, label: "2 Months", desc: "Stabilization healing phase", discount: "15%" },
@@ -2594,7 +2643,7 @@ export default function StorePage() {
                           <div>
                             <span className="text-[9px] text-slate-400 font-semibold block mb-0.5">Recommended Care Period</span>
                             <span className="text-[#1A2421] font-extrabold block leading-tight">
-                              {durationValue} {billingCycle === "weekly" ? (durationValue === 1 ? "Week" : "Weeks") : (durationValue === 1 ? "Month" : "Months")}
+                              {durationValue === 0.5 ? "3 Days" : `${durationValue} ${billingCycle === "weekly" ? (durationValue === 1 ? "Week" : "Weeks") : (durationValue === 1 ? "Month" : "Months")}`}
                             </span>
                           </div>
                           <div className="col-span-2">
@@ -2613,25 +2662,25 @@ export default function StorePage() {
                         </div>
                         <div className="flex justify-between text-xs text-slate-600 font-semibold tracking-wide">
                           <span>Clinical Care Fee</span>
-                          <span>₹{activePricing.basePrice.toLocaleString("en-IN")} / {billingCycle === "weekly" ? "wk" : "mo"}</span>
+                          <span>₹{activePricing.basePrice.toLocaleString("en-IN")} / {durationValue === 0.5 ? "3 days" : (billingCycle === "weekly" ? "wk" : "mo")}</span>
                         </div>
 
                         {conditionsCount > 1 && (
                           <div className="flex justify-between text-xs text-slate-600 font-semibold tracking-wide">
                             <span>Clinical Complexity Adjustment ({conditionsCount} Concerns)</span>
-                            <span>+₹{activePricing.surcharge.toLocaleString("en-IN")} / {billingCycle === "weekly" ? "wk" : "mo"}</span>
+                            <span>+₹{activePricing.surcharge.toLocaleString("en-IN")} / {durationValue === 0.5 ? "3 days" : (billingCycle === "weekly" ? "wk" : "mo")}</span>
                           </div>
                         )}
 
                         {conditionsCount > 1 && (
                           <div className="flex justify-between text-xs text-slate-900 font-bold tracking-wide border-b border-slate-900/5 pb-2">
                             <span>Personalized Care Investment</span>
-                            <span>₹{activePricing.adjustedBasePrice.toLocaleString("en-IN")} / {billingCycle === "weekly" ? "wk" : "mo"}</span>
+                            <span>₹{activePricing.adjustedBasePrice.toLocaleString("en-IN")} / {durationValue === 0.5 ? "3 days" : (billingCycle === "weekly" ? "wk" : "mo")}</span>
                           </div>
                         )}
 
                         <div className="flex justify-between text-xs text-slate-600 font-semibold tracking-wide">
-                          <span>Recommended Care Period ({durationValue} {billingCycle === "weekly" ? (durationValue === 1 ? "week" : "weeks") : (durationValue === 1 ? "month" : "months")})</span>
+                          <span>Recommended Care Period ({durationValue === 0.5 ? "3 Days" : `${durationValue} ${billingCycle === "weekly" ? (durationValue === 1 ? "week" : "weeks") : (durationValue === 1 ? "month" : "months")}`})</span>
                           <span>₹{activePricing.rawTotal.toLocaleString("en-IN")}</span>
                         </div>
 
@@ -2645,11 +2694,11 @@ export default function StorePage() {
                         <div className="pt-2 border-t border-slate-900/5 space-y-1.5">
                           <div className="flex justify-between text-[10px] text-slate-500 font-semibold tracking-wide">
                             <span>Care Period</span>
-                            <span className="text-slate-800 font-extrabold">{billingCycle === "weekly" ? durationValue * 7 : durationValue * 30} Days</span>
+                            <span className="text-slate-800 font-extrabold">{durationValue === 0.5 ? 3 : (billingCycle === "weekly" ? durationValue * 7 : durationValue * 30)} Days</span>
                           </div>
                           <div className="flex justify-between text-[10px] text-slate-500 font-semibold tracking-wide border-b border-slate-900/5 pb-2">
                             <span>Equivalent Daily Care Investment</span>
-                            <span className="text-emerald-700 font-extrabold">₹{Math.round(activePricing.finalPrice / (billingCycle === "weekly" ? durationValue * 7 : durationValue * 30))}/day</span>
+                            <span className="text-emerald-700 font-extrabold">₹{Math.round(activePricing.finalPrice / (durationValue === 0.5 ? 3 : (billingCycle === "weekly" ? durationValue * 7 : durationValue * 30)))}/day</span>
                           </div>
                         </div>
 
@@ -2755,16 +2804,26 @@ export default function StorePage() {
                         {/* Recommended Treatment Duration Row */}
                         <div className="pt-3 border-t border-slate-900/5 space-y-2">
                           <h4 className="text-[9px] font-black text-slate-800 uppercase tracking-wider">Recommended Treatment Duration</h4>
-                          <div className="grid grid-cols-5 gap-1.5">
+                          <div className={`grid ${billingCycle === "weekly" && careLevel === "mild" ? "grid-cols-6" : "grid-cols-5"} gap-1.5`}>
                             {(() => {
                               const opts = billingCycle === "weekly"
-                                ? [
-                                    { value: 1, label: "1 Wk", discount: "0%" },
-                                    { value: 2, label: "2 Wks", discount: "0%" },
-                                    { value: 4, label: "4 Wks", discount: "10%" },
-                                    { value: 8, label: "8 Wks", discount: "15%" },
-                                    { value: 12, label: "12 Wks", discount: "20%" }
-                                  ]
+                                ? (careLevel === "mild"
+                                    ? [
+                                        { value: 0.5, label: "3 Days", discount: "₹1k" },
+                                        { value: 1, label: "1 Wk", discount: "0%" },
+                                        { value: 2, label: "2 Wks", discount: "0%" },
+                                        { value: 4, label: "4 Wks", discount: "10%" },
+                                        { value: 8, label: "8 Wks", discount: "15%" },
+                                        { value: 12, label: "12 Wks", discount: "20%" }
+                                      ]
+                                    : [
+                                        { value: 1, label: "1 Wk", discount: "0%" },
+                                        { value: 2, label: "2 Wks", discount: "0%" },
+                                        { value: 4, label: "4 Wks", discount: "10%" },
+                                        { value: 8, label: "8 Wks", discount: "15%" },
+                                        { value: 12, label: "12 Wks", discount: "20%" }
+                                      ]
+                                  )
                                 : [
                                     { value: 1, label: "1 Mo", discount: "10%" },
                                     { value: 2, label: "2 Mos", discount: "15%" },
@@ -3948,7 +4007,12 @@ export default function StorePage() {
                           <button
                             key={key}
                             type="button"
-                            onClick={() => setWalkInTier(key)}
+                            onClick={() => {
+                              setWalkInTier(key);
+                              if (key !== "mild" && walkInDurationValue === 0.5) {
+                                setWalkInDurationValue(1);
+                              }
+                            }}
                             className={`p-3 text-left border rounded-xl transition-all duration-200 cursor-pointer flex flex-col justify-between gap-2 relative overflow-hidden group ${
                               isSelected
                                 ? "border-emerald-600 bg-emerald-50/70 text-emerald-950 font-bold ring-2 ring-emerald-500/30 shadow-xs"
@@ -3965,6 +4029,11 @@ export default function StorePage() {
                                   <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">
                                     {details.complexityLabel || "Standard"} Care
                                   </span>
+                                  {key === "mild" && (
+                                    <span className="text-[8px] font-bold text-teal-850 bg-teal-100/80 px-1.5 py-0.5 rounded mt-0.5 inline-block">
+                                      Express 3-Day available (₹1,000)
+                                    </span>
+                                  )}
                                 </div>
                               </div>
                               {isSelected && (
@@ -4197,15 +4266,25 @@ export default function StorePage() {
                             Save up to 30% with continuity
                           </span>
                         </div>
-                        <div className="grid grid-cols-5 gap-1.5">
+                        <div className={`grid ${walkInBillingCycle === "weekly" && walkInTier === "mild" ? "grid-cols-6" : "grid-cols-5"} gap-1.5`}>
                           {(walkInBillingCycle === "weekly"
-                            ? [
-                                { value: 1, label: "1 Wk", desc: "0%" },
-                                { value: 2, label: "2 Wks", desc: "0%" },
-                                { value: 4, label: "4 Wks", desc: "10%" },
-                                { value: 8, label: "8 Wks", desc: "15%" },
-                                { value: 12, label: "12 Wks", desc: "20%" }
-                              ]
+                            ? (walkInTier === "mild"
+                                ? [
+                                    { value: 0.5, label: "3 Days", desc: "₹1,000" },
+                                    { value: 1, label: "1 Wk", desc: "0%" },
+                                    { value: 2, label: "2 Wks", desc: "0%" },
+                                    { value: 4, label: "4 Wks", desc: "10%" },
+                                    { value: 8, label: "8 Wks", desc: "15%" },
+                                    { value: 12, label: "12 Wks", desc: "20%" },
+                                  ]
+                                : [
+                                    { value: 1, label: "1 Wk", desc: "0%" },
+                                    { value: 2, label: "2 Wks", desc: "0%" },
+                                    { value: 4, label: "4 Wks", desc: "10%" },
+                                    { value: 8, label: "8 Wks", desc: "15%" },
+                                    { value: 12, label: "12 Wks", desc: "20%" },
+                                  ]
+                              )
                             : [
                                 { value: 1, label: "1 Mo", desc: "10%" },
                                 { value: 2, label: "2 Mos", desc: "15%" },
@@ -4375,6 +4454,7 @@ export default function StorePage() {
                   {(() => {
                     const tierKey = (walkInTier in careLevelsDetails ? walkInTier : "chronic_focused") as keyof typeof careLevelsDetails;
                     const details = careLevelsDetails[tierKey] || careLevelsDetails.chronic_focused;
+                    const isExpressAcute = tierKey === "mild" && walkInDurationValue === 0.5;
                     const pricing = calculatePricing(tierKey, walkInBillingCycle, walkInDurationValue, walkInConditionsCount);
 
                     const baseConcessionPrice = (() => {
@@ -4398,8 +4478,9 @@ export default function StorePage() {
                     })();
 
                     const finalPrice = baseConcessionPrice + addonAmount;
-                    const totalDays = walkInBillingCycle === "weekly" ? walkInDurationValue * 7 : walkInDurationValue * 30;
+                    const totalDays = walkInBillingCycle === "weekly" ? (walkInDurationValue === 0.5 ? 3 : walkInDurationValue * 7) : walkInDurationValue * 30;
                     const dailyCost = Math.round(finalPrice / totalDays);
+                    const durationLabel = walkInDurationValue === 0.5 ? "3 Days" : `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "Week" : "Weeks") : (walkInDurationValue === 1 ? "Month" : "Months")}`;
 
                     return (
                       <div className="p-5 md:p-6 border border-emerald-500/20 bg-gradient-to-b from-white/95 to-emerald-50/25 backdrop-blur-xl rounded-3xl space-y-4 shadow-xl text-left">
@@ -4410,11 +4491,11 @@ export default function StorePage() {
                             <div className="flex items-center gap-1.5">
                               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                               <span className="text-[9px] font-black uppercase tracking-wider text-emerald-800">
-                                Live Care Quotation
+                                {isExpressAcute ? "Targeted Acute Protocol · ₹1,000" : "Live Care Quotation"}
                               </span>
                             </div>
                             <h4 className="text-base font-black text-slate-900 mt-0.5">
-                              {details.title}
+                              {isExpressAcute ? "Express Acute Care (3 Days)" : details.title}
                             </h4>
                           </div>
                           <span className="text-2xl">{details.icon}</span>
@@ -4443,7 +4524,7 @@ export default function StorePage() {
                           <p className="text-[11px] font-bold text-slate-800 line-clamp-2">
                             {walkInSelectedConcerns.length > 0 
                               ? walkInSelectedConcerns.join(", ") 
-                              : `${details.title} protocol`}
+                              : `${isExpressAcute ? "Express Acute Care" : details.title} protocol`}
                           </p>
                         </div>
 
@@ -4452,7 +4533,7 @@ export default function StorePage() {
                           <div className="flex justify-between">
                             <span>Base Clinical Care Fee</span>
                             <span className="font-bold text-slate-900 font-sans">
-                              ₹{pricing.basePrice.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}
+                              ₹{pricing.basePrice.toLocaleString("en-IN")} / {isExpressAcute ? "3 days" : (walkInBillingCycle === "weekly" ? "wk" : "mo")}
                             </span>
                           </div>
 
@@ -4460,13 +4541,13 @@ export default function StorePage() {
                             <div className="flex justify-between text-emerald-800">
                               <span>Multi-Concern Coordination</span>
                               <span className="font-bold font-sans">
-                                +₹{pricing.surcharge.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}
+                                +₹{pricing.surcharge.toLocaleString("en-IN")} / {isExpressAcute ? "3 days" : (walkInBillingCycle === "weekly" ? "wk" : "mo")}
                               </span>
                             </div>
                           )}
 
                           <div className="flex justify-between border-t border-slate-100 pt-1.5 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
-                            <span>Care Period Total ({walkInDurationValue} {walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "Week" : "Weeks") : (walkInDurationValue === 1 ? "Month" : "Months")})</span>
+                            <span>Care Period Total ({durationLabel})</span>
                             <span className="font-sans text-slate-800">₹{pricing.rawTotal.toLocaleString("en-IN")}</span>
                           </div>
 

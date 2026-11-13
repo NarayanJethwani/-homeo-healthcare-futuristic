@@ -2,7 +2,7 @@ import type { StoreClinicalCareTierId } from "../domain/types";
 
 // Patient-facing descriptions; no changes to clinical entities or pricing rules.
 export const CARE_PLAN_DETAILS: Record<StoreClinicalCareTierId, { scope: string; casework: string; review: string }> = {
-  acute_mild: { scope: "One mild, recent concern", casework: "Focused symptom history, case analysis and individual prescribing", review: "Review within 2 days; reassess before extension" },
+  acute_mild: { scope: "One mild, recent acute concern (Targeted Acute Protocol)", casework: "Focused symptom history, acute case analysis and physician-directed prescribing", review: "Review within 3 days; reassess before extension" },
   acute_wellness: { scope: "A recent concern needing a longer review window", casework: "Symptom history, case analysis and prescription review as needed", review: "Review within 4 days; reassess before extension" },
   subacute: { scope: "A persisting concern needing reassessment", casework: "History and progress review to guide the next care decision", review: "Review within 1 week; agree whether further care is needed" },
   focused: { scope: "One principal chronic concern or organ system", casework: "Case history and analysis; constitutional care where appropriate", review: "Planned weekly follow-up of the agreed concern" },
