@@ -12987,7 +12987,7 @@ ${err.message || err}`);
                           {plannerBillingCycle === "weekly" ? (
                             <>
                               <option value={1}>1 Week</option>
-                              <option value={2}>2 Weeks (5% discount)</option>
+                              <option value={2}>2 Weeks</option>
                               <option value={4}>4 Weeks (10% discount)</option>
                               <option value={8}>8 Weeks (15% discount)</option>
                               <option value={12}>12 Weeks (20% discount)</option>

@@ -200,6 +200,20 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "Validates care pathway prices, durations, add-ons, and legacy mapping"
   },
   {
+    "path": "tests/careFeeCalculator.test.ts",
+    "status": "active",
+    "ownerArea": "commerce-pricing",
+    "testLayer": "unit",
+    "reason": "Validates care fee card calculations, organ system groupings, and multi-concern rates"
+  },
+  {
+    "path": "tests/metaSocialSecurity.test.ts",
+    "status": "active",
+    "ownerArea": "access-governance",
+    "testLayer": "security",
+    "reason": "Validates Meta OAuth state encryption, token refresh security, and social publishing permissions"
+  },
+  {
     "path": "tests/specialtyAssessmentPricing.test.ts",
     "status": "active",
     "ownerArea": "commerce-pricing",

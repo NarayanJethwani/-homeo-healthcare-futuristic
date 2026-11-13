@@ -14,7 +14,8 @@ export async function proxy(request: NextRequest) {
     pathname === "/admin/login/" ||
     pathname === "/api/admin/session" ||
     pathname === "/api/admin/dev-login" ||
-    pathname === "/api/admin/invitations/accept"
+    pathname === "/api/admin/invitations/accept" ||
+    pathname === "/api/admin/social/callback"
   ) {
     return NextResponse.next();
   }

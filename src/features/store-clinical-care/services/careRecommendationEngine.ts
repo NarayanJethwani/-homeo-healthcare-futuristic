@@ -1,6 +1,8 @@
 import { MEMBERSHIP_ALLOWANCE, UNUSED_FEES_POLICY } from "./carePlanPolicy";
 import {
   CLINICAL_CARE_TIER_OPTIONS,
+  CARE_FEE_CARD_LEVELS,
+  calculateCareEstimate,
   EXPLICIT_PHYSICIAN_AUTHORITY_STATEMENT,
   calculateTierCarePeriodTotalPaise,
   calculateTierListCarePeriodTotalPaise,
@@ -14,6 +16,8 @@ import {
   type GovernedConcession,
   type OfficialClinicalQuotation,
   type StoreClinicalCareTierId,
+  type CareFeeLevel,
+  type ClinicalConcernInput,
 } from "../domain/types";
 
 export interface PreliminaryRecommendationInput {
@@ -64,7 +68,9 @@ export function calculatePreliminaryCareRecommendation(
 
 export interface QuotationCalculationInput {
   tierId: string;
-  durationWeeks: ClinicalCareDurationWeeks;
+  durationWeeks: number;
+  pricingModel?: "care_fee_card" | "legacy_v3";
+  selectedConcerns?: ClinicalConcernInput[];
   specialBrandedMedicinesPaise?: number;
   courierFeePaise?: number;
   medicalCertificateFeePaise?: number;
@@ -80,17 +86,47 @@ export interface QuotationCalculationInput {
 
 /**
  * Calculates itemized pharmacy and professional care fee breakdown using integer paise.
+ * Reads single source of truth from pricingConfig.ts. Supports both new Care Fee Card model
+ * (no percentage discounts, 3 levels / organ system grouping) and legacy v3 tiers.
  */
 export function calculateItemizedPharmacyQuotation(
   input: QuotationCalculationInput
 ): ItemizedPharmacyBreakdown {
-  const tierKey = input.tierId && input.tierId in CLINICAL_CARE_TIER_OPTIONS ? input.tierId as keyof typeof CLINICAL_CARE_TIER_OPTIONS : "integrated";
-  const tier = CLINICAL_CARE_TIER_OPTIONS[tierKey];
+  const isCardModel =
+    input.pricingModel === "care_fee_card" ||
+    input.tierId === "mild" ||
+    input.tierId === "moderate" ||
+    input.tierId === "complex" ||
+    Boolean(input.selectedConcerns && input.selectedConcerns.length > 0);
 
-  const listProfessionalFeePaise = calculateTierListCarePeriodTotalPaise(tier.id, input.durationWeeks);
-  const professionalFeePaise = calculateTierCarePeriodTotalPaise(tier.id, input.durationWeeks);
-  const continuityDiscountPercent = getTierContinuityBenefit(tier.id, input.durationWeeks);
-  const continuityDiscountPaise = listProfessionalFeePaise - professionalFeePaise;
+  let listProfessionalFeePaise: number;
+  let professionalFeePaise: number;
+  let continuityDiscountPercent = 0;
+  let continuityDiscountPaise = 0;
+
+  if (isCardModel) {
+    if (input.selectedConcerns && input.selectedConcerns.length > 0) {
+      const estimate = calculateCareEstimate(input.selectedConcerns, input.durationWeeks);
+      professionalFeePaise = estimate.totalEstimatePaise;
+      listProfessionalFeePaise = professionalFeePaise;
+    } else {
+      const cardKey = (input.tierId in CARE_FEE_CARD_LEVELS ? input.tierId : "moderate") as CareFeeLevel;
+      const levelDef = CARE_FEE_CARD_LEVELS[cardKey];
+      const effectiveWeeks = (cardKey === "moderate" || cardKey === "complex") && input.durationWeeks < 2 ? 2 : input.durationWeeks;
+      professionalFeePaise = levelDef.weeklyFeePaise * effectiveWeeks;
+      listProfessionalFeePaise = professionalFeePaise;
+    }
+  } else {
+    const tierKey = input.tierId && input.tierId in CLINICAL_CARE_TIER_OPTIONS ? input.tierId as keyof typeof CLINICAL_CARE_TIER_OPTIONS : "integrated";
+    const tier = CLINICAL_CARE_TIER_OPTIONS[tierKey];
+    const duration = input.durationWeeks as ClinicalCareDurationWeeks;
+
+    listProfessionalFeePaise = calculateTierListCarePeriodTotalPaise(tier.id, duration);
+    professionalFeePaise = calculateTierCarePeriodTotalPaise(tier.id, duration);
+    continuityDiscountPercent = getTierContinuityBenefit(tier.id, duration);
+    continuityDiscountPaise = listProfessionalFeePaise - professionalFeePaise;
+  }
+
   const brandedPaise = Math.max(0, Math.round(input.specialBrandedMedicinesPaise || 0));
   const courierPaise = Math.max(0, Math.round(input.courierFeePaise || 0));
   const certPaise = Math.max(0, Math.round(input.medicalCertificateFeePaise || 0));

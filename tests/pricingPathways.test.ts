@@ -13,6 +13,7 @@ import {
   buildGoogleSheetsCareRateFormula,
   buildGoogleSheetsContinuityBenefitFormula,
   toPublicCarePathway,
+  surchargesLookup,
 } from "../src/lib/pricingConfig";
 import { buildClinicalSheetTreatmentPlanValues } from "../src/lib/clinicalSheetTreatmentPlan";
 
@@ -34,9 +35,17 @@ assert.throws(() => calculateCarePlanTotal("acute_mild_3d", 2), /fixed 2 days/i)
   assert.strictEqual(CARE_LEVELS_DETAILS.mild.weeklyPrice, 2_000);
   assert.strictEqual(CARE_LEVELS_DETAILS.mild.title, "Acute Wellness Care");
   assert.strictEqual(CARE_LEVELS_DETAILS.chronic_focused.weeklyPrice, 3_000);
+  assert.strictEqual(CARE_LEVELS_DETAILS.chronic_focused.surchargeWeekly, 1_000);
+  assert.strictEqual(CARE_LEVELS_DETAILS.chronic_focused.surchargeMonthly, 4_000);
+  assert.strictEqual(surchargesLookup.chronic_focused.unitWeekly, 1_000);
+  assert.strictEqual(surchargesLookup.chronic_focused.unitMonthly, 4_000);
   assert.match(CARE_LEVELS_DETAILS.mild.scopeMessage, /not emergency|red flags/i);
   assert.strictEqual(CARE_LEVELS_DETAILS.moderate.weeklyPrice, 6_000);
   assert.strictEqual(CARE_LEVELS_DETAILS.focused.weeklyPrice, 9_000);
+  assert.strictEqual(CARE_LEVELS_DETAILS.focused.surchargeWeekly, 3_000);
+  assert.strictEqual(CARE_LEVELS_DETAILS.focused.surchargeMonthly, 12_000);
+  assert.strictEqual(surchargesLookup.focused.unitWeekly, 3_000);
+  assert.strictEqual(surchargesLookup.focused.unitMonthly, 12_000);
   assert.strictEqual(CARE_LEVELS_DETAILS.organ.weeklyPrice, 0);
   assert.strictEqual(CARE_LEVELS_DETAILS.organ.title, "Case-Specific Clinical Support");
   assert.match(CARE_LEVELS_DETAILS.organ.scopeMessage, /nothing is added automatically/i);
@@ -81,7 +90,7 @@ assert.throws(() => calculateCarePlanTotal("acute_mild_3d", 2), /fixed 2 days/i)
       additionalAcuteEpisode: true,
       priorityAcuteSupport: true,
     }).total,
-    9_000,
+    15_000,
   );
 
   assert.strictEqual(

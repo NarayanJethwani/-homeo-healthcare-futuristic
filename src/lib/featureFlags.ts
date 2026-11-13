@@ -8,6 +8,7 @@ export interface PlatformFeatureFlags {
   MANUAL_PAYMENT_WORKFLOW_ENABLED: boolean;
   AUTO_ACTIVATE_AFTER_GATEWAY_PAYMENT: boolean;
   STORE_CLINICAL_CARE_V1_ENABLED: boolean;
+  STORE_CLINICAL_CARE_V2_ENABLED: boolean;
 }
 
 export const FEATURE_FLAGS: PlatformFeatureFlags = {
@@ -15,6 +16,7 @@ export const FEATURE_FLAGS: PlatformFeatureFlags = {
   MANUAL_PAYMENT_WORKFLOW_ENABLED: process.env.NEXT_PUBLIC_MANUAL_PAYMENT_WORKFLOW_ENABLED === "false" ? false : true,
   AUTO_ACTIVATE_AFTER_GATEWAY_PAYMENT: process.env.NEXT_PUBLIC_AUTO_ACTIVATE_AFTER_GATEWAY_PAYMENT === "true" ? true : false,
   STORE_CLINICAL_CARE_V1_ENABLED: process.env.NEXT_PUBLIC_STORE_CLINICAL_CARE_V1_ENABLED === "false" ? false : true,
+  STORE_CLINICAL_CARE_V2_ENABLED: process.env.NEXT_PUBLIC_STORE_CLINICAL_CARE_V2_ENABLED === "true" ? true : false,
 };
 
 export function isPaymentGatewayEnabled(): boolean {
@@ -31,4 +33,8 @@ export function isAutoActivateAfterGatewayPaymentEnabled(): boolean {
 
 export function isStoreClinicalCareV1Enabled(): boolean {
   return FEATURE_FLAGS.STORE_CLINICAL_CARE_V1_ENABLED;
+}
+
+export function isStoreClinicalCareV2Enabled(): boolean {
+  return FEATURE_FLAGS.STORE_CLINICAL_CARE_V2_ENABLED;
 }
