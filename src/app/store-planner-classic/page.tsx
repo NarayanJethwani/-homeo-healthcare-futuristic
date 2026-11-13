@@ -853,24 +853,15 @@ export default function StorePage() {
   const [patientAddress, setPatientAddress] = useState("");
   const [patientComplaint, setPatientComplaint] = useState("");
   
-  // Walk-in / Let Doctor Plan states
+  // Doctor Plan / Presentation states
   const [walkInName, setWalkInName] = useState("");
-  const [walkInAge, setWalkInAge] = useState("");
-  const [walkInGender, setWalkInGender] = useState("Male");
-  const [walkInPhone, setWalkInPhone] = useState("");
-  const [walkInEmail, setWalkInEmail] = useState("");
-  const [walkInComplaint, setWalkInComplaint] = useState("");
-  const [walkInType, setWalkInType] = useState("Walk-In Appointment");
-  const [walkInTier, setWalkInTier] = useState("moderate");
-  const [isWalkInSubmitting, setIsWalkInSubmitting] = useState(false);
-  const [walkInAddress, setWalkInAddress] = useState("");
-  const [walkInSuccess, setWalkInSuccess] = useState(false);
-  const [walkInError, setWalkInError] = useState<string | null>(null);
+  const [walkInTier, setWalkInTier] = useState("chronic_focused");
   const [walkInBillingCycle, setWalkInBillingCycle] = useState<"weekly" | "monthly">("weekly");
   const [walkInConditionsCount, setWalkInConditionsCount] = useState<number>(1);
   const [walkInDurationValue, setWalkInDurationValue] = useState<number>(4);
   const [walkInSelectedConcerns, setWalkInSelectedConcerns] = useState<string[]>([]);
   const [walkInConcernCategory, setWalkInConcernCategory] = useState<string>("all");
+  const [doctorPlanCopied, setDoctorPlanCopied] = useState(false);
   
   // Concession states
   const [walkInApplyConcession, setWalkInApplyConcession] = useState(false);
@@ -968,17 +959,6 @@ export default function StorePage() {
     }
   }, []);
 
-  // Automatically trigger Senior Concession if walk-in age >= 60
-  useEffect(() => {
-    const ageVal = parseInt(walkInAge);
-    if (!isNaN(ageVal) && ageVal >= 60) {
-      setWalkInApplyConcession(true);
-      setWalkInConcessionType("senior");
-    } else if (walkInAge === "" || (!isNaN(ageVal) && ageVal < 60)) {
-      setWalkInApplyConcession(false);
-    }
-  }, [walkInAge]);
-
   // Lock body scroll when checkout modal or triage helper is open to prevent double scrollbars and layout shifts
   useEffect(() => {
     if (isCheckoutOpen || isHelperOpen) {
@@ -997,10 +977,6 @@ export default function StorePage() {
       const next = exists ? prev.filter((c) => c !== concernLabel) : [...prev, concernLabel];
       const count = Math.min(5, Math.max(1, next.length));
       setWalkInConditionsCount(count);
-      if (next.length > 0) {
-        const text = `Primary concerns to address: ${next.join(", ")}.`;
-        setWalkInComplaint((curr) => (!curr || curr.startsWith("Primary concerns to address:") ? text : curr));
-      }
       return next;
     });
   };
@@ -1032,7 +1008,6 @@ export default function StorePage() {
         setWalkInSelectedConcerns((prev) => 
           prev.includes(conditionName) ? prev : [...prev, conditionName]
         );
-        setWalkInComplaint(`Primary concerns to address: ${conditionName} (${areaTitles.join(", ")}).`);
       }
     }
   };
@@ -1217,77 +1192,123 @@ export default function StorePage() {
     }
   };
 
-  const handleWalkInSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!walkInName || !walkInAge || !walkInPhone || !walkInComplaint) {
-      return;
-    }
-    const generatedId = `P-${Math.floor(100000 + Math.random() * 900000)}`;
-    setIsWalkInSubmitting(true);
-    setWalkInError(null);
-    try {
-      const response = await fetch("/api/intake", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          id: generatedId,
-          name: walkInName,
-          email: walkInEmail || "N/A",
-          phone: walkInPhone,
-          gender: walkInGender,
-          age: String(walkInAge),
-          complaint: walkInComplaint,
-          careLevel: careLevelsDetails[walkInTier as keyof typeof careLevelsDetails]?.title || "Doctor-Led Custom Care",
-          conditionsCount: walkInConditionsCount,
-          durationText: `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "week" : "weeks") : (walkInDurationValue === 1 ? "month" : "months")} (${walkInBillingCycle === "weekly" ? "Weekly" : "Monthly"})${walkInApplyConcession ? ` [Concession: ${walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Special Clinical Concession"}]` : ""}${
-            walkInApplyMedicineAddon 
-              ? ` [Medicine Add-ons: ${walkInMedicineAddons
-                  .filter(item => {
-                    const amt = parseInt(item.amount);
-                    return !isNaN(amt) && amt > 0;
-                  })
-                  .map(item => `+₹${item.amount} for ${item.type}${item.details ? ` (${item.details})` : ""}`)
-                  .join(", ")
-                }]`
-              : ""
-          }`,
-          finalPrice: getWalkInFinalPrice(),
-          receivedAmount: getWalkInFinalPrice(),
-          remainingBalance: 0,
-          deliveryMode: walkInType === "Walk-In Appointment" 
-            ? "walkin" 
-            : walkInType === "Shipping / Courier Delivery" 
-              ? "shipping" 
-              : "pickup",
-          address: walkInType === "Shipping / Courier Delivery" ? walkInAddress : walkInType,
-          status: "pending_plan",
-          billingCycle: walkInBillingCycle === "weekly" ? "Weekly" : "Monthly",
-          concessionApplied: walkInApplyConcession 
-            ? (walkInConcessionType === "senior" ? "Senior Citizen Concession 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic Concession 30%" : "Special Clinical Concession")
-            : "None",
-          durationValue: walkInDurationValue,
-          medicineAddons: walkInApplyMedicineAddon
-            ? walkInMedicineAddons.reduce((sum, item) => sum + (parseInt(item.amount) || 0), 0)
-            : 0
-        })
-      });
-      const data = await response.json();
-      if (data.success) {
-        setWalkInSuccess(true);
-        setWalkInPatientId(data.patientId || generatedId);
-        setWalkInSheetUrl(data.clinicalSheetUrl || data.sheetUrl || "");
-        setWalkInFolderUrl(data.folderUrl || "");
-      } else {
-        throw new Error(data.message);
+  const getDoctorPlanWhatsAppText = () => {
+    const tierKey = (walkInTier in careLevelsDetails ? walkInTier : "chronic_focused") as keyof typeof careLevelsDetails;
+    const details = careLevelsDetails[tierKey] || careLevelsDetails.chronic_focused;
+    const pricing = calculatePricing(tierKey, walkInBillingCycle, walkInDurationValue, walkInConditionsCount);
+
+    const baseConcessionPrice = (() => {
+      if (!walkInApplyConcession) return pricing.finalPrice;
+      if (walkInConcessionType === "senior") return Math.round(pricing.finalPrice * 0.85);
+      if (walkInConcessionType === "compassionate") return Math.round(pricing.finalPrice * 0.70);
+      if (walkInConcessionType === "override") {
+        const overrideVal = parseInt(walkInOverridePrice);
+        return isNaN(overrideVal) ? pricing.finalPrice : Math.max(0, overrideVal);
       }
-    } catch (err: any) {
-      console.error("Walk-in registration failed:", err);
-      setWalkInError(err.message || "Failed to complete patient registration.");
-    } finally {
-      setIsWalkInSubmitting(false);
+      return pricing.finalPrice;
+    })();
+    const concessionDiscount = pricing.finalPrice - baseConcessionPrice;
+
+    const addonAmount = (() => {
+      if (!walkInApplyMedicineAddon) return 0;
+      return walkInMedicineAddons.reduce((sum, item) => {
+        const amt = parseInt(item.amount);
+        return sum + (isNaN(amt) || amt < 0 ? 0 : amt);
+      }, 0);
+    })();
+
+    const finalPrice = baseConcessionPrice + addonAmount;
+    const cycleText = walkInBillingCycle === "weekly" ? "Weekly" : "Monthly";
+    const durationText = `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "Week" : "Weeks") : (walkInDurationValue === 1 ? "Month" : "Months")}`;
+    const daysText = walkInBillingCycle === "weekly" ? walkInDurationValue * 7 : walkInDurationValue * 30;
+    const dailyRate = Math.round(finalPrice / daysText);
+    const concernsList = walkInSelectedConcerns.length > 0
+      ? walkInSelectedConcerns.join(", ")
+      : `${walkInConditionsCount} Condition(s) Scope`;
+    const patientHeader = walkInName.trim() ? `*Patient:* ${walkInName.trim()}\n` : "";
+
+    return `🌿 *Homeo Healthcare — Physician Treatment Plan*\n` +
+      `----------------------------------------\n` +
+      patientHeader +
+      `*Clinical Care Program:* ${details.title}\n` +
+      `*Targeted Health Concerns:* ${concernsList}\n` +
+      `*Care Duration:* ${durationText} (${daysText} Days — ${cycleText} Billing)\n` +
+      `----------------------------------------\n` +
+      `*Itemized Care Investment:*\n` +
+      `• Base Clinical Care: ₹${pricing.basePrice.toLocaleString("en-IN")}/${walkInBillingCycle === "weekly" ? "wk" : "mo"}\n` +
+      (pricing.surcharge > 0 ? `• Multi-Concern Coordination: +₹${pricing.surcharge.toLocaleString("en-IN")}/${walkInBillingCycle === "weekly" ? "wk" : "mo"}\n` : "") +
+      (pricing.discountPercent > 0 ? `• Continuity Benefit (${pricing.discountPercent}%): -₹${pricing.discountAmount.toLocaleString("en-IN")}\n` : "") +
+      (walkInApplyConcession && concessionDiscount > 0 ? `• Clinical Concession: -₹${concessionDiscount.toLocaleString("en-IN")}\n` : "") +
+      (walkInApplyMedicineAddon && addonAmount > 0 ? `• Specialty Remedies Add-on: +₹${addonAmount.toLocaleString("en-IN")}\n` : "") +
+      `----------------------------------------\n` +
+      `*Total Treatment Investment: ₹${finalPrice.toLocaleString("en-IN")}*\n` +
+      `*Daily Care Equivalent: ₹${dailyRate}/day*\n` +
+      `----------------------------------------\n` +
+      `*What is Included:*\n` +
+      `✓ In-depth Constitutional Evaluation & Repertorization\n` +
+      `✓ Personalized Micro-Dose Homeopathic Remedies Dispensed\n` +
+      `✓ Customized Anti-Inflammatory Dietary Regimen\n` +
+      `✓ Doorstep Delivery (Express Courier Across India)\n` +
+      `✓ Regular Clinical Monitoring & Remedy Titration\n\n` +
+      `Dr. Narayan Jethwani MD | Homeo Healthcare\n` +
+      `https://homeo.healthcare`;
+  };
+
+  const handleShareDoctorPlanWhatsApp = () => {
+    const text = getDoctorPlanWhatsAppText();
+    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(url, "_blank");
+  };
+
+  const handleCopyDoctorPlanQuotation = () => {
+    const text = getDoctorPlanWhatsAppText();
+    navigator.clipboard.writeText(text);
+    setDoctorPlanCopied(true);
+    setTimeout(() => setDoctorPlanCopied(false), 2500);
+  };
+
+  const handleSaveDoctorPlanPreset = () => {
+    const tierKey = (walkInTier in careLevelsDetails ? walkInTier : "chronic_focused") as keyof typeof careLevelsDetails;
+    const details = careLevelsDetails[tierKey];
+    const finalPrice = getWalkInFinalPrice();
+    const durationText = `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "Week" : "Weeks") : (walkInDurationValue === 1 ? "Month" : "Months")}`;
+    const conditionsText = walkInConditionsCount === 1 ? "1 Concern" : `${walkInConditionsCount} Concerns`;
+
+    const newConfig: SavedConfig = {
+      id: Math.random().toString(36).substring(2, 9),
+      name: `Doctor Plan: ${details.title} (${conditionsText}, ${durationText})`,
+      careLevel: tierKey,
+      billingCycle: walkInBillingCycle,
+      durationValue: walkInDurationValue,
+      conditionsCount: walkInConditionsCount,
+      finalPrice,
+      date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    };
+
+    const updated = [...savedConfigs, newConfig];
+    setSavedConfigs(updated);
+    try {
+      localStorage.setItem("homeo_saved_configs", JSON.stringify(updated));
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 2000);
+    } catch (e) {
+      console.error("Error saving preset:", e);
     }
+  };
+
+  const handleResetDoctorPlan = () => {
+    setWalkInTier("chronic_focused");
+    setWalkInBillingCycle("weekly");
+    setWalkInDurationValue(4);
+    setWalkInConditionsCount(1);
+    setWalkInSelectedConcerns([]);
+    setWalkInConcernCategory("all");
+    setWalkInApplyConcession(false);
+    setWalkInConcessionType("senior");
+    setWalkInOverridePrice("");
+    setWalkInApplyMedicineAddon(false);
+    setWalkInMedicineAddons([{ id: "1", type: "Dilution", details: "", amount: "" }]);
+    setWalkInName("");
   };
 
   const handleSelectCalculatedPlan = () => {
@@ -3837,988 +3858,731 @@ export default function StorePage() {
 
           {viewMode === "doctorPlan" && (
             <motion.div
+              id="doctor-plan-core"
               key="doctor-plan-view"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="space-y-8 w-full relative"
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="space-y-6 w-full relative mb-16"
             >
-              {/* Floating ambient glow orbs for high-end aesthetics */}
+              {/* Floating ambient glow orbs */}
               <div className="absolute inset-0 -z-20 overflow-hidden pointer-events-none rounded-[36px]">
-                <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-gradient-to-br from-mint/15 to-teal-400/5 blur-[80px] animate-pulse" style={{ animationDuration: '8s' }} />
-                <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-gradient-to-br from-purple-500/10 to-indigo-500/0 blur-[80px] animate-pulse" style={{ animationDuration: '10s' }} />
-                <div className="absolute top-1/2 left-1/3 w-72 h-72 rounded-full bg-emerald-500/5 blur-[90px] animate-pulse" style={{ animationDuration: '12s' }} />
+                <div className="absolute -top-32 -left-32 w-80 h-80 rounded-full bg-gradient-to-br from-teal-500/10 to-emerald-400/5 blur-[80px]" />
+                <div className="absolute -bottom-32 -right-32 w-80 h-80 rounded-full bg-gradient-to-br from-indigo-500/10 to-purple-500/0 blur-[80px]" />
               </div>
 
-              {/* Doctor Plan Intake Form */}
-              <div className="glass-panel border-white/70 bg-white/30 backdrop-blur-md rounded-[32px] p-6 md:p-8 space-y-8 shadow-xl shadow-slate-900/[0.02]">
-                {walkInSuccess ? (
-                  <div className="text-center py-8 space-y-6">
-                    <div className="w-16 h-16 bg-mint/10 border border-mint/20 text-mint rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
-                      <CheckCircle2 className="w-8 h-8" />
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-black text-slate-900">Case Registered Successfully</h3>
-                      <p className="text-xs text-slate-500 font-semibold mt-1">
-                        Your intake registration is complete. The consulting physician will review your details, plan your case, and configure your portal workspace.
-                      </p>
-                    </div>
-
-                    <div className="p-6 border border-mint/20 bg-mint/[0.02] rounded-2xl max-w-lg mx-auto text-left space-y-4">
-                      <h4 className="text-xs font-black text-[#1A2421] uppercase tracking-wider border-b border-mint/10 pb-2">
-                        Patient Case Summary
-                      </h4>
-                      <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-xs font-semibold text-slate-700">
-                        <div>
-                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Patient Name</span>
-                          <span className="text-slate-900 font-extrabold">{walkInName}</span>
-                        </div>
-                        <div>
-                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">WhatsApp Number</span>
-                          <span className="text-slate-900 font-extrabold">{walkInPhone}</span>
-                        </div>
-                        <div>
-                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Age / Gender</span>
-                          <span className="text-slate-900 font-extrabold">{walkInAge} / {walkInGender}</span>
-                        </div>
-                        <div>
-                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Care Level</span>
-                          <span className="text-slate-900 font-extrabold">{careLevelsDetails[walkInTier as keyof typeof careLevelsDetails]?.title || "Custom Treatment"}</span>
-                        </div>
-                        <div>
-                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Duration</span>
-                          <span className="text-slate-900 font-extrabold">
-                            {walkInDurationValue} {walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "Week" : "Weeks") : (walkInDurationValue === 1 ? "Month" : "Months")} ({walkInBillingCycle === "weekly" ? "Weekly" : "Monthly"})
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Est. Cost</span>
-                          <span className="text-slate-900 font-extrabold">₹{getWalkInFinalPrice().toLocaleString("en-IN")}</span>
-                        </div>
-                        {walkInApplyMedicineAddon && (
-                          <div className="col-span-2 border-t border-slate-100 pt-2 mt-1 space-y-1">
-                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Medicine Add-ons</span>
-                            {walkInMedicineAddons
-                              .filter(item => {
-                                const amt = parseInt(item.amount);
-                                return !isNaN(amt) && amt > 0;
-                              })
-                              .map(item => (
-                                <div key={item.id} className="flex justify-between text-xs font-semibold text-slate-700">
-                                  <span className="text-slate-900">{item.type}{item.details ? ` (${item.details})` : ""}</span>
-                                  <span className="text-[#0f766e] font-extrabold">+₹{Number(item.amount).toLocaleString("en-IN")}</span>
-                                </div>
-                              ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Google Sheet & Portal Synchronization Card */}
-                    <div className="p-5 bg-gradient-to-r from-emerald-500/[0.08] to-teal-500/[0.05] border border-emerald-300/60 rounded-2xl space-y-3.5 text-left shadow-xs">
-                      <div className="flex items-center justify-between flex-wrap gap-2">
-                        <div className="flex items-center gap-2 text-emerald-900 font-black text-xs">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                          <span>Google Sheets & Portal Treatment Planner Active</span>
-                        </div>
-                        {walkInPatientId && (
-                          <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-emerald-600 text-white font-mono shadow-2xs">
-                            ID: {walkInPatientId}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-[11px] text-slate-600 font-semibold leading-relaxed">
-                        Patient case file and structured fee calculator have been synchronized with the clinical Google Sheet. Consulting doctors can evaluate repertorization, review lab reports, and manage ongoing treatment in the Physician Portal.
-                      </p>
-                      <div className="flex flex-wrap items-center gap-2.5 pt-1">
-                        <a
-                          href={`/admin/dashboard?tab=treatment-planner&patientId=${walkInPatientId || "P-100000"}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-4 py-2 rounded-xl bg-[#1A2421] hover:bg-black text-white text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm"
-                        >
-                          <Stethoscope className="w-3.5 h-3.5 text-mint" />
-                          <span>Open in Physician Portal</span>
-                          <ExternalLink className="w-3 h-3 text-slate-400" />
-                        </a>
-                        {walkInSheetUrl && (
-                          <a
-                            href={walkInSheetUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-4 py-2 rounded-xl bg-white border border-emerald-300 hover:border-emerald-500 text-emerald-800 text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-2xs"
-                          >
-                            <ExternalLink className="w-3.5 h-3.5" />
-                            <span>Open Clinical Sheet</span>
-                          </a>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const careText = careLevelsDetails[walkInTier as keyof typeof careLevelsDetails]?.title || "Doctor-Led Custom Care";
-                            const durText = `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "Week" : "Weeks") : (walkInDurationValue === 1 ? "Month" : "Months")}`;
-                            const concernsText = walkInSelectedConcerns.length > 0 ? walkInSelectedConcerns.join(", ") : `${walkInConditionsCount} active condition(s)`;
-                            const planPricing = calculatePricing(walkInTier as keyof typeof careLevelsDetails, walkInBillingCycle, walkInDurationValue, walkInConditionsCount);
-                            const quote = `*Homeo Healthcare — Physician Care Plan Quotation*\n` +
-                              `*Patient:* ${walkInName} (Age: ${walkInAge})\n` +
-                              `*Patient ID:* ${walkInPatientId || "P-RECORD"}\n` +
-                              `*Care Program:* ${careText}\n` +
-                              `*Concerns Addressed:* ${concernsText}\n` +
-                              `*Care Period:* ${durText} (${walkInBillingCycle === "weekly" ? "Weekly" : "Monthly"} Cycle)\n` +
-                              `*Itemized Scope:*\n` +
-                              `- Clinical Base Care Fee: ₹${planPricing.basePrice.toLocaleString("en-IN")}\n` +
-                              (planPricing.surcharge > 0 ? `- Additional Care Scope: +₹${planPricing.surcharge.toLocaleString("en-IN")}\n` : "") +
-                              `- Personalized Care Rate: ₹${planPricing.adjustedBasePrice.toLocaleString("en-IN")}\n` +
-                              (planPricing.discountPercent > 0 ? `- Continuity Benefit (${planPricing.discountPercent}%): -₹${Math.round(planPricing.adjustedBasePrice * walkInDurationValue * (planPricing.discountPercent / 100)).toLocaleString("en-IN")}\n` : "") +
-                              `----------------------------------------\n` +
-                              `*Total Care Investment: ₹${planPricing.finalPrice.toLocaleString("en-IN")}*\n` +
-                              `_Medicines Included: Yes (Constitutional remedies & diet sheet included). Courier / specialized items confirmed prior to dispatch._\n\n` +
-                              `View details in portal: https://portal.homeo.healthcare`;
-                            navigator.clipboard.writeText(quote);
-                            alert("Quotation copied to clipboard! Ready to send via WhatsApp or paste in clinical notes.");
-                          }}
-                          className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
-                        >
-                          <Copy className="w-3.5 h-3.5" />
-                          <span>Copy WhatsApp Quotation</span>
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="pt-6 border-t border-slate-100">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setWalkInSuccess(false);
-                          setWalkInError(null);
-                          setWalkInName("");
-                          setWalkInAge("");
-                          setWalkInGender("Male");
-                          setWalkInPhone("");
-                          setWalkInEmail("");
-                          setWalkInComplaint("");
-                          setWalkInType("Walk-In Appointment");
-                          setWalkInTier("moderate");
-                          setWalkInBillingCycle("monthly");
-                          setWalkInConditionsCount(1);
-                          setWalkInDurationValue(1);
-                          setWalkInApplyConcession(false);
-                          setWalkInConcessionType("senior");
-                          setWalkInOverridePrice("");
-                          setWalkInAddress("");
-                        }}
-                        className="text-xs font-bold text-mint-dark hover:text-mint transition-colors uppercase tracking-wider cursor-pointer"
-                      >
-                        ← Register Another Patient
-                      </button>
-                    </div>
+              {/* Top Doctor Presentation Header & Actions */}
+              <div className="glass-panel border-white/80 bg-white/40 backdrop-blur-md rounded-2xl p-4 md:p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm">
+                <div className="space-y-1 text-left">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 text-[9px] font-black uppercase px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-800 border border-emerald-500/20">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      Physician Presentation Mode
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-400 hidden sm:inline">
+                      Laptop Screen Friendly · Interactive Explainer
+                    </span>
                   </div>
-                ) : (
-                  <form onSubmit={handleWalkInSubmit} className="space-y-6">
-                    {/* Portal redirection card for Doctor / Admin */}
-                    <div className="p-5 bg-gradient-to-r from-teal-500/[0.04] to-emerald-500/[0.04] border border-mint/20 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm mb-6">
-                      <div className="space-y-1 max-w-xl text-left">
-                        <span className="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded bg-mint/10 border border-mint/20 text-mint-dark inline-block mb-1">
-                          Doctor / Staff Portal
-                        </span>
-                        <h4 className="text-sm font-black text-slate-900">Physician Case Planning Portal</h4>
-                        <p className="text-xs text-slate-500 font-semibold leading-relaxed">
-                          Consulting physicians should log in to the secure Admin Portal to record detailed patient symptoms, specify billing parameters, and automatically generate Google Sheet clinical workspaces.
+                  <h3 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
+                    Doctor Treatment Plan & Care Scope
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Selection-friendly clinical planning tool for consulting physicians to explain treatment pathways, multi-system coordination, and continuity benefits directly to patients.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 self-stretch md:self-auto justify-end flex-wrap">
+                  <button
+                    type="button"
+                    onClick={handleResetDoctorPlan}
+                    className="px-3 py-2 rounded-xl border border-slate-200/80 hover:border-slate-400 bg-white/70 hover:bg-white text-slate-600 text-[11px] font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                    title="Reset to default selections"
+                  >
+                    <span>↺ Reset</span>
+                  </button>
+                  <a
+                    href="/admin/login"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 bg-[#1A2421] hover:bg-slate-800 text-white rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm"
+                  >
+                    <UserCheck className="w-3.5 h-3.5 text-mint" />
+                    <span>Admin EMR Login</span>
+                    <ExternalLink className="w-3 h-3 text-slate-400" />
+                  </a>
+                </div>
+              </div>
+
+              {/* 2-Column Responsive Layout for Laptop Screens */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                {/* Left Column (7 cols lg, 8 cols xl): Selection-Friendly Doctor Controls */}
+                <div className="lg:col-span-7 xl:col-span-8 space-y-4 text-left">
+                  
+                  {/* 1. Care Complexity Level */}
+                  <div className="glass-panel border-white/70 bg-white/40 backdrop-blur-md p-4 md:p-5 rounded-2xl space-y-3 shadow-xs">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                          <span>1. Clinical Care Complexity Level</span>
+                        </h4>
+                        <p className="text-[10px] text-slate-500 font-medium">
+                          Select the clinical depth and medical supervision tier matching the patient&apos;s pathology:
                         </p>
                       </div>
-                      <a
-                        href="/admin/login"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-5 py-2.5 bg-[#1A2421] hover:bg-[#2b3a36] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 cursor-pointer shadow-sm self-stretch md:self-auto justify-center"
-                      >
-                        <UserCheck className="w-4 h-4" />
-                        Admin Login
-                      </a>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                        7 Tiers Available
+                      </span>
                     </div>
 
-                    <div>
-                      <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Let Doctor Plan</span>
-                      <h3 className="text-2xl font-black text-slate-900">Custom & Walk-in Case Setup</h3>
-                      <p className="text-xs text-slate-500 font-semibold mt-1">
-                        Register a walk-in patient or initiate custom treatment. This will save coordinates to the database for doctor planning.
-                      </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2">
+                      {Object.entries(careLevelsDetails).map(([key, details]) => {
+                        const isSelected = walkInTier === key;
+                        const weeklyRate = details.weeklyPrice;
+                        const monthlyRate = details.monthlyPrice;
+                        const displayedRate = walkInBillingCycle === "weekly" ? `₹${weeklyRate.toLocaleString("en-IN")}/wk` : `₹${monthlyRate.toLocaleString("en-IN")}/mo`;
+                        const secondaryRate = walkInBillingCycle === "weekly" ? `₹${monthlyRate.toLocaleString("en-IN")}/mo (4 wks)` : `₹${weeklyRate.toLocaleString("en-IN")}/wk`;
+
+                        return (
+                          <button
+                            key={key}
+                            type="button"
+                            onClick={() => setWalkInTier(key)}
+                            className={`p-3 text-left border rounded-xl transition-all duration-200 cursor-pointer flex flex-col justify-between gap-2 relative overflow-hidden group ${
+                              isSelected
+                                ? "border-emerald-600 bg-emerald-50/70 text-emerald-950 font-bold ring-2 ring-emerald-500/30 shadow-xs"
+                                : "border-slate-200/80 hover:border-slate-400 bg-white/60 hover:bg-white text-slate-700"
+                            }`}
+                          >
+                            <div className="flex items-start justify-between gap-1.5">
+                              <div className="flex items-center gap-2">
+                                <span className="text-lg">{details.icon}</span>
+                                <div>
+                                  <span className="text-[11px] font-black leading-tight block text-slate-900">
+                                    {details.title}
+                                  </span>
+                                  <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">
+                                    {details.complexityLabel || "Standard"} Care
+                                  </span>
+                                </div>
+                              </div>
+                              {isSelected && (
+                                <span className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] shrink-0 font-bold">
+                                  ✓
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="flex items-baseline justify-between border-t border-slate-900/5 pt-1.5">
+                              <span className="text-xs font-black text-emerald-800 font-sans">
+                                {displayedRate}
+                              </span>
+                              <span className="text-[9px] text-slate-400 font-semibold font-sans">
+                                {secondaryRate}
+                              </span>
+                            </div>
+                          </button>
+                        );
+                      })}
                     </div>
 
-                    {/* 2-Column Grid Layout */}
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    {/* Active Tier Clinical Summary */}
+                    {careLevelsDetails[walkInTier as keyof typeof careLevelsDetails] && (
+                      <div className="p-3 bg-emerald-50/60 border border-emerald-200/70 rounded-xl text-left flex items-start gap-2.5">
+                        <span className="text-emerald-700 text-sm leading-none mt-0.5">ℹ</span>
+                        <div className="text-[10px] text-emerald-950 space-y-0.5 leading-relaxed">
+                          <p>
+                            <strong>Included Protocol:</strong> {careLevelsDetails[walkInTier as keyof typeof careLevelsDetails].description}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 2. Health Concerns to Address & Multi-System Scope */}
+                  <div className="glass-panel border-white/70 bg-white/40 backdrop-blur-md p-4 md:p-5 rounded-2xl space-y-3.5 shadow-xs">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <div>
+                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                          <span>2. Health Concerns & Multi-System Scope</span>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+                            {walkInConditionsCount === 1 ? "1 Primary Concern" : `${walkInConditionsCount} Concerns (Multi-System)`}
+                          </span>
+                        </h4>
+                        <p className="text-[10px] text-slate-500 font-medium">
+                          Select the active health complaints to cover simultaneously under this care program:
+                        </p>
+                      </div>
+                      {walkInSelectedConcerns.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={clearWalkInConcerns}
+                          className="text-[10px] font-bold text-slate-400 hover:text-rose-600 transition-colors uppercase tracking-wider cursor-pointer"
+                        >
+                          Clear Selection
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Selected Concerns Active Strip */}
+                    {walkInSelectedConcerns.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 p-2 bg-emerald-50/60 rounded-xl border border-emerald-200/70">
+                        {walkInSelectedConcerns.map((concern) => (
+                          <span
+                            key={concern}
+                            className="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-lg bg-white border border-emerald-300 text-emerald-900 shadow-2xs"
+                          >
+                            <span>{concern}</span>
+                            <button
+                              type="button"
+                              onClick={() => toggleWalkInConcern(concern)}
+                              className="hover:text-rose-600 transition-colors cursor-pointer text-slate-400 font-black text-xs leading-none"
+                              title="Remove concern"
+                            >
+                              &times;
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Category Filter Pills */}
+                    <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none">
+                      {DOCTOR_PLAN_CATEGORIES.map((cat) => (
+                        <button
+                          key={cat.id}
+                          type="button"
+                          onClick={() => setWalkInConcernCategory(cat.id)}
+                          className={`px-2.5 py-1 rounded-full text-[10px] font-bold whitespace-nowrap transition-all duration-200 cursor-pointer ${
+                            walkInConcernCategory === cat.id
+                              ? "bg-[#1A2421] text-white shadow-xs"
+                              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                          }`}
+                        >
+                          {cat.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Popular Condition Chips (Selection-Friendly Grid) */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5 max-h-44 overflow-y-auto p-1 border border-slate-100 rounded-xl bg-white/40">
+                      {POPULAR_DOCTOR_PLAN_CONCERNS.filter(
+                        (item) => walkInConcernCategory === "all" || item.category === walkInConcernCategory
+                      ).map((item) => {
+                        const isSelected = walkInSelectedConcerns.includes(item.label);
+                        return (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => toggleWalkInConcern(item.label)}
+                            className={`p-2 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between ${
+                              isSelected
+                                ? "border-emerald-600 bg-emerald-50/70 text-emerald-950 font-bold ring-1 ring-emerald-500/30"
+                                : "border-slate-200/80 hover:border-slate-400 bg-white/70 text-slate-700 hover:bg-white"
+                            }`}
+                          >
+                            <div className="flex items-start justify-between gap-1">
+                              <span className="text-[11px] leading-tight font-bold">{item.label}</span>
+                              {isSelected && (
+                                <span className="w-3.5 h-3.5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[9px] shrink-0 font-bold">
+                                  ✓
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-[8px] text-slate-400 uppercase tracking-wider font-semibold mt-1">
+                              {item.system}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Manual Condition Count Pill Bar */}
+                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-3 flex-wrap">
+                      <div>
+                        <span className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider block">
+                          Total Concerns to Coordinate
+                        </span>
+                        <span className="text-[9px] text-slate-400 font-medium">
+                          Auto-calculated from selection or click count:
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-5 gap-1.5 w-full sm:w-auto">
+                        {[1, 2, 3, 4, 5].map((val) => {
+                          const isCurrent = walkInConditionsCount === val;
+                          const tierSurchargeUnit = surchargesLookup[walkInTier]?.unitWeekly || 500;
+                          const surchargeText = val > 1 ? `+₹${((val - 1) * tierSurchargeUnit).toLocaleString("en-IN")}` : "Base";
+                          return (
+                            <button
+                              key={val}
+                              type="button"
+                              onClick={() => setWalkInConditionsCount(val)}
+                              className={`px-3 py-1.5 rounded-xl text-center transition-all duration-200 cursor-pointer border flex flex-col items-center ${
+                                isCurrent
+                                  ? "bg-[#1A2421] text-white border-transparent shadow-xs"
+                                  : "bg-white border-slate-200 text-slate-700 hover:border-slate-800"
+                              }`}
+                            >
+                              <span className="text-xs font-black">{val === 5 ? "5+" : val}</span>
+                              <span className={`text-[8px] font-semibold leading-none mt-0.5 ${isCurrent ? "text-emerald-300" : "text-slate-400"}`}>
+                                {surchargeText}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Multi-System Coordination Notice */}
+                    {walkInConditionsCount > 1 && (
+                      <div className="p-3 bg-emerald-50/60 border border-emerald-200/70 rounded-xl text-left flex items-start gap-2.5">
+                        <span className="text-emerald-700 text-sm leading-none mt-0.5">ℹ</span>
+                        <p className="text-[10px] text-emerald-950 font-medium leading-relaxed">
+                          <strong>Dual/Multi-System Care Active ({walkInConditionsCount} Concerns):</strong>{" "}
+                          Treating multiple co-existing complaints across organ systems requires cross-repertorization, synergistic remedy balancing, and closer clinical supervision by the consulting doctor.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 3. Billing Frequency & Care Continuity Duration */}
+                  <div className="glass-panel border-white/70 bg-white/40 backdrop-blur-md p-4 md:p-5 rounded-2xl space-y-3.5 shadow-xs">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                       
-                      {/* Left Column (8 cols): Inputs */}
-                      <div className="lg:col-span-8 space-y-6 text-left">
-                        
-                        {/* Section A: Patient Personal Info */}
-                        <div className="glass-panel border-slate-200/50 bg-white/20 p-5 rounded-2xl space-y-4">
-                          <h4 className="text-xs font-black text-[#1A2421] uppercase tracking-wider border-b border-slate-900/5 pb-2">
-                            1. Patient Demographics & Intake
+                      {/* Frequency Toggle */}
+                      <div className="space-y-1.5">
+                        <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-wider">
+                          Billing Frequency
+                        </h4>
+                        <div className="flex items-center gap-1 bg-white/70 p-1 rounded-full border border-slate-200/60 w-fit">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setWalkInBillingCycle("weekly");
+                              setWalkInDurationValue(4);
+                            }}
+                            className={`px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                              walkInBillingCycle === "weekly"
+                                ? "bg-[#1A2421] text-white shadow-xs"
+                                : "text-slate-500 hover:text-slate-900"
+                            }`}
+                          >
+                            Weekly
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setWalkInBillingCycle("monthly");
+                              setWalkInDurationValue(1);
+                            }}
+                            className={`px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                              walkInBillingCycle === "monthly"
+                                ? "bg-[#1A2421] text-white shadow-xs"
+                                : "text-slate-500 hover:text-slate-900"
+                            }`}
+                          >
+                            Monthly — Save 10–30%
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Care Duration Recommendation */}
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-wider">
+                            Commitment Duration
                           </h4>
-                          
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {/* Name */}
-                            <div className="space-y-1">
-                              <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Patient Name *</label>
-                              <input
-                                type="text"
-                                required
-                                value={walkInName}
-                                onChange={(e) => setWalkInName(e.target.value)}
-                                placeholder="Full Name"
-                                className="w-full p-3 rounded-xl border border-slate-250 bg-white/35 backdrop-blur-md text-sm focus:outline-none focus:border-mint focus:bg-white/80 focus:ring-2 focus:ring-mint/20 hover:border-slate-350 hover:bg-white/50 transition-all duration-300 shadow-inner"
-                              />
-                            </div>
+                          <span className="text-[9px] text-emerald-800 font-bold">
+                            Save up to 30% with continuity
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-5 gap-1.5">
+                          {(walkInBillingCycle === "weekly"
+                            ? [
+                                { value: 1, label: "1 Wk", desc: "0%" },
+                                { value: 2, label: "2 Wks", desc: "0%" },
+                                { value: 4, label: "4 Wks", desc: "10%" },
+                                { value: 8, label: "8 Wks", desc: "15%" },
+                                { value: 12, label: "12 Wks", desc: "20%" }
+                              ]
+                            : [
+                                { value: 1, label: "1 Mo", desc: "10%" },
+                                { value: 2, label: "2 Mos", desc: "15%" },
+                                { value: 3, label: "3 Mos", desc: "20%" },
+                                { value: 6, label: "6 Mos", desc: "25%" },
+                                { value: 12, label: "12 Mos", desc: "30%" }
+                              ]
+                          ).map((opt) => (
+                            <button
+                              type="button"
+                              key={opt.value}
+                              onClick={() => setWalkInDurationValue(opt.value)}
+                              className={`py-2 px-1 rounded-xl border text-center transition-all duration-200 cursor-pointer ${
+                                walkInDurationValue === opt.value
+                                  ? "border-emerald-600 bg-emerald-50 text-emerald-950 font-black ring-1 ring-emerald-500/30"
+                                  : "border-slate-200/80 hover:border-slate-800 text-slate-700 bg-white/60 hover:bg-white"
+                              }`}
+                            >
+                              <span className="text-xs block font-bold leading-none">{opt.label}</span>
+                              <span className="text-[8px] text-slate-400 block mt-1 leading-none font-semibold font-sans">{opt.desc}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
 
-                            {/* Phone */}
-                            <div className="space-y-1">
-                              <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">WhatsApp Number *</label>
-                              <input
-                                type="tel"
-                                required
-                                value={walkInPhone}
-                                onChange={(e) => setWalkInPhone(e.target.value)}
-                                placeholder="Phone / Mobile"
-                                className="w-full p-3 rounded-xl border border-slate-250 bg-white/35 backdrop-blur-md text-sm focus:outline-none focus:border-mint focus:bg-white/80 focus:ring-2 focus:ring-mint/20 hover:border-slate-350 hover:bg-white/50 transition-all duration-300 shadow-inner"
-                              />
-                            </div>
+                    </div>
+                  </div>
 
-                            {/* Email */}
-                            <div className="space-y-1">
-                              <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Email Address</label>
-                              <input
-                                type="email"
-                                value={walkInEmail}
-                                onChange={(e) => setWalkInEmail(e.target.value)}
-                                placeholder="Email address optional"
-                                className="w-full p-3 rounded-xl border border-slate-250 bg-white/35 backdrop-blur-md text-sm focus:outline-none focus:border-mint focus:bg-white/80 focus:ring-2 focus:ring-mint/20 hover:border-slate-350 hover:bg-white/50 transition-all duration-300 shadow-inner"
-                              />
-                            </div>
+                  {/* 4. Clinical Concessions & Specialty Remedies (Selection-Friendly) */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                    
+                    {/* Concessions / Discounts */}
+                    <div className="p-3.5 bg-white/40 border border-slate-200/60 rounded-2xl space-y-3">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1">
+                            <Percent className="w-3.5 h-3.5 text-mint" />
+                            Clinical Concession
+                          </h4>
+                          <p className="text-[9px] text-slate-500 font-medium">Senior, socio-economic, or doctor override</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={walkInApplyConcession}
+                            onChange={(e) => setWalkInApplyConcession(e.target.checked)}
+                            className="sr-only peer"
+                          />
+                          <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-emerald-600"></div>
+                        </label>
+                      </div>
+
+                      {walkInApplyConcession && (
+                        <div className="space-y-2 pt-2 border-t border-slate-200/60">
+                          <div className="grid grid-cols-3 gap-1.5">
+                            {[
+                              { type: "senior", label: "Senior (15%)" },
+                              { type: "compassionate", label: "Socio (30%)" },
+                              { type: "override", label: "Override (₹)" }
+                            ].map((opt) => (
+                              <button
+                                key={opt.type}
+                                type="button"
+                                onClick={() => setWalkInConcessionType(opt.type as any)}
+                                className={`py-1.5 px-2 text-center rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all border cursor-pointer ${
+                                  walkInConcessionType === opt.type
+                                    ? "bg-[#1A2421] text-white border-transparent shadow-xs"
+                                    : "bg-white/80 text-slate-600 border-slate-200 hover:border-slate-400"
+                                }`}
+                              >
+                                {opt.label}
+                              </button>
+                            ))}
                           </div>
 
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {/* Age */}
-                            <div className="space-y-1">
-                              <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Age *</label>
+                          {walkInConcessionType === "override" && (
+                            <div className="pt-1">
                               <input
                                 type="number"
-                                required
-                                value={walkInAge}
-                                onChange={(e) => setWalkInAge(e.target.value)}
-                                placeholder="Age"
                                 min="0"
-                                max="120"
-                                className="w-full p-3 rounded-xl border border-slate-250 bg-white/35 backdrop-blur-md text-sm focus:outline-none focus:border-mint focus:bg-white/80 focus:ring-2 focus:ring-mint/20 hover:border-slate-350 hover:bg-white/50 transition-all duration-300 shadow-inner"
-                              />
-                            </div>
-
-                            {/* Gender */}
-                            <div className="space-y-1">
-                              <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Gender *</label>
-                              <select
-                                value={walkInGender}
-                                onChange={(e) => setWalkInGender(e.target.value)}
-                                className="w-full p-3 rounded-xl border border-slate-250 bg-white/35 backdrop-blur-md text-sm focus:outline-none focus:border-mint focus:bg-white/80 focus:ring-2 focus:ring-mint/20 hover:border-slate-350 hover:bg-white/50 transition-all duration-300 shadow-inner cursor-pointer"
-                              >
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
-                              </select>
-                            </div>
-
-                            {/* Appointment Type */}
-                            <div className="space-y-1">
-                              <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Appointment Type *</label>
-                              <select
-                                value={walkInType}
-                                onChange={(e) => setWalkInType(e.target.value)}
-                                className="w-full p-3 rounded-xl border border-slate-250 bg-white/35 backdrop-blur-md text-sm focus:outline-none focus:border-mint focus:bg-white/80 focus:ring-2 focus:ring-mint/20 hover:border-slate-350 hover:bg-white/50 transition-all duration-300 shadow-inner cursor-pointer"
-                              >
-                                <option value="Walk-In Appointment">Walk-In Appointment</option>
-                                <option value="Let Doctor Design Plan">Let Doctor Design Plan</option>
-                                <option value="Tele-Health Consultation">Tele-Health Consultation</option>
-                                <option value="Shipping / Courier Delivery">Shipping / Courier Delivery</option>
-                              </select>
-                            </div>
-                          </div>
-
-                          {/* Shipping Address */}
-                          {walkInType === "Shipping / Courier Delivery" && (
-                            <div className="space-y-1 animate-fadeIn text-left pt-2">
-                              <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">Courier Shipping Address *</label>
-                              <textarea
-                                required
-                                rows={3}
-                                value={walkInAddress}
-                                onChange={(e) => setWalkInAddress(e.target.value)}
-                                placeholder="Enter complete shipping address including City, State, ZIP/Pin Code and Country..."
-                                className="w-full p-3 rounded-xl border border-slate-250 bg-white/35 backdrop-blur-md text-sm focus:outline-none focus:border-mint focus:bg-white/80 focus:ring-2 focus:ring-mint/20 hover:border-slate-350 hover:bg-white/50 transition-all duration-300 shadow-inner resize-none"
+                                value={walkInOverridePrice}
+                                onChange={(e) => setWalkInOverridePrice(e.target.value)}
+                                placeholder="Enter custom price in ₹"
+                                className="w-full p-2 rounded-xl border border-slate-250 bg-white text-xs font-semibold focus:outline-none focus:border-emerald-600"
                               />
                             </div>
                           )}
                         </div>
+                      )}
+                    </div>
 
-                        {/* Section B: Complexity & Pricing Parameters */}
-                        <div className="glass-panel border-slate-200/50 bg-white/20 p-5 rounded-2xl space-y-4">
-                          <h4 className="text-xs font-black text-[#1A2421] uppercase tracking-wider border-b border-slate-900/5 pb-2">
-                            2. Clinical Complexity & Rates
+                    {/* Specialized Medicine Add-ons */}
+                    <div className="p-3.5 bg-white/40 border border-slate-200/60 rounded-2xl space-y-3">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1">
+                            <PlusCircle className="w-3.5 h-3.5 text-mint" />
+                            Specialty Remedies
                           </h4>
+                          <p className="text-[9px] text-slate-500 font-medium">Mother tinctures, biochemic salts, or high dilutions</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={walkInApplyMedicineAddon}
+                            onChange={(e) => setWalkInApplyMedicineAddon(e.target.checked)}
+                            className="sr-only peer"
+                          />
+                          <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-emerald-600"></div>
+                        </label>
+                      </div>
 
-                          {/* Complexity level grid */}
-                          <div className="space-y-2 text-left">
-                            <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">Estimated Care Complexity Level *</label>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                              {Object.entries(careLevelsDetails).map(([key, details]) => {
-                                const activeClass = {
-                                  mild: "border-teal-400 bg-teal-500/[0.04] ring-1 ring-teal-300/30 text-teal-800 shadow-md",
-                                  moderate: "border-purple-400 bg-purple-500/[0.04] ring-1 ring-purple-300/30 text-purple-800 shadow-md",
-                                  focused: "border-sky-400 bg-sky-500/[0.04] ring-1 ring-sky-300/30 text-sky-800 shadow-md",
-                                  organ: "border-emerald-400 bg-emerald-500/[0.04] ring-1 ring-emerald-300/30 text-emerald-800 shadow-md",
-                                  comprehensive: "border-rose-400 bg-rose-500/[0.04] ring-1 ring-rose-300/30 text-rose-800 shadow-md",
-                                  acute_critical: "border-red-400 bg-red-500/[0.04] ring-1 ring-red-300/30 text-red-800 shadow-md"
-                                }[key] || "border-mint bg-mint/[0.04] text-slate-900 shadow-md";
-
-                                const isSelected = walkInTier === key;
-                                const dotColor = {
-                                  mild: "bg-teal-500",
-                                  moderate: "bg-purple-500",
-                                  focused: "bg-sky-500",
-                                  organ: "bg-emerald-500",
-                                  comprehensive: "bg-rose-500",
-                                  acute_critical: "bg-red-500"
-                                }[key] || "bg-mint";
-
-                                return (
-                                  <button
-                                    key={key}
-                                    type="button"
-                                    onClick={() => setWalkInTier(key)}
-                                    className={`p-2.5 text-left border rounded-xl transition-all duration-305 flex items-center gap-2.5 cursor-pointer hover:-translate-y-1 hover:shadow-sm active:scale-[0.98] relative overflow-hidden ${
-                                      isSelected
-                                        ? activeClass
-                                        : "border-slate-200/80 hover:border-slate-400 bg-white/40 hover:bg-white/60"
-                                    }`}
-                                  >
-                                    <span className="text-xl">{details.icon}</span>
-                                    <div className="min-w-0">
-                                      <span className="text-[10px] font-black text-slate-900 leading-tight truncate block">{details.title}</span>
-                                      <span className="text-[9px] font-bold text-slate-500">
-                                        ₹{(walkInBillingCycle === "weekly" ? details.weeklyPrice : details.monthlyPrice).toLocaleString("en-IN")}/{walkInBillingCycle === "weekly" ? "wk" : "mo"}
-                                      </span>
-                                    </div>
-                                    {isSelected && <div className={`absolute top-2 right-2 w-1.5 h-1.5 rounded-full breathe ${dotColor}`} />}
-                                  </button>
-                                );
-                              })}
-                            </div>
+                      {walkInApplyMedicineAddon && (
+                        <div className="space-y-2 pt-2 border-t border-slate-200/60">
+                          <div className="flex flex-wrap gap-1">
+                            {[
+                              { type: "Mother Tincture", details: "Mother Tincture (Q)", amount: "350" },
+                              { type: "Biochemic", details: "Biochemic Tissue Salts", amount: "250" },
+                              { type: "High Potency", details: "1M/10M Dilution", amount: "400" },
+                              { type: "External", details: "External Oil/Application", amount: "300" }
+                            ].map((preset) => (
+                              <button
+                                key={preset.details}
+                                type="button"
+                                onClick={() => {
+                                  setWalkInMedicineAddons((prev) => [
+                                    ...prev.filter(p => p.details !== preset.details),
+                                    { id: Math.random().toString(), type: preset.type, details: preset.details, amount: preset.amount }
+                                  ]);
+                                }}
+                                className="px-2 py-1 bg-white border border-slate-200 hover:border-emerald-600 rounded-lg text-[9px] font-bold text-slate-700 cursor-pointer transition-colors"
+                              >
+                                + {preset.details} (₹{preset.amount})
+                              </button>
+                            ))}
                           </div>
 
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                            {/* Billing Frequency */}
-                            <div className="p-3 bg-white/40 rounded-xl border border-slate-200/60 space-y-2">
-                              <div>
-                                <h4 className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider">Billing Frequency</h4>
-                                <p className="text-[8px] text-slate-400 font-bold uppercase">Weekly vs Monthly</p>
-                              </div>
-                              <div className="flex items-center gap-1 bg-white/60 p-0.5 rounded-full border border-slate-200/50 w-fit relative z-0">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setWalkInBillingCycle("weekly");
-                                    setWalkInDurationValue(1);
-                                  }}
-                                  className={`relative px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 cursor-pointer z-10 ${
-                                    walkInBillingCycle === "weekly"
-                                      ? "text-white"
-                                      : "text-slate-500 hover:text-[#1A2421]"
-                                  }`}
-                                >
-                                  {walkInBillingCycle === "weekly" && (
-                                    <motion.div
-                                      layoutId="walkInBillingCycleTab"
-                                      className="absolute inset-0 bg-[#1A2421] rounded-full -z-10 shadow-sm"
-                                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                                    />
-                                  )}
-                                  Weekly
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setWalkInBillingCycle("monthly");
-                                    setWalkInDurationValue(1);
-                                  }}
-                                  className={`relative px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 cursor-pointer z-10 ${
-                                    walkInBillingCycle === "monthly"
-                                      ? "text-white"
-                                      : "text-slate-500 hover:text-[#1A2421]"
-                                  }`}
-                                >
-                                  {walkInBillingCycle === "monthly" && (
-                                    <motion.div
-                                      layoutId="walkInBillingCycleTab"
-                                      className="absolute inset-0 bg-[#1A2421] rounded-full -z-10 shadow-sm"
-                                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                                    />
-                                  )}
-                                  Monthly — Save 10–30%
-                                </button>
-                              </div>
-                            </div>
-
-                            {/* Health Concerns to Address */}
-                            <div className="p-4 bg-white/60 rounded-2xl border border-slate-200/70 space-y-3.5 shadow-sm text-left">
-                              <div className="flex items-center justify-between flex-wrap gap-2">
-                                <div>
-                                  <h4 className="text-xs font-black text-[#1A2421] uppercase tracking-wider flex items-center gap-1.5">
-                                    <span>Health Concerns to Address</span>
-                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
-                                      {walkInConditionsCount === 1 ? "1 Primary Concern" : `${walkInConditionsCount} Concerns (Multi-System Care)`}
-                                    </span>
-                                  </h4>
-                                  <p className="text-[10px] text-slate-500 font-semibold mt-0.5">
-                                    Select active conditions across organ systems for doctor evaluation and coordinated care planning.
-                                  </p>
-                                </div>
-                                {walkInSelectedConcerns.length > 0 && (
-                                  <button
-                                    type="button"
-                                    onClick={clearWalkInConcerns}
-                                    className="text-[10px] font-bold text-slate-400 hover:text-rose-600 transition-colors uppercase tracking-wider"
-                                  >
-                                    Clear Selection
-                                  </button>
-                                )}
-                              </div>
-
-                              {/* Selected Concerns Active Pills */}
-                              {walkInSelectedConcerns.length > 0 && (
-                                <div className="flex flex-wrap gap-1.5 p-2.5 bg-emerald-50/50 rounded-xl border border-emerald-100">
-                                  {walkInSelectedConcerns.map((concern) => (
-                                    <span
-                                      key={concern}
-                                      className="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-lg bg-white border border-emerald-300 text-emerald-900 shadow-2xs"
-                                    >
-                                      <span>{concern}</span>
-                                      <button
-                                        type="button"
-                                        onClick={() => toggleWalkInConcern(concern)}
-                                        className="hover:text-rose-600 transition-colors cursor-pointer text-slate-400 font-black text-xs leading-none"
-                                        title="Remove concern"
-                                      >
-                                        &times;
-                                      </button>
-                                    </span>
-                                  ))}
-                                </div>
-                              )}
-
-                              {/* Category Filter Pills */}
-                              <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none">
-                                {DOCTOR_PLAN_CATEGORIES.map((cat) => (
-                                  <button
-                                    key={cat.id}
-                                    type="button"
-                                    onClick={() => setWalkInConcernCategory(cat.id)}
-                                    className={`px-2.5 py-1 rounded-full text-[10px] font-bold whitespace-nowrap transition-all duration-200 cursor-pointer ${
-                                      walkInConcernCategory === cat.id
-                                        ? "bg-[#1A2421] text-white shadow-xs"
-                                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                                    }`}
-                                  >
-                                    {cat.label}
-                                  </button>
-                                ))}
-                              </div>
-
-                              {/* Popular Condition Chips */}
-                              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5 max-h-48 overflow-y-auto p-1 border border-slate-100 rounded-xl bg-white/40">
-                                {POPULAR_DOCTOR_PLAN_CONCERNS.filter(
-                                  (item) => walkInConcernCategory === "all" || item.category === walkInConcernCategory
-                                ).map((item) => {
-                                  const isSelected = walkInSelectedConcerns.includes(item.label);
-                                  return (
+                          {walkInMedicineAddons.filter(m => m.details).length > 0 && (
+                            <div className="space-y-1 pt-1">
+                              {walkInMedicineAddons.filter(m => m.details).map((addon, idx) => (
+                                <div key={addon.id || idx} className="flex items-center justify-between text-[10px] bg-emerald-50/70 px-2 py-1 rounded-lg border border-emerald-200 text-emerald-950 font-bold">
+                                  <span>{addon.details}</span>
+                                  <div className="flex items-center gap-1.5">
+                                    <span>+₹{addon.amount}</span>
                                     <button
-                                      key={item.id}
                                       type="button"
-                                      onClick={() => toggleWalkInConcern(item.label)}
-                                      className={`p-2 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between ${
-                                        isSelected
-                                          ? "border-emerald-600 bg-emerald-50/70 text-emerald-950 font-bold ring-1 ring-emerald-500/30"
-                                          : "border-slate-200/80 hover:border-slate-400 bg-white/70 text-slate-700 hover:bg-white"
-                                      }`}
+                                      onClick={() => setWalkInMedicineAddons(prev => prev.filter((_, i) => i !== idx))}
+                                      className="text-slate-400 hover:text-rose-600 font-black cursor-pointer"
                                     >
-                                      <div className="flex items-start justify-between gap-1">
-                                        <span className="text-[11px] leading-tight font-bold">{item.label}</span>
-                                        {isSelected && (
-                                          <span className="w-3.5 h-3.5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[9px] shrink-0">
-                                            ✓
-                                          </span>
-                                        )}
-                                      </div>
-                                      <span className="text-[8px] text-slate-400 uppercase tracking-wider font-semibold mt-1">
-                                        {item.system}
-                                      </span>
+                                      &times;
                                     </button>
-                                  );
-                                })}
-                              </div>
-
-                              {/* Manual Conditions Count Selector */}
-                              <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-3 flex-wrap">
-                                <div>
-                                  <span className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider block">
-                                    Total Conditions to Coordinate
-                                  </span>
-                                  <span className="text-[9px] text-slate-400 font-semibold">
-                                    Auto-set by selection or choose count directly:
-                                  </span>
+                                  </div>
                                 </div>
-                                <div className="grid grid-cols-5 gap-1 w-full sm:w-auto">
-                                  {[1, 2, 3, 4, 5].map((val) => (
-                                    <button
-                                      key={val}
-                                      type="button"
-                                      onClick={() => setWalkInConditionsCount(val)}
-                                      className={`px-3 py-1.5 rounded-lg text-center transition-all duration-200 cursor-pointer border text-xs font-black ${
-                                        walkInConditionsCount === val
-                                          ? "bg-[#1A2421] text-white border-transparent shadow-xs"
-                                          : "bg-white border-slate-200 text-slate-600 hover:border-slate-800"
-                                      }`}
-                                    >
-                                      {val === 5 ? "5+" : val}
-                                    </button>
-                                  ))}
-                                </div>
-                              </div>
-
-                              {/* Clinical Care Scope Note */}
-                              {walkInConditionsCount > 1 && (
-                                <div className="p-3 bg-emerald-50/60 border border-emerald-200/70 rounded-xl text-left flex items-start gap-2.5">
-                                  <span className="text-emerald-700 text-base leading-none mt-0.5">ℹ</span>
-                                  <p className="text-[10px] text-emerald-900 font-semibold leading-relaxed">
-                                    <strong>Additional Care Scope ({walkInConditionsCount} Concerns Active):</strong>{" "}
-                                    Coordinating multiple health complaints across organ systems requires detailed cross-repertorization, synergistic remedy balancing, and closer clinical supervision by the consulting doctor.
-                                  </p>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Commitment Duration */}
-                          <div className="space-y-2 pt-2">
-                            <h4 className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider">Commitment Duration</h4>
-                            <div className="grid grid-cols-5 gap-1.5">
-                              {(walkInBillingCycle === "weekly"
-                                ? [
-                                    { value: 1, label: "1 Wk", desc: "0%" },
-                                    { value: 2, label: "2 Wks", desc: "0%" },
-                                    { value: 4, label: "4 Wks", desc: "10%" },
-                                    { value: 8, label: "8 Wks", desc: "15%" },
-                                    { value: 12, label: "12 Wks", desc: "20%" }
-                                  ]
-                                : [
-                                    { value: 1, label: "1 Mo", desc: "10%" },
-                                    { value: 2, label: "2 Mos", desc: "15%" },
-                                    { value: 3, label: "3 Mos", desc: "20%" },
-                                    { value: 6, label: "6 Mos", desc: "25%" },
-                                    { value: 12, label: "12 Mos", desc: "30%" }
-                                  ]
-                              ).map((opt) => (
-                                <button
-                                  type="button"
-                                  key={opt.value}
-                                  onClick={() => setWalkInDurationValue(opt.value)}
-                                  className={`py-2 px-1 rounded-xl border text-center transition-all duration-300 cursor-pointer hover:-translate-y-0.5 hover:shadow-sm active:scale-95 ${
-                                    walkInDurationValue === opt.value
-                                      ? "border-mint bg-mint/[0.04] text-mint-dark font-black ring-1 ring-mint/20"
-                                      : "border-slate-200/60 hover:border-slate-800 text-slate-700 bg-white/40 hover:bg-white"
-                                  }`}
-                                >
-                                  <span className="text-xs block font-bold leading-none">{opt.label}</span>
-                                  <span className="text-[8px] text-slate-400 block mt-1 leading-none font-semibold font-sans">{opt.desc}</span>
-                                </button>
                               ))}
                             </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                  </div>
+
+                </div>
+
+                {/* Right Column (5 cols lg, 4 cols xl): Sticky Patient Presentation Summary Card */}
+                <div className="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-24 space-y-3.5">
+                  {(() => {
+                    const tierKey = (walkInTier in careLevelsDetails ? walkInTier : "chronic_focused") as keyof typeof careLevelsDetails;
+                    const details = careLevelsDetails[tierKey] || careLevelsDetails.chronic_focused;
+                    const pricing = calculatePricing(tierKey, walkInBillingCycle, walkInDurationValue, walkInConditionsCount);
+
+                    const baseConcessionPrice = (() => {
+                      if (!walkInApplyConcession) return pricing.finalPrice;
+                      if (walkInConcessionType === "senior") return Math.round(pricing.finalPrice * 0.85);
+                      if (walkInConcessionType === "compassionate") return Math.round(pricing.finalPrice * 0.70);
+                      if (walkInConcessionType === "override") {
+                        const overrideVal = parseInt(walkInOverridePrice);
+                        return isNaN(overrideVal) ? pricing.finalPrice : Math.max(0, overrideVal);
+                      }
+                      return pricing.finalPrice;
+                    })();
+                    const concessionDiscount = pricing.finalPrice - baseConcessionPrice;
+
+                    const addonAmount = (() => {
+                      if (!walkInApplyMedicineAddon) return 0;
+                      return walkInMedicineAddons.reduce((sum, item) => {
+                        const amt = parseInt(item.amount);
+                        return sum + (isNaN(amt) || amt < 0 ? 0 : amt);
+                      }, 0);
+                    })();
+
+                    const finalPrice = baseConcessionPrice + addonAmount;
+                    const totalDays = walkInBillingCycle === "weekly" ? walkInDurationValue * 7 : walkInDurationValue * 30;
+                    const dailyCost = Math.round(finalPrice / totalDays);
+
+                    return (
+                      <div className="p-5 md:p-6 border border-emerald-500/20 bg-gradient-to-b from-white/95 to-emerald-50/25 backdrop-blur-xl rounded-3xl space-y-4 shadow-xl text-left">
+                        
+                        {/* Quotation Header */}
+                        <div className="flex items-center justify-between border-b border-slate-900/5 pb-3">
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                              <span className="text-[9px] font-black uppercase tracking-wider text-emerald-800">
+                                Live Care Quotation
+                              </span>
+                            </div>
+                            <h4 className="text-base font-black text-slate-900 mt-0.5">
+                              {details.title}
+                            </h4>
                           </div>
+                          <span className="text-2xl">{details.icon}</span>
                         </div>
 
-                        {/* Section C: Concessions & Addons */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          
-                          {/* Concession / Discount Override Panel */}
-                          <div className="p-4 bg-white/20 border border-slate-200/50 rounded-2xl space-y-4 hover:border-slate-300 transition-all duration-300 text-left">
-                            <div className="flex justify-between items-center">
-                              <div>
-                                <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-1">
-                                  <Percent className="w-3.5 h-3.5 text-mint" />
-                                  Concession / Discount
-                                </h4>
-                                <p className="text-[10px] text-slate-500 font-semibold">Apply senior, socio-economic, or override</p>
-                              </div>
-                              <label className="relative inline-flex items-center cursor-pointer">
-                                <input
-                                  type="checkbox"
-                                  checked={walkInApplyConcession}
-                                  onChange={(e) => setWalkInApplyConcession(e.target.checked)}
-                                  className="sr-only peer"
-                                />
-                                <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-mint"></div>
-                              </label>
-                            </div>
-
-                            <AnimatePresence initial={false}>
-                              {walkInApplyConcession && (
-                                <motion.div
-                                  initial={{ opacity: 0, height: 0 }}
-                                  animate={{ opacity: 1, height: "auto" }}
-                                  exit={{ opacity: 0, height: 0 }}
-                                  transition={{ duration: 0.25, ease: "easeInOut" }}
-                                  className="space-y-3 pt-2 border-t border-slate-200 overflow-hidden"
-                                >
-                                  <div className="space-y-1">
-                                    <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Concession Type</label>
-                                    <div className="flex flex-col gap-1.5">
-                                      {[
-                                        { type: "senior", label: "Senior (15%)" },
-                                        { type: "compassionate", label: "Socio-Economic (30%)" },
-                                        { type: "override", label: "Special Clinical Concession" }
-                                      ].map((opt) => (
-                                        <button
-                                          key={opt.type}
-                                          type="button"
-                                          onClick={() => setWalkInConcessionType(opt.type as any)}
-                                          className={`py-1.5 px-3 text-left rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all duration-300 border cursor-pointer ${
-                                            walkInConcessionType === opt.type
-                                              ? "bg-[#1A2421] text-white border-transparent shadow-sm"
-                                              : "bg-white/60 text-slate-500 border-slate-200 hover:border-slate-400"
-                                          }`}
-                                        >
-                                          {opt.label}
-                                        </button>
-                                      ))}
-                                    </div>
-                                  </div>
-
-                                  <AnimatePresence initial={false}>
-                                    {walkInConcessionType === "override" && (
-                                      <motion.div
-                                        initial={{ opacity: 0, height: 0 }}
-                                        animate={{ opacity: 1, height: "auto" }}
-                                        exit={{ opacity: 0, height: 0 }}
-                                        transition={{ duration: 0.2, ease: "easeInOut" }}
-                                        className="space-y-1 overflow-hidden"
-                                      >
-                                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Custom Final Price (₹) *</label>
-                                        <input
-                                          type="number"
-                                          min="0"
-                                          value={walkInOverridePrice}
-                                          onChange={(e) => setWalkInOverridePrice(e.target.value)}
-                                          placeholder="Enter custom price"
-                                          className="w-full p-2.5 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all"
-                                        />
-                                      </motion.div>
-                                    )}
-                                  </AnimatePresence>
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
-                          </div>
-
-                          {/* Medicine Add-on Section */}
-                          <div className="p-4 bg-white/20 border border-slate-200/50 rounded-2xl space-y-4 hover:border-slate-300 transition-all duration-300 text-left">
-                            <div className="flex justify-between items-center">
-                              <div>
-                                <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-1">
-                                  <PlusCircle className="w-3.5 h-3.5 text-mint" />
-                                  Add-on for Medicines
-                                </h4>
-                                <p className="text-[10px] text-slate-500 font-semibold">Special remedies, tinctures, or oils</p>
-                              </div>
-                              <label className="relative inline-flex items-center cursor-pointer">
-                                <input
-                                  type="checkbox"
-                                  checked={walkInApplyMedicineAddon}
-                                  onChange={(e) => setWalkInApplyMedicineAddon(e.target.checked)}
-                                  className="sr-only peer"
-                                />
-                                <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-mint"></div>
-                              </label>
-                            </div>
-
-                            <AnimatePresence initial={false}>
-                              {walkInApplyMedicineAddon && (
-                                <motion.div
-                                  initial={{ opacity: 0, height: 0 }}
-                                  animate={{ opacity: 1, height: "auto" }}
-                                  exit={{ opacity: 0, height: 0 }}
-                                  transition={{ duration: 0.25, ease: "easeInOut" }}
-                                  className="space-y-3 pt-2 border-t border-slate-200 overflow-hidden"
-                                >
-                                  <div className="space-y-3">
-                                    {walkInMedicineAddons.map((item, idx) => (
-                                      <div key={item.id} className="flex gap-2.5 items-end border-b border-slate-150 pb-2.5 last:border-b-0">
-                                        <div className="flex-1 space-y-2">
-                                          <div className="space-y-1">
-                                            <label className="text-[9px] font-black text-slate-700 uppercase tracking-wider block">Medicine Type</label>
-                                            <select
-                                              value={item.type}
-                                              onChange={(e) => {
-                                                const list = [...walkInMedicineAddons];
-                                                list[idx].type = e.target.value;
-                                                setWalkInMedicineAddons(list);
-                                              }}
-                                              className="w-full p-2 py-1.5 rounded-lg border border-slate-200 bg-white/50 text-xs focus:outline-none focus:border-slate-800 transition-all font-semibold cursor-pointer"
-                                            >
-                                              <option value="Dilution">Dilution (30C / 200C / 1M)</option>
-                                              <option value="Mother Tincture">Mother Tincture (Q)</option>
-                                              <option value="Biochemic">Biochemic / Tissue Salts</option>
-                                              <option value="Trituration">Trituration / Tablets</option>
-                                              <option value="External Application">External Application (Oils/Creams)</option>
-                                              <option value="Specialty Remedy">Specialty Remedy / Nosode</option>
-                                              <option value="Custom/Other">Other Add-on / Custom</option>
-                                            </select>
-                                          </div>
-                                          <div className="grid grid-cols-2 gap-2">
-                                            <div className="space-y-1">
-                                              <label className="text-[9px] font-black text-slate-700 uppercase tracking-wider block">Remedy Name</label>
-                                              <input
-                                                type="text"
-                                                value={item.details}
-                                                onChange={(e) => {
-                                                  const list = [...walkInMedicineAddons];
-                                                  list[idx].details = e.target.value;
-                                                  setWalkInMedicineAddons(list);
-                                                }}
-                                                placeholder="Thuja 200, etc"
-                                                className="w-full p-2 py-1.5 rounded-lg border border-slate-200 bg-white/50 text-xs focus:outline-none focus:border-slate-800 transition-all font-semibold"
-                                              />
-                                            </div>
-                                            <div className="space-y-1">
-                                              <label className="text-[9px] font-black text-slate-700 uppercase tracking-wider block">Amount (₹) *</label>
-                                              <input
-                                                type="number"
-                                                min="0"
-                                                value={item.amount}
-                                                onChange={(e) => {
-                                                  const list = [...walkInMedicineAddons];
-                                                  list[idx].amount = e.target.value;
-                                                  setWalkInMedicineAddons(list);
-                                                }}
-                                                placeholder="500"
-                                                className="w-full p-2 py-1.5 rounded-lg border border-slate-200 bg-white/50 text-xs focus:outline-none focus:border-slate-800 transition-all font-semibold"
-                                              />
-                                            </div>
-                                          </div>
-                                        </div>
-                                        {walkInMedicineAddons.length > 1 && (
-                                          <button
-                                            type="button"
-                                            onClick={() => {
-                                              setWalkInMedicineAddons(walkInMedicineAddons.filter((_, i) => i !== idx));
-                                            }}
-                                            className="p-2 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 cursor-pointer transition-colors border border-red-200/25 mb-[1px]"
-                                          >
-                                            <Trash2 className="w-3.5 h-3.5" />
-                                          </button>
-                                        )}
-                                      </div>
-                                    ))}
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        setWalkInMedicineAddons([...walkInMedicineAddons, { id: Math.random().toString(), type: "Dilution", details: "", amount: "" }]);
-                                      }}
-                                      className="w-full py-1.5 text-center rounded-xl bg-slate-50 border border-slate-200 text-[10px] font-bold text-slate-700 flex items-center justify-center gap-1 cursor-pointer hover:bg-slate-100 hover:border-slate-300 transition-all"
-                                    >
-                                      <Plus className="w-3.5 h-3.5 animate-pulse" />
-                                      <span>Add Another Medicine</span>
-                                    </button>
-                                  </div>
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
-                          </div>
-                        </div>
-
-                        {/* Complaint History */}
-                        <div className="glass-panel border-slate-200/50 bg-white/20 p-5 rounded-2xl space-y-3">
-                          <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">Symptom Complaint & History *</label>
-                          <textarea
-                            required
-                            rows={4}
-                            value={walkInComplaint}
-                            onChange={(e) => setWalkInComplaint(e.target.value)}
-                            placeholder="Describe symptoms, medical history, duration, and any existing treatments..."
-                            className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all resize-none shadow-inner"
+                        {/* Optional Patient Name Input for Quotation Personalization */}
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
+                            Patient Name / Ref (Optional)
+                          </label>
+                          <input
+                            type="text"
+                            value={walkInName}
+                            onChange={(e) => setWalkInName(e.target.value)}
+                            placeholder="e.g. Patient Full Name"
+                            className="w-full px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white/70 text-xs font-semibold focus:outline-none focus:border-emerald-600 focus:bg-white transition-all shadow-2xs"
                           />
                         </div>
-                      </div>
 
-                      {/* Right Column (4 cols): Sticky Billing Calculation Card */}
-                      <div className="lg:col-span-4 lg:sticky lg:top-32 space-y-6">
-                        {walkInTier && careLevelsDetails[walkInTier as keyof typeof careLevelsDetails] && (() => {
-                          const pricing = calculatePricing(
-                            walkInTier as keyof typeof careLevelsDetails,
-                            walkInBillingCycle,
-                            walkInDurationValue,
-                            walkInConditionsCount
-                          );
-                          
-                          const baseConcessionPrice = (() => {
-                            if (!walkInApplyConcession) return pricing.finalPrice;
-                            if (walkInConcessionType === "senior") return Math.round(pricing.finalPrice * 0.85);
-                            if (walkInConcessionType === "compassionate") return Math.round(pricing.finalPrice * 0.70);
-                            if (walkInConcessionType === "override") {
-                              const overrideVal = parseInt(walkInOverridePrice);
-                              return isNaN(overrideVal) ? pricing.finalPrice : Math.max(0, overrideVal);
-                            }
-                            return pricing.finalPrice;
-                          })();
-                          const concessionDiscount = pricing.finalPrice - baseConcessionPrice;
-                          
-                          const addonAmount = (() => {
-                            if (!walkInApplyMedicineAddon) return 0;
-                            return walkInMedicineAddons.reduce((sum, item) => {
-                              const amt = parseInt(item.amount);
-                              return sum + (isNaN(amt) || amt < 0 ? 0 : amt);
-                            }, 0);
-                          })();
-                          
-                          const finalPrice = baseConcessionPrice + addonAmount;
-
-                          return (
-                            <div className="p-6 border border-white/60 bg-white/60 backdrop-blur-md rounded-3xl space-y-4 shadow-md hover:shadow-lg transition-all duration-300 text-left">
-                              <div>
-                                <span className="text-[8px] font-black text-mint uppercase tracking-wider block">Live Estimate</span>
-                                <h4 className="text-sm font-black text-slate-900 mt-0.5">Billing Calculation</h4>
-                              </div>
-
-                              <div className="space-y-2 text-xs font-semibold text-slate-700">
-                                <div className="flex justify-between">
-                                  <span>Clinical Care Fee</span>
-                                  <span>₹{pricing.basePrice.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
-                                </div>
-                                {pricing.surcharge > 0 && (
-                                  <div className="flex justify-between text-emerald-800 font-semibold">
-                                    <span>Additional Care Scope ({walkInConditionsCount} {walkInConditionsCount === 1 ? "Concern" : "Concerns"})</span>
-                                    <span>+₹{pricing.surcharge.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
-                                  </div>
-                                )}
-                                {pricing.adjustedBasePrice !== pricing.basePrice ? (
-                                  <>
-                                    <div className="flex justify-between border-t border-slate-100 pt-1.5 font-bold text-slate-900">
-                                      <span>Personalized Care Investment</span>
-                                      <span>₹{pricing.adjustedBasePrice.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
-                                    </div>
-                                    <div className="flex justify-between text-xs text-slate-500 font-bold uppercase tracking-wider">
-                                      <span>Care Period Total ({walkInDurationValue} {walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "week" : "weeks") : (walkInDurationValue === 1 ? "month" : "months")})</span>
-                                      <span>₹{pricing.rawTotal.toLocaleString("en-IN")}</span>
-                                    </div>
-                                  </>
-                                ) : (
-                                  <div className="flex justify-between border-t border-slate-100 pt-1.5 text-xs text-slate-500 font-bold uppercase tracking-wider">
-                                    <span>Care Period Total ({walkInDurationValue} {walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "week" : "weeks") : (walkInDurationValue === 1 ? "month" : "months")})</span>
-                                    <span>₹{pricing.rawTotal.toLocaleString("en-IN")}</span>
-                                  </div>
-                                )}
-                                {pricing.discountPercent > 0 && (
-                                  <div className="flex justify-between text-emerald-600">
-                                    <span>Continuity of Care Benefit ({pricing.discountPercent}%)</span>
-                                    <span>-₹{Math.round(pricing.adjustedBasePrice * walkInDurationValue * (pricing.discountPercent / 100)).toLocaleString("en-IN")}</span>
-                                  </div>
-                                )}
-                                {walkInApplyConcession && concessionDiscount > 0 && (
-                                  <div className="flex justify-between text-[#9333ea] font-bold">
-                                    <span>
-                                      {walkInConcessionType === "senior" 
-                                        ? "Senior Citizen Concession 15%" 
-                                        : walkInConcessionType === "compassionate" 
-                                          ? "Socio-Economic Concession 30%" 
-                                          : "Special Clinical Concession"}
-                                    </span>
-                                    <span>-₹{concessionDiscount.toLocaleString("en-IN")}</span>
-                                  </div>
-                                )}
-                                {walkInApplyConcession && walkInConcessionType === "override" && concessionDiscount < 0 && (
-                                  <div className="flex justify-between text-amber-600 font-bold">
-                                    <span>Override Increase</span>
-                                    <span>+₹{Math.abs(concessionDiscount).toLocaleString("en-IN")}</span>
-                                  </div>
-                                )}
-                                {walkInApplyMedicineAddon && walkInMedicineAddons.filter(item => {
-                                  const amt = parseInt(item.amount);
-                                  return !isNaN(amt) && amt > 0;
-                                }).map((item) => (
-                                  <div key={item.id} className="flex justify-between text-emerald-600 font-bold">
-                                    <span>Add-on: {item.type}{item.details ? ` (${item.details})` : ""}</span>
-                                    <span>+₹{Number(item.amount).toLocaleString("en-IN")}</span>
-                                  </div>
-                                ))}
-                                <div className="pt-2 border-t border-slate-900/5 space-y-1.5">
-                                  <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase tracking-wider">
-                                    <span>Care Period</span>
-                                    <span className="text-slate-800 font-extrabold">{walkInBillingCycle === "weekly" ? walkInDurationValue * 7 : walkInDurationValue * 30} Days</span>
-                                  </div>
-                                  <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase tracking-wider border-b border-slate-900/5 pb-2">
-                                    <span>Daily Cost Equivalent</span>
-                                    <span className="text-emerald-700 font-extrabold">₹{Math.round(finalPrice / (walkInBillingCycle === "weekly" ? walkInDurationValue * 7 : walkInDurationValue * 30))}/day</span>
-                                  </div>
-                                </div>
-                                <div className="flex justify-between border-t-2 border-slate-900/10 pt-2 text-sm font-black text-slate-900">
-                                  <span>Total Payable</span>
-                                  <motion.span
-                                    key={finalPrice}
-                                    initial={{ scale: 0.95, opacity: 0.8 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    transition={{ type: "spring", stiffness: 350, damping: 15 }}
-                                    className="text-mint-dark font-sans"
-                                  >
-                                    ₹{finalPrice.toLocaleString("en-IN")}
-                                  </motion.span>
-                                </div>
-                              </div>
-
-                              <div className="pt-2 border-t border-slate-100 text-[9px] text-slate-400 font-semibold leading-relaxed">
-                                Includes case mapping, shipping, remedies supply, and priority clinical assistance.
-                              </div>
-                            </div>
-                          );
-                        })()}
-
-                        {walkInError && (
-                          <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-800 text-xs font-bold flex items-center gap-2">
-                            <AlertTriangle className="w-4 h-4 text-rose-600 flex-shrink-0" />
-                            <span>{walkInError}</span>
+                        {/* Scope Summary Badge */}
+                        <div className="p-2.5 bg-slate-50 border border-slate-200/60 rounded-xl space-y-1 text-xs">
+                          <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                            <span>Clinical Care Scope</span>
+                            <span className="text-emerald-800 font-black">{walkInConditionsCount} {walkInConditionsCount === 1 ? "Condition" : "Conditions"}</span>
                           </div>
-                        )}
+                          <p className="text-[11px] font-bold text-slate-800 line-clamp-2">
+                            {walkInSelectedConcerns.length > 0 
+                              ? walkInSelectedConcerns.join(", ") 
+                              : `${details.title} protocol`}
+                          </p>
+                        </div>
 
-                        {/* Submit Button inside sticky card container */}
-                        <button
-                          type="submit"
-                          disabled={isWalkInSubmitting}
-                          className="w-full py-4 bg-mint hover:bg-mint-dark disabled:bg-mint/50 text-white rounded-full font-bold uppercase tracking-wider text-xs shadow-md transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer"
-                        >
-                          {isWalkInSubmitting ? (
-                            <>
-                              <span className="animate-spin inline-block w-3 h-3 border-2 border-white border-t-transparent rounded-full" />
-                              Provisioning Workspace...
-                            </>
-                          ) : (
-                            <>
-                              <UserCheck className="w-4 h-4" />
-                              Register Patient Intake
-                            </>
+                        {/* Financial Line Items */}
+                        <div className="space-y-2 text-xs font-semibold text-slate-700 pt-1">
+                          <div className="flex justify-between">
+                            <span>Base Clinical Care Fee</span>
+                            <span className="font-bold text-slate-900 font-sans">
+                              ₹{pricing.basePrice.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}
+                            </span>
+                          </div>
+
+                          {pricing.surcharge > 0 && (
+                            <div className="flex justify-between text-emerald-800">
+                              <span>Multi-Concern Coordination</span>
+                              <span className="font-bold font-sans">
+                                +₹{pricing.surcharge.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}
+                              </span>
+                            </div>
                           )}
-                        </button>
-                      </div>
 
-                    </div>
-                  </form>
-                )}
+                          <div className="flex justify-between border-t border-slate-100 pt-1.5 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                            <span>Care Period Total ({walkInDurationValue} {walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "Week" : "Weeks") : (walkInDurationValue === 1 ? "Month" : "Months")})</span>
+                            <span className="font-sans text-slate-800">₹{pricing.rawTotal.toLocaleString("en-IN")}</span>
+                          </div>
+
+                          {pricing.discountPercent > 0 && (
+                            <div className="flex justify-between text-emerald-600 font-bold">
+                              <span>Continuity Benefit ({pricing.discountPercent}%):</span>
+                              <span className="font-sans">-₹{pricing.discountAmount.toLocaleString("en-IN")}</span>
+                            </div>
+                          )}
+
+                          {walkInApplyConcession && concessionDiscount > 0 && (
+                            <div className="flex justify-between text-purple-700 font-bold">
+                              <span>
+                                {walkInConcessionType === "senior"
+                                  ? "Senior Citizen Concession (15%)"
+                                  : walkInConcessionType === "compassionate"
+                                    ? "Socio-Economic Subsidy (30%)"
+                                    : "Clinical Concession Override"}
+                              </span>
+                              <span className="font-sans">-₹{concessionDiscount.toLocaleString("en-IN")}</span>
+                            </div>
+                          )}
+
+                          {walkInApplyMedicineAddon && addonAmount > 0 && (
+                            <div className="flex justify-between text-emerald-700 font-bold">
+                              <span>Specialty Medicines Add-on</span>
+                              <span className="font-sans">+₹{addonAmount.toLocaleString("en-IN")}</span>
+                            </div>
+                          )}
+
+                          <div className="pt-2 border-t border-slate-900/5 space-y-1.5">
+                            <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                              <span>Treatment Duration</span>
+                              <span className="text-slate-800 font-extrabold">{totalDays} Days</span>
+                            </div>
+                            <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase tracking-wider border-b border-slate-900/5 pb-2 items-center">
+                              <span>Daily Equivalent</span>
+                              <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-black font-sans">
+                                ₹{dailyCost}/day
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Total Payable Prominent Display */}
+                          <div className="flex justify-between border-t-2 border-slate-900/10 pt-2 text-base font-black text-slate-900 items-baseline">
+                            <span>Total Treatment Investment</span>
+                            <motion.span
+                              key={finalPrice}
+                              initial={{ scale: 0.95, opacity: 0.8 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              className="text-emerald-800 font-sans text-xl"
+                            >
+                              ₹{finalPrice.toLocaleString("en-IN")}
+                            </motion.span>
+                          </div>
+                        </div>
+
+                        {/* Inclusions Bullet List */}
+                        <div className="p-3 bg-white/70 rounded-xl border border-slate-200/60 text-[10px] text-slate-500 space-y-1">
+                          <span className="font-black text-slate-800 uppercase tracking-wider block">
+                            All Care Programs Include:
+                          </span>
+                          <div className="grid grid-cols-2 gap-1 font-medium text-slate-600">
+                            <div>✓ Full Case Mapping</div>
+                            <div>✓ Constitutional Remedies</div>
+                            <div>✓ Custom Diet Sheet</div>
+                            <div>✓ Free India Delivery</div>
+                          </div>
+                        </div>
+
+                        {/* Doctor Action Buttons */}
+                        <div className="space-y-2 pt-2">
+                          <button
+                            type="button"
+                            onClick={handleShareDoctorPlanWhatsApp}
+                            className="w-full py-3 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-xl font-bold uppercase tracking-wider text-xs shadow-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+                          >
+                            <MessageSquare className="w-4 h-4" />
+                            <span>Share Plan on WhatsApp</span>
+                          </button>
+
+                          <div className="grid grid-cols-2 gap-2">
+                            <button
+                              type="button"
+                              onClick={handleCopyDoctorPlanQuotation}
+                              className="py-2.5 px-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl font-bold uppercase tracking-wider text-[10px] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+                            >
+                              {doctorPlanCopied ? (
+                                <>
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                                  <span className="text-emerald-700">Copied!</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Copy className="w-3.5 h-3.5 text-slate-500" />
+                                  <span>Copy Quotation</span>
+                                </>
+                              )}
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={handleSaveDoctorPlanPreset}
+                              className="py-2.5 px-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl font-bold uppercase tracking-wider text-[10px] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+                            >
+                              <Save className="w-3.5 h-3.5 text-slate-500" />
+                              <span>Save Preset</span>
+                            </button>
+                          </div>
+                        </div>
+
+                      </div>
+                    );
+                  })()}
+                </div>
+
               </div>
             </motion.div>
           )}
