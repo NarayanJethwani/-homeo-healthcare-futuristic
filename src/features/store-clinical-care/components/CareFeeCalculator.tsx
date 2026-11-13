@@ -110,7 +110,7 @@ export const CareFeeCalculator: React.FC<CareFeeCalculatorProps> = ({
     const initialComputed = computeSuggestedLevel(defaultLevel, defaultAnswers);
 
     const newConcern: ActiveConcernState = {
-      instanceId: `${system.id}-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      instanceId: `${system.id}-${name.toLowerCase().replace(/[^a-z0-9]/g, "-")}`,
       name,
       organSystemId: system.id,
       organSystemName: system.name,
