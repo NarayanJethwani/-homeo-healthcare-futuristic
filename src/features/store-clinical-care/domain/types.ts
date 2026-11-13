@@ -316,3 +316,18 @@ export function getClinicPaymentConfiguration(): { upiId: string; bankDetails: s
     bankDetails: process.env.NEXT_PUBLIC_CLINIC_BANK_DETAILS || "HDFC Bank | A/C 50200012345678 | IFSC HDFC0001234",
   };
 }
+
+export {
+  CARE_FEE_CARD_LEVELS,
+  MAINTENANCE_CARE_FEE_WEEKLY_INR,
+  STANDARD_ORGAN_SYSTEMS,
+  calculateCareEstimate,
+  computeSuggestedLevel,
+  type CareFeeLevel,
+  type CareFeeLevelDefinition,
+  type ClinicalConcernInput,
+  type OrganSystemGroupSummary,
+  type CareEstimateResult,
+  type LevelAdjusterAnswers,
+  type ClinicalOrganSystemConfig,
+} from "../../../lib/pricingConfig";

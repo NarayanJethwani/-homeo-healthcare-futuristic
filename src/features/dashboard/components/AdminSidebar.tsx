@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import {
   Gauge,
   UserCheck,
@@ -22,6 +23,7 @@ import {
   Cpu,
   Network,
   Video,
+  Share2,
 } from "lucide-react";
 import { normalizeRole } from "@/lib/security/rbac";
 import Portal from "../../../components/Portal";
@@ -54,6 +56,7 @@ const TABS_METADATA: Record<string, { label: string; icon: any; gradient: string
   "nexus-atlas": { label: "Nexus Atlas", icon: Network, gradient: "from-violet-600 to-fuchsia-600", shadow: "shadow-[0_4px_12px_rgba(139,92,246,0.3)]" },
   "medical-academy": { label: "Medical Academy", icon: Award, gradient: "from-blue-600 to-indigo-600", shadow: "shadow-[0_4px_12px_rgba(37,99,235,0.3)]" },
   "learning-hub": { label: "Learning Hub", icon: Award, gradient: "from-fuchsia-500 to-purple-600", shadow: "shadow-[0_4px_12px_rgba(217,70,239,0.3)]" },
+  social: { label: "Social Publishing", icon: Share2, gradient: "from-blue-600 to-indigo-600", shadow: "shadow-[0_4px_12px_rgba(37,99,235,0.3)]", adminOnly: true },
   communication: { label: "Communications", icon: Send, gradient: "from-cyan-500 to-teal-500", shadow: "shadow-[0_4px_12px_rgba(6,182,212,0.3)]" },
   team: { label: "Manage Doctors", icon: UserPlus, gradient: "from-violet-600 to-purple-600", shadow: "shadow-[0_4px_12px_rgba(124,58,237,0.3)]", adminOnly: true },
   users: { label: "Practitioners", icon: UserPlus, gradient: "from-blue-600 to-indigo-600", shadow: "shadow-[0_4px_12px_rgba(37,99,235,0.3)]", adminOnly: true },
@@ -76,7 +79,7 @@ const SIDEBAR_GROUPS = [
   },
   {
     name: "Administration",
-    items: ["communication", "team", "users", "account"],
+    items: ["social", "communication", "team", "users", "account"],
   },
   {
     name: "Public",
@@ -174,6 +177,13 @@ export default function AdminSidebar({
   reduceMotion = false,
   patients = [],
 }: AdminSidebarProps) {
+  let router: any = null;
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    router = useRouter();
+  } catch {
+    router = null;
+  }
   const [openSubmenuTab, setOpenSubmenuTab] = useState<string | null>(null);
   const [hoveredTabId, setHoveredTabId] = useState<string | null>(null);
   const [hoveredTabTop, setHoveredTabTop] = useState<number>(0);
@@ -261,6 +271,12 @@ export default function AdminSidebar({
             onClick={() => {
               if (tabId === "consultation") {
                 onOpenConsultation();
+              } else if (tabId === "social") {
+                if (router?.push) {
+                  router.push("/admin/social");
+                } else if (typeof window !== "undefined") {
+                  window.location.href = "/admin/social";
+                }
               } else {
                 setActiveTab(tabId);
               }

@@ -64,7 +64,7 @@ const CONSTITUTIONAL_WEEKLY_PRICE = 6_000; // Integrated Clinical Care (₹6,000
 const ADVANCED_WEEKLY_PRICE = 9_000; // Complex Clinical Care (₹9,000 / wk)
 
 export const ADDITIONAL_ACUTE_EPISODE_PRICE = 1_000;
-export const PRIORITY_ACUTE_SUPPORT_WEEKLY_PRICE = 2_000;
+export const PRIORITY_ACUTE_SUPPORT_WEEKLY_PRICE = 5_000;
 export const COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE = 12_000; // Advanced Physician Care (₹12,000 / wk)
 export const STANDARD_CARE_PERIOD_DURATIONS = [1, 2, 4, 8, 12] as const;
 export const COMPLETE_HEALTH_TRANSFORMATION_DURATIONS = STANDARD_CARE_PERIOD_DURATIONS;
@@ -221,8 +221,8 @@ export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
     icon: "🌱",
     colorClass: "text-teal-700 border-teal-200/60 bg-teal-50/70",
     glowColor: "rgba(20,184,166,0.15)",
-    surchargeWeekly: 0,
-    surchargeMonthly: 0,
+    surchargeWeekly: 500,
+    surchargeMonthly: 2000,
     complexityLabel: "Acute & wellness",
     description: "Short, physician-reviewed support for suitable non-emergency acute concerns and focused wellness follow-up.",
     scopeMessage: "Starts at ₹2,000 per week for one physician-confirmed, non-emergency acute concern or a focused wellness follow-up. Red flags require urgent assessment or referral before a plan or quotation is created.",
@@ -247,8 +247,8 @@ export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
     icon: "🌿",
     colorClass: "text-emerald-700 border-emerald-200/60 bg-emerald-50/70",
     glowColor: "rgba(16,185,129,0.15)",
-    surchargeWeekly: 0,
-    surchargeMonthly: 0,
+    surchargeWeekly: 1000,
+    surchargeMonthly: 4000,
     complexityLabel: "Focused clinical",
     description: "Focused physician-led care for one defined, non-emergency concern requiring standard weekly follow-up.",
     scopeMessage: "₹3,000 per week for a physician-confirmed focused clinical care period. Suitable cases may be subacute, transitioning from acute care, or chronic.",
@@ -268,8 +268,8 @@ export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
     icon: "⚡",
     colorClass: "text-sky-700 border-sky-200/60 bg-sky-50/70",
     glowColor: "rgba(14,165,233,0.15)",
-    surchargeWeekly: 0,
-    surchargeMonthly: 0,
+    surchargeWeekly: 1500,
+    surchargeMonthly: 6000,
     complexityLabel: "Integrated",
     description: "Comprehensive care managing multiple interrelated systems and constitutional balance.",
     scopeMessage: "Multiple related health conditions requiring constitutional synthesis are included within agreed scope.",
@@ -293,8 +293,8 @@ export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
     icon: "🎯",
     colorClass: "text-violet-700 border-violet-200/60 bg-violet-50/70",
     glowColor: "rgba(139,92,246,0.15)",
-    surchargeWeekly: 0,
-    surchargeMonthly: 0,
+    surchargeWeekly: 3000,
+    surchargeMonthly: 12000,
     complexityLabel: "Complex",
     description: "Intensive physician supervision for long-standing, multi-layered pathological conditions.",
     scopeMessage: "₹9,000/week care fee. Chronic, long-standing, or multi-systemic pathological concerns requiring enhanced supervision.",
@@ -325,8 +325,8 @@ export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
     durations: [1],
     defaultDurationWeeks: 1,
     glowColor: "rgba(16,185,129,0.15)",
-    surchargeWeekly: 0,
-    surchargeMonthly: 0,
+    surchargeWeekly: 2000,
+    surchargeMonthly: 8000,
     legacyNames: ["Advanced Pathology Support", "Advanced Pathological Care", "Advanced Records & Pathology Review"],
     clinicianConfirmationRequired: true,
   },
@@ -345,8 +345,8 @@ export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
     durations: STANDARD_CARE_PERIOD_DURATIONS,
     defaultDurationWeeks: 4,
     glowColor: "rgba(245,158,11,0.15)",
-    surchargeWeekly: 0,
-    surchargeMonthly: 0,
+    surchargeWeekly: 3000,
+    surchargeMonthly: 12000,
     legacyNames: ["Complete Health Transformation", "Multisystem Integrative Care", "Advanced Physician Care"],
     clinicianConfirmationRequired: true,
   },
@@ -358,27 +358,27 @@ export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
     icon: "🚨",
     complexityLabel: "Priority",
     description: "Faster access and closer short-term monitoring for suitable acute cases.",
-    scopeMessage: "Optional physician-assigned support alongside Acute Wellness Care for ₹2,000 per week. This is not emergency medical care and is never added automatically.",
+    scopeMessage: "Optional physician-assigned support alongside Acute Wellness Care for ₹5,000 per week. This is not emergency medical care and is never added automatically.",
     bestFor: ["Priority appointment access", "Closer short-term monitoring", "Suitable acute cases"],
     features: ["Priority access", "Defined response window", "Closer monitoring", "Physician-directed use"],
     durations: [1, 2, 4],
     defaultDurationWeeks: 1,
     glowColor: "rgba(239,68,68,0.15)",
-    surchargeWeekly: 0,
-    surchargeMonthly: 0,
+    surchargeWeekly: 1250,
+    surchargeMonthly: 5000,
     legacyNames: ["Intensive Acute Priority Care", "Acute Critical Care"],
     clinicianConfirmationRequired: true,
   },
 };
 
 export const surchargesLookup: Record<CareLevelKey, { unitWeekly: number; unitMonthly: number }> = {
-  mild: { unitWeekly: 0, unitMonthly: 0 },
-  chronic_focused: { unitWeekly: 0, unitMonthly: 0 },
-  moderate: { unitWeekly: 0, unitMonthly: 0 },
-  focused: { unitWeekly: 0, unitMonthly: 0 },
-  organ: { unitWeekly: 0, unitMonthly: 0 },
-  comprehensive: { unitWeekly: 0, unitMonthly: 0 },
-  acute_critical: { unitWeekly: 0, unitMonthly: 0 },
+  mild: { unitWeekly: 500, unitMonthly: 2000 },
+  chronic_focused: { unitWeekly: 1000, unitMonthly: 4000 },
+  moderate: { unitWeekly: 1500, unitMonthly: 6000 },
+  focused: { unitWeekly: 3000, unitMonthly: 12000 },
+  organ: { unitWeekly: 2000, unitMonthly: 8000 },
+  comprehensive: { unitWeekly: 3000, unitMonthly: 12000 },
+  acute_critical: { unitWeekly: 1250, unitMonthly: 5000 },
 };
 
 export interface CarePriceSelection {
@@ -515,4 +515,354 @@ export function buildGoogleSheetsListCareTotalFormula(
   const memberTotal = (monthly: number, twoWeeks: number) => `IF(${billingCycleCell}="Monthly", ${durationCell}*${monthly}, ${durationCell}/2*${twoWeeks})`;
   const weeks = buildGoogleSheetsCarePeriodWeeksFormula(billingCycleCell, durationCell);
   return `=IF(${has("Comprehensive Membership")}, ${memberTotal(20000, 12000)}, IF(${has("Integrated Membership")}, ${memberTotal(10000, 6000)}, IF(${has("Focused Membership")}, ${memberTotal(5000, 3000)}, ${weeklyRateCell}*${weeks})))`;
+}
+
+// ============================================================================
+// CARE FEE CARD MODEL (v4 - Physician-Led Care Fee Card Single Source of Truth)
+// ============================================================================
+/**
+ * MIGRATION NOTICE:
+ * Legacy v3 tiers (acute_mild_3d, acute_wellness_7d, chronic_focused_1w,
+ * chronic_integrated_1w, chronic_complex_1w, chronic_advanced_1w) and continuity
+ * discount scales above are retained solely for backward compatibility with
+ * existing issued quotes, admin dashboard historical records, and PDF generators.
+ *
+ * All new patient-facing care pricing and v2 quotation builders MUST use the
+ * simplified 3-level weekly fee model below matching the printed Care Fee Card.
+ */
+
+export type CareFeeLevel = "mild" | "moderate" | "complex";
+
+export interface CareFeeLevelDefinition {
+  id: CareFeeLevel;
+  name: string;
+  weeklyFeeINR: number;
+  weeklyFeePaise: number;
+  description: string;
+  examples: string[];
+  reportReviewNeeded: boolean;
+  minDurationWeeks: number;
+}
+
+export const CARE_FEE_CARD_LEVELS: Record<CareFeeLevel, CareFeeLevelDefinition> = {
+  mild: {
+    id: "mild",
+    name: "Mild Concern",
+    weeklyFeeINR: 1_000,
+    weeklyFeePaise: 100_000,
+    description: "Recent or occasional symptoms. Daily life is mostly normal. No reports needed.",
+    examples: ["Acidity", "Mild acne", "Dandruff", "Seasonal cold", "Neck ache"],
+    reportReviewNeeded: false,
+    minDurationWeeks: 1,
+  },
+  moderate: {
+    id: "moderate",
+    name: "Moderate Concern",
+    weeklyFeeINR: 2_000,
+    weeklyFeePaise: 200_000,
+    description: "Recurring or lasting 3+ months. Affects sleep, work or activity. May need report review.",
+    examples: ["Recurrent sinusitis", "IBS", "Eczema", "Knee pain", "Migraine"],
+    reportReviewNeeded: true,
+    minDurationWeeks: 2,
+  },
+  complex: {
+    id: "complex",
+    name: "Complex / Whole-System Care",
+    weeklyFeeINR: 3_000,
+    weeklyFeePaise: 300_000,
+    description: "Long-standing or multi-symptom care of a whole organ system. Detailed case analysis and report review.",
+    examples: ["Chronic asthma", "PCOS with several symptoms", "Psoriasis", "Chronic joint disease"],
+    reportReviewNeeded: true,
+    minDurationWeeks: 2,
+  },
+};
+
+/**
+ * Maintenance Care Fee Placeholder.
+ * Currently NOT decided. Set to null. Do not display anywhere.
+ */
+export const MAINTENANCE_CARE_FEE_WEEKLY_INR: number | null = null;
+
+export const LEVEL_SEVERITY_WEIGHT: Record<CareFeeLevel, number> = {
+  mild: 1,
+  moderate: 2,
+  complex: 3,
+};
+
+export interface ClinicalOrganSystemConfig {
+  id: string;
+  name: string;
+  iconName?: string;
+  commonConditions: Array<{
+    name: string;
+    defaultLevel: CareFeeLevel;
+  }>;
+}
+
+export const STANDARD_ORGAN_SYSTEMS: ClinicalOrganSystemConfig[] = [
+  {
+    id: "digestive",
+    name: "Digestive",
+    commonConditions: [
+      { name: "Acidity", defaultLevel: "mild" },
+      { name: "Bloating & Indigestion", defaultLevel: "mild" },
+      { name: "IBS (Irritable Bowel Syndrome)", defaultLevel: "moderate" },
+      { name: "Chronic Constipation", defaultLevel: "moderate" },
+      { name: "Ulcerative Colitis / Chronic Bowel", defaultLevel: "complex" },
+    ],
+  },
+  {
+    id: "respiratory_ent",
+    name: "Respiratory & ENT",
+    commonConditions: [
+      { name: "Seasonal Cold & Throat Irritation", defaultLevel: "mild" },
+      { name: "Recurrent Sinusitis", defaultLevel: "moderate" },
+      { name: "Allergic Rhinitis", defaultLevel: "moderate" },
+      { name: "Chronic Tonsillitis", defaultLevel: "moderate" },
+      { name: "Chronic Asthma", defaultLevel: "complex" },
+    ],
+  },
+  {
+    id: "skin_hair",
+    name: "Skin & Hair",
+    commonConditions: [
+      { name: "Mild Acne", defaultLevel: "mild" },
+      { name: "Dandruff", defaultLevel: "mild" },
+      { name: "Eczema", defaultLevel: "moderate" },
+      { name: "Hair Fall / Alopecia", defaultLevel: "moderate" },
+      { name: "Psoriasis", defaultLevel: "complex" },
+      { name: "Chronic Urticaria / Hives", defaultLevel: "complex" },
+    ],
+  },
+  {
+    id: "bones_joints",
+    name: "Bones & Joints",
+    commonConditions: [
+      { name: "Neck Ache / Muscle Spasm", defaultLevel: "mild" },
+      { name: "Knee Pain (Mechanical/Recent)", defaultLevel: "moderate" },
+      { name: "Back Pain / Lumbar Strain", defaultLevel: "moderate" },
+      { name: "Chronic Joint Disease / Arthritis", defaultLevel: "complex" },
+      { name: "Frozen Shoulder / Spondylosis", defaultLevel: "complex" },
+    ],
+  },
+  {
+    id: "womens_health",
+    name: "Women's Health",
+    commonConditions: [
+      { name: "Mild PMS / Cramps", defaultLevel: "mild" },
+      { name: "Irregular Cycles", defaultLevel: "moderate" },
+      { name: "PCOS with several symptoms", defaultLevel: "complex" },
+      { name: "Endometriosis / Chronic Pelvic Pain", defaultLevel: "complex" },
+    ],
+  },
+  {
+    id: "stress_sleep_headache",
+    name: "Stress, Sleep & Headache",
+    commonConditions: [
+      { name: "Occasional Tension Headache", defaultLevel: "mild" },
+      { name: "Migraine", defaultLevel: "moderate" },
+      { name: "Chronic Insomnia / Sleep Issues", defaultLevel: "moderate" },
+      { name: "Severe Anxiety / Panic / Burnout", defaultLevel: "complex" },
+    ],
+  },
+  {
+    id: "urinary_metabolic",
+    name: "Urinary & Metabolic",
+    commonConditions: [
+      { name: "Recurrent Mild UTI", defaultLevel: "moderate" },
+      { name: "Fatty Liver / Metabolic Syndrome", defaultLevel: "moderate" },
+      { name: "Chronic Kidney / Urinary Pathology", defaultLevel: "complex" },
+    ],
+  },
+  {
+    id: "child_health",
+    name: "Child Health",
+    commonConditions: [
+      { name: "Recurrent Cold & Cough in Child", defaultLevel: "moderate" },
+      { name: "Childhood Allergies / Adenoids", defaultLevel: "moderate" },
+      { name: "Childhood Chronic Atopic Dermatitis", defaultLevel: "complex" },
+    ],
+  },
+];
+
+export interface ClinicalConcernInput {
+  id?: string;
+  name: string;
+  organSystemId: string;
+  organSystemName: string;
+  level: CareFeeLevel;
+}
+
+export interface OrganSystemGroupSummary {
+  organSystemId: string;
+  organSystemName: string;
+  highestLevel: CareFeeLevel;
+  weeklyFeeINR: number;
+  weeklyFeePaise: number;
+  concerns: ClinicalConcernInput[];
+  groupingNote: string;
+}
+
+export interface CareEstimateResult {
+  hasConcerns: boolean;
+  weeklyFeeINR: number;
+  weeklyFeePaise: number;
+  selectedDurationWeeks: number;
+  effectiveDurationWeeks: number;
+  durationAutoRaised: boolean;
+  durationRejectionReason?: string;
+  totalEstimateINR: number;
+  totalEstimatePaise: number;
+  systemGroups: OrganSystemGroupSummary[];
+  routineMedicinesIncluded: true;
+  requiresDoctorConfirmation: true;
+  containsModerateOrComplex: boolean;
+  minimumDurationWeeks: number;
+}
+
+export interface LevelAdjusterAnswers {
+  chronicity: "under_3_months" | "3_months_plus";
+  impactOnDailyLife: boolean;
+  hasMedicalReports: boolean;
+}
+
+/**
+ * Computes suggested level based on clinical criteria from the Care Fee Card:
+ * - Under 3 months, daily life mostly normal, no reports needed: Mild
+ * - Lasting 3+ months OR affects sleep/work/activity OR requires report review: Moderate
+ * - Whole organ system / long-standing / multi-symptom: Complex
+ * The patient cannot lower below the suggested level.
+ */
+export function computeSuggestedLevel(
+  defaultLevel: CareFeeLevel,
+  answers: LevelAdjusterAnswers
+): CareFeeLevel {
+  let computedLevel: CareFeeLevel = defaultLevel;
+
+  if (answers.chronicity === "3_months_plus" || answers.impactOnDailyLife || answers.hasMedicalReports) {
+    if (LEVEL_SEVERITY_WEIGHT[computedLevel] < LEVEL_SEVERITY_WEIGHT.moderate) {
+      computedLevel = "moderate";
+    }
+  }
+
+  return computedLevel;
+}
+
+/**
+ * PURE PRICING FUNCTION (no UI dependencies).
+ * Single source of truth for the Care Fee Card calculation rules:
+ * 1. Related symptoms in one organ system count as one concern at highest level.
+ * 2. Different organ systems are added together.
+ * 3. Moderate & Complex care requires a 2-week minimum duration.
+ * 4. Routine prescribed medicines included (0 extra).
+ * 5. Total = weekly fee * effective weeks.
+ */
+export function calculateCareEstimate(
+  concerns: ClinicalConcernInput[],
+  durationWeeks = 2
+): CareEstimateResult {
+  if (!concerns || concerns.length === 0) {
+    return {
+      hasConcerns: false,
+      weeklyFeeINR: 0,
+      weeklyFeePaise: 0,
+      selectedDurationWeeks: durationWeeks,
+      effectiveDurationWeeks: durationWeeks,
+      durationAutoRaised: false,
+      totalEstimateINR: 0,
+      totalEstimatePaise: 0,
+      systemGroups: [],
+      routineMedicinesIncluded: true,
+      requiresDoctorConfirmation: true,
+      containsModerateOrComplex: false,
+      minimumDurationWeeks: 1,
+    };
+  }
+
+  // Group concerns by organSystemId
+  const groupsMap = new Map<string, { systemName: string; concerns: ClinicalConcernInput[] }>();
+  for (const concern of concerns) {
+    const key = concern.organSystemId || "general";
+    const existing = groupsMap.get(key);
+    if (existing) {
+      existing.concerns.push(concern);
+    } else {
+      groupsMap.set(key, {
+        systemName: concern.organSystemName || key,
+        concerns: [concern],
+      });
+    }
+  }
+
+  const systemGroups: OrganSystemGroupSummary[] = [];
+  let totalWeeklyINR = 0;
+  let hasModerateOrComplex = false;
+
+  const entries = Array.from(groupsMap.entries());
+  for (let i = 0; i < entries.length; i++) {
+    const [systemId, groupData] = entries[i];
+    // Find highest level within this system
+    let highestLevel: CareFeeLevel = "mild";
+    for (const c of groupData.concerns) {
+      if (LEVEL_SEVERITY_WEIGHT[c.level] > LEVEL_SEVERITY_WEIGHT[highestLevel]) {
+        highestLevel = c.level;
+      }
+    }
+
+    if (highestLevel === "moderate" || highestLevel === "complex") {
+      hasModerateOrComplex = true;
+    }
+
+    const levelDef = CARE_FEE_CARD_LEVELS[highestLevel];
+    totalWeeklyINR += levelDef.weeklyFeeINR;
+
+    const concernNames = groupData.concerns.map(c => c.name);
+    let groupingNote = "";
+    if (groupData.concerns.length > 1) {
+      groupingNote = `${concernNames.join(" and ")} grouped under ${groupData.systemName}: billed at ${levelDef.name}`;
+    } else {
+      groupingNote = `${concernNames[0]} (${groupData.systemName}): ${levelDef.name}`;
+    }
+
+    systemGroups.push({
+      organSystemId: systemId,
+      organSystemName: groupData.systemName,
+      highestLevel,
+      weeklyFeeINR: levelDef.weeklyFeeINR,
+      weeklyFeePaise: levelDef.weeklyFeePaise,
+      concerns: groupData.concerns,
+      groupingNote,
+    });
+  }
+
+  const minimumDurationWeeks = hasModerateOrComplex ? 2 : 1;
+  let effectiveDurationWeeks = durationWeeks;
+  let durationAutoRaised = false;
+  let durationRejectionReason: string | undefined;
+
+  if (hasModerateOrComplex && durationWeeks < 2) {
+    effectiveDurationWeeks = 2;
+    durationAutoRaised = true;
+    durationRejectionReason = "Moderate and complex care starts with a 2-week minimum.";
+  }
+
+  const totalEstimateINR = totalWeeklyINR * effectiveDurationWeeks;
+  const totalEstimatePaise = totalEstimateINR * 100;
+
+  return {
+    hasConcerns: true,
+    weeklyFeeINR: totalWeeklyINR,
+    weeklyFeePaise: totalWeeklyINR * 100,
+    selectedDurationWeeks: durationWeeks,
+    effectiveDurationWeeks,
+    durationAutoRaised,
+    durationRejectionReason,
+    totalEstimateINR,
+    totalEstimatePaise,
+    systemGroups,
+    routineMedicinesIncluded: true,
+    requiresDoctorConfirmation: true,
+    containsModerateOrComplex: hasModerateOrComplex,
+    minimumDurationWeeks,
+  };
 }

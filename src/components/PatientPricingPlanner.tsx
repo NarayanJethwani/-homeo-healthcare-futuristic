@@ -334,7 +334,7 @@ export default function PatientPricingPlanner({
                     <span className="block text-sm font-bold text-[#1A2421]">Priority Acute Support</span>
                     <span className="block text-xs font-semibold text-slate-500 mt-1">Priority access and closer short-term monitoring. Not emergency care.</span>
                   </span>
-                  <span className="text-sm font-black text-[#1A2421]">+₹2,000/week</span>
+                  <span className="text-sm font-black text-[#1A2421]">+₹5,000/week</span>
                 </label>
               </>
             )}
@@ -437,7 +437,7 @@ export default function PatientPricingPlanner({
           <h2 className="font-serif text-2xl font-semibold text-[#1A2421]">Possible additional fees</h2>
           <dl className="mt-5 space-y-3 text-sm">
             <div className="flex justify-between gap-5"><dt className="font-semibold text-slate-600">Case-Specific Clinical Support</dt><dd className="font-black text-[#1A2421] text-right">quoted after assessment</dd></div>
-            <div className="flex justify-between gap-5"><dt className="font-semibold text-slate-600">Priority Acute Support, when assigned</dt><dd className="font-black text-[#1A2421] whitespace-nowrap">+₹2,000/week</dd></div>
+            <div className="flex justify-between gap-5"><dt className="font-semibold text-slate-600">Priority Acute Support, when assigned</dt><dd className="font-black text-[#1A2421] whitespace-nowrap">+₹5,000/week</dd></div>
             <div className="flex justify-between gap-5"><dt className="font-semibold text-slate-600">Domestic courier</dt><dd className="font-black text-[#1A2421] whitespace-nowrap">₹300</dd></div>
             <div className="flex justify-between gap-5"><dt className="font-semibold text-slate-600">International delivery</dt><dd className="font-black text-[#1A2421] whitespace-nowrap">at dispatch</dd></div>
           </dl>

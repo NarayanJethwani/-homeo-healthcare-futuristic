@@ -4,7 +4,12 @@ export type StoreFunnelEventName =
   | "store_pathway_selected"
   | "store_duration_selected"
   | "store_assessment_started"
-  | "store_assessment_submitted";
+  | "store_assessment_submitted"
+  | "calculator_started"
+  | "safety_gate_passed"
+  | "estimate_viewed"
+  | "review_requested"
+  | "whatsapp_clicked";
 
 interface StoreFunnelEventDetails {
   pathway?: string;
@@ -12,6 +17,8 @@ interface StoreFunnelEventDetails {
   question?: string;
   answer?: string | number;
   healthAreas?: number;
+  systemCount?: number;
+  concernCount?: number;
 }
 
 declare global {

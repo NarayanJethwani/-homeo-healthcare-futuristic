@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Gauge, Sparkles, Users, Compass, IndianRupee, Layers, FileText,
-  Activity, Cpu, Network, Award, Send, UserPlus, Menu, ChevronLeft, ChevronRight, Star, Settings
+  Activity, Cpu, Network, Award, Send, UserPlus, Menu, ChevronLeft, ChevronRight, Star, Settings, Share2
 } from "lucide-react";
 
 import { normalizeRole } from "@/lib/security/rbac";
@@ -33,6 +34,7 @@ const TABS_METADATA: Record<string, { label: string; icon: React.ComponentType<{
   "nexus-atlas": { label: "Nexus Atlas", icon: Network, gradient: "from-violet-600 to-fuchsia-600", shadow: "shadow-[0_4px_12px_rgba(139,92,246,0.3)]" },
   "medical-academy": { label: "Medical Academy", icon: Award, gradient: "from-blue-600 to-indigo-600", shadow: "shadow-[0_4px_12px_rgba(37,99,235,0.3)]" },
   "learning-hub": { label: "Learning Hub", icon: Award, gradient: "from-fuchsia-500 to-purple-600", shadow: "shadow-[0_4px_12px_rgba(217,70,239,0.3)]" },
+  social: { label: "Social Publishing", icon: Share2, gradient: "from-blue-600 to-indigo-600", shadow: "shadow-[0_4px_12px_rgba(37,99,235,0.3)]", adminOnly: true },
   communication: { label: "Communications", icon: Send, gradient: "from-cyan-500 to-teal-500", shadow: "shadow-[0_4px_12px_rgba(6,182,212,0.3)]" },
   team: { label: "Manage Doctors", icon: UserPlus, gradient: "from-violet-600 to-purple-600", shadow: "shadow-[0_4px_12px_rgba(124,58,237,0.3)]", adminOnly: true },
   users: { label: "Practitioners", icon: UserPlus, gradient: "from-blue-600 to-indigo-600", shadow: "shadow-[0_4px_12px_rgba(37,99,235,0.3)]", adminOnly: true },
@@ -55,7 +57,7 @@ const SIDEBAR_GROUPS = [
   },
   {
     name: "Administration",
-    items: ["communication", "team", "users", "account"],
+    items: ["social", "communication", "team", "users", "account"],
   },
   {
     name: "Public",
@@ -130,6 +132,12 @@ export default function AdminSidebar({
       <div key={tabId} className="w-full space-y-1">
         <div
           onClick={() => {
+            if (tabId === "social") {
+              if (typeof window !== "undefined") {
+                window.location.href = "/admin/social";
+              }
+              return;
+            }
             setActiveTab(tabId);
             if (subtabs.length > 0) {
               setOpenSubmenuTab(isSubmenuOpen ? null : tabId);
