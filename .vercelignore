@@ -10,6 +10,7 @@ node_modules/**
 coverage
 tmp
 *.log
+
 # Local tooling, generated reports, and the archived release checkout are not
 # application source. Keeping them out of deployments makes builds reproducible
 # and prevents their test suite from being type-checked as part of the site.
@@ -27,14 +28,3 @@ scratch
 scratch/**
 release-checkout
 release-checkout/**
-*.bak
-
-# Editorial, test, and raw ingestion datasets (build/offline only)
-data
-data/**
-docs
-docs/**
-tests
-tests/**
-.github
-.github/**
