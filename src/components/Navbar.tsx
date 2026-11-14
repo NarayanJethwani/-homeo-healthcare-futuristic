@@ -113,7 +113,11 @@ export default function Navbar() {
         }`}
       >
         <div className="mx-auto max-w-[1440px] px-4 sm:px-6">
-          <div className="glass-panel flex min-h-[68px] flex-wrap items-center justify-between gap-x-0 gap-y-0 rounded-[28px] border-white/30 px-3 py-2.5 shadow-[0_8px_30px_rgb(20,184,166,0.06)] sm:gap-x-4 sm:px-5 md:py-2 xl:flex-nowrap xl:gap-5 xl:rounded-full xl:py-2.5">
+          <div className={`flex min-h-[68px] flex-wrap items-center justify-between gap-x-0 gap-y-0 rounded-[28px] px-3 py-2.5 transition-all duration-200 sm:gap-x-4 sm:px-5 md:py-2 xl:flex-nowrap xl:gap-5 xl:rounded-full xl:py-2.5 ${
+            scrolled
+              ? "bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800 shadow-[0_12px_36px_rgba(0,0,0,0.08)]"
+              : "glass-panel border-white/30 shadow-[0_8px_30px_rgb(20,184,166,0.06)]"
+          }`}>
             {/* Logo */}
             <Link href="/" data-cursor="homeo" className="group flex shrink-0 items-center gap-2.5 rounded-full focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-mint-dark">
               <div className="relative flex items-center justify-center w-9 h-9 rounded-full bg-white border border-slate-200/50 overflow-hidden shadow-sm flex-shrink-0">
