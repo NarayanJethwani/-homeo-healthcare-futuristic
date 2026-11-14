@@ -375,9 +375,9 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
         {draftSavedAt && <span className={`${styles.helperText} text-[10px]`}>Draft autosaved</span>}
       </div>
 
-      <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
-        <div className="space-y-5 xl:col-span-7">
-          <fieldset className={`${styles.fieldset} rounded-2xl border p-4 space-y-4`}>
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-12 min-w-0 w-full">
+        <div className="space-y-5 xl:col-span-7 min-w-0 w-full">
+          <fieldset className={`${styles.fieldset} rounded-2xl border p-4 space-y-4 min-w-0 w-full`}>
             <legend className={`${styles.legend} px-2 text-xs font-black`}>1. Clinical breadth, depth and stability</legend>
 
             <VisualLineBarSelector
@@ -417,7 +417,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
             />
           </fieldset>
 
-          <fieldset className={`${styles.fieldset} rounded-2xl border p-4 space-y-4`}>
+          <fieldset className={`${styles.fieldset} rounded-2xl border p-4 space-y-4 min-w-0 w-full`}>
             <legend className={`${styles.legend} px-2 text-xs font-black`}>2. Time, intensity and coordination</legend>
 
             <VisualLineBarSelector
@@ -458,7 +458,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
           </fieldset>
 
           {/* 3. Health Concerns & Multi-System Scope */}
-          <fieldset className={`${styles.fieldset} rounded-2xl border p-4 sm:p-5 space-y-4`}>
+          <fieldset className={`${styles.fieldset} rounded-2xl border p-4 sm:p-5 space-y-4 min-w-0 w-full overflow-hidden`}>
             <legend className={`${styles.legend} px-2 text-xs font-black`}>3. Health Concerns & Multi-System Scope</legend>
             <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -484,7 +484,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
 
             {/* Selected Concerns Active Strip */}
             {selectedConcerns.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 p-2.5 bg-teal-50/80 dark:bg-teal-950/40 rounded-xl border border-teal-200 dark:border-teal-800">
+              <div className="flex flex-wrap gap-1.5 p-2.5 bg-teal-50/80 dark:bg-teal-950/40 rounded-xl border border-teal-200 dark:border-teal-800 min-w-0 w-full">
                 {selectedConcerns.map((concern) => (
                   <span
                     key={concern}
@@ -505,13 +505,13 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
             )}
 
             {/* Category Filter Pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none min-w-0 w-full max-w-full">
               {DOCTOR_PLAN_CATEGORIES.map((cat) => (
                 <button
                   key={cat.id}
                   type="button"
                   onClick={() => setConcernCategory(cat.id)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-black whitespace-nowrap transition-all duration-200 cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-black whitespace-nowrap transition-all duration-200 cursor-pointer shrink-0 ${
                     concernCategory === cat.id
                       ? "bg-teal-700 text-white shadow-xs"
                       : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
@@ -523,7 +523,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
             </div>
 
             {/* Popular Condition Chips (Selection-Friendly Grid) */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-52 overflow-y-auto p-1.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-white/70 dark:bg-slate-900/60">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-60 overflow-y-auto p-1.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-white/70 dark:bg-slate-900/60 min-w-0 w-full">
               {POPULAR_DOCTOR_PLAN_CONCERNS.filter(
                 (item) => concernCategory === "all" || item.category === concernCategory
               ).map((item) => {
@@ -556,7 +556,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
             </div>
 
             {/* Manual Condition Count Pill Bar */}
-            <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 flex-wrap">
+            <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 flex-wrap min-w-0 w-full">
               <div>
                 <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider block">
                   Total Concerns to Coordinate
@@ -565,7 +565,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
                   Auto-calculated from selection or set manually:
                 </span>
               </div>
-              <div className="grid grid-cols-5 gap-1.5 w-full sm:w-auto">
+              <div className="grid grid-cols-5 gap-1.5 w-full sm:w-auto min-w-0">
                 {[1, 2, 3, 4, 5].map((val) => {
                   const isCurrent = conditionsCount === val;
                   const tierSurchargeUnit = surchargesLookup[recommendation.pathway]?.unitWeekly || 500;
@@ -578,7 +578,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
                         setConditionsCount(val);
                         setConfirmed(false);
                       }}
-                      className={`px-3 py-1.5 rounded-xl text-center transition-all duration-200 cursor-pointer border-2 flex flex-col items-center ${
+                      className={`px-3 py-1.5 rounded-xl text-center transition-all duration-200 cursor-pointer border-2 flex flex-col items-center min-w-[50px] ${
                         isCurrent
                           ? "bg-teal-700 text-white border-teal-600 shadow-xs"
                           : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:border-slate-400 dark:hover:border-slate-700"
@@ -596,7 +596,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
 
             {/* Multi-System Coordination Notice */}
             {conditionsCount > 1 && (
-              <div className="p-3.5 bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 rounded-xl text-left flex items-start gap-2.5">
+              <div className="p-3.5 bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 rounded-xl text-left flex items-start gap-2.5 min-w-0 w-full">
                 <span className="text-teal-700 dark:text-teal-400 text-base leading-none mt-0.5">ℹ</span>
                 <p className="text-xs text-slate-850 dark:text-slate-200 font-medium leading-relaxed">
                   <strong className="font-black text-slate-950 dark:text-white">Dual/Multi-System Care Active ({conditionsCount} Concerns):</strong>{" "}
@@ -606,7 +606,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
             )}
           </fieldset>
 
-          <fieldset className={`${styles.fieldset} rounded-2xl border p-4 sm:p-5`}>
+          <fieldset className={`${styles.fieldset} rounded-2xl border p-4 sm:p-5 min-w-0 w-full`}>
             <legend className={`${styles.legend} px-2 text-sm font-black`}>4. Itemized support and medicines</legend>
             <p className={`${styles.helperText} mb-4 text-xs leading-relaxed`}>
               Add only confirmed, case-specific work and supplied medicines. Each amount remains visible as a separate quotation item.
@@ -678,7 +678,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
             </section>
           </fieldset>
 
-          <fieldset className={`${styles.fieldset} rounded-2xl border p-4`}>
+          <fieldset className={`${styles.fieldset} rounded-2xl border p-4 min-w-0 w-full`}>
             <legend className={`${styles.legend} px-2 text-xs font-black`}>5. Access consideration (never a surcharge)</legend>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <label><span className={labelClass}>Consideration</span><select className={inputClass} value={assessment.accessConsideration} onChange={e => updateAssessment("accessConsideration", e.target.value as AccessConsideration)}><option value="none">None</option><option value="senior">Senior citizen</option><option value="financial-hardship">Financial hardship</option><option value="custom">Other documented reason</option></select></label>
@@ -689,7 +689,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
           </fieldset>
         </div>
 
-        <aside className="self-start rounded-3xl border-2 border-slate-300 dark:border-slate-700 bg-slate-950 p-6 text-slate-100 xl:sticky xl:top-4 xl:col-span-5 shadow-xl">
+        <aside className="self-start rounded-3xl border-2 border-slate-300 dark:border-slate-700 bg-slate-950 p-6 text-slate-100 xl:sticky xl:top-4 xl:col-span-5 shadow-xl min-w-0 w-full">
           {recommendation.blockedBySafetyGate ? (
             <div className="rounded-2xl border-2 border-rose-500 bg-rose-500/10 p-5">
               <div className="flex items-center gap-2 font-black text-rose-300"><AlertTriangle className="h-5 w-5" /> Safety gate active</div>
