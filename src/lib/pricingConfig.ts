@@ -14,9 +14,11 @@ export const CARE_PLAN_CATALOG_VERSION = "care-plan-catalog-v3";
 export type CarePlanId =
   | "acute_mild_3d"
   | "acute_wellness_7d"
+  | "acute_priority_1w"
   | "chronic_focused_1w"
   | "chronic_integrated_1w"
   | "chronic_complex_1w"
+  | "chronic_pathological_1w"
   | "chronic_advanced_1w";
 
 export type CarePlanFamily = "acute" | "chronic";
@@ -30,7 +32,7 @@ export interface CarePlanDefinition {
   price: number;
   durationValue: number;
   durationUnit: CarePlanDurationUnit;
-  legacyCareLevelKey: Extract<CareLevelKey, "mild" | "chronic_focused" | "moderate" | "focused" | "comprehensive">;
+  legacyCareLevelKey: Extract<CareLevelKey, "mild" | "chronic_focused" | "moderate" | "focused" | "comprehensive" | "organ" | "acute_critical">;
   scope: string;
   reassessmentRequired: boolean;
   emergencyCare: false;
@@ -132,11 +134,23 @@ export const CARE_PLAN_CATALOG: Record<CarePlanId, CarePlanDefinition> = {
     family: "acute",
     title: "Acute Wellness Care",
     price: 2_000,
-    // Legacy ID is retained for compatibility with existing records.
-    durationValue: 4,
-    durationUnit: "day",
+    durationValue: 1,
+    durationUnit: "week",
     legacyCareLevelKey: "mild",
-    scope: "Four-day physician-reviewed support for a suitable non-emergency acute concern.",
+    scope: "One-week physician-reviewed support for a suitable non-emergency acute concern or focused wellness follow-up.",
+    reassessmentRequired: true,
+    emergencyCare: false,
+  },
+  acute_priority_1w: {
+    id: "acute_priority_1w",
+    family: "acute",
+    title: "Priority Acute Support",
+    badge: "Priority Acute · ₹5,000",
+    price: 5_000,
+    durationValue: 1,
+    durationUnit: "week",
+    legacyCareLevelKey: "acute_critical",
+    scope: "Urgent, high-intensity acute cases requiring daily clinical reviews, frequent remedy titration, and priority physician supervision.",
     reassessmentRequired: true,
     emergencyCare: false,
   },
@@ -155,7 +169,7 @@ export const CARE_PLAN_CATALOG: Record<CarePlanId, CarePlanDefinition> = {
   chronic_integrated_1w: {
     id: "chronic_integrated_1w",
     family: "chronic",
-    title: "Integrated Chronic Care",
+    title: "Integrated Clinical Care",
     price: 6_000,
     durationValue: 1,
     durationUnit: "week",
@@ -167,7 +181,7 @@ export const CARE_PLAN_CATALOG: Record<CarePlanId, CarePlanDefinition> = {
   chronic_complex_1w: {
     id: "chronic_complex_1w",
     family: "chronic",
-    title: "Complex Chronic Care",
+    title: "Complex Clinical Care",
     price: 9_000,
     durationValue: 1,
     durationUnit: "week",
@@ -176,10 +190,23 @@ export const CARE_PLAN_CATALOG: Record<CarePlanId, CarePlanDefinition> = {
     reassessmentRequired: true,
     emergencyCare: false,
   },
+  chronic_pathological_1w: {
+    id: "chronic_pathological_1w",
+    family: "chronic",
+    title: "Advanced Pathological Care",
+    badge: "Organ System Recovery · ₹8,000",
+    price: 8_000,
+    durationValue: 1,
+    durationUnit: "week",
+    legacyCareLevelKey: "organ",
+    scope: "Advanced recovery protocols for deep-seated pathology, including organ system rebalancing and biomarker reviews.",
+    reassessmentRequired: true,
+    emergencyCare: false,
+  },
   chronic_advanced_1w: {
     id: "chronic_advanced_1w",
     family: "chronic",
-    title: "Advanced Chronic Care",
+    title: "Advanced Physician Care",
     price: 12_000,
     durationValue: 1,
     durationUnit: "week",

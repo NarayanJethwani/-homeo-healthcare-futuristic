@@ -84,7 +84,9 @@ const legacyPathwayPlanMap: Record<string, CarePlanId> = {
   chronic_focused: "chronic_focused_1w",
   moderate: "chronic_integrated_1w",
   focused: "chronic_complex_1w",
+  organ: "chronic_pathological_1w",
   comprehensive: "chronic_advanced_1w",
+  acute_critical: "acute_priority_1w",
 };
 
 const breadthLabels: Record<OrganBreadth, string> = {
@@ -109,16 +111,16 @@ function VisualLineBarSelector<T extends string>({
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-300">
+        <span className="text-[11px] font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">
           {label}
         </span>
-        <span className="text-[10px] font-mono font-extrabold text-teal-400">
+        <span className="text-xs font-mono font-black text-teal-700 dark:text-teal-400">
           {options.find((o) => o.value === selectedValue)?.label}
         </span>
       </div>
 
       {/* Interactive Segment Line-Bar */}
-      <div className="flex flex-wrap items-center bg-slate-950 p-1 rounded-xl border border-slate-800 gap-1">
+      <div className="flex flex-wrap items-center bg-slate-100 dark:bg-slate-950 p-1.5 rounded-xl border-2 border-slate-200 dark:border-slate-800 gap-1.5">
         {options.map((opt) => {
           const isSelected = opt.value === selectedValue;
           return (
@@ -126,15 +128,15 @@ function VisualLineBarSelector<T extends string>({
               key={opt.value}
               type="button"
               onClick={() => onChange(opt.value)}
-              className={`flex-1 min-w-[70px] py-1.5 px-1.5 rounded-lg text-[11px] font-bold transition-all flex flex-col items-center justify-center text-center cursor-pointer border ${
+              className={`flex-1 min-w-[75px] py-2 px-2 rounded-lg text-xs font-black transition-all flex flex-col items-center justify-center text-center cursor-pointer border-2 ${
                 isSelected
-                  ? "bg-gradient-to-r from-teal-600 to-emerald-600 text-white border-teal-400 shadow-md shadow-teal-500/20 scale-[1.02]"
-                  : "bg-slate-900/80 text-slate-400 border-slate-800/80 hover:bg-slate-800 hover:text-slate-200"
+                  ? "bg-teal-700 text-white border-teal-600 shadow-sm scale-[1.01]"
+                  : "bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-950 dark:hover:text-white"
               }`}
             >
               <span className="truncate w-full">{opt.label}</span>
               {opt.subtext && (
-                <span className={`text-[9px] font-mono mt-0.5 truncate ${isSelected ? "text-teal-100" : "text-slate-500"}`}>
+                <span className={`text-[9.5px] font-mono mt-0.5 truncate ${isSelected ? "text-teal-100" : "text-slate-500 dark:text-slate-400"}`}>
                   {opt.subtext}
                 </span>
               )}
@@ -470,21 +472,26 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
           </fieldset>
         </div>
 
-        <aside className="self-start rounded-2xl border border-slate-200 bg-slate-950 p-5 text-slate-100 xl:sticky xl:top-4 xl:col-span-5 dark:border-slate-700">
+        <aside className="self-start rounded-3xl border-2 border-slate-300 dark:border-slate-700 bg-slate-950 p-6 text-slate-100 xl:sticky xl:top-4 xl:col-span-5 shadow-xl">
           {recommendation.blockedBySafetyGate ? (
-            <div className="rounded-2xl border border-rose-500 bg-rose-500/10 p-4">
+            <div className="rounded-2xl border-2 border-rose-500 bg-rose-500/10 p-5">
               <div className="flex items-center gap-2 font-black text-rose-300"><AlertTriangle className="h-5 w-5" /> Safety gate active</div>
-              <p className="mt-2 text-xs leading-relaxed text-rose-100">Address urgent assessment, referral or emergency care before confirming a pathway or quotation.</p>
+              <p className="mt-2 text-xs font-semibold leading-relaxed text-rose-100">Address urgent assessment, referral or emergency care before confirming a pathway or quotation.</p>
             </div>
           ) : (
             <>
-              <p className="text-[10px] font-black uppercase tracking-widest text-teal-300">Suggested pathway</p>
-              <h4 className="mt-1 text-xl font-black text-white">{automaticRecommendation.title}</h4>
-                  <p className="mt-1 text-[10px] leading-relaxed text-slate-300">This is an administrative workload suggestion after clinical review—not a diagnosis or treatment recommendation. Acute Wellness Care starts at ₹2,000/week for suitable non-emergency cases.</p>
+              <div className="inline-block px-3 py-1 rounded-full bg-teal-950 border border-teal-600 text-[10px] font-black uppercase tracking-widest text-teal-300">
+                Suggested pathway
+              </div>
+              <h4 className="mt-2 text-2xl font-black text-white tracking-tight">{automaticRecommendation.title}</h4>
+              <p className="mt-1.5 text-xs font-medium leading-relaxed text-slate-300">
+                This is an administrative workload suggestion after clinical review—not a diagnosis or treatment recommendation. Acute Wellness Care starts at ₹2,000/week for suitable non-emergency cases.
+              </p>
+              
               <label className="mt-4 block">
-                <span className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-slate-300">Pathway decision</span>
+                <span className="mb-1.5 block text-[11px] font-black uppercase tracking-wider text-slate-200">Pathway decision</span>
                 <select
-                  className={`${styles.input} w-full rounded-xl border px-3 py-2.5 text-xs font-bold`}
+                  className="w-full rounded-xl border-2 border-slate-700 bg-slate-900 px-3.5 py-2.5 text-xs font-black text-white focus:border-teal-400 focus:outline-none shadow-xs cursor-pointer"
                   value={selectedPlanId}
                   onChange={e => {
                     setSelectedPlanId(e.target.value as "recommended" | CarePlanId);
@@ -499,27 +506,105 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
                   ))}
                 </select>
               </label>
+
               {selectedPlanId !== "recommended" && (
-                <div className="mt-2 rounded-xl border border-sky-400/40 bg-sky-400/10 p-3 text-[10px] leading-relaxed text-sky-100">
-                  <p>Manual physician selection: {recommendation.title}. The recommendation remains recorded for audit.</p>
-                  <label className="mt-2 block"><span className="mb-1 block font-bold uppercase tracking-wider">Reason for physician selection</span><input className={`${styles.input} w-full rounded-lg border px-3 py-2 text-xs`} value={manualSelectionReason} placeholder="Document the clinical reason" onChange={e => { setManualSelectionReason(e.target.value); setConfirmed(false); }} /></label>
-                  {missingOverrideReason && <p className="mt-1 font-bold text-amber-200">A brief reason is required.</p>}
+                <div className="mt-2.5 rounded-xl border border-sky-400/40 bg-sky-950/60 p-3.5 text-xs leading-relaxed text-sky-200">
+                  <p className="font-bold">Manual physician selection: {recommendation.title}. The recommendation remains recorded for audit.</p>
+                  <label className="mt-2 block"><span className="mb-1 block text-[10px] font-black uppercase tracking-wider text-sky-300">Reason for physician selection</span><input className="w-full rounded-lg border-2 border-slate-700 bg-slate-900 px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-sky-400" value={manualSelectionReason} placeholder="Document the clinical reason" onChange={e => { setManualSelectionReason(e.target.value); setConfirmed(false); }} /></label>
+                  {missingOverrideReason && <p className="mt-1 text-xs font-black text-amber-300">A brief reason is required.</p>}
                 </div>
               )}
-              <p className="mt-2 text-sm font-bold text-teal-300">Selected plan fee: ₹{recommendation.carePeriodFee.toLocaleString("en-IN")} / {recommendation.planFamily === "acute" ? formatCarePlanDuration(recommendation) : "week"}</p>
-              <label className="mt-4 block"><span className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-slate-300">Care period</span><select className={`${styles.input} w-full rounded-xl border px-3 py-2.5 text-xs font-bold`} value={durationWeeks} disabled={recommendation.planFamily === "acute"} onChange={e => { setDurationWeeks(Number(e.target.value)); setConfirmed(false); }}>{recommendation.allowedDurationsWeeks.map(weeks => { const continuity = recommendation.planFamily === "acute" ? calculateCarePlanTotal(recommendation.planId) : calculateCarePlanTotal(recommendation.planId, weeks); return <option key={weeks} value={weeks}>{recommendation.planFamily === "acute" ? formatCarePlanDuration(recommendation) : `${weeks} ${weeks === 1 ? "week" : "weeks"}`} · ₹{continuity.total.toLocaleString("en-IN")}{continuity.discountPercent > 0 ? ` · ${continuity.discountPercent}% benefit` : ""}{recommendation.planFamily === "chronic" && weeks === 1 ? " · initial period; reassessment required" : ""}</option>; })}</select></label>
-              <p className="mt-2 rounded-lg bg-amber-500/10 px-3 py-2 text-[10px] leading-relaxed text-amber-100">Physician reassessment is required before renewal or movement to another plan. This is not emergency care.</p>
-              <div className="mt-4 space-y-2">{recommendation.reasons.map(reason => <div key={reason} className="flex gap-2 text-xs leading-relaxed text-slate-200"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" />{reason}</div>)}</div>
-              <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-[10px] leading-relaxed text-amber-100">{recommendation.cautions.join(" ")}</div>
-              {quote && <div className="mt-5 space-y-2 border-t border-slate-700 pt-4 text-xs"><div className="flex justify-between"><span>List care-period fee</span><strong>₹{quote.listCareTotal.toLocaleString("en-IN")}</strong></div>{quote.continuityDiscountTotal > 0 && <div className="flex justify-between text-teal-300"><span>Continuity care benefit ({quote.continuityDiscountPercent}%)</span><strong>−₹{quote.continuityDiscountTotal.toLocaleString("en-IN")}</strong></div>}<div className="flex justify-between"><span>Care fee after benefit</span><strong>₹{quote.baseCareTotal.toLocaleString("en-IN")}</strong></div>{quote.caseSpecificSupportTotal > 0 && <div className="flex justify-between"><span>Clinical support</span><strong>+₹{quote.caseSpecificSupportTotal.toLocaleString("en-IN")}</strong></div>}{quote.pharmacyTotal > 0 && <div className="flex justify-between"><span>Itemized pharmacy</span><strong>+₹{quote.pharmacyTotal.toLocaleString("en-IN")}</strong></div>}{quote.concessionTotal > 0 && <div className="flex justify-between text-indigo-300"><span>Documented concession</span><strong>−₹{quote.concessionTotal.toLocaleString("en-IN")}</strong></div>}<div className="flex justify-between border-t border-slate-700 pt-3 text-base"><span className="font-black">Pending quotation</span><strong className="text-teal-300">₹{quote.finalTotal.toLocaleString("en-IN")}</strong></div></div>}
-              <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-xl border border-slate-700 bg-slate-900 p-3 text-xs leading-relaxed"><input type="checkbox" checked={confirmed} onChange={e => setConfirmed(e.target.checked)} className="mt-0.5 h-4 w-4 accent-teal-500" /><span>I confirm the pathway, duration, scope and fee after clinical review.</span></label>
-              <button type="button" disabled={!canApply} onClick={() => {
-                if (!quote) return;
-                const now = new Date();
-                const validUntil = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-                const quotationId = `QTN-${now.toISOString().slice(0, 10).replaceAll("-", "")}-${Math.floor(1000 + Math.random() * 9000)}`;
-                onApply({ assessment, recommendation, durationWeeks, planId: recommendation.planId, planFamily: recommendation.planFamily, durationValue: quote.durationValue, durationUnit: quote.durationUnit, caseSpecificSupportAmount: supportAmount, caseSpecificSupportCategory: supportCategory, caseSpecificSupportReason: supportReason.trim(), pharmacyItems, concessionAmount: quote.concessionTotal, concessionReason: concessionReason.trim(), quote, physicianConfirmed: true, confirmedAt: now.toISOString(), quotationId, validUntil: validUntil.toISOString(), approvalStatus: "pending-patient-approval", selectionMode: selectedPlanId === "recommended" ? "recommended" : "physician-override", recommendedPathway: automaticRecommendation.pathway, selectedPathway: recommendation.pathway, recommendedPlanId: automaticRecommendation.planId, selectedPlanId: recommendation.planId, manualSelectionReason: manualSelectionReason.trim(), pricingRuleVersion: recommendation.version });
-              }} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-teal-400 px-4 py-3 text-xs font-black uppercase tracking-wider text-slate-950 hover:bg-teal-300 disabled:cursor-not-allowed disabled:opacity-40"><ShieldCheck className="h-4 w-4" /> Apply to pending plan</button>
+
+              <p className="mt-3 text-xs font-black text-teal-300">
+                Selected plan fee: <span className="text-sm font-sans">₹{recommendation.carePeriodFee.toLocaleString("en-IN")}</span> / {recommendation.planFamily === "acute" ? formatCarePlanDuration(recommendation) : "week"}
+              </p>
+
+              <label className="mt-3.5 block">
+                <span className="mb-1.5 block text-[11px] font-black uppercase tracking-wider text-slate-200">Care period</span>
+                <select className="w-full rounded-xl border-2 border-slate-700 bg-slate-900 px-3.5 py-2.5 text-xs font-black text-white focus:border-teal-400 focus:outline-none shadow-xs cursor-pointer" value={durationWeeks} disabled={recommendation.planFamily === "acute"} onChange={e => { setDurationWeeks(Number(e.target.value)); setConfirmed(false); }}>
+                  {recommendation.allowedDurationsWeeks.map(weeks => {
+                    const continuity = recommendation.planFamily === "acute" ? calculateCarePlanTotal(recommendation.planId) : calculateCarePlanTotal(recommendation.planId, weeks);
+                    return <option key={weeks} value={weeks}>{recommendation.planFamily === "acute" ? formatCarePlanDuration(recommendation) : `${weeks} ${weeks === 1 ? "week" : "weeks"}`} · ₹{continuity.total.toLocaleString("en-IN")}{continuity.discountPercent > 0 ? ` · ${continuity.discountPercent}% benefit` : ""}{recommendation.planFamily === "chronic" && weeks === 1 ? " · initial period; reassessment required" : ""}</option>;
+                  })}
+                </select>
+              </label>
+
+              <p className="mt-2 rounded-xl bg-amber-500/15 border border-amber-500/30 px-3 py-2 text-[11px] font-medium leading-relaxed text-amber-200">Physician reassessment is required before renewal or movement to another plan. This is not emergency care.</p>
+              
+              <div className="mt-4 space-y-2">
+                {recommendation.reasons.map(reason => (
+                  <div key={reason} className="flex gap-2 text-xs font-medium leading-relaxed text-slate-200">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-400" />
+                    <span>{reason}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-3 rounded-xl border border-slate-800 bg-slate-900/60 p-3 text-[11px] font-medium leading-relaxed text-slate-300">
+                {recommendation.cautions.join(" ")}
+              </div>
+
+              {quote && (
+                <div className="mt-5 space-y-2 border-t-2 border-slate-800 pt-4 text-xs font-semibold">
+                  <div className="flex justify-between text-slate-300">
+                    <span>List care-period fee</span>
+                    <strong className="font-sans text-white font-black">₹{quote.listCareTotal.toLocaleString("en-IN")}</strong>
+                  </div>
+                  {quote.continuityDiscountTotal > 0 && (
+                    <div className="flex justify-between text-teal-400">
+                      <span>Continuity care benefit ({quote.continuityDiscountPercent}%)</span>
+                      <strong className="font-sans font-black">−₹{quote.continuityDiscountTotal.toLocaleString("en-IN")}</strong>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-slate-300">
+                    <span>Care fee after benefit</span>
+                    <strong className="font-sans text-white font-black">₹{quote.baseCareTotal.toLocaleString("en-IN")}</strong>
+                  </div>
+                  {quote.caseSpecificSupportTotal > 0 && (
+                    <div className="flex justify-between text-slate-300">
+                      <span>Clinical support</span>
+                      <strong className="font-sans text-white font-black">+₹{quote.caseSpecificSupportTotal.toLocaleString("en-IN")}</strong>
+                    </div>
+                  )}
+                  {quote.pharmacyTotal > 0 && (
+                    <div className="flex justify-between text-slate-300">
+                      <span>Itemized pharmacy</span>
+                      <strong className="font-sans text-white font-black">+₹{quote.pharmacyTotal.toLocaleString("en-IN")}</strong>
+                    </div>
+                  )}
+                  {quote.concessionTotal > 0 && (
+                    <div className="flex justify-between text-indigo-300">
+                      <span>Documented concession</span>
+                      <strong className="font-sans font-black">−₹{quote.concessionTotal.toLocaleString("en-IN")}</strong>
+                    </div>
+                  )}
+                  <div className="flex justify-between border-t-2 border-slate-700 pt-3 text-sm font-black text-white items-baseline">
+                    <span>Pending quotation</span>
+                    <strong className="text-2xl font-black text-teal-300 font-sans tracking-tight">₹{quote.finalTotal.toLocaleString("en-IN")}</strong>
+                  </div>
+                </div>
+              )}
+
+              <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-xl border-2 border-slate-800 bg-slate-900/90 p-3.5 text-xs font-bold leading-relaxed text-slate-200">
+                <input type="checkbox" checked={confirmed} onChange={e => setConfirmed(e.target.checked)} className="mt-0.5 h-4 w-4 accent-teal-500 rounded cursor-pointer" />
+                <span>I confirm the pathway, duration, scope and fee after clinical review.</span>
+              </label>
+
+              <button
+                type="button"
+                disabled={!canApply}
+                onClick={() => {
+                  if (!quote) return;
+                  const now = new Date();
+                  const validUntil = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+                  const quotationId = `QTN-${now.toISOString().slice(0, 10).replaceAll("-", "")}-${Math.floor(1000 + Math.random() * 9000)}`;
+                  onApply({ assessment, recommendation, durationWeeks, planId: recommendation.planId, planFamily: recommendation.planFamily, durationValue: quote.durationValue, durationUnit: quote.durationUnit, caseSpecificSupportAmount: supportAmount, caseSpecificSupportCategory: supportCategory, caseSpecificSupportReason: supportReason.trim(), pharmacyItems, concessionAmount: quote.concessionTotal, concessionReason: concessionReason.trim(), quote, physicianConfirmed: true, confirmedAt: now.toISOString(), quotationId, validUntil: validUntil.toISOString(), approvalStatus: "pending-patient-approval", selectionMode: selectedPlanId === "recommended" ? "recommended" : "physician-override", recommendedPathway: automaticRecommendation.pathway, selectedPathway: recommendation.pathway, recommendedPlanId: automaticRecommendation.planId, selectedPlanId: recommendation.planId, manualSelectionReason: manualSelectionReason.trim(), pricingRuleVersion: recommendation.version });
+                }}
+                className="mt-3.5 flex w-full items-center justify-center gap-2 rounded-xl bg-teal-400 hover:bg-teal-300 px-4 py-3.5 text-xs font-black uppercase tracking-wider text-slate-950 shadow-md transition-all disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
+              >
+                <ShieldCheck className="h-4 w-4" />
+                <span>Apply to pending plan</span>
+              </button>
             </>
           )}
         </aside>

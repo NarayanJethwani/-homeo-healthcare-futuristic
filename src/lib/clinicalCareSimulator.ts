@@ -32,7 +32,7 @@ export interface ClinicalCareAssessment {
 export interface ClinicalCareRecommendation {
   planId: CarePlanId;
   planFamily: CarePlanFamily;
-  pathway: Extract<CareLevelKey, "mild" | "chronic_focused" | "moderate" | "focused" | "comprehensive">;
+  pathway: Extract<CareLevelKey, "mild" | "chronic_focused" | "moderate" | "focused" | "comprehensive" | "organ" | "acute_critical">;
   title: string;
   weeklyFee: number;
   carePeriodFee: number;
@@ -164,7 +164,9 @@ export function applyPhysicianPathwayOverride(
     chronic_focused: "chronic_focused_1w",
     moderate: "chronic_integrated_1w",
     focused: "chronic_complex_1w",
+    organ: "chronic_pathological_1w",
     comprehensive: "chronic_advanced_1w",
+    acute_critical: "acute_priority_1w",
   };
   return applyPhysicianPlanOverride(recommendation, planByPathway[pathway]);
 }
@@ -175,7 +177,7 @@ export function applyPhysicianPlanOverride(
 ): ClinicalCareRecommendation {
   const plan = CARE_PLAN_CATALOG[planId];
   const pathway = plan.legacyCareLevelKey as ClinicalCareRecommendation["pathway"];
-  const allowedDurationsWeeks = plan.family === "chronic" ? CARE_LEVELS_DETAILS[pathway].durations : [1];
+  const allowedDurationsWeeks = plan.family === "chronic" ? (pathway === "organ" ? [1, 2, 4, 8, 12] : CARE_LEVELS_DETAILS[pathway].durations) : [1];
   const suggestedDurationWeeks = allowedDurationsWeeks.includes(recommendation.suggestedDurationWeeks)
     ? recommendation.suggestedDurationWeeks
     : 1;
