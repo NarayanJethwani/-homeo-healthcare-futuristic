@@ -29,6 +29,8 @@ export interface ClinicalCareSimulatorDecision {
   planFamily: CarePlanFamily;
   durationValue: number;
   durationUnit: CarePlanDurationUnit;
+  conditionsCount: number;
+  selectedConcerns: string[];
   caseSpecificSupportAmount: number;
   caseSpecificSupportCategory: string;
   caseSpecificSupportReason: string;
@@ -95,6 +97,47 @@ const breadthLabels: Record<OrganBreadth, string> = {
   "four-five": "4–5 organ systems",
   "six-plus": "6+ organ systems",
   unsure: "Not yet established",
+};
+
+const DOCTOR_PLAN_CATEGORIES = [
+  { id: "all", label: "All Concerns" },
+  { id: "digestive", label: "Digestive & Gut" },
+  { id: "respiratory", label: "Respiratory & ENT" },
+  { id: "skin", label: "Skin & Hair" },
+  { id: "joints", label: "Bones & Joints" },
+  { id: "metabolic", label: "Metabolic & Thyroid" },
+  { id: "neuro", label: "Stress & Headaches" },
+  { id: "women", label: "Women's Health" },
+  { id: "pediatric", label: "Child Health" },
+];
+
+const POPULAR_DOCTOR_PLAN_CONCERNS = [
+  { id: "acidity", label: "Acidity / GERD", category: "digestive", system: "Digestive", level: "mild" },
+  { id: "ibs", label: "Chronic IBS", category: "digestive", system: "Digestive", level: "moderate" },
+  { id: "fatty-liver", label: "Fatty Liver", category: "digestive", system: "Digestive", level: "organ" },
+  { id: "sinusitis", label: "Recurrent Sinusitis / Allergy", category: "respiratory", system: "Respiratory & ENT", level: "moderate" },
+  { id: "asthma", label: "Bronchial Asthma", category: "respiratory", system: "Respiratory & ENT", level: "focused" },
+  { id: "eczema", label: "Chronic Eczema / Dermatitis", category: "skin", system: "Skin & Hair", level: "moderate" },
+  { id: "psoriasis", label: "Psoriasis", category: "skin", system: "Skin & Hair", level: "focused" },
+  { id: "hair-fall", label: "Hair Fall / Alopecia", category: "skin", system: "Skin & Hair", level: "mild" },
+  { id: "joint-pain", label: "Knee / Joint Pain (Arthritis)", category: "joints", system: "Bones & Joints", level: "moderate" },
+  { id: "cervical", label: "Cervical / Lumbar Spondylosis", category: "joints", system: "Bones & Joints", level: "moderate" },
+  { id: "migraine", label: "Vascular Migraine / Headaches", category: "neuro", system: "Stress & Neuro", level: "focused" },
+  { id: "insomnia", label: "Stress / Sleep Disturbances", category: "neuro", system: "Stress & Neuro", level: "mild" },
+  { id: "thyroid", label: "Hypothyroidism (Hashimoto's)", category: "metabolic", system: "Metabolic & Endocrine", level: "focused" },
+  { id: "pcos", label: "PCOS / Irregular Cycles", category: "women", system: "Women's Health", level: "focused" },
+  { id: "uti", label: "Recurrent UTI / Renal Spasms", category: "metabolic", system: "Urology", level: "moderate" },
+  { id: "pediatric", label: "Frequent Colds / Tonsillitis", category: "pediatric", system: "Child Health", level: "mild" },
+];
+
+const surchargesLookup: Record<string, { unitWeekly: number }> = {
+  mild: { unitWeekly: 500 },
+  chronic_focused: { unitWeekly: 1000 },
+  moderate: { unitWeekly: 1500 },
+  focused: { unitWeekly: 3000 },
+  organ: { unitWeekly: 2000 },
+  comprehensive: { unitWeekly: 3000 },
+  acute_critical: { unitWeekly: 1250 },
 };
 
 function VisualLineBarSelector<T extends string>({
@@ -178,6 +221,9 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
   const [pharmacyDetails, setPharmacyDetails] = useState("");
   const [pharmacyQuantity, setPharmacyQuantity] = useState(1);
   const [pharmacyUnitPrice, setPharmacyUnitPrice] = useState(0);
+  const [selectedConcerns, setSelectedConcerns] = useState<string[]>([]);
+  const [concernCategory, setConcernCategory] = useState<string>("all");
+  const [conditionsCount, setConditionsCount] = useState<number>(1);
   const [confirmed, setConfirmed] = useState(false);
   const [draftHydrated, setDraftHydrated] = useState(false);
   const [draftSavedAt, setDraftSavedAt] = useState("");
@@ -203,6 +249,8 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
         setSelectedPlanId(storedSelection === "recommended" || storedSelection in CARE_PLAN_CATALOG ? storedSelection : "recommended");
         setManualSelectionReason(draft.manualSelectionReason || "");
         setDurationWeeks(Number(draft.durationWeeks) || 1);
+        setSelectedConcerns(Array.isArray(draft.selectedConcerns) ? draft.selectedConcerns : []);
+        setConditionsCount(Number(draft.conditionsCount) || 1);
         setSupportAmount(Number(draft.supportAmount) || 0);
         setSupportCategory(draft.supportCategory || clinicalSupportCategories[0]);
         setSupportReason(draft.supportReason || "");
@@ -214,6 +262,8 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
         setAssessment(defaultAssessment);
         setSelectedPlanId("recommended");
         setManualSelectionReason("");
+        setSelectedConcerns([]);
+        setConditionsCount(1);
         setSupportAmount(0);
         setSupportCategory(clinicalSupportCategories[0]);
         setSupportReason("");
@@ -233,11 +283,28 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
     if (!draftHydrated) return;
     const updatedAt = new Date().toISOString();
     localStorage.setItem(`homeo.clinical-care-draft.${patientId || "standalone"}`, JSON.stringify({
-      assessment, selectedPlanId, manualSelectionReason, durationWeeks, supportAmount, supportCategory,
+      assessment, selectedPlanId, manualSelectionReason, durationWeeks, selectedConcerns, conditionsCount, supportAmount, supportCategory,
       supportReason, concessionAmount, concessionReason, pharmacyItems, updatedAt,
     }));
     setDraftSavedAt(updatedAt);
-  }, [assessment, concessionAmount, concessionReason, draftHydrated, durationWeeks, manualSelectionReason, patientId, pharmacyItems, selectedPlanId, supportAmount, supportCategory, supportReason]);
+  }, [assessment, concessionAmount, concessionReason, conditionsCount, draftHydrated, durationWeeks, manualSelectionReason, patientId, pharmacyItems, selectedConcerns, selectedPlanId, supportAmount, supportCategory, supportReason]);
+
+  const toggleConcern = (concernLabel: string) => {
+    setSelectedConcerns((prev) => {
+      const exists = prev.includes(concernLabel);
+      const next = exists ? prev.filter((c) => c !== concernLabel) : [...prev, concernLabel];
+      const count = Math.min(5, Math.max(1, next.length));
+      setConditionsCount(count);
+      return next;
+    });
+    setConfirmed(false);
+  };
+
+  const clearConcerns = () => {
+    setSelectedConcerns([]);
+    setConditionsCount(1);
+    setConfirmed(false);
+  };
 
   useEffect(() => {
     setDurationWeeks(current => recommendation.allowedDurationsWeeks.includes(current)
@@ -389,8 +456,157 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
             />
           </fieldset>
 
+          {/* 3. Health Concerns & Multi-System Scope */}
+          <fieldset className={`${styles.fieldset} rounded-2xl border p-4 sm:p-5 space-y-4`}>
+            <legend className={`${styles.legend} px-2 text-xs font-black`}>3. Health Concerns & Multi-System Scope</legend>
+            <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className={`${styles.helperText} text-xs leading-relaxed`}>
+                  Select active health complaints to cover simultaneously under this care program. Multi-system tracking scales physician analysis time.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="rounded-full bg-teal-100 dark:bg-teal-950/80 px-2.5 py-1 text-[10.5px] font-black text-teal-800 dark:text-teal-300 border border-teal-300 dark:border-teal-700">
+                  {conditionsCount === 1 ? "1 Primary Concern" : `${conditionsCount} Concerns (Multi-System)`}
+                </span>
+                {selectedConcerns.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={clearConcerns}
+                    className="text-[11px] font-black text-rose-600 hover:text-rose-800 transition-colors uppercase tracking-wider cursor-pointer"
+                  >
+                    Clear All
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Selected Concerns Active Strip */}
+            {selectedConcerns.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 p-2.5 bg-teal-50/80 dark:bg-teal-950/40 rounded-xl border border-teal-200 dark:border-teal-800">
+                {selectedConcerns.map((concern) => (
+                  <span
+                    key={concern}
+                    className="inline-flex items-center gap-1.5 text-xs font-black px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-teal-300 dark:border-teal-700 text-teal-950 dark:text-teal-100 shadow-2xs"
+                  >
+                    <span>{concern}</span>
+                    <button
+                      type="button"
+                      onClick={() => toggleConcern(concern)}
+                      className="hover:text-rose-600 transition-colors cursor-pointer text-slate-400 font-black text-xs leading-none"
+                      title="Remove concern"
+                    >
+                      &times;
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Category Filter Pills */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+              {DOCTOR_PLAN_CATEGORIES.map((cat) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setConcernCategory(cat.id)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-black whitespace-nowrap transition-all duration-200 cursor-pointer ${
+                    concernCategory === cat.id
+                      ? "bg-teal-700 text-white shadow-xs"
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Popular Condition Chips (Selection-Friendly Grid) */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-52 overflow-y-auto p-1.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-white/70 dark:bg-slate-900/60">
+              {POPULAR_DOCTOR_PLAN_CONCERNS.filter(
+                (item) => concernCategory === "all" || item.category === concernCategory
+              ).map((item) => {
+                const isSelected = selectedConcerns.includes(item.label);
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => toggleConcern(item.label)}
+                    className={`p-2.5 rounded-xl border-2 text-left transition-all duration-200 cursor-pointer flex flex-col justify-between ${
+                      isSelected
+                        ? "border-teal-600 bg-teal-50 dark:bg-teal-950 text-teal-950 dark:text-teal-100 font-black ring-1 ring-teal-500/30"
+                        : "border-slate-200 dark:border-slate-800 hover:border-slate-400 bg-white dark:bg-slate-900 text-slate-850 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-1">
+                      <span className="text-xs leading-tight font-black">{item.label}</span>
+                      {isSelected && (
+                        <span className="w-3.5 h-3.5 rounded-full bg-teal-700 text-white flex items-center justify-center text-[9px] shrink-0 font-black">
+                          ✓
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[9px] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-bold mt-1">
+                      {item.system}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Manual Condition Count Pill Bar */}
+            <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 flex-wrap">
+              <div>
+                <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider block">
+                  Total Concerns to Coordinate
+                </span>
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold">
+                  Auto-calculated from selection or set manually:
+                </span>
+              </div>
+              <div className="grid grid-cols-5 gap-1.5 w-full sm:w-auto">
+                {[1, 2, 3, 4, 5].map((val) => {
+                  const isCurrent = conditionsCount === val;
+                  const tierSurchargeUnit = surchargesLookup[recommendation.pathway]?.unitWeekly || 500;
+                  const surchargeText = val > 1 ? `+₹${((val - 1) * tierSurchargeUnit).toLocaleString("en-IN")}/wk` : "Base";
+                  return (
+                    <button
+                      key={val}
+                      type="button"
+                      onClick={() => {
+                        setConditionsCount(val);
+                        setConfirmed(false);
+                      }}
+                      className={`px-3 py-1.5 rounded-xl text-center transition-all duration-200 cursor-pointer border-2 flex flex-col items-center ${
+                        isCurrent
+                          ? "bg-teal-700 text-white border-teal-600 shadow-xs"
+                          : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:border-slate-400 dark:hover:border-slate-700"
+                      }`}
+                    >
+                      <span className="text-xs font-black">{val === 5 ? "5+" : val}</span>
+                      <span className={`text-[9px] font-bold leading-none mt-0.5 ${isCurrent ? "text-teal-100" : "text-slate-500"}`}>
+                        {surchargeText}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Multi-System Coordination Notice */}
+            {conditionsCount > 1 && (
+              <div className="p-3.5 bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 rounded-xl text-left flex items-start gap-2.5">
+                <span className="text-teal-700 dark:text-teal-400 text-base leading-none mt-0.5">ℹ</span>
+                <p className="text-xs text-slate-850 dark:text-slate-200 font-medium leading-relaxed">
+                  <strong className="font-black text-slate-950 dark:text-white">Dual/Multi-System Care Active ({conditionsCount} Concerns):</strong>{" "}
+                  Treating multiple co-existing complaints across organ systems requires cross-repertorization, synergistic remedy balancing, and closer clinical supervision by the consulting doctor.
+                </p>
+              </div>
+            )}
+          </fieldset>
+
           <fieldset className={`${styles.fieldset} rounded-2xl border p-4 sm:p-5`}>
-            <legend className={`${styles.legend} px-2 text-sm font-black`}>3. Itemized support and medicines</legend>
+            <legend className={`${styles.legend} px-2 text-sm font-black`}>4. Itemized support and medicines</legend>
             <p className={`${styles.helperText} mb-4 text-xs leading-relaxed`}>
               Add only confirmed, case-specific work and supplied medicines. Each amount remains visible as a separate quotation item.
             </p>
@@ -462,7 +678,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
           </fieldset>
 
           <fieldset className={`${styles.fieldset} rounded-2xl border p-4`}>
-            <legend className={`${styles.legend} px-2 text-xs font-black`}>4. Access consideration (never a surcharge)</legend>
+            <legend className={`${styles.legend} px-2 text-xs font-black`}>5. Access consideration (never a surcharge)</legend>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <label><span className={labelClass}>Consideration</span><select className={inputClass} value={assessment.accessConsideration} onChange={e => updateAssessment("accessConsideration", e.target.value as AccessConsideration)}><option value="none">None</option><option value="senior">Senior citizen</option><option value="financial-hardship">Financial hardship</option><option value="custom">Other documented reason</option></select></label>
               <label><span className={labelClass}>Concession amount (₹)</span><input className={inputClass} type="number" min="0" step="1000" value={concessionAmount || ""} placeholder="0" onChange={e => { setConcessionAmount(Math.max(0, Number(e.target.value))); setConfirmed(false); }} /></label>
@@ -484,7 +700,27 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
                 Suggested pathway
               </div>
               <h4 className="mt-2 text-2xl font-black text-white tracking-tight">{automaticRecommendation.title}</h4>
-              <p className="mt-1.5 text-xs font-medium leading-relaxed text-slate-300">
+              
+              {/* Clinical Care Scope & Active Concerns */}
+              <div className="mt-3 rounded-xl border border-slate-800 bg-slate-900/90 p-3 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Clinical Care Scope</span>
+                  <span className="font-mono font-black text-teal-300">
+                    {conditionsCount === 1 ? "1 Active Concern" : `${conditionsCount} Concerns (Multi-System)`}
+                  </span>
+                </div>
+                {selectedConcerns.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-1.5 pt-2 border-t border-slate-850">
+                    {selectedConcerns.map((concern) => (
+                      <span key={concern} className="rounded-md bg-teal-950 border border-teal-800 px-2 py-0.5 text-[10px] font-bold text-teal-200">
+                        {concern}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <p className="mt-2 text-xs font-medium leading-relaxed text-slate-300">
                 This is an administrative workload suggestion after clinical review—not a diagnosis or treatment recommendation. Acute Wellness Care starts at ₹2,000/week for suitable non-emergency cases.
               </p>
               
@@ -598,7 +834,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
                   const now = new Date();
                   const validUntil = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
                   const quotationId = `QTN-${now.toISOString().slice(0, 10).replaceAll("-", "")}-${Math.floor(1000 + Math.random() * 9000)}`;
-                  onApply({ assessment, recommendation, durationWeeks, planId: recommendation.planId, planFamily: recommendation.planFamily, durationValue: quote.durationValue, durationUnit: quote.durationUnit, caseSpecificSupportAmount: supportAmount, caseSpecificSupportCategory: supportCategory, caseSpecificSupportReason: supportReason.trim(), pharmacyItems, concessionAmount: quote.concessionTotal, concessionReason: concessionReason.trim(), quote, physicianConfirmed: true, confirmedAt: now.toISOString(), quotationId, validUntil: validUntil.toISOString(), approvalStatus: "pending-patient-approval", selectionMode: selectedPlanId === "recommended" ? "recommended" : "physician-override", recommendedPathway: automaticRecommendation.pathway, selectedPathway: recommendation.pathway, recommendedPlanId: automaticRecommendation.planId, selectedPlanId: recommendation.planId, manualSelectionReason: manualSelectionReason.trim(), pricingRuleVersion: recommendation.version });
+                  onApply({ assessment, recommendation, durationWeeks, planId: recommendation.planId, planFamily: recommendation.planFamily, durationValue: quote.durationValue, durationUnit: quote.durationUnit, conditionsCount, selectedConcerns, caseSpecificSupportAmount: supportAmount, caseSpecificSupportCategory: supportCategory, caseSpecificSupportReason: supportReason.trim(), pharmacyItems, concessionAmount: quote.concessionTotal, concessionReason: concessionReason.trim(), quote, physicianConfirmed: true, confirmedAt: now.toISOString(), quotationId, validUntil: validUntil.toISOString(), approvalStatus: "pending-patient-approval", selectionMode: selectedPlanId === "recommended" ? "recommended" : "physician-override", recommendedPathway: automaticRecommendation.pathway, selectedPathway: recommendation.pathway, recommendedPlanId: automaticRecommendation.planId, selectedPlanId: recommendation.planId, manualSelectionReason: manualSelectionReason.trim(), pricingRuleVersion: recommendation.version });
                 }}
                 className="mt-3.5 flex w-full items-center justify-center gap-2 rounded-xl bg-teal-400 hover:bg-teal-300 px-4 py-3.5 text-xs font-black uppercase tracking-wider text-slate-950 shadow-md transition-all disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
               >

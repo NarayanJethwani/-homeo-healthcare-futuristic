@@ -12748,8 +12748,11 @@ ${err.message || err}`);
 
             // Format dynamic WhatsApp message text
             const careText = CARE_LEVELS_DETAILS[plannerCareLevel as keyof typeof CARE_LEVELS_DETAILS]?.title || "Doctor-Led Custom Care";
+            const concernsDetail = plannerSimulatorDecision?.selectedConcerns && plannerSimulatorDecision.selectedConcerns.length > 0
+              ? ` (${plannerSimulatorDecision.conditionsCount || 1} active: ${plannerSimulatorDecision.selectedConcerns.join(", ")})`
+              : "";
             const breadthText = plannerSimulatorDecision
-              ? `Organ-system breadth recorded: ${plannerSimulatorDecision.assessment.breadth.replaceAll("-", "–")}`
+              ? `Organ-system breadth: ${plannerSimulatorDecision.assessment.breadth.replaceAll("-", "–")}${concernsDetail}`
               : "Clinical breadth pending assessment";
             const durText = `${plannerDurationValue} ${plannerDurationValue === 1 ? "Week" : "Weeks"}`;
             const concessionText = calculatedPrices.concessionAmount > 0 ? ", Documented concession applied" : "";
@@ -12811,7 +12814,7 @@ ${err.message || err}`);
                     setPlannerCareLevel(decision.recommendation.pathway);
                     setPlannerBillingCycle("weekly");
                     setPlannerDurationValue(decision.durationWeeks);
-                    setPlannerConditionsCount(breadthCount[decision.assessment.breadth] || 1);
+                    setPlannerConditionsCount(decision.conditionsCount || breadthCount[decision.assessment.breadth] || 1);
                     setPlannerConcessionType(decision.concessionAmount > 0 ? "Manual" : "None");
                     setPlannerMedicineAddons(decision.pharmacyItems.map(item => ({
                       id: item.id,
@@ -12918,7 +12921,19 @@ ${err.message || err}`);
                             <div className="flex items-center gap-2 font-black text-teal-800 dark:text-teal-200"><CheckCircle className="h-4 w-4" /> Physician-confirmed pending plan</div>
                             <div className="font-bold text-slate-850 dark:text-white">{plannerSimulatorDecision.recommendation.title}</div>
                             <div className="text-slate-600 dark:text-slate-300">{plannerSimulatorDecision.durationValue} {plannerSimulatorDecision.durationValue === 1 ? plannerSimulatorDecision.durationUnit : `${plannerSimulatorDecision.durationUnit}s`} · ₹{plannerSimulatorDecision.quote.finalTotal.toLocaleString("en-IN")} pending quotation</div>
-                            <div className="text-[10px] leading-relaxed text-slate-500 dark:text-slate-400">Organ breadth is recorded as a complexity indicator; it did not automatically calculate the fee.</div>
+                            <div className="text-teal-800 dark:text-teal-300 font-bold">
+                              Scope: {plannerSimulatorDecision.conditionsCount || 1} Active {(plannerSimulatorDecision.conditionsCount || 1) === 1 ? "Concern" : "Concerns"}
+                            </div>
+                            {plannerSimulatorDecision.selectedConcerns && plannerSimulatorDecision.selectedConcerns.length > 0 && (
+                              <div className="flex flex-wrap gap-1 pt-1">
+                                {plannerSimulatorDecision.selectedConcerns.map((c) => (
+                                  <span key={c} className="rounded-md bg-teal-100 dark:bg-teal-900 border border-teal-300 dark:border-teal-700 px-2 py-0.5 text-[10px] font-bold text-teal-900 dark:text-teal-100">
+                                    {c}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                            <div className="text-[10px] leading-relaxed text-slate-500 dark:text-slate-400">Organ breadth & concerns are recorded as clinical scope indicators; they do not automatically increase the fee.</div>
                           </div>
                         ) : (
                           <div className="flex items-start gap-2 text-slate-600 dark:text-slate-300"><Info className="mt-0.5 h-4 w-4 shrink-0 text-teal-600" /><span>Complete the simulator above, confirm the clinical decision, then apply it here before saving.</span></div>
