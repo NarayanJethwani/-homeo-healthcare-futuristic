@@ -4069,12 +4069,115 @@ export default function StorePage() {
                     )}
                   </div>
 
-                  {/* 2. Health Concerns to Address & Multi-System Scope */}
+                  {/* 2. Billing Frequency & Care Commitment Duration */}
+                  <div className="glass-panel border-white/70 bg-white/40 backdrop-blur-md p-4 md:p-5 rounded-2xl space-y-3.5 shadow-xs">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                      
+                      {/* Frequency Toggle */}
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                            <span>2. Billing Frequency</span>
+                          </h4>
+                          <span className="text-[9px] text-slate-400 font-semibold uppercase">
+                            Weekly or Monthly
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1 bg-white/70 p-1 rounded-full border border-slate-200/60 w-fit">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setWalkInBillingCycle("weekly");
+                              setWalkInDurationValue(4);
+                            }}
+                            className={`px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                              walkInBillingCycle === "weekly"
+                                ? "bg-[#1A2421] text-white shadow-xs"
+                                : "text-slate-500 hover:text-slate-900"
+                            }`}
+                          >
+                            Weekly
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setWalkInBillingCycle("monthly");
+                              setWalkInDurationValue(1);
+                            }}
+                            className={`px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                              walkInBillingCycle === "monthly"
+                                ? "bg-[#1A2421] text-white shadow-xs"
+                                : "text-slate-500 hover:text-slate-900"
+                            }`}
+                          >
+                            Monthly — Save 10–30%
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Care Duration Recommendation */}
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-wider">
+                            Commitment Duration
+                          </h4>
+                          <span className="text-[9px] text-emerald-800 font-bold">
+                            Save up to 30% with continuity
+                          </span>
+                        </div>
+                        <div className={`grid ${walkInBillingCycle === "weekly" && walkInTier === "mild" ? "grid-cols-6" : "grid-cols-5"} gap-1.5`}>
+                          {(walkInBillingCycle === "weekly"
+                            ? (walkInTier === "mild"
+                                ? [
+                                    { value: 0.5, label: "3 Days", desc: "₹1,000" },
+                                    { value: 1, label: "1 Wk", desc: "0%" },
+                                    { value: 2, label: "2 Wks", desc: "0%" },
+                                    { value: 4, label: "4 Wks", desc: "10%" },
+                                    { value: 8, label: "8 Wks", desc: "15%" },
+                                    { value: 12, label: "12 Wks", desc: "20%" },
+                                  ]
+                                : [
+                                    { value: 1, label: "1 Wk", desc: "0%" },
+                                    { value: 2, label: "2 Wks", desc: "0%" },
+                                    { value: 4, label: "4 Wks", desc: "10%" },
+                                    { value: 8, label: "8 Wks", desc: "15%" },
+                                    { value: 12, label: "12 Wks", desc: "20%" },
+                                  ]
+                              )
+                            : [
+                                { value: 1, label: "1 Mo", desc: "10%" },
+                                { value: 2, label: "2 Mos", desc: "15%" },
+                                { value: 3, label: "3 Mos", desc: "20%" },
+                                { value: 6, label: "6 Mos", desc: "25%" },
+                                { value: 12, label: "12 Mos", desc: "30%" }
+                              ]
+                          ).map((opt) => (
+                            <button
+                              type="button"
+                              key={opt.value}
+                              onClick={() => setWalkInDurationValue(opt.value)}
+                              className={`py-2 px-1 rounded-xl border text-center transition-all duration-200 cursor-pointer ${
+                                walkInDurationValue === opt.value
+                                  ? "border-emerald-600 bg-emerald-50 text-emerald-950 font-black ring-1 ring-emerald-500/30"
+                                  : "border-slate-200/80 hover:border-slate-800 text-slate-700 bg-white/60 hover:bg-white"
+                              }`}
+                            >
+                              <span className="text-xs block font-bold leading-none">{opt.label}</span>
+                              <span className="text-[8px] text-slate-400 block mt-1 leading-none font-semibold font-sans">{opt.desc}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+
+                  {/* 3. Health Concerns to Address & Multi-System Scope */}
                   <div className="glass-panel border-white/70 bg-white/40 backdrop-blur-md p-4 md:p-5 rounded-2xl space-y-3.5 shadow-xs">
                     <div className="flex items-center justify-between flex-wrap gap-2">
                       <div>
                         <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-                          <span>2. Health Concerns & Multi-System Scope</span>
+                          <span>3. Health Concerns & Multi-System Scope</span>
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
                             {walkInConditionsCount === 1 ? "1 Primary Concern" : `${walkInConditionsCount} Concerns (Multi-System)`}
                           </span>
@@ -4213,104 +4316,6 @@ export default function StorePage() {
                         </p>
                       </div>
                     )}
-                  </div>
-
-                  {/* 3. Billing Frequency & Care Continuity Duration */}
-                  <div className="glass-panel border-white/70 bg-white/40 backdrop-blur-md p-4 md:p-5 rounded-2xl space-y-3.5 shadow-xs">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-                      
-                      {/* Frequency Toggle */}
-                      <div className="space-y-1.5">
-                        <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-wider">
-                          Billing Frequency
-                        </h4>
-                        <div className="flex items-center gap-1 bg-white/70 p-1 rounded-full border border-slate-200/60 w-fit">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setWalkInBillingCycle("weekly");
-                              setWalkInDurationValue(4);
-                            }}
-                            className={`px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
-                              walkInBillingCycle === "weekly"
-                                ? "bg-[#1A2421] text-white shadow-xs"
-                                : "text-slate-500 hover:text-slate-900"
-                            }`}
-                          >
-                            Weekly
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setWalkInBillingCycle("monthly");
-                              setWalkInDurationValue(1);
-                            }}
-                            className={`px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
-                              walkInBillingCycle === "monthly"
-                                ? "bg-[#1A2421] text-white shadow-xs"
-                                : "text-slate-500 hover:text-slate-900"
-                            }`}
-                          >
-                            Monthly — Save 10–30%
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Care Duration Recommendation */}
-                      <div className="space-y-1.5">
-                        <div className="flex items-center justify-between">
-                          <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-wider">
-                            Commitment Duration
-                          </h4>
-                          <span className="text-[9px] text-emerald-800 font-bold">
-                            Save up to 30% with continuity
-                          </span>
-                        </div>
-                        <div className={`grid ${walkInBillingCycle === "weekly" && walkInTier === "mild" ? "grid-cols-6" : "grid-cols-5"} gap-1.5`}>
-                          {(walkInBillingCycle === "weekly"
-                            ? (walkInTier === "mild"
-                                ? [
-                                    { value: 0.5, label: "3 Days", desc: "₹1,000" },
-                                    { value: 1, label: "1 Wk", desc: "0%" },
-                                    { value: 2, label: "2 Wks", desc: "0%" },
-                                    { value: 4, label: "4 Wks", desc: "10%" },
-                                    { value: 8, label: "8 Wks", desc: "15%" },
-                                    { value: 12, label: "12 Wks", desc: "20%" },
-                                  ]
-                                : [
-                                    { value: 1, label: "1 Wk", desc: "0%" },
-                                    { value: 2, label: "2 Wks", desc: "0%" },
-                                    { value: 4, label: "4 Wks", desc: "10%" },
-                                    { value: 8, label: "8 Wks", desc: "15%" },
-                                    { value: 12, label: "12 Wks", desc: "20%" },
-                                  ]
-                              )
-                            : [
-                                { value: 1, label: "1 Mo", desc: "10%" },
-                                { value: 2, label: "2 Mos", desc: "15%" },
-                                { value: 3, label: "3 Mos", desc: "20%" },
-                                { value: 6, label: "6 Mos", desc: "25%" },
-                                { value: 12, label: "12 Mos", desc: "30%" }
-                              ]
-                          ).map((opt) => (
-                            <button
-                              type="button"
-                              key={opt.value}
-                              onClick={() => setWalkInDurationValue(opt.value)}
-                              className={`py-2 px-1 rounded-xl border text-center transition-all duration-200 cursor-pointer ${
-                                walkInDurationValue === opt.value
-                                  ? "border-emerald-600 bg-emerald-50 text-emerald-950 font-black ring-1 ring-emerald-500/30"
-                                  : "border-slate-200/80 hover:border-slate-800 text-slate-700 bg-white/60 hover:bg-white"
-                              }`}
-                            >
-                              <span className="text-xs block font-bold leading-none">{opt.label}</span>
-                              <span className="text-[8px] text-slate-400 block mt-1 leading-none font-semibold font-sans">{opt.desc}</span>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                    </div>
                   </div>
 
                   {/* 4. Clinical Concessions & Specialty Remedies (Selection-Friendly) */}
