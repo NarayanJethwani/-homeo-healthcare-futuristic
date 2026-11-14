@@ -1706,16 +1706,16 @@ export default function StorePage() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
-                className="text-xs font-bold text-mint uppercase tracking-widest mb-4 inline-flex items-center gap-1.5"
+                className="text-xs font-black text-teal-800 dark:text-teal-400 uppercase tracking-widest mb-4 inline-flex items-center gap-1.5"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-mint breathe" />
+                <span className="w-1.5 h-1.5 rounded-full bg-teal-600 breathe" />
                 Clinical Pricing & Packages
               </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.1 }}
-            className="font-serif text-4xl md:text-6xl font-semibold tracking-tight text-[#1A2421] mb-6"
+            className="font-serif text-4xl md:text-6xl font-bold tracking-tight text-slate-950 dark:text-white mb-6"
           >
             Clinical Care Programs
           </motion.h1>
@@ -1723,7 +1723,7 @@ export default function StorePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="text-base text-slate-700 font-semibold leading-relaxed"
+            className="text-base text-slate-800 dark:text-slate-200 font-medium leading-relaxed max-w-4xl"
           >
             Personalized physician-led homeopathic care with structured follow-up and treatment planning. Starting from ₹2,000/week, billed with flexible weekly and monthly options. Choose longer care duration to receive continuity benefits. All therapeutic care programs include consultation, remedies, custom diet sheets, and shipping inside India.
           </motion.p>
@@ -1731,13 +1731,13 @@ export default function StorePage() {
 
         {/* Mode Switcher Toggle */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-12">
-          <div className="inline-flex items-center gap-1.5 bg-slate-900/5 p-1.5 rounded-full border border-slate-200/50 backdrop-blur-md z-0 relative">
+          <div className="inline-flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/80 p-1.5 rounded-full border-2 border-slate-200 dark:border-slate-700 backdrop-blur-md z-0 relative">
             <button
               onClick={() => setViewMode("triage")}
-              className={`relative px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 cursor-pointer z-10 ${
+              className={`relative px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-200 flex items-center gap-2 cursor-pointer z-10 ${
                 viewMode === "triage"
                   ? "text-white"
-                  : "text-slate-500 hover:text-[#1A2421]"
+                  : "text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white"
               }`}
             >
               {viewMode === "triage" && (
@@ -1752,10 +1752,10 @@ export default function StorePage() {
             </button>
             <button
               onClick={() => setViewMode("dashboard")}
-              className={`relative px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 cursor-pointer z-10 ${
+              className={`relative px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-200 flex items-center gap-2 cursor-pointer z-10 ${
                 viewMode === "dashboard"
                   ? "text-white"
-                  : "text-slate-500 hover:text-[#1A2421]"
+                  : "text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white"
               }`}
             >
               {viewMode === "dashboard" && (
@@ -1770,17 +1770,17 @@ export default function StorePage() {
             </button>
             <button
               onClick={() => setMainDiscoveryTab("concerns")}
-              className="relative px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 cursor-pointer z-10 text-slate-500 hover:text-[#1A2421]"
+              className="relative px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-200 flex items-center gap-2 cursor-pointer z-10 text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white"
             >
-              <HeartPulse className="w-3.5 h-3.5 text-mint" />
+              <HeartPulse className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
               Explore Concerns
             </button>
             <button
               onClick={() => setViewMode("catalog")}
-              className={`relative px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 cursor-pointer z-10 ${
+              className={`relative px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-200 flex items-center gap-2 cursor-pointer z-10 ${
                 viewMode === "catalog"
                   ? "text-white"
-                  : "text-slate-500 hover:text-[#1A2421]"
+                  : "text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white"
               }`}
             >
               {viewMode === "catalog" && (
@@ -1795,10 +1795,10 @@ export default function StorePage() {
             </button>
             <button
               onClick={() => setViewMode("doctorPlan")}
-              className={`relative px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 cursor-pointer z-10 ${
+              className={`relative px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-200 flex items-center gap-2 cursor-pointer z-10 ${
                 viewMode === "doctorPlan"
                   ? "text-white"
-                  : "text-slate-500 hover:text-[#1A2421]"
+                  : "text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white"
               }`}
             >
               {viewMode === "doctorPlan" && (
@@ -1815,7 +1815,7 @@ export default function StorePage() {
           <Magnetic>
             <Link
               href="/store/plans"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-mint/20 hover:border-mint/60 bg-mint/5 hover:bg-mint/10 text-mint-dark hover:text-[#0c6b5e] text-xs font-extrabold uppercase tracking-wider transition-all duration-300 shadow-sm cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border-2 border-teal-600 bg-teal-50 hover:bg-teal-100 dark:bg-teal-950 dark:hover:bg-teal-900 text-teal-950 dark:text-teal-200 text-xs font-black uppercase tracking-wider transition-all duration-200 shadow-sm cursor-pointer"
             >
               📊 Compare Tiers & Savings
             </Link>
@@ -1834,15 +1834,15 @@ export default function StorePage() {
               className="space-y-12 mb-16"
             >
               {/* Section: Clinical Credentials - Why Patients Choose Homeo Healthcare */}
-              <div className="space-y-8 bg-slate-500/[0.01] border border-slate-900/[0.02] p-6 md:p-8 rounded-[32px] backdrop-blur-[2px]">
+              <div className="space-y-8 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 p-6 md:p-8 rounded-[32px]">
                 <div className="text-center max-w-3xl mx-auto space-y-3">
-                  <span className="text-[10px] font-bold text-mint tracking-widest uppercase bg-mint/5 border border-mint/15 px-3 py-1 rounded-full">
+                  <span className="text-xs font-black text-teal-800 dark:text-teal-400 tracking-widest uppercase bg-teal-50 dark:bg-teal-950 border border-teal-200 dark:border-teal-800 px-3.5 py-1 rounded-full">
                     Clinical Credentials
                   </span>
-                  <h2 className="font-serif text-3xl md:text-4xl font-semibold tracking-tight text-[#1A2421]">
+                  <h2 className="font-serif text-3xl md:text-4xl font-bold tracking-tight text-slate-950 dark:text-white">
                     Why Patients Choose Homeo Healthcare
                   </h2>
-                  <p className="text-sm text-slate-600 font-semibold leading-relaxed">
+                  <p className="text-base text-slate-800 dark:text-slate-200 font-medium leading-relaxed">
                     Experience physician-led, AI-enhanced, individualized homeopathic care designed for long-term health—not one-size-fits-all treatment.
                   </p>
                 </div>
@@ -1850,104 +1850,104 @@ export default function StorePage() {
                 {/* 2-Column Responsive Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Card 1 */}
-                  <div className="glass-panel border-slate-100 bg-white/50 rounded-2xl py-3.5 px-4 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300">
-                    <div className="w-10 h-10 rounded-xl bg-mint/5 border border-mint/10 text-mint flex items-center justify-center flex-shrink-0">
+                  <div className="border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/80 rounded-2xl py-4 px-5 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 shadow-sm">
+                    <div className="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950 border border-teal-200 dark:border-teal-800 text-teal-800 dark:text-teal-300 flex items-center justify-center flex-shrink-0">
                       <Stethoscope className="w-5 h-5" />
                     </div>
                     <div className="space-y-1 text-left">
-                      <h3 className="text-sm font-bold text-[#1A2421]">20+ Years of Clinical Experience</h3>
-                      <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                      <h3 className="text-sm font-black text-slate-950 dark:text-white">20+ Years of Clinical Experience</h3>
+                      <p className="text-xs text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
                         Extensive experience managing acute, chronic, and complex conditions with individualized homeopathy.
                       </p>
                     </div>
                   </div>
 
                   {/* Card 2 */}
-                  <div className="glass-panel border-slate-100 bg-white/50 rounded-2xl py-3.5 px-4 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-50/5 border border-indigo-500/10 text-indigo-650 flex items-center justify-center flex-shrink-0">
+                  <div className="border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/80 rounded-2xl py-4 px-5 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 shadow-sm">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 flex items-center justify-center flex-shrink-0">
                       <Fingerprint className="w-5 h-5" />
                     </div>
                     <div className="space-y-1 text-left">
-                      <h3 className="text-sm font-bold text-[#1A2421]">Individualized Constitutional Treatment</h3>
-                      <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                      <h3 className="text-sm font-black text-slate-950 dark:text-white">Individualized Constitutional Treatment</h3>
+                      <p className="text-xs text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
                         Personalized care plans tailored to your unique symptom profile, constitution, and health goals.
                       </p>
                     </div>
                   </div>
 
                   {/* Card 3 */}
-                  <div className="glass-panel border-slate-100 bg-white/50 rounded-2xl py-3.5 px-4 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300">
-                    <div className="w-10 h-10 rounded-xl bg-purple-50/5 border border-purple-500/10 text-purple-650 flex items-center justify-center flex-shrink-0">
+                  <div className="border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/80 rounded-2xl py-4 px-5 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 shadow-sm">
+                    <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 flex items-center justify-center flex-shrink-0">
                       <BrainCircuit className="w-5 h-5" />
                     </div>
                     <div className="space-y-1 text-left">
-                      <h3 className="text-sm font-bold text-[#1A2421]">Physician-Designed AI Clinical Intelligence</h3>
-                      <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                      <h3 className="text-sm font-black text-slate-950 dark:text-white">Physician-Designed AI Clinical Intelligence</h3>
+                      <p className="text-xs text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
                         Advanced AI assists analysis and planning while every recommendation remains supervised by a physician.
                       </p>
                     </div>
                   </div>
 
                   {/* Card 4 */}
-                  <div className="glass-panel border-slate-100 bg-white/50 rounded-2xl py-3.5 px-4 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300">
-                    <div className="w-10 h-10 rounded-xl bg-rose-500/5 border border-rose-500/10 text-rose-600 flex items-center justify-center flex-shrink-0">
+                  <div className="border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/80 rounded-2xl py-4 px-5 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 shadow-sm">
+                    <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 flex items-center justify-center flex-shrink-0">
                       <Activity className="w-5 h-5" />
                     </div>
                     <div className="space-y-1 text-left">
-                      <h3 className="text-sm font-bold text-[#1A2421]">Continuous Treatment Monitoring</h3>
-                      <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                      <h3 className="text-sm font-black text-slate-950 dark:text-white">Continuous Treatment Monitoring</h3>
+                      <p className="text-xs text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
                         Regular reviews ensure medicines and treatment strategies are refined throughout your care.
                       </p>
                     </div>
                   </div>
 
                   {/* Card 5 */}
-                  <div className="glass-panel border-slate-100 bg-white/50 rounded-2xl py-3.5 px-4 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300">
-                    <div className="w-10 h-10 rounded-xl bg-amber-500/5 border border-amber-500/10 text-amber-600 flex items-center justify-center flex-shrink-0">
+                  <div className="border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/80 rounded-2xl py-4 px-5 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 shadow-sm">
+                    <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 flex items-center justify-center flex-shrink-0">
                       <CalendarCheck className="w-5 h-5" />
                     </div>
                     <div className="space-y-1 text-left">
-                      <h3 className="text-sm font-bold text-[#1A2421]">Regular Physician Follow-ups</h3>
-                      <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                      <h3 className="text-sm font-black text-slate-950 dark:text-white">Regular Physician Follow-ups</h3>
+                      <p className="text-xs text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
                         Scheduled consultations ensure treatment remains aligned with your clinical progress.
                       </p>
                     </div>
                   </div>
 
                   {/* Card 6 */}
-                  <div className="glass-panel border-slate-100 bg-white/50 rounded-2xl py-3.5 px-4 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300">
-                    <div className="w-10 h-10 rounded-xl bg-blue-500/5 border border-blue-500/10 text-blue-650 flex items-center justify-center flex-shrink-0">
+                  <div className="border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/80 rounded-2xl py-4 px-5 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 shadow-sm">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 flex items-center justify-center flex-shrink-0">
                       <Globe className="w-5 h-5" />
                     </div>
                     <div className="space-y-1 text-left">
-                      <h3 className="text-sm font-bold text-[#1A2421]">Worldwide Online Care</h3>
-                      <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                      <h3 className="text-sm font-black text-slate-950 dark:text-white">Worldwide Online Care</h3>
+                      <p className="text-xs text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
                         Secure teleconsultations and medicine delivery support patients in India and worldwide.
                       </p>
                     </div>
                   </div>
 
                   {/* Card 7 */}
-                  <div className="glass-panel border-slate-100 bg-white/50 rounded-2xl py-3.5 px-4 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300">
-                    <div className="w-10 h-10 rounded-xl bg-teal-500/5 border border-teal-500/10 text-teal-600 flex items-center justify-center flex-shrink-0">
+                  <div className="border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/80 rounded-2xl py-4 px-5 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 shadow-sm">
+                    <div className="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950 border border-teal-200 dark:border-teal-800 text-teal-800 dark:text-teal-300 flex items-center justify-center flex-shrink-0">
                       <Pill className="w-5 h-5" />
                     </div>
                     <div className="space-y-1 text-left">
-                      <h3 className="text-sm font-bold text-[#1A2421]">Personalized Medicine Adjustments</h3>
-                      <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                      <h3 className="text-sm font-black text-slate-950 dark:text-white">Personalized Medicine Adjustments</h3>
+                      <p className="text-xs text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
                         Prescriptions are adjusted whenever clinically appropriate rather than remaining fixed.
                       </p>
                     </div>
                   </div>
 
                   {/* Card 8 */}
-                  <div className="glass-panel border-slate-100 bg-white/50 rounded-2xl py-3.5 px-4 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300">
-                    <div className="w-10 h-10 rounded-xl bg-orange-500/5 border border-orange-500/10 text-orange-600 flex items-center justify-center flex-shrink-0">
+                  <div className="border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/80 rounded-2xl py-4 px-5 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 shadow-sm">
+                    <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-950 border border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300 flex items-center justify-center flex-shrink-0">
                       <ClipboardList className="w-5 h-5" />
                     </div>
                     <div className="space-y-1 text-left">
-                      <h3 className="text-sm font-bold text-[#1A2421]">Transparent Treatment Planning</h3>
-                      <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                      <h3 className="text-sm font-black text-slate-950 dark:text-white">Transparent Treatment Planning</h3>
+                      <p className="text-xs text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
                         Understand your care level, treatment duration, follow-up schedule, and investment upfront.
                       </p>
                     </div>
@@ -1955,16 +1955,16 @@ export default function StorePage() {
                 </div>
 
                 {/* Bottom Highlight Panel */}
-                <div className="glass-panel border-mint/20 bg-mint/[0.02] rounded-3xl p-6 md:p-8 space-y-4 text-center relative overflow-hidden shadow-sm">
+                <div className="border-2 border-teal-200 dark:border-teal-800 bg-teal-50/60 dark:bg-teal-950/40 rounded-3xl p-6 md:p-8 space-y-4 text-center relative overflow-hidden shadow-sm">
                   <div className="space-y-2">
-                    <h3 className="text-lg font-bold text-[#1A2421]">Our Commitment to Personalized Care</h3>
-                    <p className="text-xs text-slate-655 font-semibold leading-relaxed max-w-4xl mx-auto">
+                    <h3 className="text-xl font-black text-slate-950 dark:text-white">Our Commitment to Personalized Care</h3>
+                    <p className="text-sm text-slate-800 dark:text-slate-200 font-medium leading-relaxed max-w-4xl mx-auto">
                       At Homeo Healthcare, treatment recommendations are based on your individual clinical needs, expected follow-up intensity, and long-term care requirements—not standardized packages. Every care program is designed by Dr. Narayan Jethwani and supported by AI-assisted clinical decision support to enhance consistency, transparency, and patient understanding.
                     </p>
                   </div>
                   
                   {/* Trust Badges */}
-                  <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-2 text-[10.5px] font-bold text-mint-dark">
+                  <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-2 text-xs font-black text-teal-900 dark:text-teal-200">
                     <span className="flex items-center gap-1">✓ Physician-Led</span>
                     <span className="flex items-center gap-1">✓ Personalized</span>
                     <span className="flex items-center gap-1">✓ AI-Assisted</span>
@@ -1973,9 +1973,9 @@ export default function StorePage() {
                 </div>
 
                 {/* Slim Trust Strip - Visual Bridge */}
-                <div className="border-y border-slate-900/5 py-4 bg-slate-500/[0.02] flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-center text-xs font-semibold text-slate-600">
-                  <span className="font-bold text-[#1A2421]">Trusted by patients for:</span>
-                  <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+                <div className="border-y border-slate-200 dark:border-slate-800 py-4 bg-slate-100/80 dark:bg-slate-850 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-center text-xs font-bold text-slate-800 dark:text-slate-200">
+                  <span className="font-black text-slate-950 dark:text-white">Trusted by patients for:</span>
+                  <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-semibold">
                     <span className="flex items-center gap-1.5">🌍 Worldwide Online Consultations</span>
                     <span className="flex items-center gap-1.5">🧬 Personalized Constitutional Care</span>
                     <span className="flex items-center gap-1.5">🤖 AI-Assisted Clinical Intelligence</span>
@@ -1987,10 +1987,10 @@ export default function StorePage() {
 
               {/* Clinical Recommendation Engine Header Label */}
               <div className="flex flex-col gap-1.5 text-left px-1 mt-4">
-                <span className="text-xs md:text-sm font-bold text-indigo-750 flex items-center gap-1.5 tracking-wide">
+                <span className="text-sm font-black text-indigo-950 dark:text-indigo-200 flex items-center gap-2 tracking-wide">
                   🧠 Physician-Guided Clinical Treatment Recommendation Engine
                 </span>
-                <p className="text-[11.5px] text-slate-500 font-semibold leading-relaxed">
+                <p className="text-xs text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
                   AI-assisted recommendations based on your selected clinical requirements. Final treatment plan is confirmed after physician consultation.
                 </p>
               </div>
@@ -2001,42 +2001,42 @@ export default function StorePage() {
                 <div className="lg:col-span-8 space-y-8">
                   
                   {/* Step 1: Care Level Grid */}
-                  <div className="glass-panel border-white/60 bg-white/40 rounded-3xl p-6 md:p-8 space-y-6">
+                  <div className="bg-white/95 dark:bg-slate-900/95 border-2 border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm">
                     <div className="flex justify-between items-start gap-4">
                       <div>
-                        <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 1</span>
-                        <h2 className="text-xl font-bold text-[#1A2421]">Select Recommended Care Intensity</h2>
-                        <p className="text-xs text-slate-500 font-semibold mt-1">
+                        <span className="text-xs font-black text-teal-800 dark:text-teal-400 uppercase tracking-widest block mb-1.5">Step 1</span>
+                        <h2 className="text-2xl font-black text-slate-950 dark:text-white tracking-tight">Select Recommended Care Intensity</h2>
+                        <p className="text-sm text-slate-700 dark:text-slate-300 font-medium mt-1 leading-relaxed">
                           Homeopathic treatment scales based on required care intensity. Every case is unique and requirements can change over time.
                         </p>
                       </div>
-                      <div className="w-10 h-10 bg-mint/5 border border-mint/10 text-mint rounded-2xl flex items-center justify-center flex-shrink-0">
+                      <div className="w-10 h-10 bg-teal-50 dark:bg-teal-950 border border-teal-200 dark:border-teal-800 text-teal-800 dark:text-teal-300 rounded-2xl flex items-center justify-center flex-shrink-0">
                         <Activity className="w-5 h-5" />
                       </div>
                     </div>
 
                     {/* AI Helper and Guidelines Toggles */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-slate-900/5 rounded-2xl border border-slate-200/50">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4.5 bg-slate-100 dark:bg-slate-800/60 rounded-2xl border-2 border-slate-200 dark:border-slate-700">
                       <div>
-                        <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-1">
-                          <Sparkles className="w-3.5 h-3.5 text-mint" />
+                        <h4 className="text-sm font-black text-slate-950 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+                          <Sparkles className="w-4 h-4 text-teal-700 dark:text-teal-400" />
                           Unsure which care level you need?
                         </h4>
-                        <p className="text-[10px] text-slate-500 font-semibold mt-0.5">Use our interactive helper or view mapping guidelines</p>
+                        <p className="text-xs text-slate-700 dark:text-slate-300 font-medium mt-0.5">Use our interactive helper or view mapping guidelines</p>
                       </div>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2.5">
                         <button
                           onClick={() => {
                             setTriageStep(1);
                             setViewMode("triage");
                           }}
-                          className="px-4 py-2 rounded-full bg-[#1A2421] hover:bg-[#2b3a36] text-white text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 cursor-pointer shadow-sm"
+                          className="px-5 py-2.5 rounded-full bg-slate-950 hover:bg-slate-800 text-white text-xs font-black uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95"
                         >
                           🩺 Help Me Plan
                         </button>
                         <button
                           onClick={() => setIsGuidelinesOpen(!isGuidelinesOpen)}
-                          className="px-4 py-2 rounded-full border border-slate-200 bg-white/60 hover:bg-white text-slate-700 hover:text-slate-900 text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 cursor-pointer"
+                          className="px-5 py-2.5 rounded-full border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-white text-xs font-black uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95"
                         >
                           📋 View Guidelines
                         </button>
@@ -2090,16 +2090,16 @@ export default function StorePage() {
                             <div className="overflow-x-auto">
                               <table className="w-full text-left border-collapse">
                                 <thead>
-                                  <tr className="border-b border-slate-200 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                                    <th className="py-2 pr-4 whitespace-nowrap">Care Level</th>
-                                    <th className="py-2 px-4">Common Mapped Conditions</th>
-                                    <th className="py-2 px-4 whitespace-nowrap">
+                                  <tr className="border-b-2 border-slate-300 dark:border-slate-700 text-xs font-black text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+                                    <th className="py-2.5 pr-4 whitespace-nowrap">Care Level</th>
+                                    <th className="py-2.5 px-4">Common Mapped Conditions</th>
+                                    <th className="py-2.5 px-4 whitespace-nowrap">
                                       {billingCycle === "weekly" ? "Weekly Rate" : "Monthly Rate (4 Wks)"}
                                     </th>
-                                    <th className="py-2 pl-4">Included Protocol</th>
+                                    <th className="py-2.5 pl-4">Included Protocol</th>
                                   </tr>
                                 </thead>
-                                <tbody className="divide-y divide-slate-100 font-semibold text-slate-700 text-[11px]">
+                                <tbody className="divide-y divide-slate-200 dark:divide-slate-800 font-medium text-slate-800 dark:text-slate-200 text-xs">
                                   {[
                                     {
                                       key: "mild",
@@ -2109,7 +2109,7 @@ export default function StorePage() {
                                       weeklyPrice: 2000,
                                       monthlyPrice: 7200,
                                       protocol: "Constitutional micro-dose remedies, basic diet sheet, bi-weekly check-ins. (Express 3-Day Protocol available: ₹1,000)",
-                                      textColor: "text-slate-900",
+                                      textColor: "text-slate-950 dark:text-white",
                                     },
                                     {
                                       key: "chronic_focused",
@@ -2119,7 +2119,7 @@ export default function StorePage() {
                                       weeklyPrice: 3000,
                                       monthlyPrice: 10800,
                                       protocol: "Disease mapping, targeted remedies, detailed dietary guide, fortnightly reports.",
-                                      textColor: "text-[#1A2421]",
+                                      textColor: "text-teal-900 dark:text-teal-200",
                                     },
                                     {
                                       key: "moderate",
@@ -2129,7 +2129,7 @@ export default function StorePage() {
                                       weeklyPrice: 6000,
                                       monthlyPrice: 21600,
                                       protocol: "Constitutional care synthesis, interrelated organ systems evaluation, personalized treatment plan.",
-                                      textColor: "text-sky-700",
+                                      textColor: "text-sky-900 dark:text-sky-300",
                                     },
                                     {
                                       key: "focused",
@@ -2139,7 +2139,7 @@ export default function StorePage() {
                                       weeklyPrice: 9000,
                                       monthlyPrice: 32400,
                                       protocol: "Deep organ-level pathology protocol, high-potency dilutions, lab report evaluation.",
-                                      textColor: "text-mint-dark",
+                                      textColor: "text-emerald-900 dark:text-emerald-200",
                                     },
                                     {
                                       key: "organ",
@@ -2149,7 +2149,7 @@ export default function StorePage() {
                                       weeklyPrice: 8000,
                                       monthlyPrice: 32000,
                                       protocol: "Multi-remedy inter-system support, periodic blood report comparison, dietitian integration.",
-                                      textColor: "text-indigo-700",
+                                      textColor: "text-indigo-900 dark:text-indigo-200",
                                     },
                                     {
                                       key: "comprehensive",
@@ -2159,7 +2159,7 @@ export default function StorePage() {
                                       weeklyPrice: 12000,
                                       monthlyPrice: 43200,
                                       protocol: "Direct Dr. Jethwani supervision, high-frequency dosage adjustments, acute flare protocols.",
-                                      textColor: "text-rose-600",
+                                      textColor: "text-rose-900 dark:text-rose-300",
                                     },
                                     {
                                       key: "acute_critical",
@@ -2169,7 +2169,7 @@ export default function StorePage() {
                                       weeklyPrice: 5000,
                                       monthlyPrice: 20000,
                                       protocol: "Daily clinical monitoring, frequent remedy titration, priority WhatsApp supervision by Dr. Jethwani.",
-                                      textColor: "text-red-700",
+                                      textColor: "text-red-900 dark:text-red-200",
                                     },
                                   ].map((row) => {
                                     const isSelected = careLevel === row.key;
@@ -2182,10 +2182,10 @@ export default function StorePage() {
                                         }}
                                         className={`cursor-pointer transition-all duration-200 ${
                                           isSelected
-                                            ? "bg-mint/[0.08] ring-1 ring-mint/30 shadow-xs"
+                                            ? "bg-teal-50 dark:bg-teal-950/60 ring-2 ring-teal-500/40 shadow-xs"
                                             : row.key === "acute_critical"
-                                            ? "bg-red-50/40 hover:bg-red-50/70"
-                                            : "hover:bg-slate-50/80"
+                                            ? "bg-red-50/50 hover:bg-red-50/80"
+                                            : "hover:bg-slate-100/70"
                                         }`}
                                       >
                                         <td className={`py-3 pr-4 font-black whitespace-nowrap ${row.textColor}`}>
@@ -2193,35 +2193,35 @@ export default function StorePage() {
                                             <span>{row.icon}</span>
                                             <span>{row.name}</span>
                                             {isSelected && (
-                                              <span className="ml-1 text-[9px] bg-mint text-white px-1.5 py-0.5 rounded-full font-bold">
+                                              <span className="ml-1 text-[10px] bg-teal-700 text-white px-2 py-0.5 rounded-full font-black">
                                                 Active
                                               </span>
                                             )}
                                           </div>
                                         </td>
-                                        <td className="py-3 px-4 text-slate-650">{row.conditions}</td>
-                                        <td className="py-3 px-4 font-black text-slate-900 whitespace-nowrap">
-                                          <span className="block font-bold">
+                                        <td className="py-3 px-4 text-slate-800 dark:text-slate-200 font-medium">{row.conditions}</td>
+                                        <td className="py-3 px-4 font-black text-slate-950 dark:text-white whitespace-nowrap">
+                                          <span className="block font-black text-sm">
                                             {billingCycle === "weekly"
                                               ? `₹${row.weeklyPrice.toLocaleString("en-IN")}/wk`
                                               : `₹${row.monthlyPrice.toLocaleString("en-IN")}/mo`}
                                           </span>
-                                          <span className="block text-[9px] font-semibold text-slate-400">
+                                          <span className="block text-[10px] font-bold text-slate-600 dark:text-slate-400">
                                             {billingCycle === "weekly"
                                               ? `₹${row.monthlyPrice.toLocaleString("en-IN")}/mo (4 wks)`
                                               : `₹${row.weeklyPrice.toLocaleString("en-IN")}/wk`}
                                           </span>
                                         </td>
-                                        <td className="py-3 pl-4 text-slate-650">{row.protocol}</td>
+                                        <td className="py-3 pl-4 text-slate-800 dark:text-slate-200 font-medium">{row.protocol}</td>
                                       </tr>
                                     );
                                   })}
                                 </tbody>
                               </table>
                             </div>
-                            <p className="text-[10px] text-slate-400 font-semibold flex items-center justify-between flex-wrap gap-2">
+                            <p className="text-xs text-slate-700 dark:text-slate-300 font-medium flex items-center justify-between flex-wrap gap-2">
                               <span>* Additional Care Coordination fee applies per active condition beyond 1, scaled by clinical complexity. Weekly and monthly billing available.</span>
-                              <span className="text-mint-dark font-bold">Click any row to select care level</span>
+                              <span className="text-teal-900 dark:text-teal-200 font-black">Click any row to select care level</span>
                             </p>
                           </div>
                         </motion.div>
@@ -2242,22 +2242,22 @@ export default function StorePage() {
                               setCareLevel(level);
                               if (level !== "mild" && durationValue === 0.5) setDurationValue(1);
                             }}
-                            className={`p-3 rounded-2xl border text-left transition-all duration-300 flex items-center gap-3 cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-[0.97] relative group overflow-hidden ${
+                            className={`p-3.5 rounded-2xl border-2 text-left transition-all duration-200 flex items-center gap-3 cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-[0.97] relative group overflow-hidden ${
                               active
-                                ? "border-mint bg-gradient-to-br from-mint/[0.08] to-teal-500/[0.02] ring-1 ring-mint/20 shadow-md shadow-mint/5"
-                                : "border-slate-200/80 hover:border-slate-400 bg-white/40 hover:bg-white/60"
+                                ? "border-teal-600 bg-teal-50/80 dark:bg-teal-950/40 ring-2 ring-teal-500/30 shadow-md"
+                                : "border-slate-200 dark:border-slate-800 hover:border-slate-400 bg-white dark:bg-slate-900/60"
                             }`}
                           >
-                            <span className="text-xl p-1.5 bg-white/80 rounded-xl shadow-sm border border-slate-150/40 group-hover:scale-105 transition-transform duration-300">
+                            <span className="text-2xl p-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 group-hover:scale-105 transition-transform duration-200">
                               {details.icon}
                             </span>
                             <div className="flex-1 min-w-0">
-                              <h4 className="text-xs font-black text-slate-900 leading-tight truncate">{details.title}</h4>
-                              <span className="text-[10px] font-bold text-slate-500 font-sans block mt-0.5">
+                              <h4 className="text-sm font-black text-slate-950 dark:text-white leading-tight truncate">{details.title}</h4>
+                              <span className="text-xs font-black text-teal-800 dark:text-teal-300 font-sans block mt-1">
                                 ₹{displayPrice.toLocaleString("en-IN")}/{billingCycle === "weekly" ? "wk" : "mo"}
                               </span>
                             </div>
-                            {active && <div className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-mint animate-pulse" />}
+                            {active && <div className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-teal-600 animate-pulse" />}
                           </button>
                         );
                       })}
@@ -2271,17 +2271,17 @@ export default function StorePage() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3 }}
-                        className="p-4 border-l-4 border-l-mint border-y border-r border-slate-200/60 bg-white/30 backdrop-blur-sm rounded-2xl space-y-3 shadow-sm hover:border-slate-350 transition-all duration-300 text-left"
+                        className="p-5 border-l-4 border-l-teal-600 border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 rounded-2xl space-y-3.5 shadow-sm text-left"
                       >
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-lg">{activeDetails.icon}</span>
-                            <h4 className="text-xs font-black text-[#1A2421] uppercase tracking-wider">{activeDetails.title} Details</h4>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div className="flex items-center gap-2.5 flex-wrap">
+                            <span className="text-xl">{activeDetails.icon}</span>
+                            <h4 className="text-sm font-black text-slate-950 dark:text-white uppercase tracking-wider">{activeDetails.title} Details</h4>
                             
                             {/* Care Intensity Badge with Tooltip */}
-                            <div className="flex items-center gap-1.5 bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60 px-2.5 py-0.5 rounded-full text-[9.5px] font-bold text-indigo-750 dark:text-indigo-400 relative group cursor-help select-none shrink-0 w-fit">
+                            <div className="flex items-center gap-1.5 bg-teal-100/90 dark:bg-teal-950/70 border border-teal-300 dark:border-teal-700 px-3 py-1 rounded-full text-xs font-black text-teal-900 dark:text-teal-200 relative group cursor-help select-none shrink-0 w-fit">
                               <span>Care Intensity: {activeDetails.complexityLabel}</span>
-                              <HelpCircle className="w-3.5 h-3.5 text-indigo-500 hover:text-indigo-750 dark:text-indigo-400 shrink-0" />
+                              <HelpCircle className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400 shrink-0" />
 
                               {/* Hover Tooltip */}
                               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2.5 w-60 p-3.5 bg-slate-900 text-white text-[10px] font-semibold leading-relaxed rounded-2xl shadow-xl border border-white/10 opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-300 z-50 text-left">
@@ -2291,15 +2291,15 @@ export default function StorePage() {
                             </div>
                           </div>
                         </div>
-                        <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                        <p className="text-sm text-slate-800 dark:text-slate-200 font-medium leading-relaxed">
                           {activeDetails.description}
                         </p>
                         
                         {/* Features mini grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2.5 border-t border-slate-900/5">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-3 border-t border-slate-200 dark:border-slate-800">
                           {activeDetails.features.map((feature, idx) => (
-                            <div key={idx} className="flex items-start gap-2 text-[10px] font-extrabold uppercase tracking-tight text-slate-600">
-                              <span className="text-mint">✓</span>
+                            <div key={idx} className="flex items-start gap-2 text-xs font-black uppercase tracking-wide text-slate-900 dark:text-slate-100">
+                              <span className="text-teal-700 dark:text-teal-400 font-black">✓</span>
                               <span>{feature}</span>
                             </div>
                           ))}
@@ -2312,13 +2312,13 @@ export default function StorePage() {
                       key={`why-this-plan-${careLevel}-${conditionsCount}-${durationValue}`}
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="p-4 border border-indigo-100 dark:border-indigo-950/40 bg-indigo-500/[0.03] dark:bg-indigo-950/10 rounded-2xl space-y-2 mt-4 text-left"
+                      className="p-5 border-2 border-indigo-200/80 dark:border-indigo-900/60 bg-indigo-50/70 dark:bg-indigo-950/40 rounded-2xl space-y-2 mt-4 text-left shadow-sm"
                     >
-                      <div className="flex items-center gap-1.5 text-indigo-700 dark:text-indigo-400 font-extrabold text-[11px] uppercase tracking-wider">
-                        <Info className="w-3.5 h-3.5" />
+                      <div className="flex items-center gap-1.5 text-indigo-950 dark:text-indigo-200 font-black text-xs uppercase tracking-wider">
+                        <Info className="w-4 h-4 text-indigo-700 dark:text-indigo-400" />
                         <span>Why this plan?</span>
                       </div>
-                      <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold leading-relaxed">
+                      <p className="text-sm text-slate-800 dark:text-slate-200 font-medium leading-relaxed">
                         {recommendation.patientExplanation}
                       </p>
                     </motion.div>
@@ -2327,22 +2327,22 @@ export default function StorePage() {
                   {/* Steps 1.5 & 2 Side-by-Side Wrapper */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Step 1.5: Active Health Concerns Selector */}
-                    <div className="glass-panel border-white/60 bg-white/40 rounded-3xl p-6 md:p-8 space-y-6 flex flex-col justify-between">
+                    <div className="bg-white/95 dark:bg-slate-900/95 border-2 border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 flex flex-col justify-between shadow-sm">
                       <div className="space-y-6">
                         <div className="flex justify-between items-start gap-4">
                           <div>
-                            <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 1.5</span>
-                            <h2 className="text-xl font-bold text-[#1A2421]">Active Health Concerns</h2>
-                            <p className="text-xs text-slate-500 font-semibold mt-1">
+                            <span className="text-xs font-black text-teal-800 dark:text-teal-400 uppercase tracking-widest block mb-1.5">Step 1.5</span>
+                            <h2 className="text-2xl font-black text-slate-950 dark:text-white tracking-tight">Active Health Concerns</h2>
+                            <p className="text-sm text-slate-700 dark:text-slate-300 font-medium mt-1 leading-relaxed">
                               Select the number of concurrent active health concerns you wish to address. Multi-concern tracking scales physician analysis time.
                             </p>
                           </div>
-                          <div className="w-10 h-10 bg-mint/5 border border-mint/10 text-mint rounded-2xl flex items-center justify-center flex-shrink-0">
+                          <div className="w-10 h-10 bg-teal-50 dark:bg-teal-950 border border-teal-200 dark:border-teal-800 text-teal-800 dark:text-teal-300 rounded-2xl flex items-center justify-center flex-shrink-0">
                             <Layers className="w-5 h-5" />
                           </div>
                         </div>
 
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-2.5">
                           {(() => {
                             const activeTierSurcharges = surchargesLookup[careLevel] || {
                               unitWeekly: Math.round((careLevelsDetails[careLevel]?.weeklyPrice || 2000) * 0.25),
@@ -2363,24 +2363,24 @@ export default function StorePage() {
                                   type="button"
                                   key={item.count}
                                   onClick={() => setConditionsCount(item.count)}
-                                  className={`px-4.5 py-3.5 rounded-2xl border transition-all duration-300 flex items-center justify-between cursor-pointer hover:-translate-y-1 hover:shadow-sm active:scale-[0.98] ${
+                                  className={`px-4.5 py-3.5 rounded-2xl border-2 transition-all duration-200 flex items-center justify-between cursor-pointer hover:-translate-y-0.5 hover:shadow-sm active:scale-[0.98] ${
                                     active
-                                      ? "border-mint bg-gradient-to-r from-mint/[0.05] to-transparent ring-1 ring-mint/20 font-bold shadow-md shadow-mint/5"
-                                      : "border-slate-200/60 hover:border-slate-400 text-slate-700 bg-white/40 hover:bg-white"
+                                      ? "border-teal-600 bg-teal-50/70 dark:bg-teal-950/40 ring-2 ring-teal-500/20 font-black shadow-sm"
+                                      : "border-slate-200 dark:border-slate-800 hover:border-slate-400 text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900/60 hover:bg-slate-50"
                                   }`}
                                 >
                                   <div className="flex items-center gap-3">
-                                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all ${
-                                      active ? "border-mint bg-mint" : "border-slate-300 bg-white"
+                                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
+                                      active ? "border-teal-600 bg-teal-600" : "border-slate-400 bg-white"
                                     }`}>
                                       {active && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                                     </div>
                                     <div className="text-left">
-                                      <span className="text-xs font-bold text-slate-800 block leading-tight">{item.label}</span>
-                                      <span className="text-[9px] text-slate-400 font-bold block mt-0.5 uppercase tracking-widest">{item.surchargeInfo}</span>
+                                      <span className="text-sm font-black text-slate-950 dark:text-white block leading-tight">{item.label}</span>
+                                      <span className="text-[10px] text-slate-600 dark:text-slate-400 font-extrabold block mt-0.5 uppercase tracking-wider">{item.surchargeInfo}</span>
                                     </div>
                                   </div>
-                                  <span className="text-xs font-black text-mint-dark font-sans">
+                                  <span className="text-xs font-black text-teal-800 dark:text-teal-300 font-sans">
                                     {item.surchargeText}
                                   </span>
                                 </button>
@@ -2389,7 +2389,7 @@ export default function StorePage() {
                           })()}
                         </div>
                         {conditionsCount > 1 && (
-                          <p className="text-[10px] text-amber-700 font-semibold leading-relaxed bg-amber-500/5 border border-amber-500/10 p-3.5 rounded-2xl text-left">
+                          <p className="text-xs text-amber-900 dark:text-amber-200 font-bold leading-relaxed bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800 p-4 rounded-2xl text-left">
                             Additional health concerns may require increased physician time, individualized treatment planning, and coordinated follow-up. The Clinical Complexity Adjustment reflects the additional care required.
                           </p>
                         )}
@@ -2397,36 +2397,36 @@ export default function StorePage() {
                     </div>
 
                     {/* Step 2: Duration & Billing Controls */}
-                    <div className="glass-panel border-white/60 bg-white/40 rounded-3xl p-6 md:p-8 space-y-6 flex flex-col justify-between">
+                    <div className="bg-white/95 dark:bg-slate-900/95 border-2 border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 flex flex-col justify-between shadow-sm">
                       <div className="space-y-6">
                         <div className="flex justify-between items-start gap-4">
                           <div>
-                            <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 2</span>
-                            <h2 className="text-xl font-bold text-[#1A2421]">Billing & Duration Selection</h2>
-                            <p className="text-xs text-slate-500 font-semibold mt-1">
+                            <span className="text-xs font-black text-teal-800 dark:text-teal-400 uppercase tracking-widest block mb-1.5">Step 2</span>
+                            <h2 className="text-2xl font-black text-slate-950 dark:text-white tracking-tight">Billing & Duration Selection</h2>
+                            <p className="text-sm text-slate-700 dark:text-slate-300 font-medium mt-1 leading-relaxed">
                               Personalized physician-led homeopathic care with structured follow-up and treatment planning. Choose longer care duration to receive continuity benefits.
                             </p>
                           </div>
-                          <div className="w-10 h-10 bg-mint/5 border border-mint/10 text-mint rounded-2xl flex items-center justify-center flex-shrink-0">
+                          <div className="w-10 h-10 bg-teal-50 dark:bg-teal-950 border border-teal-200 dark:border-teal-800 text-teal-800 dark:text-teal-300 rounded-2xl flex items-center justify-center flex-shrink-0">
                             <Percent className="w-5 h-5" />
                           </div>
                         </div>
 
                         <div className="space-y-6">
                           {/* Cycle Selector */}
-                          <div className="p-4.5 bg-slate-900/5 rounded-2xl border border-slate-200/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                          <div className="p-4.5 bg-slate-100 dark:bg-slate-800/60 rounded-2xl border-2 border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div>
-                              <h4 className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider">Care Billing Option</h4>
-                              <p className="text-[8px] text-slate-400 font-bold uppercase mt-0.5">Weekly care billing option vs discounted monthly Care billing option</p>
+                              <h4 className="text-xs font-black text-slate-950 dark:text-white uppercase tracking-wider">Care Billing Option</h4>
+                              <p className="text-[10px] text-slate-600 dark:text-slate-400 font-bold uppercase mt-0.5">Weekly billing vs discounted monthly care billing</p>
                             </div>
-                            <div className="flex items-center gap-1 bg-white/60 p-0.5 rounded-full border border-slate-200/50 w-fit relative z-0">
+                            <div className="flex items-center gap-1 bg-white dark:bg-slate-900 p-1 rounded-full border border-slate-300 dark:border-slate-700 w-fit relative z-0">
                               <button
                                 type="button"
                                 onClick={() => handleCycleChange("weekly")}
-                                className={`relative px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all duration-300 cursor-pointer z-10 ${
+                                className={`relative px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer z-10 ${
                                   billingCycle === "weekly"
                                     ? "text-white"
-                                    : "text-slate-500 hover:text-[#1A2421]"
+                                    : "text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white"
                                 }`}
                               >
                                 {billingCycle === "weekly" && (
@@ -2441,10 +2441,10 @@ export default function StorePage() {
                               <button
                                 type="button"
                                 onClick={() => handleCycleChange("monthly")}
-                                className={`relative px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all duration-300 flex items-center gap-1 cursor-pointer z-10 ${
+                                className={`relative px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-200 flex items-center gap-1 cursor-pointer z-10 ${
                                   billingCycle === "monthly"
                                     ? "text-white"
-                                    : "text-slate-500 hover:text-[#1A2421]"
+                                    : "text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white"
                                 }`}
                               >
                                 {billingCycle === "monthly" && (
@@ -2462,10 +2462,10 @@ export default function StorePage() {
                           {/* Duration selector */}
                           <div className="space-y-3">
                             <div className="flex justify-between items-center">
-                              <h4 className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider">Recommended Treatment Duration</h4>
-                              <span className="text-[9px] text-mint font-bold uppercase tracking-wider flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
-                                Continuity of Care Benefit: {activePricing.discountPercent}% Off
+                              <h4 className="text-xs font-black text-slate-950 dark:text-white uppercase tracking-wider">Recommended Treatment Duration</h4>
+                              <span className="text-xs text-teal-800 dark:text-teal-400 font-black uppercase tracking-wider flex items-center gap-1">
+                                <Clock className="w-3.5 h-3.5" />
+                                Continuity Benefit: {activePricing.discountPercent}% Off
                               </span>
                             </div>
                             
@@ -2508,44 +2508,41 @@ export default function StorePage() {
                                         type="button"
                                         key={opt.value}
                                         onClick={() => setDurationValue(opt.value)}
-                                        className={`sm:col-span-2 p-5 rounded-2xl border transition-all duration-305 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer hover:-translate-y-1.5 hover:shadow-lg active:scale-[0.99] relative overflow-hidden ${
+                                        className={`sm:col-span-2 p-5 rounded-2xl border-2 transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer hover:-translate-y-1 hover:shadow-lg active:scale-[0.99] relative overflow-hidden ${
                                           isSelected
-                                            ? "border-mint bg-gradient-to-br from-mint/[0.12] to-teal-500/[0.03] ring-1 ring-mint/25 shadow-lg shadow-mint/5"
-                                            : "border-slate-200 bg-white/40 hover:bg-white hover:border-slate-800"
+                                            ? "border-teal-600 bg-teal-50/80 dark:bg-teal-950/40 ring-2 ring-teal-500/25 shadow-md"
+                                            : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 hover:bg-white hover:border-slate-400"
                                         }`}
                                       >
-                                        {isSelected && (
-                                          <div className="absolute inset-0 bg-gradient-to-r from-mint/10 to-indigo-500/10 pointer-events-none opacity-60 animate-pulse" style={{ animationDuration: '4s' }} />
-                                        )}
                                         <div className="flex items-start gap-3.5 relative z-10">
-                                          <div className={`w-5 h-5 rounded-full border flex items-center justify-center mt-0.5 transition-all flex-shrink-0 ${
-                                            isSelected ? "border-mint bg-mint" : "border-slate-300 bg-white"
+                                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5 transition-all flex-shrink-0 ${
+                                            isSelected ? "border-teal-600 bg-teal-600" : "border-slate-400 bg-white"
                                           }`}>
                                             {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
                                           </div>
                                           <div className="text-left">
                                             <div className="flex flex-wrap items-center gap-2">
-                                              <span className="text-xs font-bold text-slate-850 leading-tight block">{opt.label}</span>
+                                              <span className="text-sm font-black text-slate-950 dark:text-white leading-tight block">{opt.label}</span>
                                               {opt.discount !== "0%" && (
-                                                <span className="text-[8.5px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-550 to-teal-650 text-white shadow-sm shadow-emerald-500/10">
+                                                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300">
                                                   {opt.discount} Benefit
                                                 </span>
                                               )}
-                                              <span className="text-[8.5px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                                              <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
                                                 ⭐ Best Value
                                               </span>
                                             </div>
-                                            <span className="text-[10px] text-slate-400 font-bold block mt-1.5 uppercase tracking-wider">{opt.desc}</span>
+                                            <span className="text-xs text-slate-700 dark:text-slate-300 font-medium block mt-1.5 leading-relaxed">{opt.desc}</span>
                                           </div>
                                         </div>
-                                        <div className="text-left sm:text-right relative z-10 flex sm:flex-col items-baseline sm:items-end justify-between border-t sm:border-t-0 border-slate-900/5 pt-2.5 sm:pt-0">
+                                        <div className="text-left sm:text-right relative z-10 flex sm:flex-col items-baseline sm:items-end justify-between border-t sm:border-t-0 border-slate-200 dark:border-slate-800 pt-2.5 sm:pt-0">
                                           <div>
-                                            <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block sm:inline mr-1.5 sm:mr-0">Investment </span>
-                                            <span className="text-base font-black text-slate-900 font-sans">
+                                            <span className="text-xs text-slate-600 dark:text-slate-400 font-bold uppercase tracking-wider block sm:inline mr-1.5 sm:mr-0">Investment </span>
+                                            <span className="text-lg font-black text-slate-950 dark:text-white font-sans">
                                               ₹{optPricing.finalPrice.toLocaleString("en-IN")}
                                             </span>
                                           </div>
-                                          <span className="text-[9px] text-emerald-700 font-black uppercase tracking-wider mt-0.5 block">
+                                          <span className="text-xs text-teal-800 dark:text-teal-300 font-black uppercase tracking-wider mt-0.5 block">
                                             ₹{Math.round(optPricing.finalPrice / opt.value).toLocaleString("en-IN")}/{billingCycle === "weekly" ? "wk" : "mo"} avg
                                           </span>
                                         </div>
@@ -2558,35 +2555,35 @@ export default function StorePage() {
                                       type="button"
                                       key={opt.value}
                                       onClick={() => setDurationValue(opt.value)}
-                                      className={`p-4.5 rounded-2xl border transition-all duration-300 flex flex-col justify-between gap-3.5 cursor-pointer hover:-translate-y-1.5 hover:shadow-lg active:scale-[0.98] relative overflow-hidden ${
+                                      className={`p-4.5 rounded-2xl border-2 transition-all duration-200 flex flex-col justify-between gap-3.5 cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-[0.98] relative overflow-hidden ${
                                         isSelected
-                                          ? "border-mint bg-gradient-to-br from-mint/[0.08] to-teal-500/[0.02] ring-1 ring-mint/20 shadow-md shadow-mint/5"
-                                          : "border-slate-200 bg-white/40 hover:bg-white hover:border-slate-800"
+                                          ? "border-teal-600 bg-teal-50/80 dark:bg-teal-950/40 ring-2 ring-teal-500/20 shadow-md"
+                                          : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 hover:bg-white hover:border-slate-400"
                                       }`}
                                     >
                                       <div className="flex items-start justify-between gap-2">
                                         <div className="text-left">
-                                          <span className="text-xs font-bold text-slate-850 leading-tight block">{opt.label}</span>
-                                          <span className="text-[9.5px] text-slate-400 font-semibold block mt-1 leading-normal">{opt.desc}</span>
+                                          <span className="text-sm font-black text-slate-950 dark:text-white leading-tight block">{opt.label}</span>
+                                          <span className="text-xs text-slate-700 dark:text-slate-300 font-medium block mt-1 leading-normal">{opt.desc}</span>
                                         </div>
-                                        <div className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center transition-all flex-shrink-0 mt-0.5 ${
-                                          isSelected ? "border-mint bg-mint" : "border-slate-300 bg-white"
+                                        <div className={`w-4.5 h-4.5 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0 mt-0.5 ${
+                                          isSelected ? "border-teal-600 bg-teal-600" : "border-slate-400 bg-white"
                                         }`}>
                                           {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                                         </div>
                                       </div>
-                                      <div className="flex flex-col gap-1 text-left border-t border-slate-900/5 pt-2.5 mt-auto">
+                                      <div className="flex flex-col gap-1 text-left border-t border-slate-200 dark:border-slate-800 pt-2.5 mt-auto">
                                         <div className="flex items-baseline justify-between gap-2">
-                                          <span className="text-base font-extrabold text-slate-900 font-sans">
+                                          <span className="text-base font-black text-slate-950 dark:text-white font-sans">
                                             ₹{optPricing.finalPrice.toLocaleString("en-IN")}
                                           </span>
                                           {opt.discount !== "0%" && (
-                                            <span className="text-[8.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100">
+                                            <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300">
                                               {opt.discount} Benefit
                                             </span>
                                           )}
                                         </div>
-                                        <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">
+                                        <span className="text-xs text-slate-600 dark:text-slate-400 font-bold uppercase tracking-wider">
                                           ₹{Math.round(optPricing.finalPrice / opt.value).toLocaleString("en-IN")}/{billingCycle === "weekly" ? "wk" : "mo"}
                                         </span>
                                       </div>
@@ -2603,52 +2600,52 @@ export default function StorePage() {
               </div>
 
                 {/* Dashboard Right Summary Card (4 cols) */}
-                <div className="lg:col-span-4 lg:sticky lg:top-32 space-y-6">
-                  <div className="glass-panel border-indigo-500/25 bg-indigo-500/[0.03] dark:bg-indigo-950/20 rounded-3xl p-6 md:p-8 relative overflow-hidden shadow-lg shadow-indigo-500/5">
+                <div className="lg:col-span-4 lg:sticky lg:top-28 space-y-6">
+                  <div className="bg-white/95 dark:bg-slate-900/95 border-2 border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 md:p-8 relative overflow-hidden shadow-xl">
                     {/* Glowing highlight */}
                     <div 
                       className="absolute inset-0 pointer-events-none opacity-40"
                     />
                     <div className="relative space-y-6">
-                      <div className="space-y-4">
-                        <span className="text-[9.5px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200/50 mb-3 inline-block tracking-wide">
+                      <div className="space-y-3">
+                        <span className="text-xs font-black px-3 py-1 rounded-full bg-teal-100 dark:bg-teal-950 text-teal-900 dark:text-teal-200 border border-teal-300 dark:border-teal-700 uppercase tracking-wider inline-block">
                           Active Configuration
                         </span>
-                        <h3 className="text-2xl font-bold text-[#1A2421]">{activeDetails.title}</h3>
-                        <span className="text-xs text-slate-500 font-semibold tracking-wide block mt-1">
+                        <h3 className="text-2xl sm:text-3xl font-black text-slate-950 dark:text-white tracking-tight">{activeDetails.title}</h3>
+                        <span className="text-xs text-slate-700 dark:text-slate-300 font-bold uppercase tracking-wide block">
                           {activeDetails.badge}
                         </span>
                       </div>
 
                       {/* Recommendation Summary */}
-                      <div className="p-4 bg-indigo-500/[0.04] border border-indigo-100 dark:border-indigo-950/40 rounded-2xl space-y-3 text-left">
-                        <div className="flex items-center gap-1.5 text-[#1A2421] font-bold text-[10.5px] tracking-wide">
-                          <Sparkles className="w-3.5 h-3.5 text-indigo-650" />
+                      <div className="p-4.5 bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200/80 dark:border-slate-700 rounded-2xl space-y-3.5 text-left">
+                        <div className="flex items-center gap-1.5 text-slate-950 dark:text-white font-black text-xs uppercase tracking-wider">
+                          <Sparkles className="w-4 h-4 text-teal-600 dark:text-teal-400" />
                           <span>Clinical Care Summary</span>
                         </div>
                         
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-[11px] font-semibold text-slate-655">
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs font-medium text-slate-800 dark:text-slate-200">
                           <div>
-                            <span className="text-[9px] text-slate-400 font-semibold block mb-0.5">Recommended Care Program</span>
-                            <span className="text-[#1A2421] font-extrabold block leading-tight">{recommendation.recommendedProgram}</span>
+                            <span className="text-[11px] text-slate-600 dark:text-slate-400 font-extrabold uppercase tracking-wide block mb-0.5">Recommended Program</span>
+                            <span className="text-slate-950 dark:text-white font-black text-sm block leading-tight">{recommendation.recommendedProgram}</span>
                           </div>
                           <div>
-                            <span className="text-[9px] text-slate-400 font-semibold block mb-0.5">Care Complexity</span>
-                            <span className="text-[#1A2421] font-extrabold block leading-tight">{activeDetails.complexityLabel}</span>
+                            <span className="text-[11px] text-slate-600 dark:text-slate-400 font-extrabold uppercase tracking-wide block mb-0.5">Care Complexity</span>
+                            <span className="text-slate-950 dark:text-white font-black text-sm block leading-tight">{activeDetails.complexityLabel}</span>
                           </div>
                           <div>
-                            <span className="text-[9px] text-slate-400 font-semibold block mb-0.5">Suggested Follow-up</span>
-                            <span className="text-[#1A2421] font-extrabold block leading-tight">{recommendation.followUpFrequency}</span>
+                            <span className="text-[11px] text-slate-600 dark:text-slate-400 font-extrabold uppercase tracking-wide block mb-0.5">Suggested Follow-up</span>
+                            <span className="text-slate-950 dark:text-white font-black text-sm block leading-tight">{recommendation.followUpFrequency}</span>
                           </div>
                           <div>
-                            <span className="text-[9px] text-slate-400 font-semibold block mb-0.5">Recommended Care Period</span>
-                            <span className="text-[#1A2421] font-extrabold block leading-tight">
+                            <span className="text-[11px] text-slate-600 dark:text-slate-400 font-extrabold uppercase tracking-wide block mb-0.5">Recommended Care Period</span>
+                            <span className="text-slate-950 dark:text-white font-black text-sm block leading-tight">
                               {durationValue === 0.5 ? "3 Days" : `${durationValue} ${billingCycle === "weekly" ? (durationValue === 1 ? "Week" : "Weeks") : (durationValue === 1 ? "Month" : "Months")}`}
                             </span>
                           </div>
                           <div className="col-span-2">
-                            <span className="text-[9px] text-slate-400 font-semibold block mb-0.5">Active Health Concerns</span>
-                            <span className="text-[#1A2421] font-extrabold block leading-tight">
+                            <span className="text-[11px] text-slate-600 dark:text-slate-400 font-extrabold uppercase tracking-wide block mb-0.5">Active Health Concerns</span>
+                            <span className="text-slate-950 dark:text-white font-black text-sm block leading-tight">
                               {conditionsCount} {conditionsCount === 1 ? "Concern" : "Concerns"}
                             </span>
                           </div>
@@ -2656,86 +2653,86 @@ export default function StorePage() {
                       </div>
 
                       {/* Pricing block */}
-                      <div className="p-4 bg-white/60 border border-white/80 rounded-2xl space-y-3">
-                        <div className="text-[11px] text-[#1A2421] font-bold tracking-wide border-b border-slate-900/5 pb-2">
+                      <div className="p-4.5 bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200/80 dark:border-slate-700 rounded-2xl space-y-3 text-left">
+                        <div className="text-xs text-slate-950 dark:text-white font-black uppercase tracking-wider border-b border-slate-200 dark:border-slate-700 pb-2">
                           Treatment Investment Summary
                         </div>
-                        <div className="flex justify-between text-xs text-slate-600 font-semibold tracking-wide">
+                        <div className="flex justify-between text-xs text-slate-800 dark:text-slate-200 font-bold tracking-wide">
                           <span>Clinical Care Fee</span>
-                          <span>₹{activePricing.basePrice.toLocaleString("en-IN")} / {durationValue === 0.5 ? "3 days" : (billingCycle === "weekly" ? "wk" : "mo")}</span>
+                          <span className="font-black text-slate-950 dark:text-white">₹{activePricing.basePrice.toLocaleString("en-IN")} / {durationValue === 0.5 ? "3 days" : (billingCycle === "weekly" ? "wk" : "mo")}</span>
                         </div>
 
                         {conditionsCount > 1 && (
-                          <div className="flex justify-between text-xs text-slate-600 font-semibold tracking-wide">
+                          <div className="flex justify-between text-xs text-slate-800 dark:text-slate-200 font-bold tracking-wide">
                             <span>Clinical Complexity Adjustment ({conditionsCount} Concerns)</span>
-                            <span>+₹{activePricing.surcharge.toLocaleString("en-IN")} / {durationValue === 0.5 ? "3 days" : (billingCycle === "weekly" ? "wk" : "mo")}</span>
+                            <span className="font-black text-slate-950 dark:text-white">+₹{activePricing.surcharge.toLocaleString("en-IN")} / {durationValue === 0.5 ? "3 days" : (billingCycle === "weekly" ? "wk" : "mo")}</span>
                           </div>
                         )}
 
                         {conditionsCount > 1 && (
-                          <div className="flex justify-between text-xs text-slate-900 font-bold tracking-wide border-b border-slate-900/5 pb-2">
+                          <div className="flex justify-between text-xs text-slate-950 dark:text-white font-black tracking-wide border-b border-slate-200 dark:border-slate-700 pb-2">
                             <span>Personalized Care Investment</span>
                             <span>₹{activePricing.adjustedBasePrice.toLocaleString("en-IN")} / {durationValue === 0.5 ? "3 days" : (billingCycle === "weekly" ? "wk" : "mo")}</span>
                           </div>
                         )}
 
-                        <div className="flex justify-between text-xs text-slate-600 font-semibold tracking-wide">
+                        <div className="flex justify-between text-xs text-slate-800 dark:text-slate-200 font-bold tracking-wide">
                           <span>Recommended Care Period ({durationValue === 0.5 ? "3 Days" : `${durationValue} ${billingCycle === "weekly" ? (durationValue === 1 ? "week" : "weeks") : (durationValue === 1 ? "month" : "months")}`})</span>
-                          <span>₹{activePricing.rawTotal.toLocaleString("en-IN")}</span>
+                          <span className="font-black text-slate-950 dark:text-white">₹{activePricing.rawTotal.toLocaleString("en-IN")}</span>
                         </div>
 
                         {activePricing.discountPercent > 0 && (
-                          <div className="flex justify-between text-xs text-emerald-600 font-bold tracking-wide">
+                          <div className="flex justify-between text-xs text-emerald-900 dark:text-emerald-200 font-black tracking-wide bg-emerald-100/90 dark:bg-emerald-950/70 p-2.5 rounded-lg border border-emerald-300 dark:border-emerald-800">
                             <span>Continuity of Care Benefit ({activePricing.discountPercent}%)</span>
                             <span>-₹{activePricing.discountAmount.toLocaleString("en-IN")}</span>
                           </div>
                         )}
 
-                        <div className="pt-2 border-t border-slate-900/5 space-y-1.5">
-                          <div className="flex justify-between text-[10px] text-slate-500 font-semibold tracking-wide">
+                        <div className="pt-2 border-t border-slate-200 dark:border-slate-700 space-y-1.5">
+                          <div className="flex justify-between text-xs text-slate-700 dark:text-slate-300 font-bold tracking-wide">
                             <span>Care Period</span>
-                            <span className="text-slate-800 font-extrabold">{durationValue === 0.5 ? 3 : (billingCycle === "weekly" ? durationValue * 7 : durationValue * 30)} Days</span>
+                            <span className="text-slate-950 dark:text-white font-black">{durationValue === 0.5 ? 3 : (billingCycle === "weekly" ? durationValue * 7 : durationValue * 30)} Days</span>
                           </div>
-                          <div className="flex justify-between text-[10px] text-slate-500 font-semibold tracking-wide border-b border-slate-900/5 pb-2">
+                          <div className="flex justify-between text-xs text-slate-700 dark:text-slate-300 font-bold tracking-wide border-b border-slate-200 dark:border-slate-700 pb-2">
                             <span>Equivalent Daily Care Investment</span>
-                            <span className="text-emerald-700 font-extrabold">₹{Math.round(activePricing.finalPrice / (durationValue === 0.5 ? 3 : (billingCycle === "weekly" ? durationValue * 7 : durationValue * 30)))}/day</span>
+                            <span className="text-emerald-800 dark:text-emerald-400 font-black">₹{Math.round(activePricing.finalPrice / (durationValue === 0.5 ? 3 : (billingCycle === "weekly" ? durationValue * 7 : durationValue * 30)))}/day</span>
                           </div>
                         </div>
 
                         <div className="pt-1 flex justify-between items-baseline">
-                          <span className="text-xs font-bold text-slate-800 tracking-wide">Your Treatment Investment</span>
+                          <span className="text-sm font-black text-slate-950 dark:text-white tracking-wide">Your Treatment Investment</span>
                           <div className="text-right">
                             <motion.span
                               key={activePricing.finalPrice}
                               initial={{ scale: 0.95, opacity: 0.8 }}
                               animate={{ scale: 1, opacity: 1 }}
                               transition={{ type: "spring", stiffness: 350, damping: 15 }}
-                              className="text-3xl font-black text-[#1A2421] font-sans block"
+                              className="text-3xl sm:text-4xl font-black text-slate-950 dark:text-white font-sans block"
                             >
                               ₹{activePricing.finalPrice.toLocaleString("en-IN")}
                             </motion.span>
-                            <span className="text-[9px] text-slate-500 font-semibold block uppercase">Excludes shipping (India ₹300 | Intl at dispatch)</span>
+                            <span className="text-[10px] text-slate-600 dark:text-slate-400 font-extrabold block uppercase tracking-wide mt-1">Excludes shipping (India ₹300 | Intl at dispatch)</span>
                           </div>
                         </div>
                       </div>
 
                       {/* Quick Adjuster Grid Component */}
-                      <div className="p-4 bg-white/60 border border-slate-100 rounded-2xl space-y-4 shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
+                      <div className="p-4.5 bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200/80 dark:border-slate-700 rounded-2xl space-y-4 shadow-sm">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           {/* Billing Frequency Card */}
                           <div className="flex flex-col justify-between gap-2">
                             <div>
-                              <h4 className="text-[9px] font-black text-slate-800 uppercase tracking-wider">Care Billing Option</h4>
-                              <p className="text-[7.5px] text-slate-400 font-bold uppercase mt-0.5">Weekly vs Monthly Option</p>
+                              <h4 className="text-xs font-black text-slate-950 dark:text-white uppercase tracking-wider">Care Billing Option</h4>
+                              <p className="text-[10px] text-slate-600 dark:text-slate-400 font-bold uppercase mt-0.5">Weekly vs Monthly Option</p>
                             </div>
-                            <div className="flex items-center gap-1 bg-slate-900/5 p-0.5 rounded-full border border-slate-200/50 w-fit relative scale-[0.9] origin-left z-0">
+                            <div className="flex items-center gap-1 bg-white dark:bg-slate-900 p-1 rounded-full border border-slate-300 dark:border-slate-700 w-fit relative z-0">
                               <button
                                 type="button"
                                 onClick={() => handleCycleChange("weekly")}
-                                className={`relative px-2.5 py-1 rounded-full text-[8.5px] font-black uppercase tracking-wider transition-all duration-305 cursor-pointer z-10 ${
+                                className={`relative px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer z-10 ${
                                   billingCycle === "weekly"
                                     ? "text-white"
-                                    : "text-slate-500 hover:text-[#1A2421]"
+                                    : "text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white"
                                 }`}
                               >
                                 {billingCycle === "weekly" && (
@@ -2750,10 +2747,10 @@ export default function StorePage() {
                               <button
                                 type="button"
                                 onClick={() => handleCycleChange("monthly")}
-                                className={`relative px-2.5 py-1 rounded-full text-[8.5px] font-black uppercase tracking-wider transition-all duration-305 cursor-pointer z-10 ${
+                                className={`relative px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer z-10 ${
                                   billingCycle === "monthly"
                                     ? "text-white"
-                                    : "text-slate-500 hover:text-[#1A2421]"
+                                    : "text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white"
                                 }`}
                               >
                                 {billingCycle === "monthly" && (
@@ -2766,7 +2763,7 @@ export default function StorePage() {
                                 Monthly
                               </button>
                               
-                              <span className="absolute -top-3.5 -right-3 px-1 py-0.5 rounded-full bg-emerald-500 text-white text-[7px] font-black uppercase tracking-wider">
+                              <span className="absolute -top-3.5 -right-3 px-1.5 py-0.5 rounded-full bg-emerald-600 text-white text-[8px] font-black uppercase tracking-wider">
                                 SAVE 10–30%
                               </span>
                             </div>
@@ -2775,10 +2772,10 @@ export default function StorePage() {
                           {/* Conditions Covered Card */}
                           <div className="flex flex-col justify-between gap-2">
                             <div>
-                              <h4 className="text-[9px] font-black text-slate-800 uppercase tracking-wider">Active Health Concerns</h4>
-                              <p className="text-[7.5px] text-slate-400 font-bold uppercase mt-0.5">Active Concerns</p>
+                              <h4 className="text-xs font-black text-slate-950 dark:text-white uppercase tracking-wider">Active Health Concerns</h4>
+                              <p className="text-[10px] text-slate-600 dark:text-slate-400 font-bold uppercase mt-0.5">Active Concerns</p>
                             </div>
-                            <div className="flex items-center gap-1 scale-[0.95] origin-left">
+                            <div className="flex items-center gap-1.5">
                               {[1, 2, 3, 4, 5].map((count) => {
                                 const label = count === 5 ? "5+" : `${count}`;
                                 const active = conditionsCount === count;
@@ -2787,10 +2784,10 @@ export default function StorePage() {
                                     type="button"
                                     key={count}
                                     onClick={() => setConditionsCount(count)}
-                                    className={`w-6.5 h-6.5 rounded-lg border text-[10px] font-bold transition-all duration-200 cursor-pointer flex items-center justify-center hover:border-slate-400 hover:-translate-y-0.5 active:scale-95 ${
+                                    className={`w-7 h-7 rounded-lg border-2 text-xs font-black transition-all duration-200 cursor-pointer flex items-center justify-center hover:-translate-y-0.5 active:scale-95 ${
                                       active
-                                        ? "bg-[#1A2421] text-white border-slate-800 shadow-sm"
-                                        : "border-slate-200 text-slate-700 bg-white/80 hover:border-slate-800"
+                                        ? "bg-slate-950 text-white border-slate-950 shadow-sm"
+                                        : "border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-800 hover:border-slate-500"
                                     }`}
                                   >
                                     {label}
@@ -2802,8 +2799,8 @@ export default function StorePage() {
                         </div>
 
                         {/* Recommended Treatment Duration Row */}
-                        <div className="pt-3 border-t border-slate-900/5 space-y-2">
-                          <h4 className="text-[9px] font-black text-slate-800 uppercase tracking-wider">Recommended Treatment Duration</h4>
+                        <div className="pt-3 border-t border-slate-200 dark:border-slate-700 space-y-2">
+                          <h4 className="text-xs font-black text-slate-950 dark:text-white uppercase tracking-wider">Recommended Treatment Duration</h4>
                           <div className={`grid ${billingCycle === "weekly" && careLevel === "mild" ? "grid-cols-6" : "grid-cols-5"} gap-1.5`}>
                             {(() => {
                               const opts = billingCycle === "weekly"
@@ -2839,15 +2836,15 @@ export default function StorePage() {
                                     type="button"
                                     key={opt.value}
                                     onClick={() => setDurationValue(opt.value)}
-                                    className={`py-1.5 px-0.5 rounded-xl border text-center transition-all duration-200 cursor-pointer hover:-translate-y-0.5 hover:shadow-sm active:scale-95 ${
+                                    className={`py-2 px-1 rounded-xl border-2 text-center transition-all duration-200 cursor-pointer hover:-translate-y-0.5 hover:shadow-sm active:scale-95 ${
                                       isSelected
-                                        ? "border-mint text-mint bg-mint/[0.03] ring-1 ring-mint/10 font-bold"
-                                        : "border-slate-200 text-slate-700 bg-white/70 hover:border-slate-800"
+                                        ? "border-teal-600 text-teal-900 dark:text-teal-200 bg-teal-50 dark:bg-teal-950/60 ring-1 ring-teal-500/20 font-black"
+                                        : "border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-800 hover:border-slate-400"
                                     }`}
                                   >
-                                    <span className="block text-[10px] font-black leading-tight">{opt.label}</span>
-                                    <span className={`block text-[7.5px] font-black uppercase mt-0.5 ${
-                                      isSelected ? "text-mint-dark" : "text-slate-400"
+                                    <span className="block text-[11px] font-black leading-tight">{opt.label}</span>
+                                    <span className={`block text-[8.5px] font-black uppercase mt-0.5 ${
+                                      isSelected ? "text-teal-700 dark:text-teal-400" : "text-slate-500 dark:text-slate-400"
                                     }`}>
                                       {opt.discount}
                                     </span>
@@ -2860,16 +2857,15 @@ export default function StorePage() {
                       </div>
 
                       {/* GPay Payment Visual Card */}
-                      <div className="p-4 bg-white/70 border border-mint/20 rounded-2xl flex gap-3.5 relative overflow-hidden shadow-[0_4px_16px_rgba(20,184,166,0.03)] group/gpay">
-                        <div className="absolute inset-0 pointer-events-none opacity-0 group-hover/gpay:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-transparent via-mint/[0.02] to-transparent" />
-                        <div className="w-10 h-10 bg-mint/5 border border-mint/10 text-mint rounded-xl flex items-center justify-center flex-shrink-0 font-sans font-black text-xs">
+                      <div className="p-4.5 bg-white dark:bg-slate-800/80 border-2 border-teal-200 dark:border-teal-800 rounded-2xl flex gap-3.5 relative overflow-hidden shadow-sm group/gpay">
+                        <div className="w-10 h-10 bg-teal-100 dark:bg-teal-950 border border-teal-300 dark:border-teal-700 text-teal-800 dark:text-teal-300 rounded-xl flex items-center justify-center flex-shrink-0 font-sans font-black text-xs">
                           GPay
                         </div>
                         <div>
-                          <h4 className="text-[10px] font-extrabold uppercase text-mint tracking-wider">Direct Registration Payment</h4>
-                          <p className="text-xs font-bold text-[#1A2421] mt-0.5">GPay / PhonePe / Paytm:</p>
-                          <p className="text-sm font-black text-mint-dark tracking-wide">{process.env.NEXT_PUBLIC_PAYMENT_PHONE || "8446056789"}</p>
-                          <p className="text-[9px] text-slate-500 font-semibold leading-normal mt-1">
+                          <h4 className="text-xs font-black uppercase text-teal-900 dark:text-teal-200 tracking-wider">Direct Registration Payment</h4>
+                          <p className="text-xs font-bold text-slate-950 dark:text-white mt-0.5">GPay / PhonePe / Paytm / UPI:</p>
+                          <p className="text-base font-black text-teal-800 dark:text-teal-300 tracking-wider">{process.env.NEXT_PUBLIC_PAYMENT_PHONE || "8446056789"}</p>
+                          <p className="text-xs text-slate-700 dark:text-slate-300 font-medium leading-normal mt-1">
                             Send correct total cost via UPI to register instantly. Share transfer screenshot over WhatsApp.
                           </p>
                         </div>
@@ -2878,13 +2874,13 @@ export default function StorePage() {
 
                       {/* Action buttons */}
                       <div className="space-y-3 pt-2">
-                        <p className="text-[10px] text-slate-500 italic text-center font-medium leading-relaxed max-w-xs mx-auto mb-2">
+                        <p className="text-xs text-slate-700 dark:text-slate-300 font-semibold text-center leading-relaxed max-w-xs mx-auto mb-2">
                           Every treatment program begins with a physician consultation to confirm your personalized care plan.
                         </p>
                         <Magnetic>
                           <button
                             onClick={handleSelectCalculatedPlan}
-                            className="w-full py-4 bg-mint hover:bg-mint-dark text-white rounded-full font-bold uppercase tracking-wider text-xs shadow-[0_8px_30px_rgba(20,184,166,0.15)] hover:shadow-[0_8px_30px_rgba(20,184,166,0.25)] transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer"
+                            className="w-full py-4 bg-teal-700 hover:bg-teal-800 text-white rounded-full font-black uppercase tracking-wider text-xs shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
                           >
                             Order & Proceed to Payment
                             <ArrowRight className="w-4 h-4" />
@@ -2896,9 +2892,9 @@ export default function StorePage() {
                             href="/admin/login"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full py-3.5 border border-[#1A2421]/25 hover:border-[#1A2421] text-[#1A2421] rounded-full font-bold uppercase tracking-wider text-xs transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer bg-white/50 hover:bg-white/90 shadow-sm"
+                            className="w-full py-3.5 border-2 border-slate-900 dark:border-slate-300 text-slate-950 dark:text-white rounded-full font-black uppercase tracking-wider text-xs transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm"
                           >
-                            <UserCheck className="w-3.5 h-3.5" />
+                            <UserCheck className="w-4 h-4" />
                             Doctor Portal: Login to Plan
                           </a>
                         </Magnetic>
@@ -2906,20 +2902,20 @@ export default function StorePage() {
                         <div className="grid grid-cols-2 gap-2">
                           <button
                             onClick={handleSaveConfig}
-                            className={`py-3 px-2 rounded-full border text-[10px] font-black uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer ${
+                            className={`py-3 px-2 rounded-full border-2 text-xs font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm ${
                               saveSuccess 
-                                ? "bg-emerald-500 border-transparent text-white" 
-                                : "border-slate-200 bg-white/40 hover:border-slate-800 text-slate-700"
+                                ? "bg-emerald-600 border-transparent text-white" 
+                                : "border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-800 text-slate-900 dark:text-white"
                             }`}
                           >
                             {saveSuccess ? (
                               <>
-                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                <CheckCircle2 className="w-4 h-4" />
                                 Saved!
                               </>
                             ) : (
                               <>
-                                <Save className="w-3.5 h-3.5" />
+                                <Save className="w-4 h-4" />
                                 Save Config
                               </>
                             )}
@@ -2927,20 +2923,20 @@ export default function StorePage() {
 
                           <button
                             onClick={() => handleCopyLink()}
-                            className={`py-3 px-2 rounded-full border text-[10px] font-black uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer ${
+                            className={`py-3 px-2 rounded-full border-2 text-xs font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm ${
                               shareSuccess 
-                                ? "bg-[#1A2421] border-transparent text-white" 
-                                : "border-slate-200 bg-white/40 hover:border-slate-800 text-slate-700"
+                                ? "bg-slate-950 border-transparent text-white" 
+                                : "border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-800 text-slate-900 dark:text-white"
                             }`}
                           >
                             {shareSuccess ? (
                               <>
-                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                <CheckCircle2 className="w-4 h-4" />
                                 Copied!
                               </>
                             ) : (
                               <>
-                                <Share2 className="w-3.5 h-3.5" />
+                                <Share2 className="w-4 h-4" />
                                 Copy Link
                               </>
                             )}
@@ -3932,30 +3928,30 @@ export default function StorePage() {
               </div>
 
               {/* Top Doctor Presentation Header & Actions */}
-              <div className="glass-panel border-white/80 bg-white/40 backdrop-blur-md rounded-2xl p-4 md:p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm">
-                <div className="space-y-1 text-left">
+              <div className="bg-white/95 dark:bg-slate-900/95 border-2 border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 md:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm">
+                <div className="space-y-1.5 text-left">
                   <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 text-[9px] font-black uppercase px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-800 border border-emerald-500/20">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="inline-flex items-center gap-1.5 text-xs font-black uppercase px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700">
+                      <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
                       Physician Presentation Mode
                     </span>
-                    <span className="text-[10px] font-bold text-slate-400 hidden sm:inline">
+                    <span className="text-xs font-bold text-slate-600 dark:text-slate-400 hidden sm:inline">
                       Laptop Screen Friendly · Interactive Explainer
                     </span>
                   </div>
-                  <h3 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
+                  <h3 className="text-2xl md:text-3xl font-black text-slate-950 dark:text-white tracking-tight">
                     Doctor Treatment Plan & Care Scope
                   </h3>
-                  <p className="text-xs text-slate-500 font-medium">
+                  <p className="text-sm text-slate-700 dark:text-slate-300 font-medium leading-relaxed max-w-4xl">
                     Selection-friendly clinical planning tool for consulting physicians to explain treatment pathways, multi-system coordination, and continuity benefits directly to patients.
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2 self-stretch md:self-auto justify-end flex-wrap">
+                <div className="flex items-center gap-2.5 self-stretch md:self-auto justify-end flex-wrap">
                   <button
                     type="button"
                     onClick={handleResetDoctorPlan}
-                    className="px-3 py-2 rounded-xl border border-slate-200/80 hover:border-slate-400 bg-white/70 hover:bg-white text-slate-600 text-[11px] font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                    className="px-4 py-2.5 rounded-xl border-2 border-slate-300 dark:border-slate-700 hover:border-slate-800 bg-white dark:bg-slate-800 hover:bg-slate-50 text-slate-900 dark:text-white text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
                     title="Reset to default selections"
                   >
                     <span>↺ Reset</span>
@@ -3964,11 +3960,11 @@ export default function StorePage() {
                     href="/admin/login"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-4 py-2 bg-[#1A2421] hover:bg-slate-800 text-white rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm"
+                    className="px-5 py-2.5 bg-[#1A2421] hover:bg-slate-800 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 shadow-sm"
                   >
-                    <UserCheck className="w-3.5 h-3.5 text-mint" />
+                    <UserCheck className="w-4 h-4 text-emerald-400" />
                     <span>Admin EMR Login</span>
-                    <ExternalLink className="w-3 h-3 text-slate-400" />
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-300" />
                   </a>
                 </div>
               </div>
@@ -3980,22 +3976,22 @@ export default function StorePage() {
                 <div className="lg:col-span-7 xl:col-span-8 space-y-4 text-left">
                   
                   {/* 1. Care Complexity Level */}
-                  <div className="glass-panel border-white/70 bg-white/40 backdrop-blur-md p-4 md:p-5 rounded-2xl space-y-3 shadow-xs">
+                  <div className="bg-white/95 dark:bg-slate-900/95 border-2 border-slate-200/90 dark:border-slate-800 p-5 md:p-6 rounded-2xl space-y-4 shadow-sm">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                        <h4 className="text-sm font-black text-slate-950 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
                           <span>1. Clinical Care Complexity Level</span>
                         </h4>
-                        <p className="text-[10px] text-slate-500 font-medium">
+                        <p className="text-xs text-slate-700 dark:text-slate-300 font-medium mt-0.5">
                           Select the clinical depth and medical supervision tier matching the patient&apos;s pathology:
                         </p>
                       </div>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                      <span className="text-xs font-black px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-850 dark:text-slate-200 border border-slate-300 dark:border-slate-700">
                         7 Tiers Available
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2.5">
                       {Object.entries(careLevelsDetails).map(([key, details]) => {
                         const isSelected = walkInTier === key;
                         const weeklyRate = details.weeklyPrice;
@@ -4013,41 +4009,41 @@ export default function StorePage() {
                                 setWalkInDurationValue(1);
                               }
                             }}
-                            className={`p-3 text-left border rounded-xl transition-all duration-200 cursor-pointer flex flex-col justify-between gap-2 relative overflow-hidden group ${
+                            className={`p-3.5 text-left border-2 rounded-xl transition-all duration-200 cursor-pointer flex flex-col justify-between gap-2.5 relative overflow-hidden group ${
                               isSelected
-                                ? "border-emerald-600 bg-emerald-50/70 text-emerald-950 font-bold ring-2 ring-emerald-500/30 shadow-xs"
-                                : "border-slate-200/80 hover:border-slate-400 bg-white/60 hover:bg-white text-slate-700"
+                                ? "border-teal-600 bg-teal-50/80 dark:bg-teal-950/40 text-teal-950 dark:text-white font-black ring-2 ring-teal-500/30 shadow-sm"
+                                : "border-slate-200 dark:border-slate-800 hover:border-slate-400 bg-white dark:bg-slate-900/60 hover:bg-slate-50 text-slate-800 dark:text-slate-200"
                             }`}
                           >
                             <div className="flex items-start justify-between gap-1.5">
                               <div className="flex items-center gap-2">
-                                <span className="text-lg">{details.icon}</span>
+                                <span className="text-xl p-1 bg-white dark:bg-slate-800 rounded-lg shadow-2xs border border-slate-200 dark:border-slate-700">{details.icon}</span>
                                 <div>
-                                  <span className="text-[11px] font-black leading-tight block text-slate-900">
+                                  <span className="text-xs font-black leading-tight block text-slate-950 dark:text-white">
                                     {details.title}
                                   </span>
-                                  <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">
+                                  <span className="text-[10px] text-slate-600 dark:text-slate-400 font-extrabold uppercase tracking-wider block mt-0.5">
                                     {details.complexityLabel || "Standard"} Care
                                   </span>
                                   {key === "mild" && (
-                                    <span className="text-[8px] font-bold text-teal-850 bg-teal-100/80 px-1.5 py-0.5 rounded mt-0.5 inline-block">
+                                    <span className="text-[8.5px] font-black text-teal-900 bg-teal-100 border border-teal-300 px-1.5 py-0.5 rounded mt-0.5 inline-block">
                                       Express 3-Day available (₹1,000)
                                     </span>
                                   )}
                                 </div>
                               </div>
                               {isSelected && (
-                                <span className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] shrink-0 font-bold">
+                                <span className="w-4 h-4 rounded-full bg-teal-700 text-white flex items-center justify-center text-[10px] shrink-0 font-black">
                                   ✓
                                 </span>
                               )}
                             </div>
 
-                            <div className="flex items-baseline justify-between border-t border-slate-900/5 pt-1.5">
-                              <span className="text-xs font-black text-emerald-800 font-sans">
+                            <div className="flex items-baseline justify-between border-t border-slate-200 dark:border-slate-700 pt-2">
+                              <span className="text-xs font-black text-teal-800 dark:text-teal-300 font-sans">
                                 {displayedRate}
                               </span>
-                              <span className="text-[9px] text-slate-400 font-semibold font-sans">
+                              <span className="text-[10px] text-slate-600 dark:text-slate-400 font-bold font-sans">
                                 {secondaryRate}
                               </span>
                             </div>
@@ -4058,11 +4054,11 @@ export default function StorePage() {
 
                     {/* Active Tier Clinical Summary */}
                     {careLevelsDetails[walkInTier as keyof typeof careLevelsDetails] && (
-                      <div className="p-3 bg-emerald-50/60 border border-emerald-200/70 rounded-xl text-left flex items-start gap-2.5">
-                        <span className="text-emerald-700 text-sm leading-none mt-0.5">ℹ</span>
-                        <div className="text-[10px] text-emerald-950 space-y-0.5 leading-relaxed">
+                      <div className="p-3.5 bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 rounded-xl text-left flex items-start gap-2.5">
+                        <span className="text-teal-700 dark:text-teal-400 text-base leading-none mt-0.5">ℹ</span>
+                        <div className="text-xs text-slate-850 dark:text-slate-200 space-y-0.5 leading-relaxed font-medium">
                           <p>
-                            <strong>Included Protocol:</strong> {careLevelsDetails[walkInTier as keyof typeof careLevelsDetails].description}
+                            <strong className="font-black text-slate-950 dark:text-white">Included Protocol:</strong> {careLevelsDetails[walkInTier as keyof typeof careLevelsDetails].description}
                           </p>
                         </div>
                       </div>
@@ -4070,30 +4066,30 @@ export default function StorePage() {
                   </div>
 
                   {/* 2. Billing Frequency & Care Commitment Duration */}
-                  <div className="glass-panel border-white/70 bg-white/40 backdrop-blur-md p-4 md:p-5 rounded-2xl space-y-3.5 shadow-xs">
+                  <div className="bg-white/95 dark:bg-slate-900/95 border-2 border-slate-200/90 dark:border-slate-800 p-5 md:p-6 rounded-2xl space-y-4 shadow-sm">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                       
                       {/* Frequency Toggle */}
-                      <div className="space-y-1.5">
+                      <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                          <h4 className="text-xs font-black text-slate-950 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
                             <span>2. Billing Frequency</span>
                           </h4>
-                          <span className="text-[9px] text-slate-400 font-semibold uppercase">
+                          <span className="text-[10px] text-slate-600 dark:text-slate-400 font-bold uppercase">
                             Weekly or Monthly
                           </span>
                         </div>
-                        <div className="flex items-center gap-1 bg-white/70 p-1 rounded-full border border-slate-200/60 w-fit">
+                        <div className="flex items-center gap-1 bg-white dark:bg-slate-800 p-1 rounded-full border border-slate-300 dark:border-slate-700 w-fit">
                           <button
                             type="button"
                             onClick={() => {
                               setWalkInBillingCycle("weekly");
                               setWalkInDurationValue(4);
                             }}
-                            className={`px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                            className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
                               walkInBillingCycle === "weekly"
                                 ? "bg-[#1A2421] text-white shadow-xs"
-                                : "text-slate-500 hover:text-slate-900"
+                                : "text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white"
                             }`}
                           >
                             Weekly
@@ -4104,10 +4100,10 @@ export default function StorePage() {
                               setWalkInBillingCycle("monthly");
                               setWalkInDurationValue(1);
                             }}
-                            className={`px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                            className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
                               walkInBillingCycle === "monthly"
                                 ? "bg-[#1A2421] text-white shadow-xs"
-                                : "text-slate-500 hover:text-slate-900"
+                                : "text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white"
                             }`}
                           >
                             Monthly — Save 10–30%
@@ -4116,12 +4112,12 @@ export default function StorePage() {
                       </div>
 
                       {/* Care Duration Recommendation */}
-                      <div className="space-y-1.5">
+                      <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-wider">
+                          <h4 className="text-xs font-black text-slate-950 dark:text-white uppercase tracking-wider">
                             Commitment Duration
                           </h4>
-                          <span className="text-[9px] text-emerald-800 font-bold">
+                          <span className="text-xs text-teal-800 dark:text-teal-300 font-black uppercase tracking-wider">
                             Save up to 30% with continuity
                           </span>
                         </div>
@@ -4156,14 +4152,16 @@ export default function StorePage() {
                               type="button"
                               key={opt.value}
                               onClick={() => setWalkInDurationValue(opt.value)}
-                              className={`py-2 px-1 rounded-xl border text-center transition-all duration-200 cursor-pointer ${
+                              className={`py-2 px-1 rounded-xl border-2 text-center transition-all duration-200 cursor-pointer ${
                                 walkInDurationValue === opt.value
-                                  ? "border-emerald-600 bg-emerald-50 text-emerald-950 font-black ring-1 ring-emerald-500/30"
-                                  : "border-slate-200/80 hover:border-slate-800 text-slate-700 bg-white/60 hover:bg-white"
+                                  ? "border-teal-600 bg-teal-50 dark:bg-teal-950 text-teal-950 dark:text-teal-100 font-black ring-1 ring-teal-500/30"
+                                  : "border-slate-200 dark:border-slate-700 hover:border-slate-800 text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-800"
                               }`}
                             >
-                              <span className="text-xs block font-bold leading-none">{opt.label}</span>
-                              <span className="text-[8px] text-slate-400 block mt-1 leading-none font-semibold font-sans">{opt.desc}</span>
+                              <span className="text-xs block font-black leading-none">{opt.label}</span>
+                              <span className={`text-[9px] block mt-1 leading-none font-bold font-sans ${
+                                walkInDurationValue === opt.value ? "text-teal-800 dark:text-teal-300" : "text-slate-500 dark:text-slate-400"
+                              }`}>{opt.desc}</span>
                             </button>
                           ))}
                         </div>
@@ -4173,16 +4171,16 @@ export default function StorePage() {
                   </div>
 
                   {/* 3. Health Concerns to Address & Multi-System Scope */}
-                  <div className="glass-panel border-white/70 bg-white/40 backdrop-blur-md p-4 md:p-5 rounded-2xl space-y-3.5 shadow-xs">
+                  <div className="bg-white/95 dark:bg-slate-900/95 border-2 border-slate-200/90 dark:border-slate-800 p-5 md:p-6 rounded-2xl space-y-4 shadow-sm">
                     <div className="flex items-center justify-between flex-wrap gap-2">
                       <div>
-                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                        <h4 className="text-sm font-black text-slate-950 dark:text-white uppercase tracking-wider flex items-center gap-2">
                           <span>3. Health Concerns & Multi-System Scope</span>
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+                          <span className="text-xs font-black px-3 py-1 rounded-full bg-teal-100 dark:bg-teal-950 text-teal-900 dark:text-teal-200 border border-teal-300 dark:border-teal-700">
                             {walkInConditionsCount === 1 ? "1 Primary Concern" : `${walkInConditionsCount} Concerns (Multi-System)`}
                           </span>
                         </h4>
-                        <p className="text-[10px] text-slate-500 font-medium">
+                        <p className="text-xs text-slate-700 dark:text-slate-300 font-medium mt-0.5">
                           Select the active health complaints to cover simultaneously under this care program:
                         </p>
                       </div>
@@ -4190,7 +4188,7 @@ export default function StorePage() {
                         <button
                           type="button"
                           onClick={clearWalkInConcerns}
-                          className="text-[10px] font-bold text-slate-400 hover:text-rose-600 transition-colors uppercase tracking-wider cursor-pointer"
+                          className="text-xs font-black text-rose-700 hover:text-rose-900 transition-colors uppercase tracking-wider cursor-pointer"
                         >
                           Clear Selection
                         </button>
@@ -4199,11 +4197,11 @@ export default function StorePage() {
 
                     {/* Selected Concerns Active Strip */}
                     {walkInSelectedConcerns.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 p-2 bg-emerald-50/60 rounded-xl border border-emerald-200/70">
+                      <div className="flex flex-wrap gap-2 p-2.5 bg-teal-50/80 dark:bg-teal-950/60 rounded-xl border border-teal-200 dark:border-teal-800">
                         {walkInSelectedConcerns.map((concern) => (
                           <span
                             key={concern}
-                            className="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-lg bg-white border border-emerald-300 text-emerald-900 shadow-2xs"
+                            className="inline-flex items-center gap-1.5 text-xs font-black px-3 py-1 rounded-lg bg-white dark:bg-slate-800 border border-teal-300 dark:border-teal-700 text-teal-950 dark:text-teal-100 shadow-2xs"
                           >
                             <span>{concern}</span>
                             <button
@@ -4220,16 +4218,16 @@ export default function StorePage() {
                     )}
 
                     {/* Category Filter Pills */}
-                    <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none">
+                    <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
                       {DOCTOR_PLAN_CATEGORIES.map((cat) => (
                         <button
                           key={cat.id}
                           type="button"
                           onClick={() => setWalkInConcernCategory(cat.id)}
-                          className={`px-2.5 py-1 rounded-full text-[10px] font-bold whitespace-nowrap transition-all duration-200 cursor-pointer ${
+                          className={`px-3 py-1.5 rounded-full text-xs font-black whitespace-nowrap transition-all duration-200 cursor-pointer ${
                             walkInConcernCategory === cat.id
                               ? "bg-[#1A2421] text-white shadow-xs"
-                              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                              : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200"
                           }`}
                         >
                           {cat.label}
@@ -4238,7 +4236,7 @@ export default function StorePage() {
                     </div>
 
                     {/* Popular Condition Chips (Selection-Friendly Grid) */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5 max-h-44 overflow-y-auto p-1 border border-slate-100 rounded-xl bg-white/40">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-48 overflow-y-auto p-1.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-white/70 dark:bg-slate-800/60">
                       {POPULAR_DOCTOR_PLAN_CONCERNS.filter(
                         (item) => walkInConcernCategory === "all" || item.category === walkInConcernCategory
                       ).map((item) => {
@@ -4248,21 +4246,21 @@ export default function StorePage() {
                             key={item.id}
                             type="button"
                             onClick={() => toggleWalkInConcern(item.label)}
-                            className={`p-2 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between ${
+                            className={`p-2.5 rounded-xl border-2 text-left transition-all duration-200 cursor-pointer flex flex-col justify-between ${
                               isSelected
-                                ? "border-emerald-600 bg-emerald-50/70 text-emerald-950 font-bold ring-1 ring-emerald-500/30"
-                                : "border-slate-200/80 hover:border-slate-400 bg-white/70 text-slate-700 hover:bg-white"
+                                ? "border-teal-600 bg-teal-50 dark:bg-teal-950 text-teal-950 dark:text-teal-100 font-black ring-1 ring-teal-500/30"
+                                : "border-slate-200 dark:border-slate-700 hover:border-slate-400 bg-white dark:bg-slate-800 text-slate-850 dark:text-slate-200 hover:bg-slate-50"
                             }`}
                           >
                             <div className="flex items-start justify-between gap-1">
-                              <span className="text-[11px] leading-tight font-bold">{item.label}</span>
+                              <span className="text-xs leading-tight font-black">{item.label}</span>
                               {isSelected && (
-                                <span className="w-3.5 h-3.5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[9px] shrink-0 font-bold">
+                                <span className="w-3.5 h-3.5 rounded-full bg-teal-700 text-white flex items-center justify-center text-[9px] shrink-0 font-black">
                                   ✓
                                 </span>
                               )}
                             </div>
-                            <span className="text-[8px] text-slate-400 uppercase tracking-wider font-semibold mt-1">
+                            <span className="text-[9px] text-slate-600 dark:text-slate-400 uppercase tracking-wider font-bold mt-1">
                               {item.system}
                             </span>
                           </button>
@@ -4271,12 +4269,12 @@ export default function StorePage() {
                     </div>
 
                     {/* Manual Condition Count Pill Bar */}
-                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-3 flex-wrap">
+                    <div className="pt-2 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3 flex-wrap">
                       <div>
-                        <span className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider block">
+                        <span className="text-xs font-black text-slate-950 dark:text-white uppercase tracking-wider block">
                           Total Concerns to Coordinate
                         </span>
-                        <span className="text-[9px] text-slate-400 font-medium">
+                        <span className="text-[10px] text-slate-600 dark:text-slate-400 font-bold">
                           Auto-calculated from selection or click count:
                         </span>
                       </div>
@@ -4290,14 +4288,14 @@ export default function StorePage() {
                               key={val}
                               type="button"
                               onClick={() => setWalkInConditionsCount(val)}
-                              className={`px-3 py-1.5 rounded-xl text-center transition-all duration-200 cursor-pointer border flex flex-col items-center ${
+                              className={`px-3 py-1.5 rounded-xl text-center transition-all duration-200 cursor-pointer border-2 flex flex-col items-center ${
                                 isCurrent
                                   ? "bg-[#1A2421] text-white border-transparent shadow-xs"
-                                  : "bg-white border-slate-200 text-slate-700 hover:border-slate-800"
+                                  : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:border-slate-800"
                               }`}
                             >
                               <span className="text-xs font-black">{val === 5 ? "5+" : val}</span>
-                              <span className={`text-[8px] font-semibold leading-none mt-0.5 ${isCurrent ? "text-emerald-300" : "text-slate-400"}`}>
+                              <span className={`text-[9px] font-bold leading-none mt-0.5 ${isCurrent ? "text-teal-300" : "text-slate-500"}`}>
                                 {surchargeText}
                               </span>
                             </button>
@@ -4308,10 +4306,10 @@ export default function StorePage() {
 
                     {/* Multi-System Coordination Notice */}
                     {walkInConditionsCount > 1 && (
-                      <div className="p-3 bg-emerald-50/60 border border-emerald-200/70 rounded-xl text-left flex items-start gap-2.5">
-                        <span className="text-emerald-700 text-sm leading-none mt-0.5">ℹ</span>
-                        <p className="text-[10px] text-emerald-950 font-medium leading-relaxed">
-                          <strong>Dual/Multi-System Care Active ({walkInConditionsCount} Concerns):</strong>{" "}
+                      <div className="p-3.5 bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 rounded-xl text-left flex items-start gap-2.5">
+                        <span className="text-teal-700 dark:text-teal-400 text-base leading-none mt-0.5">ℹ</span>
+                        <p className="text-xs text-slate-850 dark:text-slate-200 font-medium leading-relaxed">
+                          <strong className="font-black text-slate-950 dark:text-white">Dual/Multi-System Care Active ({walkInConditionsCount} Concerns):</strong>{" "}
                           Treating multiple co-existing complaints across organ systems requires cross-repertorization, synergistic remedy balancing, and closer clinical supervision by the consulting doctor.
                         </p>
                       </div>
@@ -4322,14 +4320,14 @@ export default function StorePage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                     
                     {/* Concessions / Discounts */}
-                    <div className="p-3.5 bg-white/40 border border-slate-200/60 rounded-2xl space-y-3">
+                    <div className="p-4 md:p-5 bg-white/95 dark:bg-slate-900/95 border-2 border-slate-200/90 dark:border-slate-800 rounded-2xl space-y-3 shadow-sm">
                       <div className="flex justify-between items-center">
                         <div>
-                          <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1">
-                            <Percent className="w-3.5 h-3.5 text-mint" />
+                          <h4 className="text-xs font-black text-slate-950 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+                            <Percent className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
                             Clinical Concession
                           </h4>
-                          <p className="text-[9px] text-slate-500 font-medium">Senior, socio-economic, or doctor override</p>
+                          <p className="text-[10px] text-slate-600 dark:text-slate-400 font-bold mt-0.5">Senior, socio-economic, or doctor override</p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
                           <input
@@ -4338,12 +4336,12 @@ export default function StorePage() {
                             onChange={(e) => setWalkInApplyConcession(e.target.checked)}
                             className="sr-only peer"
                           />
-                          <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-emerald-600"></div>
+                          <div className="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-teal-700"></div>
                         </label>
                       </div>
 
                       {walkInApplyConcession && (
-                        <div className="space-y-2 pt-2 border-t border-slate-200/60">
+                        <div className="space-y-2 pt-2 border-t border-slate-200 dark:border-slate-700">
                           <div className="grid grid-cols-3 gap-1.5">
                             {[
                               { type: "senior", label: "Senior (15%)" },
@@ -4354,10 +4352,10 @@ export default function StorePage() {
                                 key={opt.type}
                                 type="button"
                                 onClick={() => setWalkInConcessionType(opt.type as any)}
-                                className={`py-1.5 px-2 text-center rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all border cursor-pointer ${
+                                className={`py-2 px-1.5 text-center rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border-2 cursor-pointer ${
                                   walkInConcessionType === opt.type
                                     ? "bg-[#1A2421] text-white border-transparent shadow-xs"
-                                    : "bg-white/80 text-slate-600 border-slate-200 hover:border-slate-400"
+                                    : "bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:border-slate-800"
                                 }`}
                               >
                                 {opt.label}
@@ -4373,7 +4371,7 @@ export default function StorePage() {
                                 value={walkInOverridePrice}
                                 onChange={(e) => setWalkInOverridePrice(e.target.value)}
                                 placeholder="Enter custom price in ₹"
-                                className="w-full p-2 rounded-xl border border-slate-250 bg-white text-xs font-semibold focus:outline-none focus:border-emerald-600"
+                                className="w-full p-2.5 rounded-xl border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-black text-slate-950 dark:text-white focus:outline-none focus:border-teal-600 shadow-2xs"
                               />
                             </div>
                           )}
@@ -4382,14 +4380,14 @@ export default function StorePage() {
                     </div>
 
                     {/* Specialized Medicine Add-ons */}
-                    <div className="p-3.5 bg-white/40 border border-slate-200/60 rounded-2xl space-y-3">
+                    <div className="p-4 md:p-5 bg-white/95 dark:bg-slate-900/95 border-2 border-slate-200/90 dark:border-slate-800 rounded-2xl space-y-3 shadow-sm">
                       <div className="flex justify-between items-center">
                         <div>
-                          <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1">
-                            <PlusCircle className="w-3.5 h-3.5 text-mint" />
+                          <h4 className="text-xs font-black text-slate-950 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+                            <PlusCircle className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
                             Specialty Remedies
                           </h4>
-                          <p className="text-[9px] text-slate-500 font-medium">Mother tinctures, biochemic salts, or high dilutions</p>
+                          <p className="text-[10px] text-slate-600 dark:text-slate-400 font-bold mt-0.5">Mother tinctures, biochemic salts, or high dilutions</p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
                           <input
@@ -4398,13 +4396,13 @@ export default function StorePage() {
                             onChange={(e) => setWalkInApplyMedicineAddon(e.target.checked)}
                             className="sr-only peer"
                           />
-                          <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-emerald-600"></div>
+                          <div className="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-teal-700"></div>
                         </label>
                       </div>
 
                       {walkInApplyMedicineAddon && (
-                        <div className="space-y-2 pt-2 border-t border-slate-200/60">
-                          <div className="flex flex-wrap gap-1">
+                        <div className="space-y-2 pt-2 border-t border-slate-200 dark:border-slate-700">
+                          <div className="flex flex-wrap gap-1.5">
                             {[
                               { type: "Mother Tincture", details: "Mother Tincture (Q)", amount: "350" },
                               { type: "Biochemic", details: "Biochemic Tissue Salts", amount: "250" },
@@ -4420,7 +4418,7 @@ export default function StorePage() {
                                     { id: Math.random().toString(), type: preset.type, details: preset.details, amount: preset.amount }
                                   ]);
                                 }}
-                                className="px-2 py-1 bg-white border border-slate-200 hover:border-emerald-600 rounded-lg text-[9px] font-bold text-slate-700 cursor-pointer transition-colors"
+                                className="px-2.5 py-1.5 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-teal-600 rounded-lg text-[10px] font-black text-slate-900 dark:text-slate-100 cursor-pointer transition-colors"
                               >
                                 + {preset.details} (₹{preset.amount})
                               </button>
@@ -4430,14 +4428,14 @@ export default function StorePage() {
                           {walkInMedicineAddons.filter(m => m.details).length > 0 && (
                             <div className="space-y-1 pt-1">
                               {walkInMedicineAddons.filter(m => m.details).map((addon, idx) => (
-                                <div key={addon.id || idx} className="flex items-center justify-between text-[10px] bg-emerald-50/70 px-2 py-1 rounded-lg border border-emerald-200 text-emerald-950 font-bold">
+                                <div key={addon.id || idx} className="flex items-center justify-between text-xs bg-teal-50 dark:bg-teal-950/70 px-2.5 py-1.5 rounded-lg border border-teal-200 dark:border-teal-800 text-teal-950 dark:text-teal-100 font-black">
                                   <span>{addon.details}</span>
                                   <div className="flex items-center gap-1.5">
                                     <span>+₹{addon.amount}</span>
                                     <button
                                       type="button"
                                       onClick={() => setWalkInMedicineAddons(prev => prev.filter((_, i) => i !== idx))}
-                                      className="text-slate-400 hover:text-rose-600 font-black cursor-pointer"
+                                      className="text-slate-400 hover:text-rose-600 font-black cursor-pointer text-sm leading-none"
                                     >
                                       &times;
                                     </button>
@@ -4488,27 +4486,27 @@ export default function StorePage() {
                     const durationLabel = walkInDurationValue === 0.5 ? "3 Days" : `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "Week" : "Weeks") : (walkInDurationValue === 1 ? "Month" : "Months")}`;
 
                     return (
-                      <div className="p-5 md:p-6 border border-emerald-500/20 bg-gradient-to-b from-white/95 to-emerald-50/25 backdrop-blur-xl rounded-3xl space-y-4 shadow-xl text-left">
+                      <div className="p-5 md:p-6 border-2 border-slate-200/90 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-3xl space-y-4 shadow-xl text-left">
                         
                         {/* Quotation Header */}
-                        <div className="flex items-center justify-between border-b border-slate-900/5 pb-3">
+                        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
                           <div>
                             <div className="flex items-center gap-1.5">
-                              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                              <span className="text-[9px] font-black uppercase tracking-wider text-emerald-800">
+                              <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+                              <span className="text-[10px] font-black uppercase tracking-wider text-teal-900 dark:text-teal-200 bg-teal-100 dark:bg-teal-950 px-2.5 py-0.5 rounded-full border border-teal-300 dark:border-teal-700">
                                 {isExpressAcute ? "Targeted Acute Protocol · ₹1,000" : "Live Care Quotation"}
                               </span>
                             </div>
-                            <h4 className="text-base font-black text-slate-900 mt-0.5">
+                            <h4 className="text-xl md:text-2xl font-black text-slate-950 dark:text-white mt-1 tracking-tight">
                               {isExpressAcute ? "Express Acute Care (3 Days)" : details.title}
                             </h4>
                           </div>
-                          <span className="text-2xl">{details.icon}</span>
+                          <span className="text-2xl p-1 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs">{details.icon}</span>
                         </div>
 
                         {/* Optional Patient Name Input for Quotation Personalization */}
                         <div className="space-y-1">
-                          <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
+                          <label className="text-[10px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider block">
                             Patient Name / Ref (Optional)
                           </label>
                           <input
@@ -4516,17 +4514,17 @@ export default function StorePage() {
                             value={walkInName}
                             onChange={(e) => setWalkInName(e.target.value)}
                             placeholder="e.g. Patient Full Name"
-                            className="w-full px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white/70 text-xs font-semibold focus:outline-none focus:border-emerald-600 focus:bg-white transition-all shadow-2xs"
+                            className="w-full px-3.5 py-2 rounded-xl border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold text-slate-950 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600 transition-all shadow-2xs"
                           />
                         </div>
 
                         {/* Scope Summary Badge */}
-                        <div className="p-2.5 bg-slate-50 border border-slate-200/60 rounded-xl space-y-1 text-xs">
-                          <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                        <div className="p-3 bg-slate-50 dark:bg-slate-800/80 border-2 border-slate-200 dark:border-slate-700 rounded-xl space-y-1 text-xs">
+                          <div className="flex justify-between items-center text-[10px] text-slate-700 dark:text-slate-300 font-black uppercase tracking-wider">
                             <span>Clinical Care Scope</span>
-                            <span className="text-emerald-800 font-black">{walkInConditionsCount} {walkInConditionsCount === 1 ? "Condition" : "Conditions"}</span>
+                            <span className="text-xs font-black text-teal-900 dark:text-teal-200 bg-teal-100 dark:bg-teal-950 px-2 py-0.5 rounded-md border border-teal-300 dark:border-teal-700">{walkInConditionsCount} {walkInConditionsCount === 1 ? "Condition" : "Conditions"}</span>
                           </div>
-                          <p className="text-[11px] font-bold text-slate-800 line-clamp-2">
+                          <p className="text-xs font-black text-slate-950 dark:text-white line-clamp-2">
                             {walkInSelectedConcerns.length > 0 
                               ? walkInSelectedConcerns.join(", ") 
                               : `${isExpressAcute ? "Express Acute Care" : details.title} protocol`}
@@ -4534,37 +4532,37 @@ export default function StorePage() {
                         </div>
 
                         {/* Financial Line Items */}
-                        <div className="space-y-2 text-xs font-semibold text-slate-700 pt-1">
-                          <div className="flex justify-between">
+                        <div className="space-y-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 pt-1">
+                          <div className="flex justify-between items-center">
                             <span>Base Clinical Care Fee</span>
-                            <span className="font-bold text-slate-900 font-sans">
+                            <span className="font-black text-slate-950 dark:text-white font-sans text-xs">
                               ₹{pricing.basePrice.toLocaleString("en-IN")} / {isExpressAcute ? "3 days" : (walkInBillingCycle === "weekly" ? "wk" : "mo")}
                             </span>
                           </div>
 
                           {pricing.surcharge > 0 && (
-                            <div className="flex justify-between text-emerald-800">
+                            <div className="flex justify-between items-center text-teal-900 dark:text-teal-300">
                               <span>Multi-Concern Coordination</span>
-                              <span className="font-bold font-sans">
+                              <span className="font-black font-sans text-xs">
                                 +₹{pricing.surcharge.toLocaleString("en-IN")} / {isExpressAcute ? "3 days" : (walkInBillingCycle === "weekly" ? "wk" : "mo")}
                               </span>
                             </div>
                           )}
 
-                          <div className="flex justify-between border-t border-slate-100 pt-1.5 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                          <div className="flex justify-between items-center border-t border-slate-200 dark:border-slate-700 pt-2 text-slate-700 dark:text-slate-300 font-black uppercase tracking-wider text-[11px]">
                             <span>Care Period Total ({durationLabel})</span>
-                            <span className="font-sans text-slate-800">₹{pricing.rawTotal.toLocaleString("en-IN")}</span>
+                            <span className="font-sans text-slate-950 dark:text-white font-black text-xs">₹{pricing.rawTotal.toLocaleString("en-IN")}</span>
                           </div>
 
                           {pricing.discountPercent > 0 && (
-                            <div className="flex justify-between text-emerald-600 font-bold">
+                            <div className="flex justify-between items-center text-emerald-900 dark:text-emerald-200 font-black text-xs bg-emerald-100 dark:bg-emerald-950/70 p-2 rounded-lg border border-emerald-300 dark:border-emerald-700">
                               <span>Continuity Benefit ({pricing.discountPercent}%):</span>
-                              <span className="font-sans">-₹{pricing.discountAmount.toLocaleString("en-IN")}</span>
+                              <span className="font-sans font-black">-₹{pricing.discountAmount.toLocaleString("en-IN")}</span>
                             </div>
                           )}
 
                           {walkInApplyConcession && concessionDiscount > 0 && (
-                            <div className="flex justify-between text-purple-700 font-bold">
+                            <div className="flex justify-between items-center text-purple-900 dark:text-purple-200 font-black text-xs bg-purple-100 dark:bg-purple-950/70 p-2 rounded-lg border border-purple-300 dark:border-purple-700">
                               <span>
                                 {walkInConcessionType === "senior"
                                   ? "Senior Citizen Concession (15%)"
@@ -4572,38 +4570,38 @@ export default function StorePage() {
                                     ? "Socio-Economic Subsidy (30%)"
                                     : "Clinical Concession Override"}
                               </span>
-                              <span className="font-sans">-₹{concessionDiscount.toLocaleString("en-IN")}</span>
+                              <span className="font-sans font-black">-₹{concessionDiscount.toLocaleString("en-IN")}</span>
                             </div>
                           )}
 
                           {walkInApplyMedicineAddon && addonAmount > 0 && (
-                            <div className="flex justify-between text-emerald-700 font-bold">
+                            <div className="flex justify-between items-center text-teal-900 dark:text-teal-200 font-black text-xs bg-teal-100 dark:bg-teal-950/70 p-2 rounded-lg border border-teal-300 dark:border-teal-700">
                               <span>Specialty Medicines Add-on</span>
-                              <span className="font-sans">+₹{addonAmount.toLocaleString("en-IN")}</span>
+                              <span className="font-sans font-black">+₹{addonAmount.toLocaleString("en-IN")}</span>
                             </div>
                           )}
 
-                          <div className="pt-2 border-t border-slate-900/5 space-y-1.5">
-                            <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                          <div className="pt-2 border-t border-slate-200 dark:border-slate-700 space-y-2">
+                            <div className="flex justify-between text-[11px] text-slate-700 dark:text-slate-300 font-black uppercase tracking-wider">
                               <span>Treatment Duration</span>
-                              <span className="text-slate-800 font-extrabold">{totalDays} Days</span>
+                              <span className="text-slate-950 dark:text-white font-black text-xs">{totalDays} Days</span>
                             </div>
-                            <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase tracking-wider border-b border-slate-900/5 pb-2 items-center">
+                            <div className="flex justify-between text-[11px] text-slate-700 dark:text-slate-300 font-black uppercase tracking-wider border-b border-slate-200 dark:border-slate-700 pb-2 items-center">
                               <span>Daily Equivalent</span>
-                              <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-black font-sans">
+                              <span className="px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-200 font-black font-sans text-xs border border-emerald-300 dark:border-emerald-700">
                                 ₹{dailyCost}/day
                               </span>
                             </div>
                           </div>
 
                           {/* Total Payable Prominent Display */}
-                          <div className="flex justify-between border-t-2 border-slate-900/10 pt-2 text-base font-black text-slate-900 items-baseline">
+                          <div className="flex justify-between border-t-2 border-slate-300 dark:border-slate-700 pt-3 text-sm font-black text-slate-950 dark:text-white items-baseline">
                             <span>Total Treatment Investment</span>
                             <motion.span
                               key={finalPrice}
                               initial={{ scale: 0.95, opacity: 0.8 }}
                               animate={{ scale: 1, opacity: 1 }}
-                              className="text-emerald-800 font-sans text-xl"
+                              className="text-slate-950 dark:text-white font-sans text-2xl sm:text-3xl font-black tracking-tight"
                             >
                               ₹{finalPrice.toLocaleString("en-IN")}
                             </motion.span>
@@ -4611,11 +4609,11 @@ export default function StorePage() {
                         </div>
 
                         {/* Inclusions Bullet List */}
-                        <div className="p-3 bg-white/70 rounded-xl border border-slate-200/60 text-[10px] text-slate-500 space-y-1">
-                          <span className="font-black text-slate-800 uppercase tracking-wider block">
+                        <div className="p-3.5 bg-slate-50 dark:bg-slate-800/80 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-xs space-y-1.5">
+                          <span className="font-black text-slate-950 dark:text-white uppercase tracking-wider block text-xs">
                             All Care Programs Include:
                           </span>
-                          <div className="grid grid-cols-2 gap-1 font-medium text-slate-600">
+                          <div className="grid grid-cols-2 gap-1.5 font-bold text-slate-800 dark:text-slate-200 text-xs">
                             <div>✓ Full Case Mapping</div>
                             <div>✓ Constitutional Remedies</div>
                             <div>✓ Custom Diet Sheet</div>
@@ -4628,7 +4626,7 @@ export default function StorePage() {
                           <button
                             type="button"
                             onClick={handleShareDoctorPlanWhatsApp}
-                            className="w-full py-3 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-xl font-bold uppercase tracking-wider text-xs shadow-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+                            className="w-full py-3.5 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-xl font-black uppercase tracking-wider text-xs shadow-md transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
                           >
                             <MessageSquare className="w-4 h-4" />
                             <span>Share Plan on WhatsApp</span>
@@ -4638,16 +4636,16 @@ export default function StorePage() {
                             <button
                               type="button"
                               onClick={handleCopyDoctorPlanQuotation}
-                              className="py-2.5 px-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl font-bold uppercase tracking-wider text-[10px] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+                              className="py-2.5 px-3 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white rounded-xl font-black uppercase tracking-wider text-[11px] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
                             >
                               {doctorPlanCopied ? (
                                 <>
                                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                                  <span className="text-emerald-700">Copied!</span>
+                                  <span className="text-emerald-700 dark:text-emerald-300">Copied!</span>
                                 </>
                               ) : (
                                 <>
-                                  <Copy className="w-3.5 h-3.5 text-slate-500" />
+                                  <Copy className="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" />
                                   <span>Copy Quotation</span>
                                 </>
                               )}
@@ -4656,9 +4654,9 @@ export default function StorePage() {
                             <button
                               type="button"
                               onClick={handleSaveDoctorPlanPreset}
-                              className="py-2.5 px-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl font-bold uppercase tracking-wider text-[10px] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+                              className="py-2.5 px-3 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white rounded-xl font-black uppercase tracking-wider text-[11px] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
                             >
-                              <Save className="w-3.5 h-3.5 text-slate-500" />
+                              <Save className="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" />
                               <span>Save Preset</span>
                             </button>
                           </div>
@@ -4677,49 +4675,49 @@ export default function StorePage() {
         )}
 
         {/* Pricing Sub-text Notes */}
-        <div className="mb-24 flex flex-col items-center text-center max-w-4xl mx-auto px-6 py-8 rounded-3xl border border-slate-200/50 bg-white/20 backdrop-blur-md">
-          <p className="text-sm text-slate-700 font-bold tracking-tight mb-4">
+        <div className="mb-24 flex flex-col items-center text-center max-w-4xl mx-auto px-6 py-8 rounded-3xl border-2 border-slate-200/90 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 shadow-md">
+          <p className="text-base text-slate-950 dark:text-white font-black tracking-tight mb-3">
             Treatment plans are selected according to disease complexity and level of medical supervision required.
           </p>
-          <div className="h-[1px] w-12 bg-slate-200 mb-4" />
-          <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">
-            Dr Narayan Jethwani MD <span className="mx-2 text-slate-300">|</span> 20+ Years Experience in Homeopathic Practice
+          <div className="h-[2px] w-16 bg-teal-600 mb-3" />
+          <p className="text-xs text-slate-800 dark:text-slate-200 font-black uppercase tracking-wider">
+            Dr Narayan Jethwani MD <span className="mx-2 text-slate-400">|</span> 20+ Years Experience in Homeopathic Practice
           </p>
         </div>
 
         {/* Global Catalog Inclusions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-slate-900/5 pt-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 border-t-2 border-slate-200 dark:border-slate-800 pt-16">
           <div className="flex gap-4">
-            <div className="w-10 h-10 rounded-2xl bg-white border border-slate-100 flex items-center justify-center flex-shrink-0 shadow-sm text-mint">
-              <Truck className="w-5 h-5" />
+            <div className="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950 border-2 border-teal-200 dark:border-teal-800 flex items-center justify-center flex-shrink-0 shadow-sm text-teal-800 dark:text-teal-300">
+              <Truck className="w-6 h-6" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-slate-900 mb-1">Global Shipping</h4>
-              <p className="text-xs text-slate-700 font-semibold leading-relaxed">
+              <h4 className="text-sm font-black text-slate-950 dark:text-white mb-1.5">Global Shipping</h4>
+              <p className="text-xs text-slate-800 dark:text-slate-200 font-bold leading-relaxed">
                 Remedies are safely packaged and shipped globally. Domestic shipping across India is ₹300 standard. International shipping is calculated by provider or self-booked.
               </p>
             </div>
           </div>
 
           <div className="flex gap-4">
-            <div className="w-10 h-10 rounded-2xl bg-white border border-slate-100 flex items-center justify-center flex-shrink-0 shadow-sm text-mint">
-              <ShieldCheck className="w-5 h-5" />
+            <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950 border-2 border-emerald-200 dark:border-emerald-800 flex items-center justify-center flex-shrink-0 shadow-sm text-emerald-800 dark:text-emerald-300">
+              <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-slate-900 mb-1">High Quality Therapeutics</h4>
-              <p className="text-xs text-slate-700 font-semibold leading-relaxed">
+              <h4 className="text-sm font-black text-slate-950 dark:text-white mb-1.5">High Quality Therapeutics</h4>
+              <p className="text-xs text-slate-800 dark:text-slate-200 font-bold leading-relaxed">
                 Only pure, dynamic dilutions prepared strictly in accordance with official pharmacopoeias are sourced and dispatched to patients.
               </p>
             </div>
           </div>
 
           <div className="flex gap-4">
-            <div className="w-10 h-10 rounded-2xl bg-white border border-slate-100 flex items-center justify-center flex-shrink-0 shadow-sm text-purple-500">
-              <MessageSquare className="w-5 h-5" />
+            <div className="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-950 border-2 border-purple-200 dark:border-purple-800 flex items-center justify-center flex-shrink-0 shadow-sm text-purple-800 dark:text-purple-300">
+              <MessageSquare className="w-6 h-6" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-[#1A2421] mb-1">Inter-Consultation Tracking</h4>
-              <p className="text-xs text-slate-700 font-semibold leading-relaxed">
+              <h4 className="text-sm font-black text-slate-950 dark:text-white mb-1.5">Inter-Consultation Tracking</h4>
+              <p className="text-xs text-slate-800 dark:text-slate-200 font-bold leading-relaxed">
                 Patients have continuous clinical support over WhatsApp to coordinate dose changes, acute symptoms flares, or updates.
               </p>
             </div>
