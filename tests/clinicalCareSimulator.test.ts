@@ -38,7 +38,8 @@ function runClinicalCareSimulatorTests() {
   assert.strictEqual(acuteQuote.continuityDiscountPercent, 0);
   const acuteWellness = applyPhysicianPlanOverride(acute, "acute_wellness_7d");
   assert.strictEqual(acuteWellness.carePeriodFee, 2_000);
-  assert.strictEqual(acuteWellness.durationValue, 4);
+  assert.strictEqual(acuteWellness.durationValue, 1);
+  assert.strictEqual(acuteWellness.durationUnit, "week");
 
   const basePathway = recommendClinicalCare(standardChronic);
   assert.strictEqual(basePathway.pathway, "chronic_focused");
