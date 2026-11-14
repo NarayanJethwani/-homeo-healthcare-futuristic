@@ -102,6 +102,9 @@ function runClinicalCareSimulatorTests() {
     durationUnit: "week",
     weeklyCareFee: 9_000,
     durationWeeks: 4,
+    conditionsCount: 1,
+    complexityAdjustmentWeekly: 0,
+    complexityAdjustmentTotal: 0,
     listCareTotal: 36_000,
     continuityDiscountPercent: 10,
     continuityDiscountTotal: 3_600,
@@ -112,6 +115,18 @@ function runClinicalCareSimulatorTests() {
     concessionTotal: 2_000,
     finalTotal: 34_400,
   });
+
+  const integrated = applyPhysicianPlanOverride(advanced, "chronic_integrated_1w");
+  const integratedQuote = buildClinicalCareQuote({
+    recommendation: integrated,
+    durationWeeks: 1,
+    conditionsCount: 4,
+  });
+  assert.strictEqual(integratedQuote.conditionsCount, 4);
+  assert.strictEqual(integratedQuote.complexityAdjustmentWeekly, 4_500);
+  assert.strictEqual(integratedQuote.complexityAdjustmentTotal, 4_500);
+  assert.strictEqual(integratedQuote.baseCareTotal, 6_000);
+  assert.strictEqual(integratedQuote.finalTotal, 10_500);
 
   console.log("✅ Clinical care simulator tests passed");
 }

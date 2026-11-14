@@ -3595,8 +3595,8 @@ export default function AdminDashboard() {
       const { quote } = plannerSimulatorDecision;
       return {
         basePrice: quote.weeklyCareFee,
-        surcharge: 0,
-        adjustedBasePrice: quote.weeklyCareFee,
+        surcharge: quote.complexityAdjustmentTotal || 0,
+        adjustedBasePrice: quote.weeklyCareFee + (quote.complexityAdjustmentWeekly || 0),
         listTotal: quote.listCareTotal,
         rawTotal: quote.baseCareTotal,
         discountPercent: quote.continuityDiscountPercent,
@@ -12760,6 +12760,7 @@ ${err.message || err}`);
             const whatsappInvoiceText = `Dear ${activePatient?.name || "Valued Patient"},\n\nThank you for consulting Homeo Healthcare.\n\nYour physician-reviewed care plan is ready as a pending quotation:\n*Quotation:* ${plannerSimulatorDecision?.quotationId || "Pending confirmation"}\n*Valid until:* ${plannerSimulatorDecision ? new Date(plannerSimulatorDecision.validUntil).toLocaleDateString("en-IN") : "—"}\n*Approval status:* ${(plannerSimulatorDecision?.approvalStatus || "pending-patient-approval").replaceAll("-", " ")}\n*Care Pathway:* ${careText}\n*Clinical Scope:* ${breadthText}\n*Care Period:* ${durText}${concessionText}\n${plannerDurationValue === 1 && plannerSimulatorDecision?.recommendation.pathway !== "mild" ? "*Reassessment:* Physician reassessment is required before continuation.\n" : ""}\n*Itemized Quotation:*\n- List care-period fee: ₹${calculatedPrices.listTotal.toLocaleString("en-IN")}\n` +
               (calculatedPrices.discountAmount > 0 ? `- Continuity Care Benefit (${calculatedPrices.discountPercent}%): -₹${calculatedPrices.discountAmount.toLocaleString("en-IN")}\n` : "") +
               `- Care fee after benefit: ₹${calculatedPrices.rawTotal.toLocaleString("en-IN")}\n` +
+              (calculatedPrices.surcharge > 0 ? `- Clinical Complexity Adjustment (${plannerSimulatorDecision?.conditionsCount || plannerConditionsCount} Concerns): +₹${calculatedPrices.surcharge.toLocaleString("en-IN")}\n` : "") +
               (calculatedPrices.caseSpecificSupportTotal > 0 ? `- Case-Specific Clinical Support: +₹${calculatedPrices.caseSpecificSupportTotal.toLocaleString("en-IN")}\n` : "") +
               (calculatedPrices.concessionAmount > 0 ? `- Concession Applied: -₹${calculatedPrices.concessionAmount.toLocaleString("en-IN")}\n` : "") +
               (calculatedPrices.addonsSum > 0 ? `- Itemized pharmacy medicines: +₹${calculatedPrices.addonsSum.toLocaleString("en-IN")}\n` : "") +

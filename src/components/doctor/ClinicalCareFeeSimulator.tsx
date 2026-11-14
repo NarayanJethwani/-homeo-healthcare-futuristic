@@ -319,6 +319,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
       return buildClinicalCareQuote({
         recommendation,
         durationWeeks,
+        conditionsCount,
         caseSpecificSupportAmount: supportAmount,
         pharmacyItems,
         concessionAmount,
@@ -326,7 +327,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
     } catch {
       return null;
     }
-  }, [recommendation, durationWeeks, supportAmount, pharmacyItems, concessionAmount]);
+  }, [recommendation, durationWeeks, conditionsCount, supportAmount, pharmacyItems, concessionAmount]);
 
   const missingSupportReason = supportAmount > 0 && supportReason.trim().length < 5;
   const missingConcessionReason = concessionAmount > 0 && concessionReason.trim().length < 5;
@@ -796,6 +797,12 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
                     <span>Care fee after benefit</span>
                     <strong className="font-sans text-white font-black">₹{quote.baseCareTotal.toLocaleString("en-IN")}</strong>
                   </div>
+                  {quote.complexityAdjustmentTotal > 0 && (
+                    <div className="flex justify-between text-teal-300">
+                      <span>Clinical complexity adjustment ({quote.conditionsCount} concerns)</span>
+                      <strong className="font-sans text-teal-200 font-black">+₹{quote.complexityAdjustmentTotal.toLocaleString("en-IN")}</strong>
+                    </div>
+                  )}
                   {quote.caseSpecificSupportTotal > 0 && (
                     <div className="flex justify-between text-slate-300">
                       <span>Clinical support</span>
