@@ -3,6 +3,7 @@ import {
   CARE_LEVELS_DETAILS,
   calculateCarePlanTotal,
   calculateContinuityCareTotal,
+  surchargesLookup,
   type CarePlanDurationUnit,
   type CarePlanFamily,
   type CarePlanId,
@@ -61,6 +62,7 @@ export interface PharmacyQuoteItem {
 export interface ClinicalCareQuoteInput {
   recommendation: ClinicalCareRecommendation;
   durationWeeks: number;
+  conditionsCount?: number;
   caseSpecificSupportAmount?: number;
   pharmacyItems?: PharmacyQuoteItem[];
   concessionAmount?: number;
@@ -73,6 +75,9 @@ export interface ClinicalCareQuote {
   durationUnit: CarePlanDurationUnit;
   weeklyCareFee: number;
   durationWeeks: number;
+  conditionsCount: number;
+  complexityAdjustmentWeekly: number;
+  complexityAdjustmentTotal: number;
   listCareTotal: number;
   continuityDiscountPercent: number;
   continuityDiscountTotal: number;
@@ -206,13 +211,20 @@ export function buildClinicalCareQuote(input: ClinicalCareQuoteInput): ClinicalC
     throw new Error(`Unsupported duration for ${recommendation.title}: ${input.durationWeeks} weeks`);
   }
 
+  const conditionsCount = Math.max(1, Number(input.conditionsCount || 1));
+  const unitWeekly = surchargesLookup[recommendation.pathway]?.unitWeekly || 500;
+  const complexityAdjustmentWeekly = conditionsCount > 1 ? (conditionsCount - 1) * unitWeekly : 0;
+  const complexityAdjustmentTotal = recommendation.planFamily === "acute"
+    ? complexityAdjustmentWeekly
+    : complexityAdjustmentWeekly * input.durationWeeks;
+
   const caseSpecificSupportTotal = Math.max(0, Number(input.caseSpecificSupportAmount || 0));
   const pharmacyTotal = (input.pharmacyItems || []).reduce((sum, item) => sum + Math.max(0, Number(item.amount || 0)), 0);
   const continuity = recommendation.planFamily === "acute"
     ? calculateCarePlanTotal(recommendation.planId)
     : calculateContinuityCareTotal(recommendation.weeklyFee, input.durationWeeks);
   const baseCareTotal = continuity.total;
-  const subtotal = baseCareTotal + caseSpecificSupportTotal + pharmacyTotal;
+  const subtotal = baseCareTotal + complexityAdjustmentTotal + caseSpecificSupportTotal + pharmacyTotal;
   const concessionTotal = Math.min(subtotal, Math.max(0, Number(input.concessionAmount || 0)));
 
   return {
@@ -222,6 +234,9 @@ export function buildClinicalCareQuote(input: ClinicalCareQuoteInput): ClinicalC
     durationUnit: recommendation.durationUnit,
     weeklyCareFee: recommendation.weeklyFee,
     durationWeeks: input.durationWeeks,
+    conditionsCount,
+    complexityAdjustmentWeekly,
+    complexityAdjustmentTotal,
     listCareTotal: continuity.listTotal,
     continuityDiscountPercent: continuity.discountPercent,
     continuityDiscountTotal: continuity.discountAmount,
